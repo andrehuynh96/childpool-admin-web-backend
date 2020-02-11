@@ -65,7 +65,7 @@ const config = {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/active-member',
   },
-
+  enableSeed: process.env.ENABLE_SEED == "1",
 };
 
 module.exports = config;
