@@ -6,6 +6,7 @@ module.exports = {
     require("./wallet");
     database.db().wallet.sync({ force: false }).then(() => {
       logger.info('Resync wallet data model and do not drop any data');
+      require('app/model/wallet/seed');
     });
   }
 }

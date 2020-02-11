@@ -1,4 +1,4 @@
-const Model = require("app/model/staking").roles;
+const Model = require("app/model/wallet").roles;
 const bcrypt = require('bcrypt');
 
 (async () => {

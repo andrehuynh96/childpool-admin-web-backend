@@ -1,4 +1,4 @@
-const Model = require("app/model/staking").users;
+const Model = require("app/model/wallet").users;
 const bcrypt = require('bcrypt');
 
 let passWord = bcrypt.hashSync("Abc@123456", 10);
