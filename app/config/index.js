@@ -64,6 +64,7 @@ const config = {
   website: {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/active-member',
+    urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password',
   },
   enableSeed: process.env.ENABLE_SEED == "1",
 };
