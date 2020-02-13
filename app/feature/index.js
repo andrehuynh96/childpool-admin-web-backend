@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.use(require('./forgot-password/forgot-password.route'));
+router.use(require('./set-new-password/set-new-password.route'));
 
 module.exports = router;
 
