@@ -68,7 +68,8 @@ module.exports = async (req, res, next) => {
           let userIp = await UserIps.findOne({ 
             where:{
                 user_id: user.id,
-                client_ip: registerIp
+                client_ip: registerIp,
+                allow_flg: true,
             }
           })
           await UserActivityLog.create({
@@ -124,11 +125,11 @@ async function _sendEmail(user, verifyToken) {
       let data = {
         email: user.email,
         fullname: user.email,
-        link: `${config.website.urlConfirmNewIp}/${verifyToken}`,
+        link: `${config.website.urlConfirmIp}/${verifyToken}`,
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, user.email, data, "confirm-new-ip.ejs");
+      await mailer.sendWithTemplate(subject, from, user.email, data, "confirm-ip.ejs");
     } catch (err) {
       logger.error("send email confirm new IP fail", err);
     }

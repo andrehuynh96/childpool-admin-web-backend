@@ -4,6 +4,7 @@ const router = express.Router();
 router.use(require('./forgot-password/forgot-password.route'));
 router.use(require('./set-new-password/set-new-password.route'));
 router.use(require('./login/login.route'));
+router.use(require('./confirm-ip/confirm-ip.route'));
 module.exports = router;
 
 /**********************************************************************/
