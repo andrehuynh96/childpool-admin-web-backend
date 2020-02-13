@@ -1,8 +1,8 @@
 const ActionType = require("./value-object/member-activity-action-type");
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define("user_activity_logs", {
-    member_id: {
-      type: DataTypes.UUID,
+    user_id: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     client_ip: {
