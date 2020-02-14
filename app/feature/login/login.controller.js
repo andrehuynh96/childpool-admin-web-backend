@@ -2,7 +2,8 @@ const logger = require('app/lib/logger');
 const User = require("app/model/wallet").users;
 const UserIps = require("app/model/wallet").user_ips;
 const UserActivityLog = require("app/model/wallet").user_activity_logs;
-const OTP = require("app/model/wallet").otps;
+const UserOTP = require("app/model/wallet").user_otps;
+const mailer = require('app/lib/mailer');
 const UserStatus = require("app/model/wallet/value-object/user-status");
 const ActionType = require("app/model/wallet/value-object/user-activity-action-type");
 const OtpType = require("app/model/wallet/value-object/otp-type");
@@ -25,11 +26,11 @@ module.exports = async (req, res, next) => {
         if (!match) {
           return res.unauthorized(res.__("LOGIN_FAIL", "LOGIN_FAIL"));
         }
-        if (user.status == UserStatus.UNACTIVATED) {
+        if (user.user_sts == UserStatus.UNACTIVATED) {
           return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
         }
     
-        if (user.status == UserStatus.LOCKED) {
+        if (user.user_sts == UserStatus.LOCKED) {
           return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
         }
     
@@ -38,7 +39,7 @@ module.exports = async (req, res, next) => {
           let today = new Date();
           today.setHours(today.getHours() + config.expiredVefiryToken);
     
-          await OTP.update({
+          await UserOTP.update({
             expired: true
           }, {
               where: {
@@ -48,7 +49,7 @@ module.exports = async (req, res, next) => {
               returning: true
             })
     
-          await OTP.create({
+          await UserOTP.create({
             code: verifyToken,
             used: false,
             expired: false,
@@ -67,25 +68,55 @@ module.exports = async (req, res, next) => {
           let userIp = await UserIps.findOne({ 
             where:{
                 user_id: user.id,
-                client_ip: registerIp
+                client_ip: registerIp,
+                allow_flg: true,
             }
           })
-          if(!userIp){ //TODO
-            //send URL confirm to mailbox
-          }
           await UserActivityLog.create({
             user_id: user.id,
             client_ip: registerIp,
             action: ActionType.LOGIN,
             user_agent: req.headers['user-agent']
           });
-    
-          req.session.authenticated = true;
-          req.session.user = user;
-          return res.ok({
-            twofa: false,
-            user: userMapper(user)
-          });
+          if(!userIp){ //TODO
+            let verifyToken = Buffer.from(uuidV4()).toString('base64');
+            let today = new Date();
+            today.setHours(today.getHours() + config.expiredVefiryToken);
+            await UserOTP.update({
+                expired: true
+              }, {
+                  where: {
+                    user_id: user.id,
+                    action_type: OtpType.TWOFA
+                  },
+                  returning: true
+                })
+        
+              await UserOTP.create({
+                code: verifyToken,
+                used: false,
+                expired: false,
+                expired_at: today,
+                user_id: user.id,
+                action_type: OtpType.TWOFA
+              })
+              await UserIps.create({
+                user_id: user.id,
+                client_ip: registerIp,
+                allow_flg: false,
+                verify_token: verifyToken
+              })
+            _sendEmail(user, verifyToken);
+            return res.ok(true);
+          }
+          else {
+            req.session.authenticated = true;
+            req.session.user = user;
+            return res.ok({
+                twofa: false,
+                user: userMapper(user)
+            });
+          }
         }
       }
       catch (err) {
@@ -93,3 +124,19 @@ module.exports = async (req, res, next) => {
         next(err);
       } 
 };
+async function _sendEmail(user, verifyToken) {
+    try {
+      let subject = 'Listco Account - New IP Confirmation';
+      let from = `Listco <${config.mailSendAs}>`;
+      let data = {
+        email: user.email,
+        fullname: user.email,
+        link: `${config.website.urlConfirmIp}/${verifyToken}`,
+        hours: config.expiredVefiryToken
+      }
+      data = Object.assign({}, data, config.email);
+      await mailer.sendWithTemplate(subject, from, user.email, data, "confirm-ip.ejs");
+    } catch (err) {
+      logger.error("send email confirm new IP fail", err);
+    }
+  }

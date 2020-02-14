@@ -65,6 +65,7 @@ const config = {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/active-member',
     urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password',
+    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-new-ip',
   },
   enableSeed: process.env.ENABLE_SEED == "1",
 };
