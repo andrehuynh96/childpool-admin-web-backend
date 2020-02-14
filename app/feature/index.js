@@ -5,6 +5,7 @@ router.use(require('./forgot-password/forgot-password.route'));
 router.use(require('./set-new-password/set-new-password.route'));
 router.use(require('./login/login.route'));
 router.use(require('./confirm-ip/confirm-ip.route'));
+router.use(require('./confirm-2fa/confirm-2fa.route'));
 module.exports = router;
 
 /**********************************************************************/
