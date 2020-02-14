@@ -64,6 +64,90 @@ module.exports = {
       next(err);
     }
   },
+  get2Fa: async (req, res, next) => {
+    try {
+      const secret = speakeasy.generateSecret();
+      return res.ok(secret.base32);
+    }
+    catch (err) {
+      logger.error('getMe fail:', err);
+      next(err);
+    }
+  },
+  update2Fa: async (req, res, next) => {
+    try {
+      let user = await User.findOne({
+        where: {
+          id: req.user.id
+        }
+      })
+      if (!user) {
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+      }
+      if (req.body.disable) {
+        var verified = speakeasy.totp.verify({
+          secret: user.twofa_secret,
+          encoding: 'base32',
+          token: req.body.twofa_code,
+        });
+
+        if (!verified) {
+          return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT");
+        }
+
+        let [_, response] = await User.update({
+          twofa_enable_flg: false
+        }, {
+            where: {
+              id: req.user.id
+            },
+            returning: true
+          });
+        if (!response || response.length == 0) {
+          return res.serverInternalError();
+        }
+      }
+      else {
+        var verified = speakeasy.totp.verify({
+          secret: req.body.twofa_secret,
+          encoding: 'base32',
+          token: req.body.twofa_code,
+        });
+
+        if (!verified) {
+          return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT");
+        }
+
+        let result = await User.findOne({
+          where: {
+            twofa_secret: req.body.twofa_secret
+          }
+        })
+        if (result) {
+          return res.badRequest(res.__("TWOFA_EXISTS_ALREADY"), "TWOFA_EXISTS_ALREADY");
+        }
+
+        let [_, response] = await User.update({
+          twofa_secret: req.body.twofa_secret,
+          twofa_enable_flg: true
+        }, {
+            where: {
+              id: req.user.id
+            },
+            returning: true
+          });
+        if (!response || response.length == 0) {
+          return res.serverInternalError();
+        }
+      }
+
+      return res.ok(true);
+    }
+    catch (err) {
+      logger.error('uppdate-2fa fail:', err);
+      next(err);
+    }
+  },
   loginHistory: async (req, res, next) => {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
