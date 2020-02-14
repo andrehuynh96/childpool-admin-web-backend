@@ -64,4 +64,31 @@ module.exports = {
       next(err);
     }
   },
+  loginHistory: async (req, res, next) => {
+    try {
+      let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+      let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+
+      const { count: total, rows: items } = await UserActivityLog.findAndCountAll({
+        limit,
+        offset,
+        where: {
+          user_id: req.user.id,
+          action: ActionType.LOGIN
+        },
+        order: [['created_at', 'DESC']]
+      });
+
+      return res.ok({
+        items: items,
+        offset: offset,
+        limit: limit,
+        total: total
+      });
+    }
+    catch (err) {
+      logger.error('loginHistory fail:', err);
+      next(err);
+    }
+  }
 };
