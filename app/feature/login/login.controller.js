@@ -2,7 +2,7 @@ const logger = require('app/lib/logger');
 const User = require("app/model/wallet").users;
 const UserIps = require("app/model/wallet").user_ips;
 const UserActivityLog = require("app/model/wallet").user_activity_logs;
-const userOTP = require("app/model/wallet").user_otps;
+const UserOTP = require("app/model/wallet").user_otps;
 const mailer = require('app/lib/mailer');
 const UserStatus = require("app/model/wallet/value-object/user-status");
 const ActionType = require("app/model/wallet/value-object/user-activity-action-type");
@@ -39,7 +39,7 @@ module.exports = async (req, res, next) => {
           let today = new Date();
           today.setHours(today.getHours() + config.expiredVefiryToken);
     
-          await userOTP.update({
+          await UserOTP.update({
             expired: true
           }, {
               where: {
@@ -49,7 +49,7 @@ module.exports = async (req, res, next) => {
               returning: true
             })
     
-          await userOTP.create({
+          await UserOTP.create({
             code: verifyToken,
             used: false,
             expired: false,
@@ -82,7 +82,7 @@ module.exports = async (req, res, next) => {
             let verifyToken = Buffer.from(uuidV4()).toString('base64');
             let today = new Date();
             today.setHours(today.getHours() + config.expiredVefiryToken);
-            await userOTP.update({
+            await UserOTP.update({
                 expired: true
               }, {
                   where: {
@@ -92,13 +92,19 @@ module.exports = async (req, res, next) => {
                   returning: true
                 })
         
-              await userOTP.create({
+              await UserOTP.create({
                 code: verifyToken,
                 used: false,
                 expired: false,
                 expired_at: today,
                 user_id: user.id,
                 action_type: OtpType.TWOFA
+              })
+              await UserIps.create({
+                user_id: user.id,
+                client_ip: registerIp,
+                allow_flg: false,
+                verify_token: verifyToken
               })
             _sendEmail(user, verifyToken);
             return res.ok(true);
