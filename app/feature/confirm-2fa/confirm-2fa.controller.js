@@ -16,7 +16,6 @@ module.exports = async (req, res, next) => {
               action_type: OtpType.TWOFA
             }
         });
-        console.log(user_otp)
         if (!user_otp) {
             return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ["verify_token"] });
         }
@@ -33,11 +32,11 @@ module.exports = async (req, res, next) => {
             return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
         }
       
-        if (user.status == UserStatus.UNACTIVATED) {
+        if (user.user_sts == UserStatus.UNACTIVATED) {
             return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
         }
       
-        if (user.status == UserStatus.LOCKED) {
+        if (user.user_sts == UserStatus.LOCKED) {
             return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
         }
         var verified = speakeasy.totp.verify({
