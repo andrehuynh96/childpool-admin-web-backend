@@ -3,8 +3,9 @@ const router = express.Router();
 
 router.use(require('./forgot-password/forgot-password.route'));
 router.use(require('./set-new-password/set-new-password.route'));
-router.use(require('./response-schema/user.response-schema'));
 router.use(require('./login/login.route'));
+router.use(require('./user/user.route'));
+
 module.exports = router;
 
 /**********************************************************************/
