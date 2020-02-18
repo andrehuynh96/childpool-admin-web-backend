@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
+    verify_token: {
+      type: DataTypes.STRING(128),
+      allowNull: false
+    },
     data: {
       type: DataTypes.STRING(1024),
       allowNull: true
