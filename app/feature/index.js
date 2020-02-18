@@ -4,6 +4,7 @@ const router = express.Router();
 router.use(require('./forgot-password/forgot-password.route'));
 router.use(require('./set-new-password/set-new-password.route'));
 router.use(require('./login/login.route'));
+router.use(require('./user/user.route'));
 router.use(require('./confirm-ip/confirm-ip.route'));
 router.use(require('./confirm-2fa/confirm-2fa.route'));
 router.use(require('./account/account.route'));
