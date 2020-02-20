@@ -282,7 +282,7 @@ module.exports = {
       let otp = await OTP.findOne({
         where: {
           code: req.body.verify_token,
-          action_type: { [Op.in]: [OtpType.FORGOT_PASSWORD, OtpType.CREATE_ACCOUNT] }
+          action_type: { [Op.in]: [OtpType.CREATE_ACCOUNT] }
         }
       });
       if (!otp) {
@@ -303,10 +303,6 @@ module.exports = {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
   
-      if (user.user_sts == UserStatus.UNACTIVATED) {
-        return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
-      }
-  
       if (user.user_sts == UserStatus.LOCKED) {
         return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
       }
@@ -314,6 +310,7 @@ module.exports = {
       let passWord = bcrypt.hashSync(req.body.password, 10);
       let [_, response] = await User.update({
         password_hash: passWord,
+        user_sts: UserStatus.ACTIVATED
       }, {
           where: {
             id: user.id
@@ -335,16 +332,6 @@ module.exports = {
           },
           returning: true
         })
-
-      // mark this user as ACTIVATED
-      await User.update({
-        user_sts: UserStatus.ACTIVATED
-      }, {
-          where: {
-            id: user.id
-          },
-          returning: true
-        }); 
   
       return res.ok(true);
     }
@@ -383,7 +370,7 @@ module.exports = {
       }, {
           where: {
             user_id: user.id,
-            action_type: OtpType.FORGOT_PASSWORD
+            action_type: OtpType.CREATE_ACCOUNT
           },
           returning: true
         })
@@ -394,7 +381,7 @@ module.exports = {
         expired: false,
         expired_at: today,
         user_id: user.id,
-        action_type: OtpType.FORGOT_PASSWORD
+        action_type: OtpType.CREATE_ACCOUNT
       })
       _sendEmailCreateUser(user, verifyToken);
       return res.ok(true);
@@ -414,7 +401,7 @@ async function _sendEmailCreateUser(user, verifyToken) {
       email: user.email,
       fullname: user.email,
       site: config.website.url,
-      link: `${config.website.urlSetNewPassword}/${verifyToken}`,
+      link: `${config.website.urlActiveUser}/${verifyToken}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);

@@ -2,7 +2,7 @@ const express = require('express');
 const validator = require('app/middleware/validator.middleware');
 const authenticate = require('app/middleware/authenticate.middleware');
 const parseformdata = require('app/middleware/parse-formdata.middleware');
-const { create, update, } = require('./validator');
+const { create, update, active } = require('./validator');
 const controller = require('./user.controller');
 const config = require('app/config')
 
@@ -42,8 +42,15 @@ router.delete(
 
 router.post(
   '/active-user',
+  validator(active),
   authenticate,
   controller.active
+)
+
+router.get(
+  '/resend-email',
+  authenticate,
+  controller.resendEmailActive
 )
 
 module.exports = router;
@@ -358,6 +365,47 @@ module.exports = router;
                         "verify_token":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
                         "password":"Abc@123456",
                   }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/resend-email:
+ *   get:
+ *     summary: resend email contain active user link
+ *     tags:
+ *       - Users
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: id of user who need activating
+ *         type: int
  *     produces:
  *       - application/json
  *     responses:
