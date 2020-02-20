@@ -44,6 +44,7 @@ module.exports = async (req, res, next) => {
     let passWord = bcrypt.hashSync(req.body.password, 10);
     let [_, response] = await User.update({
       password_hash: passWord,
+      user_sts: UserStatus.ACTIVATED
     }, {
         where: {
           id: user.id
