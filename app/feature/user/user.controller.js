@@ -19,6 +19,7 @@ module.exports = {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+      let roles = req.session.role;
       let where = { deleted_flg: false };
       let include = [
         {
@@ -27,7 +28,10 @@ module.exports = {
             {
               model: Role
             }
-          ]
+          ],
+          where: {
+            role_id: { [Op.gte]: Math.min(...roles) }
+          }
         }
       ];
       if (req.query.user_sts) {
@@ -36,7 +40,6 @@ module.exports = {
       if (req.query.query) {
         where.email = { [Op.iLike]: `%${req.query.query}%` };
       }
-      
       const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, include: include, where: where, order: [['created_at', 'DESC']] });
       return res.ok({
         items: userMapper(items),
@@ -81,6 +84,9 @@ module.exports = {
   },
   delete: async (req, res, next) => {
     try {
+      if (req.params.id == req.user.id) {
+        return res.badRequest(res.__("USER_NOT_DELETED"), "USER_NOT_DELETED");
+      }
       let result = await User.findOne({
         where: {
           id: req.params.id
@@ -92,7 +98,8 @@ module.exports = {
       }
 
       let [_, response] = await User.update({
-        deleted_flg: true
+        deleted_flg: true,
+        updated_by: req.user.id
       }, {
           where: {
             id: req.params.id
@@ -138,7 +145,9 @@ module.exports = {
       let user = await User.create({
         email: req.body.email,
         password_hash: passWord,
-        user_sts: UserStatus.ACTIVATED,
+        user_sts: UserStatus.UNACTIVATED,
+        updated_by: req.user.id,
+        created_by: req.user.id
       }, { transaction });
 
       if (!user) {
@@ -196,7 +205,6 @@ module.exports = {
       next(err);
     }
   },
-
   update: async (req, res, next) => {
     const transaction = await database.transaction();
     try {
@@ -327,6 +335,16 @@ module.exports = {
           },
           returning: true
         })
+
+      // mark this user as ACTIVATED
+      await User.update({
+        user_sts: UserStatus.ACTIVATED
+      }, {
+          where: {
+            id: user.id
+          },
+          returning: true
+        }); 
   
       return res.ok(true);
     }
