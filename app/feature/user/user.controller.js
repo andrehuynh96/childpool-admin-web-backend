@@ -352,6 +352,57 @@ module.exports = {
       logger.error("set new password fail: ", err);
       next(err);
     }
+  },
+  resendEmailActive: async (req, res, next) => {
+    try {
+      let userId = req.params.id;
+      let user = await User.findOne({
+        where: {
+          id: userId
+        }
+      })
+
+      if (!user) {
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+      }
+
+      if (user.user_sts == UserStatus.ACTIVATED) {
+        return res.forbidden(res.__("ACCOUNT_ACTIVATED_ALREADY", "ACCOUNT_ACTIVATED_ALREADY"));
+      }
+
+      if (user.user_sts == UserStatus.LOCKED) {
+        return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+      }
+
+
+      let verifyToken = Buffer.from(uuidV4()).toString('base64');
+      let today = new Date();
+      today.setHours(today.getHours() + config.expiredVefiryToken);
+      await OTP.update({
+        expired: true
+      }, {
+          where: {
+            user_id: user.id,
+            action_type: OtpType.FORGOT_PASSWORD
+          },
+          returning: true
+        })
+
+      await OTP.create({
+        code: verifyToken,
+        used: false,
+        expired: false,
+        expired_at: today,
+        user_id: user.id,
+        action_type: OtpType.FORGOT_PASSWORD
+      })
+      _sendEmailCreateUser(user, verifyToken);
+      return res.ok(true);
+    }
+    catch (err) {
+      logger.error('create account fail:', err);
+      next(err);
+    }
   }
 }
 
