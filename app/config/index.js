@@ -64,6 +64,7 @@ const config = {
   website: {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/active-member',
+    urlActiveUser: process.env.WEBSITE_URL + '/active-user',
     urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password',
     urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-new-ip',
   },
