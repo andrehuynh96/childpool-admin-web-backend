@@ -67,7 +67,7 @@ module.exports = async (req, res, next) => {
         req.session.user = user;
         return res.ok(userMapper(user));
     }
-    catch{
+    catch(err){
         logger.error("login fail: ", err);
         next(err);
     }
