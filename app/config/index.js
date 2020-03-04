@@ -66,7 +66,14 @@ const config = {
     urlActive: process.env.WEBSITE_URL + '/active-member',
     urlActiveUser: process.env.WEBSITE_URL + '/active-user',
     urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password',
-    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-new-ip',
+    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-new-ip'
+  },
+  stakingApi: {
+    url: process.env.STAKING_API_URL,
+    key: process.env.STAKING_API_KEY,
+    secret: process.env.STAKING_API_SECRET,
+    jwksUrl: process.env.STAKING_API_JWK_URL,
+    kid: process.env.STAKING_API_KID,
   },
   enableSeed: process.env.ENABLE_SEED == "1",
 };
