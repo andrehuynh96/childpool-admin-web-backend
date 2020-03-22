@@ -118,7 +118,7 @@ module.exports = {
     }
   },
   create: async (req, res, next) => {
-    const transaction = await database.transaction();
+    let transaction;
     try {
       let result = await User.findOne({
         where: {
@@ -141,6 +141,8 @@ module.exports = {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND");
       }
 
+      transaction = await database.transaction();
+
       let passWord = bcrypt.hashSync("Abc@123456", 10);
       let user = await User.create({
         email: req.body.email,
@@ -151,7 +153,7 @@ module.exports = {
       }, { transaction });
 
       if (!user) {
-        await transaction.rollback();
+        if (transaction) await transaction.rollback();
         return res.serverInternalError();
       }
 
@@ -167,7 +169,7 @@ module.exports = {
       }, { transaction });
 
       if (!userRole) {
-        await transaction.rollback();
+        if (transaction) await transaction.rollback();
         return res.serverInternalError();
       }
 
@@ -201,12 +203,12 @@ module.exports = {
     }
     catch (err) {
       logger.error('create account fail:', err);
-      await transaction.rollback();
+      if (transaction) await transaction.rollback();
       next(err);
     }
   },
   update: async (req, res, next) => {
-    const transaction = await database.transaction();
+    let transaction;
     try {
       let result = await User.findOne({
         where: {
@@ -228,6 +230,8 @@ module.exports = {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND");
       }
 
+      transaction = await database.transaction();
+      
       let [_, response] = await User.update({
         user_sts: req.body.user_sts,
         email: req.body.email
@@ -238,7 +242,7 @@ module.exports = {
           returning: true
         }, { transaction });
       if (!response || response.length == 0) {
-        await transaction.rollback();
+        if (transaction) await transaction.rollback();
         return res.serverInternalError();
       }
 
@@ -254,7 +258,7 @@ module.exports = {
       }, { transaction });
 
       if (!userRole) {
-        await transaction.rollback();
+        if (transaction) await transaction.rollback();
         return res.serverInternalError();
       }
 
@@ -272,7 +276,7 @@ module.exports = {
     }
     catch (err) {
       logger.error('update user fail:', err);
-      await transaction.rollback();
+      if (transaction) await transaction.rollback();
       next(err);
     }
   },

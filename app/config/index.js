@@ -76,6 +76,10 @@ const config = {
     kid: process.env.STAKING_API_KID,
   },
   enableSeed: process.env.ENABLE_SEED == "1",
+  lockUser: {
+    maximumTriesLogin: process.env.MAXIMUM_TRIES_LOGIN,
+    lockTime: process.env.LOCK_TIME
+  }
 };
 
 module.exports = config;
