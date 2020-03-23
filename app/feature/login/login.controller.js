@@ -78,7 +78,7 @@ module.exports = async (req, res, next) => {
             action: ActionType.LOGIN,
             user_agent: req.headers['user-agent']
           });
-          if(!userIp){ //TODO
+          if(!userIp){
             let verifyToken = Buffer.from(uuidV4()).toString('base64');
             let today = new Date();
             today.setHours(today.getHours() + config.expiredVefiryToken);
