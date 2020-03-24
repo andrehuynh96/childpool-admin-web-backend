@@ -9,6 +9,7 @@ router.use(require('./confirm-ip/confirm-ip.route'));
 router.use(require('./confirm-2fa/confirm-2fa.route'));
 router.use(require('./account/account.route'));
 router.use(require('./grandchild/grandchild.route'));
+router.use(require('./member/member.route'));
 module.exports = router;
 
 /**********************************************************************/
