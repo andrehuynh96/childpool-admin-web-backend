@@ -22,7 +22,8 @@ module.exports = {
 		try {
             body = {
                 partner_id: req.params.id,
-                name: req.body.name
+                name: req.body.name,
+                user_id: req.session.user.id
             }
             let items = await StakingAPI.createApiKey(body)
             if (items.data) {
