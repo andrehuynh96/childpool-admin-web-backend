@@ -49,6 +49,7 @@ const config = {
     pass: process.env.SMTP_PASS
   },
   mailSendAs: process.env.MAIL_SEND_AS || 'no-reply@infinito.io',
+  disableRecaptcha: true,
   CDN: {
     url: process.env.CDN_URL,
     accessKey: process.env.CDN_ACCESS_KEY,
@@ -76,6 +77,10 @@ const config = {
     kid: process.env.STAKING_API_KID,
   },
   enableSeed: process.env.ENABLE_SEED == "1",
+  lockUser: {
+    maximumTriesLogin: process.env.MAXIMUM_TRIES_LOGIN,
+    lockTime: process.env.LOCK_TIME
+  }
 };
 
 module.exports = config;

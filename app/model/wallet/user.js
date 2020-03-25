@@ -43,6 +43,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0
+    },
+    latest_login_at: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    attempt_login_number: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
     }
   }, {
       underscored: true,

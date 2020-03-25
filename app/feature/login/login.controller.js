@@ -1,3 +1,4 @@
+const Sequelize = require('sequelize');
 const logger = require('app/lib/logger');
 const User = require("app/model/wallet").users;
 const UserIps = require("app/model/wallet").user_ips;
@@ -22,16 +23,45 @@ module.exports = async (req, res, next) => {
         if (!user) {
           return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ["email"] });
         }
-        const match = await bcrypt.compare(req.body.password, user.password_hash);
-        if (!match) {
-          return res.unauthorized(res.__("LOGIN_FAIL", "LOGIN_FAIL"));
-        }
         if (user.user_sts == UserStatus.UNACTIVATED) {
-          return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
+          return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
         }
     
         if (user.user_sts == UserStatus.LOCKED) {
-          return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+          return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+        }
+
+        const match = await bcrypt.compare(req.body.password, user.password_hash);
+        if (!match) {
+          if (user.attempt_login_number + 1 <= config.lockUser.maximumTriesLogin) {
+            await User.update({
+              attempt_login_number: user.attempt_login_number + 1, // increase attempt_login_number in case wrong password
+              latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
+            }, {
+              where: {
+                id: user.id
+              }
+            })
+            if (user.attempt_login_number + 1 == config.lockUser.maximumTriesLogin)
+              return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+            else return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
+          }
+          else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+        }
+        else {
+          let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
+          nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
+          let rightNow = new Date();
+          if (nextAcceptableLogin >= rightNow && user.attempt_login_number >= config.lockUser.maximumTriesLogin) // don't forbid if lock time has passed
+            return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+          await User.update({
+            attempt_login_number: 0, 
+            latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
+          }, {
+            where: {
+              id: user.id
+            }
+          })
         }
     
         if (user.twofa_enable_flg) {
