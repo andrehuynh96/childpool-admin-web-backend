@@ -49,6 +49,7 @@ const config = {
     pass: process.env.SMTP_PASS
   },
   mailSendAs: process.env.MAIL_SEND_AS || 'no-reply@infinito.io',
+  disableRecaptcha: true,
   CDN: {
     url: process.env.CDN_URL,
     accessKey: process.env.CDN_ACCESS_KEY,
