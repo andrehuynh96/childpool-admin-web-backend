@@ -5,7 +5,9 @@ const StakingAPI = require("app/lib/staking-api/partner-api-key")
 module.exports = {
     getAll: async(req, res, next) => {
         try {
-            let items = await StakingAPI.getAllApiKey(req.params.id);
+            let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+			let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+            let items = await StakingAPI.getAllApiKey(req.params.id,limit,offset);
             if (items.data) {
                 return res.ok(items.data);
             }
@@ -20,12 +22,7 @@ module.exports = {
     },
     create: async(req, res, next) => {
 		try {
-            body = {
-                partner_id: req.params.id,
-                name: req.body.name,
-                user_id: req.session.user.id
-            }
-            let items = await StakingAPI.createApiKey(body)
+            let items = await StakingAPI.createApiKey(req.params.id,req.body.name)
             if (items.data) {
 				return res.ok(items.data);
 			}

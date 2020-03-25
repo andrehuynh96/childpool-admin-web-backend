@@ -6,16 +6,15 @@ const redis = require("app/lib/redis");
 const cache = redis.client();
 
 module.exports = {
-    getAllApiKey:  async (partner_id) => {
+    getAllApiKey:  async (partner_id,limit,offset) => {
         try {
           let accessToken = await _getToken();
-          let result = await axios.get(`${config.stakingApi.url}/partners/${partner_id}/keys`, {
+          let result = await axios.get(`${config.stakingApi.url}/partners/${partner_id}/keys/?limit=${limit}&offset=${offset}`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${accessToken}`
             }
           });
-    
           return result.data;
         }
         catch (err) {
@@ -23,11 +22,14 @@ module.exports = {
           return err.response.data;
         }
       },
-      createApiKey: async(body) => {
+      createApiKey: async(partner_id,name) => {
         try {
+          console.log("======================>",name)
           let accessToken = await _getToken();
-          let result = await axios.post(`${config.stakingApi.url}/partners/${body.partner_id}/keys`, 
-          body,
+          let result = await axios.post(`${config.stakingApi.url}/partners/${partner_id}/keys`, 
+          {
+            name: name
+          },
           {
             headers: {
               "Content-Type": "application/json",
