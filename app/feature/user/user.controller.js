@@ -62,7 +62,7 @@ module.exports = {
       })
 
       if (!result) {
-        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
 
       let userRole = await UserRole.findOne({
@@ -85,7 +85,7 @@ module.exports = {
   delete: async (req, res, next) => {
     try {
       if (req.params.id == req.user.id) {
-        return res.badRequest(res.__("USER_NOT_DELETED"), "USER_NOT_DELETED");
+        return res.badRequest(res.__("USER_NOT_DELETED"), "USER_NOT_DELETED", { fields: ['id'] });
       }
       let result = await User.findOne({
         where: {
@@ -94,18 +94,18 @@ module.exports = {
       })
 
       if (!result) {
-        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
 
       let [_, response] = await User.update({
         deleted_flg: true,
         updated_by: req.user.id
       }, {
-          where: {
-            id: req.params.id
-          },
-          returning: true
-        });
+        where: {
+          id: req.params.id
+        },
+        returning: true
+      });
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
@@ -128,7 +128,7 @@ module.exports = {
       })
 
       if (result) {
-        return res.badRequest(res.__("EMAIL_EXISTS_ALREADY"), "EMAIL_EXISTS_ALREADY");
+        return res.badRequest(res.__("EMAIL_EXISTS_ALREADY"), "EMAIL_EXISTS_ALREADY", { fields: ['email'] });
       }
 
       let role = await Role.findOne({
@@ -138,7 +138,7 @@ module.exports = {
       })
 
       if (!role) {
-        return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND");
+        return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
       }
 
       transaction = await database.transaction();
@@ -179,12 +179,12 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-          where: {
-            user_id: user.id,
-            action_type: OtpType.CREATE_ACCOUNT
-          },
-          returning: true
-        })
+        where: {
+          user_id: user.id,
+          action_type: OtpType.CREATE_ACCOUNT
+        },
+        returning: true
+      })
 
       await OTP.create({
         code: verifyToken,
@@ -217,7 +217,7 @@ module.exports = {
       })
 
       if (!result) {
-        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
 
       let role = await Role.findOne({
@@ -227,20 +227,20 @@ module.exports = {
       })
 
       if (!role) {
-        return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND");
+        return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
       }
 
       transaction = await database.transaction();
-      
+
       let [_, response] = await User.update({
         user_sts: req.body.user_sts,
         email: req.body.email
       }, {
-          where: {
-            id: req.params.id
-          },
-          returning: true
-        }, { transaction });
+        where: {
+          id: req.params.id
+        },
+        returning: true
+      }, { transaction });
       if (!response || response.length == 0) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();
@@ -269,7 +269,7 @@ module.exports = {
           id: req.params.id
         }
       })
-      
+
       let user = userMapper(result);
       user.role_id = role.id
       return res.ok(user);
@@ -292,12 +292,12 @@ module.exports = {
       if (!otp) {
         return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ["verify_token"] });
       }
-  
+
       let today = new Date();
       if (otp.expired_at < today || otp.expired || otp.used) {
-        return res.badRequest(res.__("TOKEN_EXPIRED"), "TOKEN_EXPIRED");
+        return res.badRequest(res.__("TOKEN_EXPIRED"), "TOKEN_EXPIRED", { fields: ['verify_token'] });
       }
-  
+
       let user = await User.findOne({
         where: {
           id: otp.user_id
@@ -306,37 +306,37 @@ module.exports = {
       if (!user) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-  
+
       if (user.user_sts == UserStatus.LOCKED) {
-        return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
       }
-  
+
       let passWord = bcrypt.hashSync(req.body.password, 10);
       let [_, response] = await User.update({
         password_hash: passWord,
         user_sts: UserStatus.ACTIVATED
       }, {
-          where: {
-            id: user.id
-          },
-          returning: true
-        });
+        where: {
+          id: user.id
+        },
+        returning: true
+      });
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
-  
+
       // mark this otp as USED after setting new password
       await OTP.update({
         used: true
       }, {
-          where: {
-            user_id: user.id,
-            code: req.body.verify_token,
-            action_type: OtpType.CREATE_ACCOUNT
-          },
-          returning: true
-        })
-  
+        where: {
+          user_id: user.id,
+          code: req.body.verify_token,
+          action_type: OtpType.CREATE_ACCOUNT
+        },
+        returning: true
+      })
+
       return res.ok(true);
     }
     catch (err) {
@@ -354,15 +354,15 @@ module.exports = {
       })
 
       if (!user) {
-        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
 
       if (user.user_sts == UserStatus.ACTIVATED) {
-        return res.forbidden(res.__("ACCOUNT_ACTIVATED_ALREADY", "ACCOUNT_ACTIVATED_ALREADY"));
+        return res.forbidden(res.__("ACCOUNT_ACTIVATED_ALREADY"), "ACCOUNT_ACTIVATED_ALREADY");
       }
 
       if (user.user_sts == UserStatus.LOCKED) {
-        return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
       }
 
 
@@ -372,12 +372,12 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-          where: {
-            user_id: user.id,
-            action_type: OtpType.CREATE_ACCOUNT
-          },
-          returning: true
-        })
+        where: {
+          user_id: user.id,
+          action_type: OtpType.CREATE_ACCOUNT
+        },
+        returning: true
+      })
 
       await OTP.create({
         code: verifyToken,
