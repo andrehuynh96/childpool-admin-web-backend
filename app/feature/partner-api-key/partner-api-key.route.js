@@ -92,65 +92,65 @@ module.exports = route;
  *         schema:
  *           $ref: '#/definitions/500'
  */
- /**
- * @swagger
- * /web/partners/{id}/keys:
- *   post:
- *     summary: create a new API key
- *     tags:
- *       - API key
- *     description: reate a new API key
- *     parameters:
- *       - name: id
- *         in: path
- *         type: string
- *         required: true
- *       - in: body
- *         name: data
- *         description: Info of new API key
- *         schema:
- *            type: object
- *            required:
- *            - name
- *            example:
- *               {
-                        name: "MYHN"
-                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
-                    "data": {
-                        "id": "c487a17d-1992-4324-8847-b8cc25acecd7",
-                        "api_key": "5f4ddc88-02d6-4f72-abc2-082ed86205ff",
-                        "status": "NOT_CONNECT",
-                        "partner_id": "8f3d8b76-7915-493c-88f2-94ee074a56f2",
-                        "name": "MYHN",
-                        "secret_key": "oVN9QA29PtM2",
-                        "actived_flg": true,
-                        "created_by": 1,
-                        "updatedAt": "2020-03-24T03:52:07.788Z",
-                        "createdAt": "2020-03-24T03:52:07.788Z"
-                    }
-                }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/partners/{id}/keys:
+*   post:
+*     summary: create a new API key
+*     tags:
+*       - API key
+*     description: reate a new API key
+*     parameters:
+*       - name: id
+*         in: path
+*         type: string
+*         required: true
+*       - in: body
+*         name: data
+*         description: Info of new API key
+*         schema:
+*            type: object
+*            required:
+*            - name
+*            example:
+*               {
+                       name: "MYHN"
+                 }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                   "data": {
+                       "id": "c487a17d-1992-4324-8847-b8cc25acecd7",
+                       "api_key": "5f4ddc88-02d6-4f72-abc2-082ed86205ff",
+                       "status": "NOT_CONNECT",
+                       "partner_id": "8f3d8b76-7915-493c-88f2-94ee074a56f2",
+                       "name": "MYHN",
+                       "secret_key": "oVN9QA29PtM2",
+                       "actived_flg": true,
+                       "created_by": 1,
+                       "updatedAt": "2020-03-24T03:52:07.788Z",
+                       "createdAt": "2020-03-24T03:52:07.788Z"
+                   }
+               }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
