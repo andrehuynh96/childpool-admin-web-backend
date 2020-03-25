@@ -40,7 +40,7 @@ module.exports = {
 
       const match = await bcrypt.compare(req.body.password, result.password_hash);
       if (!match) {
-        return res.badRequest(res.__("PASSWORD_INVALID", "PASSWORD_INVALID"));
+        return res.badRequest(res.__("PASSWORD_INVALID"), "PASSWORD_INVALID", { fields: ['password'] });
       }
 
       let passWord = bcrypt.hashSync(req.body.new_password, 10);
@@ -92,7 +92,7 @@ module.exports = {
         });
 
         if (!verified) {
-          return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT");
+          return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT", { fields: ['twofa_code'] });
         }
 
         let [_, response] = await User.update({
@@ -115,7 +115,7 @@ module.exports = {
         });
 
         if (!verified) {
-          return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT");
+          return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT", { fields: ['twofa_code'] });
         }
 
         let result = await User.findOne({
@@ -124,7 +124,7 @@ module.exports = {
           }
         })
         if (result) {
-          return res.badRequest(res.__("TWOFA_EXISTS_ALREADY"), "TWOFA_EXISTS_ALREADY");
+          return res.badRequest(res.__("TWOFA_EXISTS_ALREADY"), "TWOFA_EXISTS_ALREADY", { fields: ['twofa_secret'] });
         }
 
         let [_, response] = await User.update({
