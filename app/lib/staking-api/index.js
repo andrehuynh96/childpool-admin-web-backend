@@ -30,10 +30,10 @@ module.exports = {
       return err.response.data;
     }
   },
-  getAllGrandchild: async () => {
+  getAllGrandchild: async (limit,offset) => {
     try {
       let accessToken = await _getToken();
-      let result = await axios.get(`${config.stakingApi.url}/grandchild`, {
+      let result = await axios.get(`${config.stakingApi.url}/grandchild/?limit=${limit}&offset=${offset}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`
