@@ -3,16 +3,20 @@ const controller = require("./grandchild.controller");
 const { create } = require("./validator");
 const validator = require("app/middleware/validator.middleware");
 const authenticate = require('app/middleware/authenticate.middleware');
+const PermissionKey = require('app/model/wallet/value-object/permission-key');
+const authority = require('app/middleware/authority.middleware');
 const route = express.Router();
 
 route.post("/grandchild",
   validator(create),
   authenticate,
+  authority(PermissionKey.CREATE_GRANDCHILD_),
   controller.create
 );
 
 route.get("/grandchild",
   authenticate,
+  authority(PermissionKey.VIEW_LIST_GRANDCHILD),
   controller.getAll
 );
 

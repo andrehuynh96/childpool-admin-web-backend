@@ -1,6 +1,9 @@
 const logger = require('app/lib/logger');
 const User = require("app/model/wallet").users;
+const UserRole = require('app/model/wallet').user_roles;
 const UserOTP = require("app/model/wallet").user_otps;
+const RolePermissions = require("app/model/wallet").role_permissions;
+const Permissions = require("app/model/wallet").permissions;
 const UserStatus = require("app/model/wallet/value-object/user-status");
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const userMapper = require("app/feature/response-schema/user.response-schema");
@@ -16,7 +19,6 @@ module.exports = async (req, res, next) => {
               action_type: OtpType.TWOFA
             }
         });
-        console.log(user_otp)
         if (!user_otp) {
             return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ["verify_token"] });
         }
@@ -56,6 +58,12 @@ module.exports = async (req, res, next) => {
             },
         });
         const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
+        let roles = await UserRole.findAll({
+            attributes: ['role_id'],
+            where: {
+              user_id: user.id
+            }
+          })
         await UserActivityLog.create({
             user_id: user.id,
             client_ip: registerIp,
@@ -65,6 +73,27 @@ module.exports = async (req, res, next) => {
       
         req.session.authenticated = true;
         req.session.user = user;
+
+        let roleList = roles.map(role => role.role_id);
+        let rolePermissions = await RolePermissions.findAll({
+            attributes: [
+              "permission_id"
+            ],
+            where: {
+              role_id: roleList
+            }
+          });
+        rolePermissions = [...new Set(rolePermissions.map(ele => ele.permission_id))];
+        let permissions = await Permissions.findAll({
+            attributes: [
+              "name"
+            ],
+            where: {
+              id: rolePermissions
+            }
+          });
+        req.session.roles = permissions.map(ele => ele.name);
+        console.log(req.session.roles)
         return res.ok(userMapper(user));
     }
     catch(err){

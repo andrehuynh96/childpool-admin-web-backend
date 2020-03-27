@@ -6,21 +6,23 @@ const { changePassword, update, twofa } = require('./validator');
 const controller = require('./account.controller');
 const verifyRecaptcha = require('app/middleware/verify-recaptcha.middleware');
 const config = require('app/config')
-
+const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const Recaptcha = require('express-recaptcha').RecaptchaV2;
 const recaptcha = new Recaptcha(config.recaptchaSiteKey, config.recaptchaSecret);
-
+const authority = require('app/middleware/authority.middleware');
 const router = express.Router();
 
 router.get(
   '/me',
   authenticate,
+  authority(PermissionKey.VIEW_USER),
   controller.getMe
 );
 
 router.post(
   '/me/change-password',
   authenticate,
+  authority(PermissionKey.CHANGE_PASSWORD_ACCOUNT),
   validator(changePassword),
   recaptcha.middleware.verify,
   verifyRecaptcha,
@@ -29,18 +31,21 @@ router.post(
 router.get(
   '/me/login-history',
   authenticate,
+  authority(PermissionKey.VIEW_LOGIN_HISTORY_ACCOUNT),
   controller.loginHistory
 );
 
 router.get(
   '/me/2fa',
   authenticate,
+  authority(PermissionKey.VIEW_2FA_ACCOUNT),
   controller.get2Fa
 );
 
 router.post(
   '/me/2fa',
   authenticate,
+  authority(PermissionKey.UPDATE_2FA_ACCOUNT),
   validator(twofa),
   controller.update2Fa
 );
