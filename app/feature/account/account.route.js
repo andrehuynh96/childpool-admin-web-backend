@@ -11,7 +11,6 @@ const Recaptcha = require('express-recaptcha').RecaptchaV2;
 const recaptcha = new Recaptcha(config.recaptchaSiteKey, config.recaptchaSecret);
 const authority = require('app/middleware/authority.middleware');
 const router = express.Router();
-
 router.get(
   '/me',
   authenticate,

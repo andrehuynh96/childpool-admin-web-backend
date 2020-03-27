@@ -19,7 +19,7 @@ module.exports = {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
-      let roles = req.session.role;
+      let roles = req.session.roles;
       let where = { deleted_flg: false };
       let include = [
         {
@@ -140,7 +140,6 @@ module.exports = {
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
       }
-
       transaction = await database.transaction();
 
       let passWord = bcrypt.hashSync("Abc@123456", 10);
@@ -151,7 +150,7 @@ module.exports = {
         updated_by: req.user.id,
         created_by: req.user.id
       }, { transaction });
-
+      
       if (!user) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();

@@ -122,6 +122,15 @@ module.exports = {
       "Operator2",
     ]
   },
+  "ACTIVE_USER": {
+    "KEY": "ACTIVE_USER",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
+  },
   "RESEND_EMAIL": {
     "KEY": "RESEND_EMAIL",
     "ROLES": [
