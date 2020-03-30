@@ -4,6 +4,8 @@ const User = require("app/model/wallet").users;
 const UserIps = require("app/model/wallet").user_ips;
 const UserActivityLog = require("app/model/wallet").user_activity_logs;
 const UserOTP = require("app/model/wallet").user_otps;
+const RolePermissions = require("app/model/wallet").role_permissions;
+const Permissions = require("app/model/wallet").permissions;
 const mailer = require('app/lib/mailer');
 const UserStatus = require("app/model/wallet/value-object/user-status");
 const ActionType = require("app/model/wallet/value-object/user-activity-action-type");
@@ -12,6 +14,7 @@ const userMapper = require("app/feature/response-schema/user.response-schema");
 const bcrypt = require('bcrypt');
 const config = require("app/config");
 const uuidV4 = require('uuid/v4');
+const UserRole = require('app/model/wallet').user_roles;
 module.exports = async (req, res, next) => {
     try {
         let user = await User.findOne({
@@ -95,6 +98,12 @@ module.exports = async (req, res, next) => {
         }
         else {
           const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
+          let roles = await UserRole.findAll({
+            attributes: ['role_id'],
+            where: {
+              user_id: user.id
+            }
+          })
           let userIp = await UserIps.findOne({ 
             where:{
                 user_id: user.id,
@@ -108,7 +117,7 @@ module.exports = async (req, res, next) => {
             action: ActionType.LOGIN,
             user_agent: req.headers['user-agent']
           });
-          if(!userIp){ //TODO
+          if(!userIp){
             let verifyToken = Buffer.from(uuidV4()).toString('base64');
             let today = new Date();
             today.setHours(today.getHours() + config.expiredVefiryToken);
@@ -142,6 +151,25 @@ module.exports = async (req, res, next) => {
           else {
             req.session.authenticated = true;
             req.session.user = user;
+            let roleList = roles.map(role => role.role_id);
+            let rolePermissions = await RolePermissions.findAll({
+              attributes: [
+                "permission_id"
+              ],
+              where: {
+                role_id: roleList
+              }
+            });
+            rolePermissions = [...new Set(rolePermissions.map(ele => ele.permission_id))];
+            let permissions = await Permissions.findAll({
+              attributes: [
+                "name"
+              ],
+              where: {
+                id: rolePermissions
+              }
+            });
+            req.session.roles = permissions.map(ele => ele.name);
             return res.ok({
                 twofa: false,
                 user: userMapper(user)

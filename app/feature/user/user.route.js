@@ -5,24 +5,29 @@ const parseformdata = require('app/middleware/parse-formdata.middleware');
 const { create, update, active } = require('./validator');
 const controller = require('./user.controller');
 const config = require('app/config')
+const PermissionKey = require('app/model/wallet/value-object/permission-key');
+const authority = require('app/middleware/authority.middleware');
 
 const router = express.Router();
 
 router.get(
   '/users',
   authenticate,
+  authority(PermissionKey.VIEW_LIST_USER),
   controller.search
 );
 
 router.get(
   '/users/:id',
   authenticate,
+  authority(PermissionKey.VIEW_USER_DETAIL),
   controller.get
 );
 
 router.post(
   '/users',
   authenticate,
+  authority(PermissionKey.CREATE_USER),
   validator(create),
   controller.create
 );
@@ -30,6 +35,7 @@ router.post(
 router.put(
   '/users/:id',
   authenticate,
+  authority(PermissionKey.UPDATE_USER),
   validator(update),
   controller.update
 );
@@ -37,6 +43,7 @@ router.put(
 router.delete(
   '/users/:id',
   authenticate,
+  authority(PermissionKey.DELETE_USER),
   controller.delete
 );
 
@@ -44,12 +51,14 @@ router.post(
   '/active-user',
   validator(active),
   authenticate,
+  authority(PermissionKey.ACTIVE_USER),
   controller.active
 )
 
 router.get(
   '/resend-email',
   authenticate,
+  authority(PermissionKey.RESEND_EMAIL),
   controller.resendEmailActive
 )
 

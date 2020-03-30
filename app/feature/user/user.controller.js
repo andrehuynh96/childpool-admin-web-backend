@@ -19,28 +19,14 @@ module.exports = {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
-      let roles = req.session.role;
       let where = { deleted_flg: false };
-      let include = [
-        {
-          model: UserRole,
-          include: [
-            {
-              model: Role
-            }
-          ],
-          where: {
-            role_id: { [Op.gte]: Math.min(...roles) }
-          }
-        }
-      ];
       if (req.query.user_sts) {
         where.user_sts = req.query.user_sts
       }
       if (req.query.query) {
         where.email = { [Op.iLike]: `%${req.query.query}%` };
       }
-      const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, include: include, where: where, order: [['created_at', 'DESC']] });
+      const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
       return res.ok({
         items: userMapper(items),
         offset: offset,
@@ -140,7 +126,6 @@ module.exports = {
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
       }
-
       transaction = await database.transaction();
 
       let passWord = bcrypt.hashSync("Abc@123456", 10);
@@ -151,7 +136,7 @@ module.exports = {
         updated_by: req.user.id,
         created_by: req.user.id
       }, { transaction });
-
+      
       if (!user) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();
