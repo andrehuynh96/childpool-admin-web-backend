@@ -80,23 +80,6 @@ module.exports = {
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
-      let targetUserRole = await UserRole.findOne({
-        where: {
-          user_id: req.params.id
-        }
-      })
-      let targetRole = await Role.findOne({
-        where: {
-          id: targetUserRole.role_id
-        }
-      })      
-      if(targetRole.id == 1){
-        return res.badRequest(res.__("USER_NOT_DELETED"), "USER_NOT_DELETED", { fields: ['id'] });
-      }
-      let myRole = req.session.role[0]
-      if(targetRole.id != myRole + 1){
-        return res.badRequest(res.__("USER_NOT_DELETED"), "USER_NOT_DELETED", { fields: ['id'] });
-      }
       let [_, response] = await User.update({
         deleted_flg: true,
         updated_by: req.user.id
