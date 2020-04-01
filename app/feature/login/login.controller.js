@@ -170,6 +170,7 @@ module.exports = async (req, res, next) => {
               }
             });
             req.session.roles = permissions.map(ele => ele.name);
+            req.session.role = roleList;
             return res.ok({
                 twofa: false,
                 user: userMapper(user)

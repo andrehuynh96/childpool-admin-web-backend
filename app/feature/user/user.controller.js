@@ -13,7 +13,6 @@ const mailer = require('app/lib/mailer');
 const database = require('app/lib/database').db().wallet;
 const Role = require("app/model/wallet").roles;
 const UserRole = require("app/model/wallet").user_roles;
-
 module.exports = {
   search: async (req, res, next) => {
     try {
@@ -78,11 +77,9 @@ module.exports = {
           id: req.params.id
         }
       })
-
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
-
       let [_, response] = await User.update({
         deleted_flg: true,
         updated_by: req.user.id
