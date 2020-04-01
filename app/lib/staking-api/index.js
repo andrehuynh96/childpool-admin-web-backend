@@ -31,10 +31,10 @@ module.exports = {
       return err.response.data;
     }
   },
-  getAllGrandchild: async () => {
+  getAllGrandchild: async (limit,offset) => {
     try {
-      let accessToken = await getToken();
-      let result = await axios.get(`${config.stakingApi.url}/grandchild`, {
+      let accessToken = await _getToken();
+      let result = await axios.get(`${config.stakingApi.url}/grandchild/?limit=${limit}&offset=${offset}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`
@@ -45,6 +45,23 @@ module.exports = {
     }
     catch (err) {
       logger.error("getAllGrandchild fail:", err);
+      return err.response.data;
+    }
+  },
+  revokeAPIKey: async () => {
+    try {
+      let accessToken = await _getToken();
+      let result = await axios.get(`${config.stakingApi.url}/api-key/revoke`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+
+      return result.data;
+    }
+    catch (err) {
+      logger.error("revokeAPIKey fail:", err);
       return err.response.data;
     }
   }

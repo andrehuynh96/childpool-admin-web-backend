@@ -11,7 +11,8 @@ router.use(require('./account/account.route'));
 router.use(require('./grandchild/grandchild.route'));
 router.use(require('./partner-api-key/partner-api-key.route'));
 router.use(require('./member/member.route'));
-module.exports = router;
+router.use(require('./api-key/api-key.route'));
+ module.exports = router;
 
 /**********************************************************************/
 /**

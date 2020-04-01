@@ -22,7 +22,7 @@ module.exports = route;
 
 /**
  * @swagger
- * /api/v1/grandchild:
+ * /web/grandchild:
  *   post:
  *     summary: create a new grandchild
  *     tags:
@@ -84,7 +84,7 @@ module.exports = route;
 
 /**
  * @swagger
- * /api/v1/grandchild:
+ * /web/grandchild:
  *   get:
  *     summary: get list of all grandchilds
  *     tags:
