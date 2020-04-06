@@ -29,7 +29,7 @@ module.exports = router;
  *     summary: Login
  *     tags:
  *       - Accounts
- *     description: if twofa == true then return verify_token otherwise return user object
+ *     description: if twofa == true then return verify_token otherwise return user object, if need to verify IP then return confirm_ip
  *     parameters:
  *       - in: body
  *         name: data
@@ -55,6 +55,7 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
+                      "confirm_ip":true,
                       "twofa":true,
                       "verify_token":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
                       "user":{
