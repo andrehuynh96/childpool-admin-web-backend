@@ -18,6 +18,7 @@ const config = {
     },
     appenders: ['CONSOLE', 'FILE', 'ERROR_ONLY'],
   },
+  corsDomain: process.env.CORS_DOMAINS,
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,

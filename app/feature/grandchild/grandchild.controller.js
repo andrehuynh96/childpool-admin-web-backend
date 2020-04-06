@@ -26,7 +26,10 @@ module.exports = {
 	},
 	getAll: async(req, res, next) => {
 		try {
-			let items = await StakingAPI.getAllGrandchild();
+			let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+			let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+
+			let items = await StakingAPI.getAllGrandchild(limit,offset);
 			if (items.data) {
 				return res.ok(items.data);
 			}

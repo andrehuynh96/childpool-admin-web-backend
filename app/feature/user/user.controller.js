@@ -13,34 +13,19 @@ const mailer = require('app/lib/mailer');
 const database = require('app/lib/database').db().wallet;
 const Role = require("app/model/wallet").roles;
 const UserRole = require("app/model/wallet").user_roles;
-
 module.exports = {
   search: async (req, res, next) => {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
-      let roles = req.session.role;
       let where = { deleted_flg: false };
-      let include = [
-        {
-          model: UserRole,
-          include: [
-            {
-              model: Role
-            }
-          ],
-          where: {
-            role_id: { [Op.gte]: Math.min(...roles) }
-          }
-        }
-      ];
       if (req.query.user_sts) {
         where.user_sts = req.query.user_sts
       }
       if (req.query.query) {
         where.email = { [Op.iLike]: `%${req.query.query}%` };
       }
-      const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, include: include, where: where, order: [['created_at', 'DESC']] });
+      const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
       return res.ok({
         items: userMapper(items),
         offset: offset,
@@ -92,11 +77,9 @@ module.exports = {
           id: req.params.id
         }
       })
-
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
-
       let [_, response] = await User.update({
         deleted_flg: true,
         updated_by: req.user.id
@@ -140,7 +123,6 @@ module.exports = {
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
       }
-
       transaction = await database.transaction();
 
       let passWord = bcrypt.hashSync("Abc@123456", 10);
@@ -151,7 +133,7 @@ module.exports = {
         updated_by: req.user.id,
         created_by: req.user.id
       }, { transaction });
-
+      
       if (!user) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();
