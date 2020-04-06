@@ -126,7 +126,7 @@ module.exports = async (req, res, next) => {
               }, {
                   where: {
                     user_id: user.id,
-                    action_type: OtpType.TWOFA
+                    action_type: OtpType.CONFIRM_IP
                   },
                   returning: true
                 })
@@ -137,7 +137,7 @@ module.exports = async (req, res, next) => {
                 expired: false,
                 expired_at: today,
                 user_id: user.id,
-                action_type: OtpType.TWOFA
+                action_type: OtpType.CONFIRM_IP
               })
               await UserIps.create({
                 user_id: user.id,
@@ -146,7 +146,10 @@ module.exports = async (req, res, next) => {
                 verify_token: verifyToken
               })
             _sendEmail(user, verifyToken);
-            return res.ok(true);
+            return res.ok({
+              confirm_ip: true,
+              verify_token: verifyToken
+            });
           }
           else {
             req.session.authenticated = true;
