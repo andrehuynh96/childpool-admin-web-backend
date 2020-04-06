@@ -93,8 +93,7 @@ module.exports = async (req, res, next) => {
 
       return res.ok({
         twofa: true,
-        verify_token: verifyToken,
-        confirm_ip: false
+        verify_token: verifyToken
       });
     }
     else {
