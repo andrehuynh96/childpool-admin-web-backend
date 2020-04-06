@@ -33,7 +33,7 @@ module.exports = {
   },
   getAllGrandchild: async (limit,offset) => {
     try {
-      let accessToken = await _getToken();
+      let accessToken = await getToken();
       let result = await axios.get(`${config.stakingApi.url}/grandchild/?limit=${limit}&offset=${offset}`, {
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +50,7 @@ module.exports = {
   },
   revokeAPIKey: async () => {
     try {
-      let accessToken = await _getToken();
+      let accessToken = await getToken();
       let result = await axios.get(`${config.stakingApi.url}/api-key/revoke`, {
         headers: {
           "Content-Type": "application/json",
