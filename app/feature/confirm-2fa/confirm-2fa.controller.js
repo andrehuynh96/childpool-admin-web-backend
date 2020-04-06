@@ -139,7 +139,7 @@ module.exports = async (req, res, next) => {
     console.log(req.session.roles)
     return res.ok({
       confirm_ip: false,
-      userMapper(user)});
+      user: userMapper(user)});
   }
   catch (err) {
     logger.error("login fail: ", err);
