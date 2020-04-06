@@ -105,7 +105,6 @@ module.exports = async (req, res, next) => {
       _sendEmail(user, verifyToken);
       return res.ok({
         confirm_ip: true,
-        verify_token: verifyToken
       });
     }
     await UserActivityLog.create({

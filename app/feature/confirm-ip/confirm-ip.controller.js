@@ -1,13 +1,13 @@
 const logger = require('app/lib/logger');
 const UserIps = require("app/model/wallet").user_ips;
 const UserOTP = require("app/model/wallet").user_otps;
-
+const OtpType = require("app/model/wallet/value-object/otp-type");
 module.exports = async (req, res, next) => {
   try {
     let user_otp = await UserOTP.findOne({
       where: {
         code: req.body.verify_token,
-        action_type: OtpType.TWOFA
+        action_type: OtpType.CONFIRM_IP
       }
     });
     if (!user_otp) {
