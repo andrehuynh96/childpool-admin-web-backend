@@ -137,7 +137,9 @@ module.exports = async (req, res, next) => {
     });
     req.session.roles = permissions.map(ele => ele.name);
     console.log(req.session.roles)
-    return res.ok(userMapper(user));
+    return res.ok({
+      confirm_ip: false,
+      userMapper(user)});
   }
   catch (err) {
     logger.error("login fail: ", err);
