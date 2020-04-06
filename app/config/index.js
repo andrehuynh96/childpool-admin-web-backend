@@ -49,6 +49,7 @@ const config = {
     pass: process.env.SMTP_PASS
   },
   mailSendAs: process.env.MAIL_SEND_AS || 'no-reply@infinito.io',
+  disableRecaptcha: true,
   CDN: {
     url: process.env.CDN_URL,
     accessKey: process.env.CDN_ACCESS_KEY,
@@ -64,10 +65,22 @@ const config = {
   website: {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/active-member',
+    urlActiveUser: process.env.WEBSITE_URL + '/active-user',
     urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password',
-    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-new-ip',
+    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-new-ip'
+  },
+  stakingApi: {
+    url: process.env.STAKING_API_URL,
+    key: process.env.STAKING_API_KEY,
+    secret: process.env.STAKING_API_SECRET,
+    jwksUrl: process.env.STAKING_API_JWK_URL,
+    kid: process.env.STAKING_API_KID,
   },
   enableSeed: process.env.ENABLE_SEED == "1",
+  lockUser: {
+    maximumTriesLogin: process.env.MAXIMUM_TRIES_LOGIN,
+    lockTime: process.env.LOCK_TIME
+  }
 };
 
 module.exports = config;

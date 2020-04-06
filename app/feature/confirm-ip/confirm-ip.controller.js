@@ -23,7 +23,7 @@ module.exports = async (req, res, next) => {
             return res.ok(true);
         }
     }
-    catch{
+    catch(err){
         logger.error("create new user_ip fail", err);
     }
 };
