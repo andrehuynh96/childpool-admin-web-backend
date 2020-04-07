@@ -4,8 +4,8 @@ const controller = require('./api-key.controller');
 
 const router = express.Router();
 
-router.get(
-  '/api-key/revoke',
+router.delete(
+  '/partners/:id/keys/:key',
   authenticate,
   controller.revokeAPIKey
 );
@@ -17,12 +17,19 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/api-key/revoke:
- *   get:
+ * /web/partners/{id}/keys/{key}:
+ *   delete:
  *     summary: revoke API key
  *     tags:
  *       - API Key
  *     description: revoke API key
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         type: string
+ *       - name: key
+ *         in: path
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
