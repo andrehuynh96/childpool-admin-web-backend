@@ -5,11 +5,11 @@ module.exports = {
   revokeAPIKey: async (req, res, next) => {
     try {
       let items = await StakingAPI.revokeAPIKey(req.params.id, req.params.key);
-			if (items.data) {
+			if (!items.code) {
 				return res.ok(items.data);
 			}
 			else {
-				return res.ok([]);
+				return res.status(parseInt(items.code)).send(items.data);
 			}
     }
     catch (err) {

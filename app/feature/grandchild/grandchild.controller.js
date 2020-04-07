@@ -12,11 +12,11 @@ module.exports = {
 				created_by: req.user.id
 			}
 			let items = await StakingAPI.createGrandchild(body);
-			if (items.data) {
+			if (!items.code) {
 				return res.ok(items.data);
 			}
 			else {
-				return res.ok([]);
+				return res.status(parseInt(items.code)).send(items.data);
 			}
 		}
 		catch (err) {
@@ -30,11 +30,11 @@ module.exports = {
 			let offset = req.query.offset ? parseInt(req.query.offset) : 0;
 
 			let items = await StakingAPI.getAllGrandchild(limit,offset);
-			if (items.data) {
+			if (!items.code) {
 				return res.ok(items.data);
 			}
 			else {
-				return res.ok([]);
+				return res.status(parseInt(items.code)).send(items.data);
 			}
 		}
 		catch (err) {
@@ -45,11 +45,11 @@ module.exports = {
 	update: async(req, res, next) => {
 		try {
 			let items = await StakingAPI.updateGrandchild(req.params.id, req.body.name, req.user.id);
-			if (items.data) {
+			if (!items.code) {
 				return res.ok(items.data);
 			}
 			else {
-				return res.ok([]);
+				return res.status(parseInt(items.code)).send(items.data);
 			}
 		}
 		catch (err) {

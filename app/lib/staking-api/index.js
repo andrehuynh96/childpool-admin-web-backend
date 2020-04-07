@@ -28,10 +28,10 @@ module.exports = {
     }
     catch (err) {
       logger.error("createGrandchild fail:", err);
-      return err.response.data;
+      return { code: err.response.status, data: err.response.data };
     }
   },
-  getAllGrandchild: async (limit,offset) => {
+  getAllGrandchild: async (limit, offset) => {
     try {
       let accessToken = await getToken();
       let result = await axios.get(`${config.stakingApi.url}/grandchild/?limit=${limit}&offset=${offset}`, {
@@ -45,29 +45,29 @@ module.exports = {
     }
     catch (err) {
       logger.error("getAllGrandchild fail:", err);
-      return err.response.data;
+      return { code: err.response.status, data: err.response.data };
     }
   },
   updateGrandchild: async (id, name, userId) => {
     try {
       let accessToken = await getToken();
-      let result = await axios.put(`${config.stakingApi.url}/grandchild/${id}`, 
-      {
-        name,
-        updated_by: userId
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
+      let result = await axios.put(`${config.stakingApi.url}/grandchild/${id}`,
+        {
+          name,
+          updated_by: userId
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
 
       return result.data;
     }
     catch (err) {
       logger.error("updateGrandchild fail:", err);
-      return err.response.data;
+      return { code: err.response.status, data: err.response.data };
     }
   },
   revokeAPIKey: async (partnerId, apiKey) => {
@@ -84,7 +84,7 @@ module.exports = {
     }
     catch (err) {
       logger.error("revokeAPIKey fail:", err);
-      return err.response.data;
+      return { code: err.response.status, data: err.response.data };
     }
   }
 } 
