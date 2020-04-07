@@ -20,7 +20,7 @@ module.exports = {
     }
     catch (err) {
       logger.error("get list API key fail:", err);
-      return err.response.data;
+      return { code: err.response.status, data: err.response.data };
     }
   },
   createApiKey: async (partner_id, name) => {
@@ -42,7 +42,7 @@ module.exports = {
     }
     catch (err) {
       logger.error("create new API key fail:", err);
-      return err.response.data;
+      return { code: err.response.status, data: err.response.data };
     }
   }
 } 
