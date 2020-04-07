@@ -6,7 +6,7 @@ module.exports = {
 	create: async(req, res, next) => {
 		try {
 			let body = {
-				email: req.user.email,
+				email: req.body.email,
 				name: req.body.name,
 				partner_type: req.body.partner_type,
 				created_by: req.user.id
@@ -42,4 +42,19 @@ module.exports = {
 			next(err);
 		}
 	},
+	update: async(req, res, next) => {
+		try {
+			let items = await StakingAPI.updateGrandchild(req.params.id, req.body.name, req.user.id);
+			if (items.data) {
+				return res.ok(items.data);
+			}
+			else {
+				return res.ok([]);
+			}
+		}
+		catch (err) {
+			logger.error("update grandchild fail:", err);
+			next(err);
+		}
+	}
 }
