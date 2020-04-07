@@ -1,6 +1,6 @@
 const logger = require("app/lib/logger");
 const config = require("app/config");
-const StakingAPI = require("app/lib/staking-api")
+const StakingAPI = require("app/lib/staking-api");
 
 module.exports = {
 	create: async(req, res, next) => {
