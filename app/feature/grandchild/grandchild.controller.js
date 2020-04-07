@@ -1,12 +1,12 @@
 const logger = require("app/lib/logger");
 const config = require("app/config");
-const StakingAPI = require("app/lib/staking-api")
+const StakingAPI = require("app/lib/staking-api");
 
 module.exports = {
 	create: async(req, res, next) => {
 		try {
 			let body = {
-				email: req.user.email,
+				email: req.body.email,
 				name: req.body.name,
 				partner_type: req.body.partner_type,
 				created_by: req.user.id
@@ -26,7 +26,10 @@ module.exports = {
 	},
 	getAll: async(req, res, next) => {
 		try {
-			let items = await StakingAPI.getAllGrandchild();
+			let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+			let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+
+			let items = await StakingAPI.getAllGrandchild(limit,offset);
 			if (items.data) {
 				return res.ok(items.data);
 			}
@@ -39,4 +42,19 @@ module.exports = {
 			next(err);
 		}
 	},
+	update: async(req, res, next) => {
+		try {
+			let items = await StakingAPI.updateGrandchild(req.params.id, req.body.name, req.user.id);
+			if (items.data) {
+				return res.ok(items.data);
+			}
+			else {
+				return res.ok([]);
+			}
+		}
+		catch (err) {
+			logger.error("update grandchild fail:", err);
+			next(err);
+		}
+	}
 }

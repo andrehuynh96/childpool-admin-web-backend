@@ -53,8 +53,17 @@ module.exports = {
       "Operator2",
     ]
   },
-  "CREATE_GRANDCHILD_": {
-    "KEY": "CREATE_GRANDCHILD_",
+  "CREATE_GRANDCHILD": {
+    "KEY": "CREATE_GRANDCHILD",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
+  },
+  "UPDATE_GRANDCHILD": {
+    "KEY": "UPDATE_GRANDCHILD",
     "ROLES": [
       "Master",
       "Admin",
