@@ -62,22 +62,22 @@ module.exports = router;
                             "email": "trinhdn@blockchainlabs.asia",
                             "twofa_enable_flg": false,
                             "user_sts": "ACTIVATED",
-                            "latest_login_at": "2020-04-07T22:45:19.535Z"
-                        },
-                        "roles": [
-                            {
-                                "id": 1,
-                                "name": "Master",
-                                "level": 0,
-                                "root_flg": true
-                            },
-                            {
-                                "id": 2,
-                                "name": "Admin",
-                                "level": 10,
-                                "root_flg": false
-                            }
-                        ]
+                            "latest_login_at": "2020-04-07T22:47:02.796Z",
+                            "roles": [
+                                {
+                                    "id": 1,
+                                    "name": "Master",
+                                    "level": 0,
+                                    "root_flg": true
+                                },
+                                {
+                                    "id": 2,
+                                    "name": "Admin",
+                                    "level": 10,
+                                    "root_flg": false
+                                }
+                            ]
+                        }
                     }
  *             }
  *       400:

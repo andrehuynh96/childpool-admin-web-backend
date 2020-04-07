@@ -182,12 +182,13 @@ module.exports = async (req, res, next) => {
             id: roleList
           }
         })
+        let response = userMapper(user);
+        response.roles = roleList;
         req.session.role = roleList;
         return res.ok({
           confirm_ip: false,
           twofa: false,
-          user: userMapper(user),
-          roles: roleList
+          user: response
         });
       }
     }
