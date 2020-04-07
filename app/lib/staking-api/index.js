@@ -48,12 +48,12 @@ module.exports = {
       return err.response.data;
     }
   },
-  revokeAPIKey: async () => {
+  revokeAPIKey: async (partnerId, apiKey) => {
     try {
       let accessToken = await getToken();
-      let result = await axios.get(`${config.stakingApi.url}/api-key/revoke`, {
+      let result = await axios.delete(`${config.stakingApi.url}/partners/${partnerId}/keys/${apiKey}`, {
         headers: {
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`
         }
       });

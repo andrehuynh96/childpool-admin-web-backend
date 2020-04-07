@@ -4,7 +4,7 @@ const StakingAPI = require("app/lib/staking-api");
 module.exports = {
   revokeAPIKey: async (req, res, next) => {
     try {
-      let items = await StakingAPI.revokeAPIKey();
+      let items = await StakingAPI.revokeAPIKey(req.params.id, req.params.key);
 			if (items.data) {
 				return res.ok(items.data);
 			}
