@@ -93,8 +93,7 @@ module.exports = async (req, res, next) => {
 
       return res.ok({
         twofa: true,
-        verify_token: verifyToken,
-        confirm_ip: false
+        verify_token: verifyToken
       });
     }
     else {
@@ -121,7 +120,7 @@ module.exports = async (req, res, next) => {
       if (!userIp) {
         let verifyToken = Buffer.from(uuidV4()).toString('base64');
         let today = new Date();
-        today.setHours(today.getHours() + config.expiredVefiryToken);
+        today.setHours(today.getHours() + config.expiredConfirmIpToken);
         await UserOTP.update({
           expired: true
         }, {
