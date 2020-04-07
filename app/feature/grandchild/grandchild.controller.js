@@ -56,5 +56,20 @@ module.exports = {
 			logger.error("update grandchild fail:", err);
 			next(err);
 		}
+	},
+	get: async(req, res, next) => {
+		try {
+			let items = await StakingAPI.getGrandchild(req.params.id);
+			if (!items.code) {
+				return res.ok(items.data);
+			}
+			else {
+				return res.status(parseInt(items.code)).send(items.data);
+			}
+		}
+		catch (err) {
+			logger.error("get grandchild fail:", err);
+			next(err);
+		}
 	}
 }
