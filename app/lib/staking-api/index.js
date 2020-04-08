@@ -70,6 +70,23 @@ module.exports = {
       return { code: err.response.status, data: err.response.data };
     }
   },
+  getGrandchild: async (id) => {
+    try {
+      let accessToken = await getToken();
+      let result = await axios.get(`${config.stakingApi.url}/grandchild/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+
+      return result.data;
+    }
+    catch (err) {
+      logger.error("getGrandchild fail:", err);
+      return { code: err.response.status, data: err.response.data };
+    }
+  },
   revokeAPIKey: async (partnerId, apiKey) => {
     try {
       let accessToken = await getToken();
