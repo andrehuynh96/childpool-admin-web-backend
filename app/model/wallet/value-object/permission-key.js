@@ -149,58 +149,8 @@ module.exports = {
       "Operator2",
     ]
   },
-  "CREATE_USER_ADMIN": {
-    "KEY": "CREATE_USER_ADMIN",
-    "ROLES": [
-      "Master"
-    ]
-  },
-  "CREATE_USER_OPERATOR2": {
-    "KEY": "CREATE_USER_OPERATOR2",
-    "ROLES": [
-      "Admin"
-    ]
-  },
-  "CREATE_USER_OPERATOR1": {
-    "KEY": "CREATE_USER_OPERATOR1",
-    "ROLES": [
-      "Operator2"
-    ]
-  },
-  "UPDATE_USER_ADMIN": {
-    "KEY": "UPDATE_USER_ADMIN",
-    "ROLES": [
-      "Master"
-    ]
-  },
-  "UPDATE_USER_OPERATOR2": {
-    "KEY": "UPDATE_USER_OPERATOR2",
-    "ROLES": [
-      "Admin"
-    ]
-  },
-  "UPDATE_USER_OPERATOR1": {
-    "KEY": "UPDATE_USER_OPERATOR1",
-    "ROLES": [
-      "Operator2"
-    ]
-  },
-  "DELETE_USER_ADMIN": {
-    "KEY": "DELETE_USER_ADMIN",
-    "ROLES": [
-      "Master"
-    ]
-  },
-  "DELETE_USER_OPERATOR2": {
-    "KEY": "DELETE_USER_OPERATOR2",
-    "ROLES": [
-      "Admin"
-    ]
-  },
-  "DELETE_USER_OPERATOR1": {
-    "KEY": "DELETE_USER_OPERATOR1",
-    "ROLES": [
-      "Operator2"
-    ]
+  "VIEW_LIST_ROLE": {
+    "KEY": "VIEW_LIST_ROLE",
+    "ROLES": ["Master", "Admin", "Operator 1", "Operator 2"]
   },
 }

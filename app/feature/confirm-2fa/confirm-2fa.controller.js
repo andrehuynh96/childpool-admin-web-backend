@@ -138,7 +138,7 @@ module.exports = async (req, res, next) => {
         id: rolePermissions
       }
     });
-    req.session.roles = permissions.map(ele => ele.name);
+    req.session.permissions = permissions.map(ele => ele.name);
     roleList = await Roles.findAll({
       attributes: [
         "id", "name", "level", "root_flg"
@@ -149,7 +149,7 @@ module.exports = async (req, res, next) => {
     })
     let response = userMapper(user);
     response.roles = roleList;
-    req.session.role = roleList;
+    req.session.roles = roleList;
     return res.ok({
       confirm_ip: false,
       user: response
