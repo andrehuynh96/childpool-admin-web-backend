@@ -322,7 +322,6 @@ module.exports = router;
  *                  {
                           "user_sts":"UNACTIVATED|ACTIVATED|LOCKED",
                           "role_id":1,
-                          "email":"trinhdn@blockchainlabs.asia",
                           "name":"bbbbb"
  *                  }
  *     produces:
@@ -360,93 +359,93 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/active-user:
- *   post:
- *     summary: active registered user
- *     tags:
- *       - Users
- *     description:
- *     parameters:
- *       - in: body
- *         name: data
- *         description: Data for activating.
- *         schema:
- *            type: object
- *            required:
- *            - verify_token
- *            - password
- *            example:
- *               {
-                        "verify_token":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
-                        "password":"Abc@123456",
-                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/active-user:
+*   post:
+*     summary: active registered user
+*     tags:
+*       - Users
+*     description:
+*     parameters:
+*       - in: body
+*         name: data
+*         description: Data for activating.
+*         schema:
+*            type: object
+*            required:
+*            - verify_token
+*            - password
+*            example:
+*               {
+                       "verify_token":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
+                       "password":"Abc@123456",
+                 }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
- /**
- * @swagger
- * /web/resend-email:
- *   get:
- *     summary: resend email contain active user link
- *     tags:
- *       - Users
- *     description:
- *     parameters:
- *       - in: path
- *         name: id
- *         description: id of user who need activating
- *         type: int
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/resend-email:
+*   get:
+*     summary: resend email contain active user link
+*     tags:
+*       - Users
+*     description:
+*     parameters:
+*       - in: path
+*         name: id
+*         description: id of user who need activating
+*         type: int
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
