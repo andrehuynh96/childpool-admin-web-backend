@@ -103,19 +103,25 @@ module.exports = router;
  *             {
  *                 "data": {
                       "items": [
-                        {
-                          "id": 1,
-                          "email":"example@gmail.com",
-                          "twofa_enable_flg": true,
-                          "create_at":"",
-                          "user_sts":"ACTIVATED",
-                          "role": ["Admin"]
-                        }
+                          {
+                              "id": 21,
+                              "email": "example@gmail.com",
+                              "name": "bbbbb",
+                              "twofa_enable_flg": false,
+                              "user_sts": "ACTIVATED"
+                          },
+                          {
+                              "id": 15,
+                              "email": "hungtran.op1@gmail.com",
+                              "twofa_enable_flg": false,
+                              "user_sts": "ACTIVATED",
+                              "latest_login_at": "2020-04-07T06:38:16.113Z"
+                          }
                       ],
                       "offset": 0,
-                      "limit": 10,
-                      "total": 4
- *                 }
+                      "limit": 2,
+                      "total": 9
+                  }
  *             }
  *       400:
  *         description: Error
@@ -162,13 +168,13 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data": {
-                        "id": 1,
-                        "email":"example@gmail.com",
-                        "twofa_enable_flg": true,
-                        "create_at":"",
-                        "user_sts":"ACTIVATED",
-                        "role_id":1
- *                 }
+                        "id": 21,
+                        "email": "example@gmail.com",
+                        "name": "bbbbb",
+                        "twofa_enable_flg": false,
+                        "user_sts": "ACTIVATED",
+                        "role_id": 2
+                    }
  *             }
  *       400:
  *         description: Error
@@ -253,7 +259,8 @@ module.exports = router;
  *            example:
  *                  {
                           "email":"example@gmail.com",
-                          "role":1
+                          "role":1,
+                          "name":"aaaaa"
  *                  }
  *     produces:
  *       - application/json
@@ -264,13 +271,13 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data": {
-                        "id": 1,
-                        "email":"example@gmail.com",
-                        "twofa_enable_flg": true,
-                        "create_at":"",
-                        "user_sts":"ACTIVATED",
-                        "role":1
- *                 }
+                        "id": 21,
+                        "email": "example@gmail.com",
+                        "name": "aaaaa",
+                        "twofa_enable_flg": false,
+                        "user_sts": "UNACTIVATED",
+                        "role_id": 1
+                    }
  *             }
  *       400:
  *         description: Error
@@ -315,7 +322,8 @@ module.exports = router;
  *                  {
                           "user_sts":"UNACTIVATED|ACTIVATED|LOCKED",
                           "role_id":1,
-                          "email":"trinhdn@blockchainlabs.asia"
+                          "email":"trinhdn@blockchainlabs.asia",
+                          "name":"bbbbb"
  *                  }
  *     produces:
  *       - application/json
@@ -326,13 +334,13 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data": {
-                        "id": 1,
-                        "email":"example@gmail.com",
-                        "twofa_enable_flg": true,
-                        "create_at":"",
-                        "user_sts":"ACTIVATED",
-                        "role":1
- *                 }
+                        "id": 21,
+                        "email": "example@gmail.com",
+                        "name": "bbbbb",
+                        "twofa_enable_flg": false,
+                        "user_sts": "ACTIVATED",
+                        "role_id": 2
+                    }
  *             }
  *       400:
  *         description: Error

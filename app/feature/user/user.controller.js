@@ -68,6 +68,7 @@ module.exports = {
     }
   },
   delete: async (req, res, next) => {
+    let transaction;
     try {
       if (req.params.id == req.user.id) {
         return res.badRequest(res.__("USER_NOT_DELETED"), "USER_NOT_DELETED", { fields: ['id'] });
@@ -80,15 +81,21 @@ module.exports = {
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
-      let [_, response] = await User.update({
-        deleted_flg: true,
-        updated_by: req.user.id
-      }, {
+
+      transaction = await database.transaction();
+      await UserRole.destroy({
+        where: {
+          user_id: req.params.id
+        }
+      }, { transaction });
+      let response = await User.destroy({
         where: {
           id: req.params.id
         },
         returning: true
-      });
+      }, { transaction });
+      await transaction.commit();
+
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
@@ -97,6 +104,7 @@ module.exports = {
     }
     catch (err) {
       logger.error('delete user fail:', err);
+      if (transaction) await transaction.rollback();
       next(err);
     }
   },
@@ -128,6 +136,7 @@ module.exports = {
       let passWord = bcrypt.hashSync("Abc@123456", 10);
       let user = await User.create({
         email: req.body.email,
+        name: req.body.name,
         password_hash: passWord,
         user_sts: UserStatus.UNACTIVATED,
         updated_by: req.user.id,
@@ -216,7 +225,8 @@ module.exports = {
 
       let [_, response] = await User.update({
         user_sts: req.body.user_sts,
-        email: req.body.email
+        email: req.body.email,
+        name: req.body.name
       }, {
         where: {
           id: req.params.id
