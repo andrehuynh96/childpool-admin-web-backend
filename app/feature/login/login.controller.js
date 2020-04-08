@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
   try {
     let user = await User.findOne({
       where: {
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
         deleted_flg: false
       }
     });
