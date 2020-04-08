@@ -14,6 +14,9 @@ const ActionType = require("app/model/wallet/value-object/user-activity-action-t
 const uuidV4 = require('uuid/v4');
 const config = require("app/config");
 const mailer = require('app/lib/mailer');
+const Roles = require('app/model/wallet').roles;
+
+
 module.exports = async (req, res, next) => {
   try {
     let user_otp = await UserOTP.findOne({
@@ -56,10 +59,10 @@ module.exports = async (req, res, next) => {
     await UserOTP.update({
       used: true
     }, {
-      where: {
-        id: user_otp.id
-      },
-    });
+        where: {
+          id: user_otp.id
+        },
+      });
     const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
     let roles = await UserRole.findAll({
       attributes: ['role_id'],
@@ -81,12 +84,12 @@ module.exports = async (req, res, next) => {
       await UserOTP.update({
         expired: true
       }, {
-        where: {
-          user_id: user.id,
-          action_type: OtpType.CONFIRM_IP
-        },
-        returning: true
-      })
+          where: {
+            user_id: user.id,
+            action_type: OtpType.CONFIRM_IP
+          },
+          returning: true
+        })
 
       await UserOTP.create({
         code: verifyToken,
@@ -136,10 +139,21 @@ module.exports = async (req, res, next) => {
       }
     });
     req.session.roles = permissions.map(ele => ele.name);
-    console.log(req.session.roles)
+    roleList = await Roles.findAll({
+      attributes: [
+        "id", "name", "level", "root_flg"
+      ],
+      where: {
+        id: roleList
+      }
+    })
+    let response = userMapper(user);
+    response.roles = roleList;
+    req.session.role = roleList;
     return res.ok({
       confirm_ip: false,
-      user: userMapper(user)});
+      user: response
+    });
   }
   catch (err) {
     logger.error("login fail: ", err);
