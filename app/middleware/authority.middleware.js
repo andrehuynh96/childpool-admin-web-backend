@@ -1,15 +1,15 @@
-const Permission = require('app/model/wallet').permissions;
-const RolePermission = require('app/model/wallet').role_permissions;
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
+
 module.exports = function (permission) {
   return async function (req, res, next) {
-    if (!req.session || !req.session.authenticated || !req.session.roles) {
+    if (!req.session || !req.session.authenticated || !req.session.permissions) {
       res.forbidden();
     } else {
-      if (!PermissionKey[permission.KEY]) {
+      let exactPermission = permission.KEY;
+      if (!PermissionKey[exactPermission]) {
         res.badRequest(res.__("PERMISSION_NOT_FOUND"), "PERMISSION_NOT_FOUND");
       } else {
-        if (!req.roles.includes(permission.KEY)) {
+        if (!req.permissions.includes(exactPermission)) {
           res.forbidden();
         } else {
           next()
@@ -17,4 +17,4 @@ module.exports = function (permission) {
       }
     }
   }
-}
+} 

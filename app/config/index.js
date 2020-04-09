@@ -18,6 +18,7 @@ const config = {
     },
     appenders: ['CONSOLE', 'FILE', 'ERROR_ONLY'],
   },
+  corsDomain: process.env.CORS_DOMAINS,
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
@@ -62,6 +63,7 @@ const config = {
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
+  expiredConfirmIpToken: process.env.EXPIRED_CONFIRM_IP_TOKEN ? parseInt(process.env.EXPIRED_CONFIRM_IP_TOKEN) : 2,
   website: {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/active-member',
