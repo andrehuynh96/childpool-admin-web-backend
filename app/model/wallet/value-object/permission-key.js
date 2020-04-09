@@ -112,6 +112,7 @@ module.exports = {
     "ROLES": [
       "Master",
       "Admin",
+      "Operator1",
       "Operator2",
     ]
   },
@@ -120,6 +121,7 @@ module.exports = {
     "ROLES": [
       "Master",
       "Admin",
+      "Operator1",
       "Operator2",
     ]
   },
@@ -128,6 +130,7 @@ module.exports = {
     "ROLES": [
       "Master",
       "Admin",
+      "Operator1",
       "Operator2",
     ]
   },
@@ -151,6 +154,6 @@ module.exports = {
   },
   "VIEW_LIST_ROLE": {
     "KEY": "VIEW_LIST_ROLE",
-    "ROLES": ["Master", "Admin", "Operator 1", "Operator 2"]
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
 }
