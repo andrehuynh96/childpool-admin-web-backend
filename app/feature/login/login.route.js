@@ -12,8 +12,8 @@ const router = express.Router();
 router.post(
   '/login',
   validator(requestSchema),
-  //recaptcha.middleware.verify,
-  // verifyRecaptcha,
+  recaptcha.middleware.verify,
+  verifyRecaptcha,
   controller
 );
 module.exports = router;
