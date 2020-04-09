@@ -1,6 +1,6 @@
 const logger = require('app/lib/logger');
 const Role = require("app/model/wallet").roles;
-const database = require('app/lib/database').db().wallets;
+const database = require('app/lib/database').db().wallet;
 const Permission = require("app/model/wallet").permissions;
 const RolePermission = require("app/model/wallet").role_permissions;
 const Sequelize = require('sequelize');
@@ -120,7 +120,7 @@ module.exports = {
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['id'] });
       }
-      if (roles.root_flg) {
+      if (role.root_flg) {
         return res.badRequest(res.__("UNABLE_UPDATE_ROOT_ROLE"), "UNABLE_UPDATE_ROOT_ROLE", { fields: ['id'] });
       }
       let items = await Permission.findAll({
