@@ -1,12 +1,11 @@
 const express = require('express');
 const validator = require('app/middleware/validator.middleware');
 const authenticate = require('app/middleware/authenticate.middleware');
-const parseformdata = require('app/middleware/parse-formdata.middleware');
 const { create, update, active } = require('./validator');
 const controller = require('./user.controller');
-const config = require('app/config')
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const authority = require('app/middleware/authority.middleware');
+const levelAuthority = require('app/middleware/level-authority.middleware');
 
 const router = express.Router();
 
@@ -21,6 +20,7 @@ router.get(
   '/users/:id',
   authenticate,
   authority(PermissionKey.VIEW_USER_DETAIL),
+  levelAuthority("req.params.id", true),
   controller.get
 );
 
@@ -28,6 +28,7 @@ router.post(
   '/users',
   authenticate,
   authority(PermissionKey.CREATE_USER),
+  levelAuthority("req.body.role_id"),
   validator(create),
   controller.create
 );
@@ -36,6 +37,8 @@ router.put(
   '/users/:id',
   authenticate,
   authority(PermissionKey.UPDATE_USER),
+  levelAuthority("req.params.id", true),
+  levelAuthority("req.body.role_id"),
   validator(update),
   controller.update
 );
@@ -44,6 +47,7 @@ router.delete(
   '/users/:id',
   authenticate,
   authority(PermissionKey.DELETE_USER),
+  levelAuthority("req.params.id", true),
   controller.delete
 );
 
@@ -259,7 +263,7 @@ module.exports = router;
  *            example:
  *                  {
                           "email":"example@gmail.com",
-                          "role":1,
+                          "role_id":1,
                           "name":"aaaaa"
  *                  }
  *     produces:
