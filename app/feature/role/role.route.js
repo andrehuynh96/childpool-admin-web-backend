@@ -1,44 +1,51 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./api-key.controller');
+const controller = require('./role.controller');
+const authority = require('app/middleware/authority.middleware');
+const Permission = require('app/model/wallet/value-object/permission-key');
 
 const router = express.Router();
 
-router.delete(
-  '/partners/:id/keys/:key',
-  authenticate,
-  controller.revokeAPIKey
+router.get(
+  '/roles',
+ // authenticate,
+  authority(Permission.VIEW_LIST_ROLE),
+  controller.getAll
 );
 
 module.exports = router;
+
 
 /*********************************************************************/
 
 
 /**
  * @swagger
- * /web/partners/{id}/keys/{key}:
- *   delete:
- *     summary: revoke API key
+ * /web/roles:
+ *   get:
+ *     summary: get role
  *     tags:
- *       - API Key
- *     description: revoke API key
+ *       - Roles
+ *     description:
  *     parameters:
- *       - name: id
- *         in: path
- *         type: string
- *       - name: key
- *         in: path
- *         type: string
  *     produces:
  *       - application/json
  *     responses:
  *       200:
- *         description: Ok 
+ *         description: Ok
  *         examples:
  *           application/json:
  *             {
- *                 "data":true
+ *                 "data":[
+                      {
+                        "id":1,
+                        "name":"Admin",
+                        "description":null,
+                        "deleted_flg":false,
+                        "createdAt":"2020-01-16T07:17:26.158Z",
+                        "updatedAt":"2020-01-16T07:17:26.158Z"
+                      }
+                    ]
  *             }
  *       400:
  *         description: Error
@@ -58,5 +65,3 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
-
-/*********************************************************************/

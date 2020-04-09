@@ -1,40 +1,33 @@
 const express = require('express');
-const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./api-key.controller');
+const controller = require('./logout.controller');
 
 const router = express.Router();
 
-router.delete(
-  '/partners/:id/keys/:key',
-  authenticate,
-  controller.revokeAPIKey
+router.get(
+  '/logout',
+  controller
 );
 
 module.exports = router;
 
-/*********************************************************************/
 
+
+/*********************************************************************/
 
 /**
  * @swagger
- * /web/partners/{id}/keys/{key}:
- *   delete:
- *     summary: revoke API key
+ * /web/logout:
+ *   get:
+ *     summary: logout
  *     tags:
- *       - API Key
- *     description: revoke API key
+ *       - Accounts
+ *     description:
  *     parameters:
- *       - name: id
- *         in: path
- *         type: string
- *       - name: key
- *         in: path
- *         type: string
  *     produces:
  *       - application/json
  *     responses:
  *       200:
- *         description: Ok 
+ *         description: Ok
  *         examples:
  *           application/json:
  *             {
@@ -57,6 +50,3 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
-
-
-/*********************************************************************/

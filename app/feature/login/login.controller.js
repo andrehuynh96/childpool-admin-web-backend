@@ -15,11 +15,12 @@ const bcrypt = require('bcrypt');
 const config = require("app/config");
 const uuidV4 = require('uuid/v4');
 const UserRole = require('app/model/wallet').user_roles;
+const Roles = require('app/model/wallet').roles;
 module.exports = async (req, res, next) => {
   try {
     let user = await User.findOne({
       where: {
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
         deleted_flg: false
       }
     });
@@ -172,12 +173,22 @@ module.exports = async (req, res, next) => {
             id: rolePermissions
           }
         });
-        req.session.roles = permissions.map(ele => ele.name);
-        req.session.role = roleList;
+        req.session.permissions = permissions.map(ele => ele.name);
+        roleList = await Roles.findAll({
+          attributes: [
+            "id", "name", "level", "root_flg"
+          ],
+          where: {
+            id: roleList
+          }
+        })
+        let response = userMapper(user);
+        response.roles = roleList;
+        req.session.roles = roleList;
         return res.ok({
           confirm_ip: false,
           twofa: false,
-          user: userMapper(user)
+          user: response
         });
       }
     }
