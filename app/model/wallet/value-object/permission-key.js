@@ -156,4 +156,16 @@ module.exports = {
     "KEY": "VIEW_LIST_ROLE",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "CREATE_ROLE": {
+    "KEY": "CREATE_ROLE",
+    "ROLES": ["Master"]
+  },
+  "UPDATE_ROLE": {
+    "KEY": "UPDATE_ROLE",
+    "ROLES": ["Master"]
+  },
+  "DELETE_ROLE": {
+    "KEY": "DELETE_ROLE",
+    "ROLES": ["Master"]
+  },
 }
