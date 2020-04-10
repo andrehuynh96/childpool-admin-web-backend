@@ -176,4 +176,8 @@ module.exports = {
     "KEY": "VIEW_LIST_PERMISSION_DETAIL",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "VIEW_ROLE_PERMISSIONS": {
+    "KEY": "VIEW_ROLE_PERMISSIONS",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 }
