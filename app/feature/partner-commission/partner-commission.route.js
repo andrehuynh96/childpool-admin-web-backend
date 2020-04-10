@@ -10,22 +10,36 @@ const route = express.Router();
 route.get("/partners/:partner_id/commissions",
 	authenticate,
 	authority(PermissionKey.VIEW_LIST_COMMISSION_PARTNER),
-  controller.getAll
+	controller.getAll
 );
 
 route.get(
-  '/partners/:partner_id/commissions/histories',
+	'/partners/:partner_id/commissions/histories',
 	authenticate,
 	authority(PermissionKey.VIEW_HISTORY_COMMISSION_PARTNER),
-  controller.getHis
+	controller.getHis
 );
 
 route.post(
 	'/partners/:partner_id/commissions',
 	authenticate,
 	authority(PermissionKey.CREATE_COMMISSION_PARTNER),
-  validator(update),
-  controller.update
+	validator(update),
+	controller.update
+);
+
+route.get(
+	"/partners/commissions/:platform",
+	authenticate,
+	authority(PermissionKey.VIEW_LIST_COMMISSION_PARTNER),
+	controller.getAllByPlatform
+);
+
+route.get(
+	"/partners/:partner_id/commissions/:platform",
+	authenticate,
+	authority(PermissionKey.VIEW_LIST_COMMISSION_PARTNER),
+	controller.get
 );
 
 module.exports = route;
@@ -52,7 +66,7 @@ module.exports = route;
  *       - name: limit
  *         in: query
  *         type: integer
- *         format: int32 
+ *         format: int32
  *     produces:
  *       - application/json
  *     responses:
@@ -125,7 +139,7 @@ module.exports = route;
  *       - in: path
  *         name: partner_id
  *         type: string
- *         required: true  
+ *         required: true
  *       - in: body
  *         name: data
  *         description: Data for commision.
@@ -217,7 +231,7 @@ module.exports = route;
  *       - in: path
  *         name: partner_id
  *         type: string
- *         required: true 
+ *         required: true
  *       - name: offset
  *         in: query
  *         type: integer
@@ -225,7 +239,7 @@ module.exports = route;
  *       - name: limit
  *         in: query
  *         type: integer
- *         format: int32 
+ *         format: int32
  *     produces:
  *       - application/json
  *     responses:
@@ -274,5 +288,140 @@ module.exports = route;
  *         description: Error
  *         schema:
  *           $ref: '#/definitions/500'
- *  
+ *
+ */
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/partners/commissions/{platform}:
+ *   get:
+ *     summary: get list of partner commissions by platform
+ *     tags:
+ *       - Commission
+ *     description: get list of partner commissions by by platform
+ *     parameters:
+ *       - in: path
+ *         name: platform
+ *         type: string
+ *         required: true
+ *       - name: offset
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": {
+												"items": [
+														{
+																"id": "3c3ed477-a40e-439c-97ff-a404498ed5c2",
+																"platform": "ETH",
+																"commission": 20,
+																"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
+																"updated_at": "2019-12-16T08:48:01.508Z"
+														},
+														{
+																"id": "ac098ffd-1ff3-47c5-9244-38eda2dcfc59",
+																"platform": "ETH",
+																"commission": 20,
+																"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
+																"updated_by": 0,
+																"updated_at": "2019-12-16T08:48:01.508Z"
+														}
+												],
+												"offset": 0,
+												"limit": 10,
+												"total": 2
+										}
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/partners/{partner_id}/commissions/{platform}:
+ *   get:
+ *     summary: get commission by platform and partner_id
+ *     tags:
+ *       - Commission
+ *     description: get commission by platform and partner_id
+ *     parameters:
+ *       - in: path
+ *         name: partner_id
+ *         type: string
+ *         required: true
+ *       - in: path
+ *         name: platform
+ *         type: string
+ *         required: true
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": [
+												{
+														"id": "3c3ed477-a40e-439c-97ff-a404498ed5c2",
+														"platform": "ETH",
+														"commission": 20,
+														"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
+														"updated_at": "2019-12-16T08:48:01.508Z"
+												},
+												{
+														"id": "ac098ffd-1ff3-47c5-9244-38eda2dcfc59",
+														"platform": "ETH",
+														"commission": 20,
+														"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
+														"updated_by": 0,
+														"updated_at": "2019-12-16T08:48:01.508Z"
+												}
+										]
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
  */
