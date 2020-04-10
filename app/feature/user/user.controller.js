@@ -18,14 +18,28 @@ module.exports = {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+      let rolesControl = await _getRoleControl(req.roles);
       let where = { deleted_flg: false };
+      let include = [
+        {
+          model: UserRole,
+          include: [
+            {
+              model: Role
+            }
+          ],
+          where: {
+            role_id: { [Op.in]: rolesControl }
+          }
+        }
+      ];
       if (req.query.user_sts) {
         where.user_sts = req.query.user_sts
       }
       if (req.query.query) {
         where.email = { [Op.iLike]: `%${req.query.query}%` };
       }
-      const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
+      const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, where: where, include: include, order: [['created_at', 'DESC']] });
       return res.ok({
         items: userMapper(items),
         offset: offset,
@@ -113,7 +127,7 @@ module.exports = {
     try {
       let result = await User.findOne({
         where: {
-          email: req.body.email,
+          email: req.body.email.toLowerCase(),
           deleted_flg: false
         }
       })
@@ -135,14 +149,14 @@ module.exports = {
 
       let passWord = bcrypt.hashSync("Abc@123456", 10);
       let user = await User.create({
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
         name: req.body.name,
         password_hash: passWord,
         user_sts: UserStatus.UNACTIVATED,
         updated_by: req.user.id,
         created_by: req.user.id
       }, { transaction });
-      
+
       if (!user) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();
@@ -170,12 +184,12 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-        where: {
-          user_id: user.id,
-          action_type: OtpType.CREATE_ACCOUNT
-        },
-        returning: true
-      })
+          where: {
+            user_id: user.id,
+            action_type: OtpType.CREATE_ACCOUNT
+          },
+          returning: true
+        })
 
       await OTP.create({
         code: verifyToken,
@@ -225,14 +239,14 @@ module.exports = {
 
       let [_, response] = await User.update({
         user_sts: req.body.user_sts,
-        email: req.body.email,
+        // email: req.body.email.toLowerCase(),
         name: req.body.name
       }, {
-        where: {
-          id: req.params.id
-        },
-        returning: true
-      }, { transaction });
+          where: {
+            id: req.params.id
+          },
+          returning: true
+        }, { transaction });
       if (!response || response.length == 0) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();
@@ -308,11 +322,11 @@ module.exports = {
         password_hash: passWord,
         user_sts: UserStatus.ACTIVATED
       }, {
-        where: {
-          id: user.id
-        },
-        returning: true
-      });
+          where: {
+            id: user.id
+          },
+          returning: true
+        });
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
@@ -321,13 +335,13 @@ module.exports = {
       await OTP.update({
         used: true
       }, {
-        where: {
-          user_id: user.id,
-          code: req.body.verify_token,
-          action_type: OtpType.CREATE_ACCOUNT
-        },
-        returning: true
-      })
+          where: {
+            user_id: user.id,
+            code: req.body.verify_token,
+            action_type: OtpType.CREATE_ACCOUNT
+          },
+          returning: true
+        })
 
       return res.ok(true);
     }
@@ -364,12 +378,12 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-        where: {
-          user_id: user.id,
-          action_type: OtpType.CREATE_ACCOUNT
-        },
-        returning: true
-      })
+          where: {
+            user_id: user.id,
+            action_type: OtpType.CREATE_ACCOUNT
+          },
+          returning: true
+        })
 
       await OTP.create({
         code: verifyToken,
@@ -421,4 +435,25 @@ async function _sendEmailDeleteUser(user) {
   } catch (err) {
     logger.error("send email create account fail", err);
   }
+}
+
+async function _getRoleControl(roles) {
+  let levels = roles.map(ele => ele.level)
+  let roleControl = []
+  for (let e of levels) {
+    let role = await Role.findOne({
+      attribute: ["level"],
+      where: {
+        level: { [Op.gt]: e },
+        deleted_flg: false
+      },
+      order: [['level', 'ASC']]
+    });
+
+    if (role) {
+      roleControl.push(role.id)
+    }
+  }
+
+  return roleControl;
 }
