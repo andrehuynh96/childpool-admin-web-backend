@@ -4,7 +4,8 @@ module.exports = async (req, res, next) => {
   try {
     req.session.authenticated = undefined;
     req.session.user = undefined;
-    req.session.role = undefined;
+    req.session.roles = undefined;
+    req.session.permissions = undefined;
     return res.ok(true);
   }
   catch (err) {
