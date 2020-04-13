@@ -46,6 +46,34 @@ module.exports = {
       next(err);
     }
   },
+  permissionsOfRole: async(req, res, next) => {
+    try {
+      let role = await Role.findOne({
+        where: {
+          id: req.params.id
+        }
+      })
+      if (!role) {
+        return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['id'] });
+      }
+      let rolePemssion = await RolePermission.findAll({
+        where: {
+          role_id : req.params.id
+        }
+      })
+      let permissionIds = rolePemssion.map(ele => ele.permission_id)
+      let permissions = await Permission.findAll({
+        where: {
+          id: permissionIds
+        }
+      })
+      return res.ok(permissions);
+    }
+    catch (err) {
+      logger.error('get permissions of roles fail:', err);
+      next(err);
+    }
+  },
   create: async (req, res, next) => {
     let transaction;
     try {
