@@ -176,8 +176,16 @@ module.exports = {
     "KEY": "VIEW_LIST_PERMISSION_DETAIL",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "VIEW_ROLE_PERMISSIONS": {
+   "VIEW_ROLE_PERMISSIONS": {
     "KEY": "VIEW_ROLE_PERMISSIONS",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "CREATE_CHANGE_REWARD_ADDRESS_REQUEST": {
+    "KEY": "CREATE_CHANGE_REWARD_ADDRESS_REQUEST",
+    "ROLES": ["Admin"]
+  },
+  "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST": {
+    "KEY": "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST",
+    "ROLES": ["Master"]
   },
 }
