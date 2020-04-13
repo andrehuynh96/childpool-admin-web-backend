@@ -23,6 +23,12 @@ router.get(
   controller.roleHavePermission
 );
 
+router.get(
+  '/roles/:id/permissions',
+  authenticate,
+  authority(Permission.VIEW_ROLE_PERMISSIONS),
+  controller.permissionsOfRole
+);
 
 router.post("/roles",
   validator(create),
@@ -141,6 +147,82 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+ /**
+ * @swagger
+ * /web/roles/{id}/permissions:
+ *   get:
+ *     summary: get permission of role
+ *     tags:
+ *       - Roles
+ *     description:
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         type: string
+ *         required: true
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ * 
+ *           application/json:
+ *             {
+                  "data": [
+                      {
+                          "id": 160,
+                          "name": "VIEW_LIST_USER",
+                          "description": "VIEW_LIST_USER",
+                          "deleted_flg": false,
+                          "createdAt": "2020-04-09T04:09:06.904Z",
+                          "updatedAt": "2020-04-09T04:09:06.904Z"
+                      },
+                      {
+                          "id": 161,
+                          "name": "VIEW_USER",
+                          "description": "VIEW_USER",
+                          "deleted_flg": false,
+                          "createdAt": "2020-04-09T04:09:06.904Z",
+                          "updatedAt": "2020-04-09T04:09:06.904Z"
+                      },
+                      {
+                          "id": 162,
+                          "name": "ACTIVE_USER",
+                          "description": "ACTIVE_USER",
+                          "deleted_flg": false,
+                          "createdAt": "2020-04-09T04:09:06.904Z",
+                          "updatedAt": "2020-04-09T04:09:06.904Z"
+                      },
+                      {
+                          "id": 163,
+                          "name": "VIEW_ACCOUNT",
+                          "description": "VIEW_ACCOUNT",
+                          "deleted_flg": false,
+                          "createdAt": "2020-04-09T04:09:06.904Z",
+                          "updatedAt": "2020-04-09T04:09:06.904Z"
+                      }
+                    ]
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
 /**
 * @swagger
 * /web/roles:
