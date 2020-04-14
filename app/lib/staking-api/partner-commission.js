@@ -88,5 +88,21 @@ module.exports = {
 			logger.error("getCommissions fail:", err);
 			return { code: err.response.status, data: err.response.data };
 		}
-	}
+	},
+	getAllCommissionByPartner: async (limit, offset) => {
+		try {
+			let accessToken = await getToken();
+			let result = await axios.get(`${config.stakingApi.url}/me/commissions?limit=${limit}&offset=${offset}`, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			});
+
+			return result.data;
+		}
+		catch (err) {
+			logger.error("getAllCommissionByPlatform fail:", err);
+			return { code: err.response.status, data: err.response.data };
+		}
+	},
 }
