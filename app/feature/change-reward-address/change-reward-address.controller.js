@@ -81,7 +81,7 @@ async function _sendEmail(platform, address, email, verifyToken) {
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
-        link: `${config.website.urlConfirmRequest}?token=${verifyToken}`,
+        link: `${config.website.urlConfirmRequest}${verifyToken}`,
         platform: platform,
         rewardAddress: address
       }

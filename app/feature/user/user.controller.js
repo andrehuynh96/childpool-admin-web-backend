@@ -409,7 +409,7 @@ async function _sendEmailCreateUser(user, verifyToken) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      link: `${config.website.urlActiveUser}?token=${verifyToken}`,
+      link: `${config.website.urlActiveUser}${verifyToken}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);

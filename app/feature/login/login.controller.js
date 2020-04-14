@@ -205,7 +205,7 @@ async function _sendEmail(user, verifyToken, loginHistory) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      link: `${config.website.urlConfirmNewIp}?token=${verifyToken}`,
+      link: `${config.website.urlConfirmNewIp}${verifyToken}`,
       accessType: loginHistory.user_agent,
       time: loginHistory.createdAt,
       ipAddress: loginHistory.client_ip

@@ -66,10 +66,10 @@ const config = {
   expiredConfirmIpToken: process.env.EXPIRED_CONFIRM_IP_TOKEN ? parseInt(process.env.EXPIRED_CONFIRM_IP_TOKEN) : 2,
   website: {
     url: process.env.WEBSITE_URL,
-    urlActiveUser: process.env.WEBSITE_URL + '/active-user',
-    urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password',
-    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-ip',
-    urlConfirmRequest: process.env.WEBSITE_URL + '/confirm-request',
+    urlActiveUser: process.env.WEBSITE_URL + '/active-user?token=',
+    urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password?token=',
+    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-ip?token=',
+    urlConfirmRequest: process.env.WEBSITE_URL + '/confirm-request?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL,
   },
   stakingApi: {
