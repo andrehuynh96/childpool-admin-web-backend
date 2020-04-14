@@ -112,7 +112,7 @@ module.exports = async (req, res, next) => {
           allow_flg: true,
         }
       })
-      await UserActivityLog.create({
+      let loginHistory = await UserActivityLog.create({
         user_id: user.id,
         client_ip: registerIp,
         action: ActionType.LOGIN,
@@ -146,7 +146,7 @@ module.exports = async (req, res, next) => {
           allow_flg: false,
           verify_token: verifyToken
         })
-        _sendEmail(user, verifyToken);
+        _sendEmail(user, verifyToken, loginHistory);
         return res.ok({
           confirm_ip: true,
           twofa: false,
@@ -198,18 +198,20 @@ module.exports = async (req, res, next) => {
     next(err);
   }
 };
-async function _sendEmail(user, verifyToken) {
+async function _sendEmail(user, verifyToken, loginHistory) {
   try {
-    let subject = 'Listco Account - New IP Confirmation';
-    let from = `Listco <${config.mailSendAs}>`;
+    console.log(loginHistory)
+    let subject = `${config.emailTemplate.partnerName} - New IP Confirmation`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
-      email: user.email,
-      fullname: user.email,
-      link: `${config.website.urlConfirmIp}/${verifyToken}`,
-      hours: config.expiredVefiryToken
+      imageUrl: config.website.urlImages,
+      link: `${config.website.urlConfirmNewIp}${verifyToken}`,
+      accessType: loginHistory.user_agent,
+      time: loginHistory.createdAt,
+      ipAddress: loginHistory.client_ip
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, user.email, data, "confirm-ip.ejs");
+    await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.confirmNewIp);
   } catch (err) {
     logger.error("send email confirm new IP fail", err);
   }

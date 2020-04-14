@@ -86,7 +86,7 @@ async function _sendEmail(platform, address, email, verifyToken) {
         rewardAddress: address
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, email, data, "confirm-request.ejs");
+      await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.confirmRequest);
     } catch (err) {
       logger.error("send confirmed email for changing reward address for master fail", err);
     }
@@ -104,7 +104,7 @@ async function _sendEmailMasterPool(partner, platform, address, emails) {
         rewardAddress: address
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, emails, data, "view-request.ejs");
+      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.viewRequest);
     } catch (err) {
       logger.error("send confirmed email for changing reward address for master pool fail", err);
     }
