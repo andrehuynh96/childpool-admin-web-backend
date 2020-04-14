@@ -69,7 +69,8 @@ const config = {
     urlActive: process.env.WEBSITE_URL + '/active-member',
     urlActiveUser: process.env.WEBSITE_URL + '/active-user',
     urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password',
-    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-new-ip'
+    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-new-ip',
+    urlConfirmRequest: process.env.WEBSITE_URL + '/confirm-request/'
   },
   stakingApi: {
     url: process.env.STAKING_API_URL,
@@ -82,6 +83,12 @@ const config = {
   lockUser: {
     maximumTriesLogin: process.env.MAXIMUM_TRIES_LOGIN,
     lockTime: process.env.LOCK_TIME
+  },
+  emailTemplate: {
+    partnerName: process.env.PARTNER_NAME || 'IBL'
+  },
+  masterWebsite: {
+    urlViewRequest: process.env.MASTER_WEBSITE_URL + '/view-request'
   }
 };
 

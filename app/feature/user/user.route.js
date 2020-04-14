@@ -60,7 +60,7 @@ router.post(
 )
 
 router.get(
-  '/resend-email',
+  '/users/:id/resend-email',
   authenticate,
   authority(PermissionKey.RESEND_EMAIL),
   controller.resendEmailActive
@@ -415,7 +415,7 @@ module.exports = router;
 
 /**
 * @swagger
-* /web/resend-email:
+* /web/users/{id}/resend-email:
 *   get:
 *     summary: resend email contain active user link
 *     tags:

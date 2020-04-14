@@ -180,4 +180,24 @@ module.exports = {
     "KEY": "VIEW_ROLE_PERMISSIONS",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "CREATE_CHANGE_REWARD_ADDRESS_REQUEST": {
+    "KEY": "CREATE_CHANGE_REWARD_ADDRESS_REQUEST",
+    "ROLES": ["Admin"]
+  },
+  "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST": {
+    "KEY": "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST",
+    "ROLES": ["Master"]
+  },
+  "VIEW_LIST_COMMISSION_PARTNER": {
+    "KEY": "VIEW_LIST_COMMISSION_PARTNER",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_HISTORY_COMMISSION_PARTNER": {
+    "KEY": "VIEW_HISTORY_COMMISSION_PARTNER",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "CREATE_COMMISSION_PARTNER": {
+    "KEY": "CREATE_COMMISSION_PARTNER",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  }
 }
