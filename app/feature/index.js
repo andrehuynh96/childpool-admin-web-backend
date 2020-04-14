@@ -17,6 +17,7 @@ router.use(require('./role/role.route'));
 router.use(require('./permission/permission.route'));
 router.use(require('./partner-commission/partner-commission.route'));
 router.use(require('./change-reward-address/change-reward-address.route'));
+router.use(require('./partner-tx-memo/partner-tx-memo.route'));
  
 module.exports = router;
 
