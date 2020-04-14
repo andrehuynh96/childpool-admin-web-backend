@@ -61,17 +61,15 @@ module.exports = async (req, res, next) => {
 
 async function _sendEmail(user, verifyToken) {
   try {
-    let subject = 'Listco Account - Reset Account Password';
-    let from = `Listco <${config.mailSendAs}>`;
+    let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
-      email: user.email,
-      fullname: user.email,
-      link: `${config.website.urlSetNewPassword}/${verifyToken}`,
+      imageUrl: config.website.urlImages,
+      link: `${config.website.urlSetNewPassword}?token=${verifyToken}`,
       hours: config.expiredVefiryToken
     }
-    data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, user.email, data, "forgot-password.ejs");
+    await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.resetPassword);
   } catch (err) {
-    logger.error("send email forgot password fail", err);
+    logger.error("resend email forgot password fail", err);
   }
 }
