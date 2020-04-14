@@ -54,7 +54,7 @@ router.delete(
 router.post(
   '/active-user',
   validator(active),
-  authenticate,
+  //authenticate,
   authority(PermissionKey.ACTIVE_USER),
   controller.active
 )
