@@ -200,7 +200,6 @@ module.exports = async (req, res, next) => {
 };
 async function _sendEmail(user, verifyToken, loginHistory) {
   try {
-    console.log(loginHistory)
     let subject = `${config.emailTemplate.partnerName} - New IP Confirmation`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
