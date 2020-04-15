@@ -4,9 +4,21 @@ const router = express.Router();
 router.use(require('./forgot-password/forgot-password.route'));
 router.use(require('./set-new-password/set-new-password.route'));
 router.use(require('./login/login.route'));
+router.use(require('./user/user.route'));
 router.use(require('./confirm-ip/confirm-ip.route'));
 router.use(require('./confirm-2fa/confirm-2fa.route'));
 router.use(require('./account/account.route'));
+router.use(require('./grandchild/grandchild.route'));
+router.use(require('./partner-api-key/partner-api-key.route'));
+router.use(require('./member/member.route'));
+router.use(require('./api-key/api-key.route'));
+router.use(require('./logout/logout.route'));
+router.use(require('./role/role.route'));
+router.use(require('./permission/permission.route'));
+router.use(require('./partner-commission/partner-commission.route'));
+router.use(require('./change-reward-address/change-reward-address.route'));
+router.use(require('./partner-tx-memo/partner-tx-memo.route'));
+ 
 module.exports = router;
 
 /**********************************************************************/

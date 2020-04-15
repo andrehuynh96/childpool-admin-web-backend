@@ -18,6 +18,7 @@ const config = {
     },
     appenders: ['CONSOLE', 'FILE', 'ERROR_ONLY'],
   },
+  corsDomain: process.env.CORS_DOMAINS,
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
@@ -62,13 +63,39 @@ const config = {
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
+  expiredConfirmIpToken: process.env.EXPIRED_CONFIRM_IP_TOKEN ? parseInt(process.env.EXPIRED_CONFIRM_IP_TOKEN) : 2,
   website: {
     url: process.env.WEBSITE_URL,
-    urlActive: process.env.WEBSITE_URL + '/active-member',
-    urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password',
-    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-new-ip',
+    urlActiveUser: process.env.WEBSITE_URL + '/active-user?token=',
+    urlSetNewPassword: process.env.WEBSITE_URL + '/set-new-password?token=',
+    urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-ip?token=',
+    urlConfirmRequest: process.env.WEBSITE_URL + '/confirm-request?token=',
+    urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL,
+  },
+  stakingApi: {
+    url: process.env.STAKING_API_URL,
+    key: process.env.STAKING_API_KEY,
+    secret: process.env.STAKING_API_SECRET,
+    jwksUrl: process.env.STAKING_API_JWK_URL,
+    kid: process.env.STAKING_API_KID,
   },
   enableSeed: process.env.ENABLE_SEED == "1",
+  lockUser: {
+    maximumTriesLogin: process.env.MAXIMUM_TRIES_LOGIN,
+    lockTime: process.env.LOCK_TIME
+  },
+  emailTemplate: {
+    partnerName: process.env.PARTNER_NAME,
+    activeAccount: process.env.PARTNER_NAME.toLowerCase() + "/active-account.ejs",
+    resetPassword: process.env.PARTNER_NAME.toLowerCase() + "/reset-password.ejs",
+    deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs",
+    confirmNewIp: process.env.PARTNER_NAME.toLowerCase() + "/confirm-ip.ejs",
+    confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
+    viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
+  },
+  masterWebsite: {
+    urlViewRequest: process.env.MASTER_WEBSITE_URL + '/view-request'
+  }
 };
 
 module.exports = config;

@@ -1,7 +1,7 @@
 const UserStatus = require("./value-object/user-status");
 
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("users", {
+  const User = sequelize.define("users", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     password_hash: {
       type: DataTypes.STRING(128),
       allowNull: false
+    },
+    name: {
+      type: DataTypes.STRING(128),
+      allowNull: true
     },
     user_sts: {
       type: DataTypes.STRING(36),
@@ -43,9 +47,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0
+    },
+    latest_login_at: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    attempt_login_number: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
     }
   }, {
       underscored: true,
       timestamps: true,
     });
-} 
+
+  User.associate = function(models) {
+      User.hasMany(models.user_roles, {foreignKey: 'user_id', sourceKey: 'id'});
+  }
+
+  return User;
+}
