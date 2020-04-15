@@ -90,7 +90,6 @@ module.exports = async (req, res, next) => {
           },
           returning: true
         })
-
       await UserOTP.create({
         code: verifyToken,
         used: false,
@@ -105,7 +104,16 @@ module.exports = async (req, res, next) => {
         allow_flg: false,
         verify_token: verifyToken
       })
-      _sendEmail(user, verifyToken);
+      let loginHistory = await UserActivityLog.findOne({
+        where: {
+          user_id: user.id,
+          client_ip: registerIp,
+          action: ActionType.LOGIN,
+          user_agent: req.headers['user-agent']
+        },
+        order: [['created_at', 'ASC']]
+      })
+      _sendEmail(user, verifyToken, loginHistory);
       return res.ok({
         confirm_ip: true,
       });
@@ -160,17 +168,20 @@ module.exports = async (req, res, next) => {
     next(err);
   }
 };
-async function _sendEmail(user, verifyToken) {
+async function _sendEmail(user, verifyToken, loginHistory) {
   try {
-    let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+    let subject = `${config.emailTemplate.partnerName} - New IP Confirmation`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      link: `${config.website.urlSetNewPassword}${verifyToken}`,
-      hours: config.expiredVefiryToken
+      link: `${config.website.urlConfirmNewIp}${verifyToken}`,
+      accessType: loginHistory.user_agent,
+      time: loginHistory.createdAt,
+      ipAddress: loginHistory.client_ip
     }
-    await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.resetPassword);
+    data = Object.assign({}, data, config.email);
+    await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.confirmNewIp);
   } catch (err) {
-    logger.error("resend email forgot password fail", err);
+    logger.error("send email confirm new IP fail", err);
   }
 }
