@@ -44,6 +44,15 @@ module.exports = {
       "Operator2",
     ]
   },
+  "UPDATE_PROFILE_ACCOUNT": {
+    "KEY": "UPDATE_PROFILE_ACCOUNT",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
+  },
   "VIEW_LIST_GRANDCHILD": {
     "KEY": "VIEW_LIST_GRANDCHILD",
     "ROLES": [

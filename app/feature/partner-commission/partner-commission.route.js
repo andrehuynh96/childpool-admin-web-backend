@@ -42,6 +42,13 @@ route.get(
 	controller.get
 );
 
+route.get(
+	"/commissions",
+	authenticate,
+	authority(PermissionKey.VIEW_LIST_COMMISSION_PARTNER),
+	controller.getAllByPartner
+);
+
 module.exports = route;
 
 /*********************************************************************/
@@ -407,6 +414,91 @@ module.exports = route;
 														"updated_at": "2019-12-16T08:48:01.508Z"
 												}
 										]
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/commissions:
+ *   get:
+ *     summary: get list of partner commissions by partner
+ *     tags:
+ *       - Commission
+ *     description: get list of partner commissions by partner
+ *     parameters:
+ *       - name: offset
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": {
+												"items": [
+														{
+																"id": "f62634d4-30f9-11ea-aec2-2e728ce88125",
+																"platform": "ATOM",
+																"commission": 21,
+																"reward_address": "cosmos1suvplzztw7kn4ntn9pcduxz2lxfjfy5akd3uk0",
+																"updated_by": 10,
+																"updated_at": "2020-04-11T08:51:33.275Z"
+														},
+														{
+																"id": "3c3ed477-a40e-439c-97ff-a404498ed5c2",
+																"platform": "ETH",
+																"commission": 20,
+																"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
+																"updated_by": 10,
+																"updated_at": "2019-12-16T08:48:01.508Z"
+														},
+														{
+																"id": "ac098ffd-1ff3-47c5-9244-38eda2dcfc59",
+																"platform": "ETH",
+																"commission": 20,
+																"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
+																"updated_by": 10,
+																"updated_at": "2019-12-16T08:48:01.508Z"
+														},
+														{
+																"id": "24c39b32-2d13-11ea-978f-2e728ce88125",
+																"platform": "IRIS",
+																"commission": 20,
+																"reward_address": "iaa16se3zaex588aqa6e0mgnps92a005mjm95d56jx",
+																"updated_by": 10,
+																"updated_at": "2020-02-06T09:12:43.073Z"
+														}
+												],
+												"offset": 0,
+												"limit": 10,
+												"total": 4
+										}
  *             }
  *       400:
  *         description: Error

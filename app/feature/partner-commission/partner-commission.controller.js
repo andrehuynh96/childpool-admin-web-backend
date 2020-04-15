@@ -84,4 +84,21 @@ module.exports = {
       next(err);
     }
   },
+  getAllByPartner: async (req, res, next) => {
+    try {
+      let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+      let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+      let items = await StakingAPI.getAllCommissionByPartner(limit, offset);
+      if (!items.code) {
+        return res.ok(items.data);
+      }
+      else {
+        return res.status(parseInt(items.code)).send(items.data);
+      }
+    }
+    catch (err) {
+      logger.error("get list partner commission by partner fail:", err);
+      next(err);
+    }
+  },
 }
