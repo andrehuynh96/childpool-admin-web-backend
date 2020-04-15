@@ -25,7 +25,6 @@ module.exports = {
   },
   createApiKey: async (partner_id, name) => {
     try {
-      console.log("======================>", name)
       let accessToken = await getToken();
       let result = await axios.post(`${config.stakingApi.url}/partners/${partner_id}/keys`,
         {

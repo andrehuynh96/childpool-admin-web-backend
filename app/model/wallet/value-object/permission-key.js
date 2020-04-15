@@ -44,6 +44,15 @@ module.exports = {
       "Operator2",
     ]
   },
+  "UPDATE_PROFILE_ACCOUNT": {
+    "KEY": "UPDATE_PROFILE_ACCOUNT",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
+  },
   "VIEW_LIST_GRANDCHILD": {
     "KEY": "VIEW_LIST_GRANDCHILD",
     "ROLES": [
@@ -199,5 +208,17 @@ module.exports = {
   "CREATE_COMMISSION_PARTNER": {
     "KEY": "CREATE_COMMISSION_PARTNER",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
-  }
+  },
+  "VIEW_LIST_PARTNER_TX_MEMO": {
+    "KEY": "VIEW_LIST_PARTNER_TX_MEMO",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "CREATE_PARTNER_TX_MEMO": {
+    "KEY": "CREATE_PARTNER_TX_MEMO",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_LIST_PARTNER_TX_MEMO_HISTORY": {
+    "KEY": "VIEW_LIST_PARTNER_TX_MEMO_HISTORY",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 }

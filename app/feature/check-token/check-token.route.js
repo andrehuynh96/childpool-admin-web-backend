@@ -1,38 +1,32 @@
 const express = require('express');
-const controller = require('./confirm-ip.controller');
-const requestSchema = require('./confirm-ip.request-schema');
-const validator = require('app/middleware/validator.middleware');
+const controller = require('./check-token.controller');
+
 const router = express.Router();
 
-router.post(
-    '/confirm-ip',
-    validator(requestSchema),
-    controller
-  );
+router.get(
+  '/check-token/:token',
+  controller
+);
+
 module.exports = router;
+
+
 
 /*********************************************************************/
 
 /**
  * @swagger
- * /web/confirm-ip:
- *   post:
- *     summary: confirm-ip
+ * /web/check-token/{token}:
+ *   get:
+ *     summary: check token
  *     tags:
- *       - Accounts
+ *       - Token
  *     description:
  *     parameters:
- *       - in: body
- *         name: data
- *         description: Data for login.
- *         schema:
- *            type: object
- *            required:
- *            - verify_token
- *            example:
- *               {
-                        "verify_token":"ZmU0MTAxYzQtYjA3NS00ZmFlLTgzMmMtYTI0Yzc0ZmViMTY2"
-                  }
+ *       - in: path
+ *         name: token
+ *         type: string
+ *         required: true
  *     produces:
  *       - application/json
  *     responses:
@@ -41,7 +35,10 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": true
+ *                 "data":{
+                        "token_sts":"VALID|EXPIRED|USED",
+                        "user_sts":"ACTIVATED|UNACTIVATED|LOCKED"
+                    }
  *             }
  *       400:
  *         description: Error
