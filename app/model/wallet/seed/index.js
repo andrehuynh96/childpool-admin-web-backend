@@ -11,3 +11,4 @@ if (config.enableSeed) {
     console.log(err)
   }
 }
+require("./root-permission");
