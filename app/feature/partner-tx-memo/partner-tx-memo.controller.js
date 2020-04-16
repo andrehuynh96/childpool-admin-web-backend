@@ -1,6 +1,7 @@
 const logger = require("app/lib/logger");
 const config = require("app/config");
 const StakingAPI = require("app/lib/staking-api/partner-tx-memo")
+const User  = require("app/model/wallet").users;
 
 module.exports = {
     getAll: async (req, res, next) => {
@@ -8,15 +9,28 @@ module.exports = {
             let limit = req.query.limit ? parseInt(req.query.limit) : 10;
             let offset = req.query.offset ? parseInt(req.query.offset) : 0;
             let items = await StakingAPI.getAll(req.params.partner_id, limit, offset);
+            let partner_tx_memo = []
             if (!items.code) {
-                return res.ok(items.data);
+                for( let memo of items.data.items){
+                    let user = await User.findOne({
+                        where: {
+                            id: memo.updated_by
+                        }
+                    })
+                    if(user){
+                        memo.updated_by = user.name
+                    }
+                    else memo.updated_by =null
+                    partner_tx_memo.push(memo)
+                }
+                return res.ok(partner_tx_memo);
             }
             else {
                 return res.status(parseInt(items.code)).send(items.data);
             }
         }
         catch (err) {
-            logger.error("get list grandchild fail:", err);
+            logger.error("get partner transaction memo fail:", err);
             next(err);
         }
     },
@@ -40,15 +54,28 @@ module.exports = {
             let limit = req.query.limit ? parseInt(req.query.limit) : 10;
             let offset = req.query.offset ? parseInt(req.query.offset) : 0;
             let items = await StakingAPI.getHis(req.params.partner_id, limit, offset);
+            let partner_tx_memo = []
             if (!items.code) {
-                return res.ok(items.data);
+                for( let memo of items.data.items){
+                    let user = await User.findOne({
+                        where: {
+                            id: memo.updated_by
+                        }
+                    })
+                    if(user){
+                        memo.updated_by = user.name
+                    }
+                    else memo.updated_by =null
+                    partner_tx_memo.push(memo)
+                }
+                return res.ok(partner_tx_memo);
             }
             else {
                 return res.status(parseInt(items.code)).send(items.data);
             }
         }
         catch (err) {
-            logger.error("get list grandchild fail:", err);
+            logger.error("get partner transaction memo history fail:", err);
             next(err);
         }
     }
