@@ -1,7 +1,7 @@
 const logger = require("app/lib/logger");
 const config = require("app/config");
 const StakingAPI = require("app/lib/staking-api/partner-tx-memo")
-const User  = require("app/model/wallet").users;
+const User = require("app/model/wallet").users;
 
 module.exports = {
     getAll: async (req, res, next) => {
@@ -11,16 +11,16 @@ module.exports = {
             let items = await StakingAPI.getAll(req.params.partner_id, limit, offset);
             let partner_tx_memo = []
             if (!items.code) {
-                for( let memo of items.data.items){
+                for (let memo of items.data.items) {
                     let user = await User.findOne({
                         where: {
                             id: memo.updated_by
                         }
                     })
-                    if(user){
-                        memo.updated_by = user.name
+                    if (user) {
+                        memo.updated_by_user_name = user.name
                     }
-                    else memo.updated_by =null
+                    else memo.updated_by_user_name = null
                     partner_tx_memo.push(memo)
                 }
                 return res.ok(partner_tx_memo);
@@ -36,18 +36,18 @@ module.exports = {
     },
     create: async (req, res, next) => {
         try {
-            let items = await StakingAPI.create(req.params.partner_id, req.body.items,req.user.id)
+            let items = await StakingAPI.create(req.params.partner_id, req.body.items, req.user.id)
             if (!items.code) {
-              return res.ok(items.data);
+                return res.ok(items.data);
             }
             else {
-              return res.status(parseInt(items.code)).send(items.data);
+                return res.status(parseInt(items.code)).send(items.data);
             }
-          }
-          catch (err) {
+        }
+        catch (err) {
             logger.error("create partner tx memo fail:", err);
             next(err);
-          }
+        }
     },
     getHis: async (req, res, next) => {
         try {
@@ -56,16 +56,16 @@ module.exports = {
             let items = await StakingAPI.getHis(req.params.partner_id, limit, offset);
             let partner_tx_memo = []
             if (!items.code) {
-                for( let memo of items.data.items){
+                for (let memo of items.data.items) {
                     let user = await User.findOne({
                         where: {
                             id: memo.updated_by
                         }
                     })
-                    if(user){
-                        memo.updated_by = user.name
+                    if (user) {
+                        memo.updated_by_user_name = user.name
                     }
-                    else memo.updated_by =null
+                    else memo.updated_by_user_name = null
                     partner_tx_memo.push(memo)
                 }
                 return res.ok(partner_tx_memo);
