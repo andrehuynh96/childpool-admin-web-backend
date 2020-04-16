@@ -5,7 +5,7 @@ const schema = Joi.object().keys({
     Joi.object().keys({
       id: Joi.string().optional(),
       platform: Joi.string().required(),
-      commission: Joi.number().min(0.00).max(100).required()
+      commission: Joi.number().min(0.000).max(100).required()
     })
   )
 });
