@@ -66,7 +66,8 @@ module.exports = router;
                             "memo": "BINARY:ATOM",
                             "default_flg": true,
                             "updated_by": 71,
-                            "updated_at": "2020-03-30T07:21:06.420Z"
+                            "updated_at": "2020-03-30T07:21:06.420Z",
+                            "updated_by_user_name": "Myhn"
                         },
                         {
                             "id": "9d284127-3e71-4d41-9b61-f48d0910877e",
@@ -74,7 +75,8 @@ module.exports = router;
                             "memo": "Infinitooo:IRIS",
                             "default_flg": true,
                             "updated_by": 71,
-                            "updated_at": "2020-03-30T07:16:36.928Z"
+                            "updated_at": "2020-03-30T07:16:36.928Z",
+                            "updated_by_user_name": "Myhn"
                         },
                         {
                             "id": "e71887da-8d24-4c56-b8ed-3ca0fec9719c",
@@ -82,7 +84,8 @@ module.exports = router;
                             "memo": "Infinito:IRISs",
                             "default_flg": true,
                             "updated_by": 71,
-                            "updated_at": "2020-03-30T07:20:57.111Z"
+                            "updated_at": "2020-03-30T07:20:57.111Z",
+                            "updated_by_user_name": "Hung"
                         }
                     ],
                     "offset": 0,
@@ -155,7 +158,8 @@ module.exports = router;
                             "memo": "Infinito:ATOM TEST",
                             "default_flg": true,
                             "updated_by": 115,
-                            "updated_at": "2020-04-13T09:05:47.640Z"
+                            "updated_at": "2020-04-13T09:05:47.640Z",
+                            "partner_updated_by": "53861af9-f058-4f2a-9b5a-409f11607019"
                         },
                         {
                             "id": "064445b1-c9be-40a4-a323-1b0e24890492",
@@ -163,7 +167,8 @@ module.exports = router;
                             "memo": "BINARY:ATOM TEST",
                             "default_flg": true,
                             "updated_by": 115,
-                            "updated_at": "2020-04-13T09:05:47.640Z"
+                            "updated_at": "2020-04-13T09:05:47.640Z",
+                            "partner_updated_by": "53861af9-f058-4f2a-9b5a-409f11607019"
                         }
                     ]
                 }
@@ -224,7 +229,8 @@ module.exports = router;
                             "memo": "BINARY:ATOM",
                             "default_flg": false,
                             "updated_by": 71,
-                            "updated_at": "2020-03-30T07:21:06.420Z"
+                            "updated_at": "2020-03-30T07:21:06.420Z",
+                            "updated_by_user_name": "Myhn"
                         },
                         {
                             "id": "9d284127-3e71-4d41-9b61-f48d0910877e",
@@ -232,7 +238,8 @@ module.exports = router;
                             "memo": "Infinitooo:IRIS",
                             "default_flg": false,
                             "updated_by": 71,
-                            "updated_at": "2020-03-30T07:16:36.928Z"
+                            "updated_at": "2020-03-30T07:16:36.928Z",
+                            "updated_by_user_name": "Hung"
                         },
                         {
                             "id": "e71887da-8d24-4c56-b8ed-3ca0fec9719c",
@@ -240,7 +247,8 @@ module.exports = router;
                             "memo": "Infinito:IRISs",
                             "default_flg": false,
                             "updated_by": 71,
-                            "updated_at": "2020-03-30T07:20:57.111Z"
+                            "updated_at": "2020-03-30T07:20:57.111Z",
+                            "updated_by_user_name": null
                         }
                     ],
                     "offset": 0,
