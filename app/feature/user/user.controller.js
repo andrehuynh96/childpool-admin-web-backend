@@ -13,13 +13,12 @@ const mailer = require('app/lib/mailer');
 const database = require('app/lib/database').db().wallet;
 const Role = require("app/model/wallet").roles;
 const UserRole = require("app/model/wallet").user_roles;
-
 module.exports = {
   search: async (req, res, next) => {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
-      let roles = req.session.role;
+      let rolesControl = await _getRoleControl(req.roles);
       let where = { deleted_flg: false };
       let include = [
         {
@@ -30,7 +29,7 @@ module.exports = {
             }
           ],
           where: {
-            role_id: { [Op.gte]: Math.min(...roles) }
+            role_id: { [Op.in]: rolesControl }
           }
         }
       ];
@@ -40,7 +39,7 @@ module.exports = {
       if (req.query.query) {
         where.email = { [Op.iLike]: `%${req.query.query}%` };
       }
-      const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, include: include, where: where, order: [['created_at', 'DESC']] });
+      const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, where: where, include: include, order: [['created_at', 'DESC']] });
       return res.ok({
         items: userMapper(items),
         offset: offset,
@@ -62,7 +61,7 @@ module.exports = {
       })
 
       if (!result) {
-        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
 
       let userRole = await UserRole.findOne({
@@ -83,29 +82,34 @@ module.exports = {
     }
   },
   delete: async (req, res, next) => {
+    let transaction;
     try {
       if (req.params.id == req.user.id) {
-        return res.badRequest(res.__("USER_NOT_DELETED"), "USER_NOT_DELETED");
+        return res.badRequest(res.__("USER_NOT_DELETED"), "USER_NOT_DELETED", { fields: ['id'] });
       }
       let result = await User.findOne({
         where: {
           id: req.params.id
         }
       })
-
       if (!result) {
-        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
 
-      let [_, response] = await User.update({
-        deleted_flg: true,
-        updated_by: req.user.id
-      }, {
-          where: {
-            id: req.params.id
-          },
-          returning: true
-        });
+      transaction = await database.transaction();
+      await UserRole.destroy({
+        where: {
+          user_id: req.params.id
+        }
+      }, { transaction });
+      let response = await User.destroy({
+        where: {
+          id: req.params.id
+        },
+        returning: true
+      }, { transaction });
+      await transaction.commit();
+
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
@@ -114,6 +118,7 @@ module.exports = {
     }
     catch (err) {
       logger.error('delete user fail:', err);
+      if (transaction) await transaction.rollback();
       next(err);
     }
   },
@@ -122,13 +127,13 @@ module.exports = {
     try {
       let result = await User.findOne({
         where: {
-          email: req.body.email,
+          email: req.body.email.toLowerCase(),
           deleted_flg: false
         }
       })
 
       if (result) {
-        return res.badRequest(res.__("EMAIL_EXISTS_ALREADY"), "EMAIL_EXISTS_ALREADY");
+        return res.badRequest(res.__("EMAIL_EXISTS_ALREADY"), "EMAIL_EXISTS_ALREADY", { fields: ['email'] });
       }
 
       let role = await Role.findOne({
@@ -138,14 +143,14 @@ module.exports = {
       })
 
       if (!role) {
-        return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND");
+        return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
       }
-
       transaction = await database.transaction();
 
       let passWord = bcrypt.hashSync("Abc@123456", 10);
       let user = await User.create({
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
+        name: req.body.name,
         password_hash: passWord,
         user_sts: UserStatus.UNACTIVATED,
         updated_by: req.user.id,
@@ -217,7 +222,7 @@ module.exports = {
       })
 
       if (!result) {
-        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
 
       let role = await Role.findOne({
@@ -227,14 +232,15 @@ module.exports = {
       })
 
       if (!role) {
-        return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND");
+        return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
       }
 
       transaction = await database.transaction();
-      
+
       let [_, response] = await User.update({
         user_sts: req.body.user_sts,
-        email: req.body.email
+        // email: req.body.email.toLowerCase(),
+        name: req.body.name
       }, {
           where: {
             id: req.params.id
@@ -269,7 +275,7 @@ module.exports = {
           id: req.params.id
         }
       })
-      
+
       let user = userMapper(result);
       user.role_id = role.id
       return res.ok(user);
@@ -292,12 +298,12 @@ module.exports = {
       if (!otp) {
         return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ["verify_token"] });
       }
-  
+
       let today = new Date();
       if (otp.expired_at < today || otp.expired || otp.used) {
-        return res.badRequest(res.__("TOKEN_EXPIRED"), "TOKEN_EXPIRED");
+        return res.badRequest(res.__("TOKEN_EXPIRED"), "TOKEN_EXPIRED", { fields: ['verify_token'] });
       }
-  
+
       let user = await User.findOne({
         where: {
           id: otp.user_id
@@ -306,11 +312,11 @@ module.exports = {
       if (!user) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-  
+
       if (user.user_sts == UserStatus.LOCKED) {
-        return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
       }
-  
+
       let passWord = bcrypt.hashSync(req.body.password, 10);
       let [_, response] = await User.update({
         password_hash: passWord,
@@ -324,7 +330,7 @@ module.exports = {
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
-  
+
       // mark this otp as USED after setting new password
       await OTP.update({
         used: true
@@ -336,7 +342,7 @@ module.exports = {
           },
           returning: true
         })
-  
+
       return res.ok(true);
     }
     catch (err) {
@@ -354,15 +360,15 @@ module.exports = {
       })
 
       if (!user) {
-        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
 
       if (user.user_sts == UserStatus.ACTIVATED) {
-        return res.forbidden(res.__("ACCOUNT_ACTIVATED_ALREADY", "ACCOUNT_ACTIVATED_ALREADY"));
+        return res.forbidden(res.__("ACCOUNT_ACTIVATED_ALREADY"), "ACCOUNT_ACTIVATED_ALREADY");
       }
 
       if (user.user_sts == UserStatus.LOCKED) {
-        return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
       }
 
 
@@ -399,17 +405,15 @@ module.exports = {
 
 async function _sendEmailCreateUser(user, verifyToken) {
   try {
-    let subject = 'Listco Account - Create Account';
-    let from = `Listco <${config.mailSendAs}>`;
+    let subject = `${config.emailTemplate.partnerName} - Create Account`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
-      email: user.email,
-      fullname: user.email,
-      site: config.website.url,
-      link: `${config.website.urlActiveUser}/${verifyToken}`,
+      imageUrl: config.website.urlImages,
+      link: `${config.website.urlActiveUser}${verifyToken}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, user.email, data, "create-user.ejs");
+    await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.activeAccount);
   } catch (err) {
     logger.error("send email create account fail", err);
   }
@@ -417,16 +421,35 @@ async function _sendEmailCreateUser(user, verifyToken) {
 
 async function _sendEmailDeleteUser(user) {
   try {
-    let subject = 'Listco Account - Delete Account';
-    let from = `Listco <${config.mailSendAs}>`;
+    let subject = `${config.emailTemplate.partnerName} - Delete Account`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
-      email: user.email,
-      fullname: user.email,
-      site: config.website.url
+      imageUrl: config.website.urlImages,
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, user.email, data, "delete-user.ejs");
+    await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.deactiveAccount);
   } catch (err) {
-    logger.error("send email create account fail", err);
+    logger.error("send email delete account fail", err);
   }
+}
+
+async function _getRoleControl(roles) {
+  let levels = roles.map(ele => ele.level)
+  let roleControl = []
+  for (let e of levels) {
+    let role = await Role.findOne({
+      attribute: ["level"],
+      where: {
+        level: { [Op.gt]: e },
+        deleted_flg: false
+      },
+      order: [['level', 'ASC']]
+    });
+
+    if (role) {
+      roleControl.push(role.id)
+    }
+  }
+
+  return roleControl;
 }

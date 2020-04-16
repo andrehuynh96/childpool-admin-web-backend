@@ -20,11 +20,11 @@ module.exports = async (req, res, next) => {
     }
 
     if (user.user_sts == UserStatus.UNACTIVATED) {
-      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
+      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
     }
 
     if (user.user_sts == UserStatus.LOCKED) {
-      return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+      return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
@@ -61,17 +61,15 @@ module.exports = async (req, res, next) => {
 
 async function _sendEmail(user, verifyToken) {
   try {
-    let subject = 'Listco Account - Reset Account Password';
-    let from = `Listco <${config.mailSendAs}>`;
+    let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
-      email: user.email,
-      fullname: user.email,
-      link: `${config.website.urlSetNewPassword}/${verifyToken}`,
+      imageUrl: config.website.urlImages,
+      link: `${config.website.urlSetNewPassword}${verifyToken}`,
       hours: config.expiredVefiryToken
     }
-    data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, user.email, data, "forgot-password.ejs");
+    await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.resetPassword);
   } catch (err) {
-    logger.error("send email forgot password fail", err);
+    logger.error("resend email forgot password fail", err);
   }
 }

@@ -3,6 +3,8 @@ module.exports = function (req, res, next) {
     res.unauthorized();
   } else {
     req.user = req.session.user;
+    req.roles = req.session.roles;
+    req.permissions = req.session.permissions;
     next()
   }
 }
