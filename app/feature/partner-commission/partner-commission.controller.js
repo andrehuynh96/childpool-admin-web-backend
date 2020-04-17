@@ -1,6 +1,8 @@
 const logger = require("app/lib/logger");
 const config = require("app/config");
 const StakingAPI = require("app/lib/staking-api/partner-commission");
+const User = require("app/model/wallet").users;
+const mapper = require("app/feature/response-schema/partner-commission.response-schema");
 
 module.exports = {
   getAll: async (req, res, next) => {
@@ -9,7 +11,7 @@ module.exports = {
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getAllCommission(req.params.partner_id, limit, offset);
       if (!items.code) {
-        return res.ok(items.data);
+        return res.ok({ ...items.data, items: mapper(await _getUsername(items.data.items)) });
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
@@ -26,7 +28,7 @@ module.exports = {
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getCommissionHis(req.params.partner_id, limit, offset);
       if (!items.code) {
-        return res.ok(items.data);
+        return res.ok({ ...items.data, items: mapper(await _getUsername(items.data.items)) });
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
@@ -41,7 +43,8 @@ module.exports = {
     try {
       let items = await StakingAPI.updateCommission(req.params.partner_id, req.body.items, req.user.id);
       if (!items.code) {
-        return res.ok(items.data);
+        console.log(items.data)
+        return res.ok(mapper(await _getUsername(items.data)));
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
@@ -58,7 +61,7 @@ module.exports = {
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getAllCommissionByPlatform(req.params.platform, limit, offset);
       if (!items.code) {
-        return res.ok(items.data);
+        return res.ok({ ...items.data, items: mapper(await _getUsername(items.data.items)) });
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
@@ -73,7 +76,7 @@ module.exports = {
     try {
       let items = await StakingAPI.getCommissions(req.params.partner_id, req.params.platform);
       if (!items.code) {
-        return res.ok(items.data);
+        return res.ok(mapper(await _getUsername(items.data)));
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
@@ -90,7 +93,7 @@ module.exports = {
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getAllCommissionByPartner(limit, offset);
       if (!items.code) {
-        return res.ok(items.data);
+        return res.ok({ ...items.data, items: mapper(await _getUsername(items.data.items)) });
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
@@ -101,4 +104,25 @@ module.exports = {
       next(err);
     }
   },
+}
+
+const _getUsername = async (arr) => {
+  let userNames = await User.findAll({
+    attributes: [
+      "id", "name"
+    ],
+    where: {
+      id: arr.map(ele => ele.updated_by)
+    }
+  });
+  let names = userNames.reduce((result, item) => {
+    result[item.id] = item.name;
+    return result;
+  }, {});
+  return arr.map(ele => {
+    return {
+      ...ele,
+      updated_by_user_name: ele.partner_updated_by ? names[ele.updated_by] : null
+    };
+  })
 }

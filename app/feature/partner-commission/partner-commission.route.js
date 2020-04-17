@@ -83,36 +83,43 @@ module.exports = route;
  *           application/json:
  *             {
  *                 "data": {
-                        "items": [
-                            {
-                                "id": "b216a8ef-cc05-4d7b-b46a-a72c918d22c2",
-                                "platform": "BTC",
-                                "commission": 69,
-                                "reward_address": "this_is_a_different_bitcoin_address",
-                                "updated_by": 64,
-                                "updated_at": "2020-04-09T14:47:41.017Z"
-                            },
-                            {
-                                "id": "8f3d8b76-7915-493c-88f2-94ee074a56f1",
-                                "platform": "ETC",
-                                "commission": 68,
-                                "reward_address": "this_is_a_more_different_etc_address",
-                                "updated_by": 64,
-                                "updated_at": "2020-04-09T14:47:37.884Z"
-                            },
-                            {
-                                "id": "2366f28e-8802-47b6-b96e-1cbf467f6978",
-                                "platform": "IRIS",
-                                "commission": 70,
-                                "reward_address": "",
-                                "updated_by": 64,
-                                "updated_at": "2020-04-09T14:47:41.801Z"
-                            }
-                        ],
-                        "offset": 0,
-                        "limit": 10,
-                        "total": 3
-                    }
+												"items": [
+														{
+																"id": "b216a8ef-cc05-4d7b-b46a-a72c918d22c2",
+																"platform": "BTC",
+																"commission": 15,
+																"reward_address": "this_is_a_different_bitcoin_address",
+																"updated_by": 10,
+																"updated_by_user_name": "testttttttttt"
+														},
+														{
+																"id": "8f3d8b76-7915-493c-88f2-94ee074a56f1",
+																"platform": "ETC",
+																"commission": 10,
+																"reward_address": "this_is_a_more_different_etc_address",
+																"updated_by": 10,
+																"updated_by_user_name": "testttttttttt"
+														},
+														{
+																"id": "2366f28e-8802-47b6-b96e-1cbf467f6978",
+																"platform": "IRIS",
+																"commission": 70,
+																"reward_address": "",
+																"updated_by": 64
+														},
+														{
+																"id": "92883d8c-4184-4cee-8eb7-c0bacee1ffcc",
+																"platform": "IRIS",
+																"commission": 24,
+																"reward_address": "",
+																"updated_by": 10,
+																"updated_by_user_name": "testttttttttt"
+														}
+												],
+												"offset": 0,
+												"limit": 10,
+												"total": 4
+										}
  *             }
  *       400:
  *         description: Error
@@ -180,31 +187,23 @@ module.exports = route;
  *           application/json:
  *             {
  *                 "data": [
-                        {
-                            "id": "2366f28e-8802-47b6-b96e-1cbf467f6978",
-                            "platform": "IRIS",
-                            "commission": 70,
-                            "reward_address": "",
-                            "updated_by": 64,
-                            "updated_at": "2020-04-09T14:47:41.801Z"
-                        },
-                        {
-                            "id": "8f3d8b76-7915-493c-88f2-94ee074a56f1",
-                            "platform": "ETC",
-                            "commission": 68,
-                            "reward_address": "this_is_a_more_different_etc_address",
-                            "updated_by": 64,
-                            "updated_at": "2020-04-09T14:47:37.884Z"
-                        },
-                        {
-                            "id": "b216a8ef-cc05-4d7b-b46a-a72c918d22c2",
-                            "platform": "BTC",
-                            "commission": 69,
-                            "reward_address": "this_is_a_different_bitcoin_address",
-                            "updated_by": 64,
-                            "updated_at": "2020-04-09T14:47:41.017Z"
-                        }
-                    ]
+												{
+														"id": "8f3d8b76-7915-493c-88f2-94ee074a56f1",
+														"platform": "ETC",
+														"commission": 10,
+														"reward_address": "this_is_a_more_different_etc_address",
+														"updated_by": 10,
+														"updated_by_user_name": "testttttttttt"
+												},
+												{
+														"id": "b216a8ef-cc05-4d7b-b46a-a72c918d22c2",
+														"platform": "BTC",
+														"commission": 15,
+														"reward_address": "this_is_a_different_bitcoin_address",
+														"updated_by": 10,
+														"updated_by_user_name": "testttttttttt"
+												}
+										]
  *             }
  *       400:
  *         description: Error
@@ -256,28 +255,28 @@ module.exports = route;
  *           application/json:
  *             {
                     "data": {
-                          "items": [
-                              {
-                                  "id": "b216a8ef-cc05-4d7b-b46a-a72c918d22c2",
-                                  "platform": "BTC",
-                                  "commission": 50,
-                                  "reward_address": "this_is_a_bitcoin_address",
-                                  "updated_by": 65,
-                                  "updated_at": "2020-03-02T08:07:26.688Z"
-                              },
-                              {
-                                  "id": "b216a8ef-cc05-4d7b-b46a-a72c918d22c2",
-                                  "platform": "BTC",
-                                  "commission": 50,
-                                  "reward_address": "this_is_a_different_bitcoin_address",
-                                  "updated_by": 65,
-                                  "updated_at": "2020-03-02T08:08:12.140Z"
-                              }
-                          ],
-                          "offset": 0,
-                          "limit": 10,
-                          "total": 2
-                      }
+												"items": [
+														{
+																"id": "c8f44aac-8801-49e1-8f18-f87328801bb1",
+																"platform": "BTC",
+																"commission": 12,
+																"reward_address": "",
+																"updated_by": 10,
+																"updated_by_user_name": "testttttttttt"
+														},
+														{
+																"id": "eb56566b-dc6e-477b-a271-f712e887ea2c",
+																"platform": "ETH",
+																"commission": 11,
+																"reward_address": "",
+																"updated_by": 10,
+																"updated_by_user_name": "testttttttttt"
+														}
+												],
+												"offset": 0,
+												"limit": 10,
+												"total": 2
+										}
  *             }
  *       400:
  *         description: Error
@@ -334,22 +333,29 @@ module.exports = route;
 														{
 																"id": "3c3ed477-a40e-439c-97ff-a404498ed5c2",
 																"platform": "ETH",
-																"commission": 20,
+																"commission": 68,
 																"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
-																"updated_at": "2019-12-16T08:48:01.508Z"
+																"updated_by": 73
 														},
 														{
 																"id": "ac098ffd-1ff3-47c5-9244-38eda2dcfc59",
 																"platform": "ETH",
-																"commission": 20,
+																"commission": 69,
 																"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
-																"updated_by": 0,
-																"updated_at": "2019-12-16T08:48:01.508Z"
+																"updated_by": 73
+														},
+														{
+																"id": "eb56566b-dc6e-477b-a271-f712e887ea2c",
+																"platform": "ETH",
+																"commission": 11,
+																"reward_address": "",
+																"updated_by": 10,
+																"updated_by_user_name": "testttttttttt"
 														}
 												],
 												"offset": 0,
 												"limit": 10,
-												"total": 2
+												"total": 3
 										}
  *             }
  *       400:
@@ -399,19 +405,12 @@ module.exports = route;
  *             {
  *                 "data": [
 												{
-														"id": "3c3ed477-a40e-439c-97ff-a404498ed5c2",
+														"id": "eb56566b-dc6e-477b-a271-f712e887ea2c",
 														"platform": "ETH",
-														"commission": 20,
-														"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
-														"updated_at": "2019-12-16T08:48:01.508Z"
-												},
-												{
-														"id": "ac098ffd-1ff3-47c5-9244-38eda2dcfc59",
-														"platform": "ETH",
-														"commission": 20,
-														"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
-														"updated_by": 0,
-														"updated_at": "2019-12-16T08:48:01.508Z"
+														"commission": 11,
+														"reward_address": "",
+														"updated_by": 10,
+														"updated_by_user_name": "testttttttttt"
 												}
 										]
  *             }
@@ -465,34 +464,30 @@ module.exports = route;
 														{
 																"id": "f62634d4-30f9-11ea-aec2-2e728ce88125",
 																"platform": "ATOM",
-																"commission": 21,
+																"commission": 69,
 																"reward_address": "cosmos1suvplzztw7kn4ntn9pcduxz2lxfjfy5akd3uk0",
-																"updated_by": 10,
-																"updated_at": "2020-04-11T08:51:33.275Z"
+																"updated_by": 73
 														},
 														{
 																"id": "3c3ed477-a40e-439c-97ff-a404498ed5c2",
 																"platform": "ETH",
-																"commission": 20,
+																"commission": 68,
 																"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
-																"updated_by": 10,
-																"updated_at": "2019-12-16T08:48:01.508Z"
+																"updated_by": 73
 														},
 														{
 																"id": "ac098ffd-1ff3-47c5-9244-38eda2dcfc59",
 																"platform": "ETH",
-																"commission": 20,
+																"commission": 69,
 																"reward_address": "0x61179C42C57BFE59C5CecA25B3B66f6Ee3b15cD7",
-																"updated_by": 10,
-																"updated_at": "2019-12-16T08:48:01.508Z"
+																"updated_by": 73
 														},
 														{
 																"id": "24c39b32-2d13-11ea-978f-2e728ce88125",
 																"platform": "IRIS",
-																"commission": 20,
+																"commission": 70,
 																"reward_address": "iaa16se3zaex588aqa6e0mgnps92a005mjm95d56jx",
-																"updated_by": 10,
-																"updated_at": "2020-02-06T09:12:43.073Z"
+																"updated_by": 73
 														}
 												],
 												"offset": 0,
