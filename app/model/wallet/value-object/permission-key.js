@@ -122,7 +122,6 @@ module.exports = {
       "Master",
       "Admin",
       "Operator1",
-      "Operator2",
     ]
   },
   "UPDATE_USER": {
@@ -131,7 +130,6 @@ module.exports = {
       "Master",
       "Admin",
       "Operator1",
-      "Operator2",
     ]
   },
   "DELETE_USER": {
@@ -140,7 +138,6 @@ module.exports = {
       "Master",
       "Admin",
       "Operator1",
-      "Operator2",
     ]
   },
   "ACTIVE_USER": {

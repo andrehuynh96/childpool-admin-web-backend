@@ -1,7 +1,7 @@
 const Model = require("app/model/wallet").permissions;
 const PermissionKey = require("app/model/wallet/value-object/permission-key");
 
-(async () => {
+module.exports = async () => {
   let models = [];
   let permissions = Object.keys(PermissionKey).map(key => {
     return PermissionKey[key].KEY;
@@ -24,8 +24,8 @@ const PermissionKey = require("app/model/wallet/value-object/permission-key");
     }
   }
   await Model.bulkCreate(
-  models, {
+    models, {
       returning: true
     });
-  
-})();
+
+};
