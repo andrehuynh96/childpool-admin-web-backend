@@ -1,10 +1,15 @@
+const { Temporalize } = require('sequelize-temporalize');
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("wallets", {
+  const Wallet = sequelize.define("wallets", {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4(),
+    },
+    name: {
+      type: DataTypes.STRING(256),
+      allowNull: true
     },
     member_id: {
       type: DataTypes.UUID,
@@ -15,16 +20,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
-    key_store_path: {
-      type: DataTypes.STRING(256),
-      allowNull: false
-    },
-    user_wallet_pass_hash: {
-      type: DataTypes.STRING(64),
-      allowNull: true
-    },
-    salt: {
-      type: DataTypes.STRING(64),
+    encrypted_passphrase: {
+      type: DataTypes.STRING(512),
       allowNull: true
     },
     deleted_flg: {
@@ -36,4 +33,20 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: true,
     });
-} 
+  Temporalize({
+    model: Wallet,
+    sequelize,
+    temporalizeOptions: {
+      blocking: false,
+      full: false,
+      modelSuffix: "_his"
+    }
+  });
+
+  Wallet.associate = (models) => {
+    Wallet.hasMany(models.wallet_tokens, { foreignKey: 'wallet_id', as: "tokens" });
+    Wallet.hasMany(models.wallet_priv_keys, { foreignKey: 'wallet_id', as: "privKeys" });
+    Wallet.belongsTo(models.members, { foreignKey: 'member_id', targetKey: 'id' });
+  };
+  return Wallet;
+}   
