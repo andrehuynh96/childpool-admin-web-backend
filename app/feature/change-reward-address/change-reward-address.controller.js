@@ -72,6 +72,20 @@ module.exports = {
             logger.error(error);
             next(error);
         }
+    },
+    checkToken: async (req, res, next) => {
+        try {
+            let token = req.params.token;
+            let result = await StakingAPI.checkTokenRewardAddressRequest(token);
+            if (!result.code) {
+                return res.ok(result.data);
+            } else {
+                return res.status(parseInt(result.code)).send(result.data);
+            } 
+        } catch (error) {
+            logger.error(error);
+            next(error);
+        }
     }
 }
 
