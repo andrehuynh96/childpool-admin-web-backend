@@ -12,7 +12,8 @@ module.exports = {
       let result = await Role.findAll({
         where: {
           deleted_flg: false
-        }
+        },
+        order: [['level', 'ASC']]
       });
       return res.ok(result);
     }
@@ -27,7 +28,6 @@ module.exports = {
       let roleControl = []
       for (let e of levels) {
         let role = await Role.findOne({
-
           where: {
             level: { [Op.gt]: e },
             deleted_flg: false
@@ -36,7 +36,13 @@ module.exports = {
         });
 
         if (role) {
-          roleControl.push(role)
+          let roles = await Role.findAll({
+            where: {
+              level: role.level,
+              deleted_flg: false
+            }
+          });
+          roleControl = roleControl.concat(roles);
         }
       }
       return res.ok(roleControl);
@@ -178,11 +184,11 @@ module.exports = {
           name: name,
           level: level
         }, {
-          where: {
-            id: req.params.id
-          },
-          returning: true
-        }, { transaction });
+            where: {
+              id: req.params.id
+            },
+            returning: true
+          }, { transaction });
         if (!updateRoleResponse) {
           if (transaction) await transaction.rollback();
           return res.serverInternalError();
