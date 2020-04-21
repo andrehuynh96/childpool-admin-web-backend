@@ -38,8 +38,8 @@ module.exports = {
                 email: user.email
             }
             let result = await StakingAPI.createRewardAddressRequest(commission_id, data);
-            let {platform, verify_token} = result.data;
-            _sendEmail(platform, body.reward_address, user.email, verify_token);
+            let {platform, verify_token, partner, icon} = result.data;
+            _sendEmail(platform, body.reward_address, user.email, verify_token, partner, icon);
 			if (!result.code) {
 				return res.ok(true);
 			}
@@ -59,9 +59,9 @@ module.exports = {
             }
             let result = await StakingAPI.updateRewardAddressRequest(data);
 			if (!result.code) {
-                let {partner, platform, address, emails} = result.data;
+                let {partner, partner_id, platform, address, emails, icon} = result.data;
                 if (status == 1 && emails.length > 0) {
-                    _sendEmailMasterPool(partner, platform, address, emails);
+                    _sendEmailMasterPool(partner, platform, address, emails, icon, partner_id);
                 }
 				return res.ok(true);
 			}
@@ -89,14 +89,16 @@ module.exports = {
     }
 }
 
-async function _sendEmail(platform, address, email, verifyToken) {
+async function _sendEmail(platform, address, email, verifyToken, partner, icon) {
     try {
       let subject = ` ${config.emailTemplate.partnerName} - Change reward address`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
         link: `${config.website.urlConfirmRequest}${verifyToken}`,
+        partnerName: partner,
         platform: platform,
+        icon: icon,
         rewardAddress: address
       }
       data = Object.assign({}, data, config.email);
@@ -106,15 +108,16 @@ async function _sendEmail(platform, address, email, verifyToken) {
     }
 }
 
-async function _sendEmailMasterPool(partner, platform, address, emails) {
+async function _sendEmailMasterPool(partner, platform, address, emails, icon, partnerId) {
     try {
       let subject = ` ${config.emailTemplate.partnerName} - Change reward address`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
-        link: `${config.masterWebsite.urlViewRequest}`,
+        link: `${config.masterWebsite.urlViewRequest}/${partnerId}/commission`,
         partnerName: partner,
         platform: platform,
+        icon: icon,
         rewardAddress: address
       }
       data = Object.assign({}, data, config.email);
