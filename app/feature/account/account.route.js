@@ -359,16 +359,14 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": [
-                        {
-                            "id": 10,
-                            "email": "trinhdn@blockchainlabs.asia",
-                            "name": "testttttttttt",
-                            "twofa_enable_flg": false,
-                            "user_sts": "ACTIVATED",
-                            "latest_login_at": "2020-04-15T04:44:38.951Z"
-                        }
-                    ]
+ *                 "data": {
+                        "id": 10,
+                        "email": "trinhdn@blockchainlabs.asia",
+                        "name": "testttttttttt",
+                        "twofa_enable_flg": false,
+                        "user_sts": "ACTIVATED",
+                        "latest_login_at": "2020-04-21T10:58:38.843Z"
+                    }
  *             }
  *       400:
  *         description: Error
