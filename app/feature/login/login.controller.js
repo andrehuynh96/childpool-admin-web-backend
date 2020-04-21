@@ -15,11 +15,12 @@ const bcrypt = require('bcrypt');
 const config = require("app/config");
 const uuidV4 = require('uuid/v4');
 const UserRole = require('app/model/wallet').user_roles;
+const Roles = require('app/model/wallet').roles;
 module.exports = async (req, res, next) => {
   try {
     let user = await User.findOne({
       where: {
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
         deleted_flg: false
       }
     });
@@ -41,15 +42,31 @@ module.exports = async (req, res, next) => {
           attempt_login_number: user.attempt_login_number + 1, // increase attempt_login_number in case wrong password
           latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
         }, {
-            where: {
-              id: user.id
-            }
-          })
+          where: {
+            id: user.id
+          }
+        })
         if (user.attempt_login_number + 1 == config.lockUser.maximumTriesLogin)
           return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
         else return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
       }
-      else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+      else {
+        let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
+        nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
+        let rightNow = new Date();
+        if (nextAcceptableLogin < rightNow) { // don't forbid if lock time has passed
+          await User.update({
+            attempt_login_number: 1,
+            latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
+          }, {
+            where: {
+              id: user.id
+            }
+          });
+          return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
+        }
+        else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+      }
     }
     else {
       let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
@@ -61,10 +78,10 @@ module.exports = async (req, res, next) => {
         attempt_login_number: 0,
         latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
       }, {
-          where: {
-            id: user.id
-          }
-        })
+        where: {
+          id: user.id
+        }
+      })
     }
 
     if (user.twofa_enable_flg) {
@@ -75,12 +92,12 @@ module.exports = async (req, res, next) => {
       await UserOTP.update({
         expired: true
       }, {
-          where: {
-            user_id: user.id,
-            action_type: OtpType.TWOFA
-          },
-          returning: true
-        })
+        where: {
+          user_id: user.id,
+          action_type: OtpType.TWOFA
+        },
+        returning: true
+      })
 
       await UserOTP.create({
         code: verifyToken,
@@ -111,7 +128,7 @@ module.exports = async (req, res, next) => {
           allow_flg: true,
         }
       })
-      await UserActivityLog.create({
+      let loginHistory = await UserActivityLog.create({
         user_id: user.id,
         client_ip: registerIp,
         action: ActionType.LOGIN,
@@ -124,12 +141,12 @@ module.exports = async (req, res, next) => {
         await UserOTP.update({
           expired: true
         }, {
-            where: {
-              user_id: user.id,
-              action_type: OtpType.CONFIRM_IP
-            },
-            returning: true
-          })
+          where: {
+            user_id: user.id,
+            action_type: OtpType.CONFIRM_IP
+          },
+          returning: true
+        })
 
         await UserOTP.create({
           code: verifyToken,
@@ -145,7 +162,7 @@ module.exports = async (req, res, next) => {
           allow_flg: false,
           verify_token: verifyToken
         })
-        _sendEmail(user, verifyToken);
+        _sendEmail(user, verifyToken, loginHistory);
         return res.ok({
           confirm_ip: true,
           twofa: false,
@@ -172,12 +189,22 @@ module.exports = async (req, res, next) => {
             id: rolePermissions
           }
         });
-        req.session.roles = permissions.map(ele => ele.name);
-        req.session.role = roleList;
+        req.session.permissions = permissions.map(ele => ele.name);
+        roleList = await Roles.findAll({
+          attributes: [
+            "id", "name", "level", "root_flg"
+          ],
+          where: {
+            id: roleList
+          }
+        })
+        let response = userMapper(user);
+        response.roles = roleList;
+        req.session.roles = roleList;
         return res.ok({
           confirm_ip: false,
           twofa: false,
-          user: userMapper(user)
+          user: response
         });
       }
     }
@@ -187,18 +214,19 @@ module.exports = async (req, res, next) => {
     next(err);
   }
 };
-async function _sendEmail(user, verifyToken) {
+async function _sendEmail(user, verifyToken, loginHistory) {
   try {
-    let subject = 'Listco Account - New IP Confirmation';
-    let from = `Listco <${config.mailSendAs}>`;
+    let subject = `${config.emailTemplate.partnerName} - New IP Confirmation`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
-      email: user.email,
-      fullname: user.email,
-      link: `${config.website.urlConfirmIp}/${verifyToken}`,
-      hours: config.expiredVefiryToken
+      imageUrl: config.website.urlImages,
+      link: `${config.website.urlConfirmNewIp}${verifyToken}`,
+      accessType: loginHistory.user_agent,
+      time: loginHistory.createdAt,
+      ipAddress: loginHistory.client_ip
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, user.email, data, "confirm-ip.ejs");
+    await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.confirmNewIp);
   } catch (err) {
     logger.error("send email confirm new IP fail", err);
   }

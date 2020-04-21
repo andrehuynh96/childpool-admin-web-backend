@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(128),
       allowNull: false
     },
+    name: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
     user_sts: {
       type: DataTypes.STRING(36),
       allowNull: false,
@@ -59,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
   User.associate = function(models) {
-      User.hasOne(models.user_roles, {foreignKey: 'user_id', sourceKey: 'id'});
+      User.hasMany(models.user_roles, {foreignKey: 'user_id', sourceKey: 'id'});
   }
 
   return User;

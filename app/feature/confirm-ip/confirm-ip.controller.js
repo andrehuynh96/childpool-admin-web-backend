@@ -36,6 +36,13 @@ module.exports = async (req, res, next) => {
           verify_token: req.body.verify_token
         }
       })
+      await UserOTP.update({
+        used: true
+      },{
+        where: {
+          code: req.body.verify_token
+        }
+      })
       return res.ok(true);
     }
   }

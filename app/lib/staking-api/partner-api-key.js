@@ -20,12 +20,11 @@ module.exports = {
     }
     catch (err) {
       logger.error("get list API key fail:", err);
-      return err.response.data;
+      return { code: err.response.status, data: err.response.data };
     }
   },
   createApiKey: async (partner_id, name) => {
     try {
-      console.log("======================>", name)
       let accessToken = await getToken();
       let result = await axios.post(`${config.stakingApi.url}/partners/${partner_id}/keys`,
         {
@@ -42,7 +41,7 @@ module.exports = {
     }
     catch (err) {
       logger.error("create new API key fail:", err);
-      return err.response.data;
+      return { code: err.response.status, data: err.response.data };
     }
   }
 } 

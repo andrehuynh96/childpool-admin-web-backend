@@ -12,7 +12,15 @@ router.use(require('./grandchild/grandchild.route'));
 router.use(require('./partner-api-key/partner-api-key.route'));
 router.use(require('./member/member.route'));
 router.use(require('./api-key/api-key.route'));
- module.exports = router;
+router.use(require('./logout/logout.route'));
+router.use(require('./role/role.route'));
+router.use(require('./permission/permission.route'));
+router.use(require('./partner-commission/partner-commission.route'));
+router.use(require('./change-reward-address/change-reward-address.route'));
+router.use(require('./partner-tx-memo/partner-tx-memo.route'));
+router.use(require('./check-token/check-token.route')); 
+
+module.exports = router;
 
 /**********************************************************************/
 /**
