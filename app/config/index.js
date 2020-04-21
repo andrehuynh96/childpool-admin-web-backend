@@ -94,7 +94,7 @@ const config = {
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
   },
   masterWebsite: {
-    urlViewRequest: process.env.MASTER_WEBSITE_URL + '/view-request'
+    urlViewRequest: process.env.MASTER_WEBSITE_URL + '/admin/childpool/detail'
   }
 };
 

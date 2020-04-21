@@ -1,153 +1,93 @@
-<!doctype html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
     <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Confirm</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Reward address changed</title>
     <style>
       @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
-      img {
-        border: none;
-        -ms-interpolation-mode: bicubic;
-        max-width: 100%;
-      }
-      a{
-        text-decoration: none !important;
-      }
-      body{
-        font-family: 'Montserrat', sans-serif;
-        -webkit-font-smoothing: antialiased;
-        font-size: 14px;
-        line-height: 20px;
-        margin: 0;
-        padding: 0;
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%;
-        background: #fff;
-        color: #676767;
-      }
-
-      table {
-        border-collapse: separate;
-        mso-table-lspace: 0pt;
-        mso-table-rspace: 0pt;
-        width: 100%;
+      .head-logo{
+        padding: 33px 0;
         text-align: center;
+      }
+      .sec-logo{
+        text-align: center;
+        padding: 20px 0;
       }
       table tr{
-        clear: both;
-      }
-      table td {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 14px;
-        vertical-align: top;
-      }
-
-      /* -------------------------------------
-          BODY & CONTAINER
-      ------------------------------------- */
-
-      /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
-      .container {
-        display: block;
-        margin: 0 auto !important;
-        /* makes it centered */
-        max-width: 600px;
-        width: 600px;
-        text-align: center;
-        /* padding: 50px; */
-      }
-
-      /* -------------------------------------
-          HEADER, FOOTER, MAIN
-      ------------------------------------- */
-      .main {
-        width: 100%;
-      }
-
-      p, ul, ol {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 14px;
-        font-weight: normal;
-        padding-left: 0;
-        margin: 0;
-        line-height: 20px;
-      }
-      ul li,
-      ol li {
-        list-style-position: inside;
-        margin-left: 5px;
-      }
-      .head-logo{
-        text-align: left;
-        background-color: #182850;
-        padding: 35px 65px 20px;
-      }
-      a {
-        color: #3498db;
-        text-decoration: underline;
-      }
-      /* .btn-cf a,.x_btn-cf a{
-        background: linear-gradient(209.27deg, #00E093 0%, #007CFF 100%);
-      } */
-      /* -------------------------------------
-          RESPONSIVE AND MOBILE FRIENDLY STYLES
-      ------------------------------------- */
-      @media only screen and (max-width: 620px) {
-        .container{
-          width: 100%;
-          max-width: 100%;
-          padding: 0;
-        }
-        .content{
-          padding: 30px;
-        }
-
+        padding: 0px;
       }
     </style>
   </head>
-  <body>
-    <table border="0" cellpadding="0" cellspacing="0" class="body" align="center">
+  <body style="margin: 0px; padding: 0px; background-color: #FFFFFF;" bgcolor="#FFFFFF"><!-- << bg color for forwarding (leave white) // main bg color >> -->
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
       <tr>
-        <td class="container">
-          <div class="content">
-            <table class="main" style="text-align: center;" align="center">
-              <tr>
-                <td class="head-logo">
-                  <img src="<%=imageUrl%>/moon-logo.png" alt="">
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 108px">
-                  <img src="<%=imageUrl%>/moon-confirm.png" alt="" style="margin-bottom: 20px">
-                  <p style="font-size: 18px;font-weight: 500;margin-bottom: 15px; line-height: 30px; color: #182850">Verify your email address
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <p style="margin-bottom: 3px;">Platform: <%=platform%></p>
-                  <p style="margin-bottom: 3px;">New address: <%=rewardAddress%></p>
-                </td>
-              </tr>
-              <tr>
-                  <td>
-                    <div>
-                      <!--[if mso]>
-                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%=link%>" style="height:36px;v-text-anchor:middle;width:150px;" arcsize="5%" strokecolor="#00ABCD" fillcolor="#00ABCD">
-                          <w:anchorlock/>
-                          <center style="color:#ffffff;font-family: 'Montserrat', sans-serif;font-size:14px; font-weight: 600; ">Verify email</center>
-                        </v:roundrect>
-                      <![endif]-->
-                      <a href="<%=link%>" style="background: rgb(0,224,147); background: -moz-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: -webkit-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%);border:1px solid #00ABCD;border-radius:8px;-webkit-border-radius: 8px; -moz-border-radius: 8px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 18px; margin: 18px 0 0 0; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;">Confirm</a>
-                    </div>                    
-                  </td>
-              </tr>
-            </table>
-          </div>
+        <td>
+          <!-- CENTER FLOAT WIDTH -->
+          <table width="600" border="0" valign="top" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="head-logo">
+                <img src="<%=imageUrl%>/logo.png" alt="">
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color: #979797;height: 1px;"></td>
+            </tr>
+            <tr>
+              <td class="sec-logo">
+                <img style="min-height: 106px; width: 51px; object-fit: contain; object-position: bottom;" src="<%=imageUrl%>/moonstake-confirm.png" alt="">
+              </td>
+            </tr>
+            <tr style="text-align: center;">
+              <td style="padding-bottom: 14px;">                  
+                <p style="color: #6D7278; font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0; line-height: 22px; text-align: center;margin: 0">Reward address changed</p>
+              </td>
+            </tr>
+            <tr>
+              <td><!-- Master Width of the center panel -->
+                
+                <!-- CENTER PANEL BG COLOR (to hide separation of tables on email forward from Outlook (known issue) -->
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
+                  <tr>                    
+                    <td style="display: inline-block; width: 50%; text-align: right;margin-bottom: 5px;">
+                      <p style="font-family: 'Montserrat', sans-serif; color: #6D7278; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 25px; display: inline-block;padding-right: 5px;margin: 0;">Childpool: </p>
+                    </td>
+                    <td style="display: inline-block; width: 50%;margin-bottom: 5px;">
+                      <p style="font-family: 'Montserrat', sans-serif; color: #6D7278; font-size: 14px; letter-spacing: 0; line-height: 25px;  display: inline-block; padding-left: 5px;margin: 0;"><%=partnerName%></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="display: inline-block; width: 50%; text-align: right;margin-bottom: 5px;">
+                      <p style="font-family: 'Montserrat', sans-serif;  color: #6D7278; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 25px; display: inline-block; text-align: right; padding-right: 5px;margin: 0;">Platform: </p>                    
+                    </td>
+                    <td style="display: inline-block;  color: #6D7278; font-family: 'Montserrat', sans-serif; font-size: 14px; letter-spacing: 0; line-height: 18px;padding-left: 5px;margin-bottom: 5px;">
+                      <img src="<%=icon%>" alt="" style="width: 30px; height: 30px; vertical-align: middle; margin-top: -5px; display: inline-block; padding-right: 5px;margin: 0;"><span"><%=platform%></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="display: inline-block; width: 36%; text-align: right;margin-bottom: 25px;">
+                      <p style="font-family: 'Montserrat', sans-serif; color: #6D7278; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 25px; display: inline-block; padding-right: 5px;margin: 0;">New address:</p>
+                    </td>
+                    <td style="display: inline-block; width: 62%;margin-bottom: 25px;">
+                      <p style="font-family: 'Montserrat', sans-serif; color: #0078FF; font-size: 14px; letter-spacing: 0; line-height: 18px; display: inline-block;margin: 0;"><%=rewardAddress%></p>
+                    </td>  
+                  </tr>
+                  <tr>
+                    <td>
+                      <div style="text-align: center">
+                        <a href="<%=link%>" style="background: rgb(0,224,147); background: -moz-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: -webkit-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); border:1px solid #00ABCD;border-radius:8px;-webkit-border-radius: 8px; -moz-border-radius: 8px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 18px; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;">Confirm</a>
+                      </div>                    
+                    </td>
+                  </tr>
+                </table>
+
+              <!-- /CENTER FLOAT WIDTH -->
+              </td>
+            </tr>
+          </table>
+      <!-- /CENTER FLOAT -->
         </td>
       </tr>
-
     </table>
-  </body>
+  </body> 
 </html>
