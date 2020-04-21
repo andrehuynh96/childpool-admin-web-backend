@@ -219,8 +219,8 @@ module.exports = {
     "KEY": "VIEW_LIST_PARTNER_TX_MEMO_HISTORY",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "VIEW_MEMBER": {
-    "KEY": "VIEW_MEMBER",
+  "VIEW_LIST_MEMBER": {
+    "KEY": "VIEW_LIST_MEMBER",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "REVOKE_KEY_PARTNER": {
