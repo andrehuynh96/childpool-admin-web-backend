@@ -9,7 +9,7 @@ const router = express.Router();
 router.get(
 	'/members',
 	authenticate,
-	authority(PermissionKey.VIEW_MEMBER),
+	authority(PermissionKey.VIEW_LIST_MEMBER),
 	controller.search
 );
 
