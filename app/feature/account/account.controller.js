@@ -188,7 +188,7 @@ module.exports = {
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
-      return res.ok(userMapper(response));
+      return res.ok(userMapper(response[0]));
     }
     catch (err) {
       logger.error('updateProfile fail:', err);

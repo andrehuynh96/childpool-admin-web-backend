@@ -1,12 +1,15 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./api-key.controller');
+const authority = require('app/middleware/authority.middleware');
+const PermissionKey = require('app/model/wallet/value-object/permission-key');
 
 const router = express.Router();
 
 router.delete(
   '/partners/:id/keys/:key',
   authenticate,
+  authority(PermissionKey.REVOKE_KEY_PARTNER),
   controller.revokeAPIKey
 );
 
