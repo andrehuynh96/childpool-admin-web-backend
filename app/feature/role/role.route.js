@@ -19,7 +19,7 @@ router.get(
 router.get(
   '/roles-have-permission',
   authenticate,
-  authorityRoot,
+  //authorityRoot,
   controller.roleHavePermission
 );
 
