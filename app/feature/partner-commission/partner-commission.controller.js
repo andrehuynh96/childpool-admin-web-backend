@@ -62,7 +62,8 @@ module.exports = {
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getAllCommissionByPlatform(req.params.platform, limit, offset);
       if (!items.code) {
-        return res.ok({ ...items.data, items: mapper(await _getUsername(items.data.items)) });
+        let getUserNames = mapper(await _getUsername(items.data.items))
+        return res.ok({ ...items.data, items: getUserNames && getUserNames.length > 0 ? getUserNames : [] });
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
@@ -94,7 +95,8 @@ module.exports = {
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getAllCommissionByPartner(limit, offset);
       if (!items.code) {
-        return res.ok({ ...items.data, items: mapper(await _getUsername(items.data.items)) });
+        let getUserNames = mapper(await _getUsername(items.data.items))
+        return res.ok({ ...items.data, items: getUserNames && getUserNames.length > 0 ? getUserNames : [] });
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
