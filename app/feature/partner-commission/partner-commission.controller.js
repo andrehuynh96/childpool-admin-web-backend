@@ -106,6 +106,9 @@ module.exports = {
 }
 
 const _getUsername = async (arr) => {
+  if (!arr || arr.length == 0) {
+    return arr;
+  }
   let userNames = await User.findAll({
     attributes: [
       "id", "name"
