@@ -25,7 +25,7 @@ module.exports = async (req, res, next) => {
       }
     });
     if (!user) {
-      return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ["email"] });
+      return res.badRequest(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
     }
     if (user.user_sts == UserStatus.UNACTIVATED) {
       return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
