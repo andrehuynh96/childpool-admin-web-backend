@@ -43,7 +43,6 @@ module.exports = {
     try {
       let items = await StakingAPI.updateCommission(req.params.partner_id, req.body.items, req.user.id);
       if (!items.code) {
-        console.log(items.data)
         return res.ok(mapper(await _getUsername(items.data)));
       }
       else {
