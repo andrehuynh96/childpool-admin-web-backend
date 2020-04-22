@@ -12,7 +12,7 @@ route.get("/permissions",
 );
 route.get("/me/permissions",
   authenticate,
-  authority(PermissionKey.VIEW_LIST_PERMISSION_DETAIL),
+  //authority(PermissionKey.VIEW_LIST_PERMISSION_DETAIL),
   controller.get
 );
 
