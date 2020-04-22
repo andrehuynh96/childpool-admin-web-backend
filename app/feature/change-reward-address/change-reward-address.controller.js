@@ -38,8 +38,8 @@ module.exports = {
                 email: user.email
             }
             let result = await StakingAPI.createRewardAddressRequest(commission_id, data);
-            let {platform, verify_token} = result.data;
-            _sendEmail(platform, body.reward_address, user.email, verify_token);
+            let {platform, verify_token, partner, icon} = result.data;
+            _sendEmail(platform, body.reward_address, user.email, verify_token, partner, icon);
 			if (!result.code) {
 				return res.ok(true);
 			}
@@ -59,9 +59,9 @@ module.exports = {
             }
             let result = await StakingAPI.updateRewardAddressRequest(data);
 			if (!result.code) {
-                let {partner, platform, address, emails} = result.data;
+                let {partner, partner_id, platform, address, emails, icon} = result.data;
                 if (status == 1 && emails.length > 0) {
-                    _sendEmailMasterPool(partner, platform, address, emails);
+                    _sendEmailMasterPool(partner, platform, address, emails, icon, partner_id);
                 }
 				return res.ok(true);
 			}
@@ -72,39 +72,56 @@ module.exports = {
             logger.error(error);
             next(error);
         }
+    },
+    checkToken: async (req, res, next) => {
+        try {
+            let token = req.params.token;
+            let result = await StakingAPI.checkTokenRewardAddressRequest(token);
+            if (!result.code) {
+                return res.ok(result.data);
+            } else {
+                return res.status(parseInt(result.code)).send(result.data);
+            } 
+        } catch (error) {
+            logger.error(error);
+            next(error);
+        }
     }
 }
 
-async function _sendEmail(platform, address, email, verifyToken) {
+async function _sendEmail(platform, address, email, verifyToken, partner, icon) {
     try {
       let subject = ` ${config.emailTemplate.partnerName} - Change reward address`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
         link: `${config.website.urlConfirmRequest}${verifyToken}`,
+        partnerName: partner,
         platform: platform,
+        icon: icon,
         rewardAddress: address
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, email, data, "confirm-request.ejs");
+      await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.confirmRequest);
     } catch (err) {
       logger.error("send confirmed email for changing reward address for master fail", err);
     }
 }
 
-async function _sendEmailMasterPool(partner, platform, address, emails) {
+async function _sendEmailMasterPool(partner, platform, address, emails, icon, partnerId) {
     try {
       let subject = ` ${config.emailTemplate.partnerName} - Change reward address`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
-        link: `${config.masterWebsite.urlViewRequest}`,
+        link: `${config.masterWebsite.urlViewRequest}/${partnerId}/commission`,
         partnerName: partner,
         platform: platform,
+        icon: icon,
         rewardAddress: address
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, emails, data, "view-request.ejs");
+      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.viewRequest);
     } catch (err) {
       logger.error("send confirmed email for changing reward address for master pool fail", err);
     }

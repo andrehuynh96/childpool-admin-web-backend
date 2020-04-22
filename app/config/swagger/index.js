@@ -7,7 +7,7 @@ module.exports = function (app, prefix) {
   var options = {
     swaggerDefinition: {
       info: {
-        title: 'Staking Wallet Web Backend',
+        title: 'Staking Admin Childpool Backend',
         version: '1.0.0',
       },
       servers: [

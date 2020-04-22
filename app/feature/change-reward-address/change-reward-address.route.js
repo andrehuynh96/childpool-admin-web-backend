@@ -22,6 +22,11 @@ router.post(
     validator(update),
     controller.update
 );
+
+router.get(
+    '/commissions/requests/check-token/:token',
+    controller.checkToken
+);
   
 module.exports = router;
 
@@ -128,3 +133,46 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+/**
+ * @swagger
+ * /web/commissions/requests/check-token/{token}:
+ *   get:
+ *     summary: check token
+ *     tags:
+ *       - Requests
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         type: string
+ *         required: true
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data":{
+                        "token_sts":"VALID|USED"
+                    }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */

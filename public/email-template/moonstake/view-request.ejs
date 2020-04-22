@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Reward address changed</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
+      .head-logo{
+        padding: 33px 0;
+        text-align: center;
+      }
+      .sec-logo{
+        text-align: center;
+        padding: 20px 0;
+      }
+      table tr{
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body style="margin: 0px; padding: 0px; background-color: #FFFFFF;" bgcolor="#FFFFFF"><!-- << bg color for forwarding (leave white) // main bg color >> -->
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td>
+          <!-- CENTER FLOAT WIDTH -->
+          <table width="600" border="0" valign="top" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="head-logo">
+                <img src="<%=imageUrl%>/logo.png" alt="">
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color: #979797;height: 1px;"></td>
+            </tr>
+            <tr>
+              <td class="sec-logo">
+                <img src="<%=imageUrl%>/moonstake-reward-address.png" alt="">
+              </td>
+            </tr>
+            <tr style="text-align: center;">
+              <td style="padding-bottom: 14px;">                  
+                <p style="color: #6D7278; font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0; line-height: 22px; text-align: center;margin: 0">Reward address changed</p>
+              </td>
+            </tr>
+            <tr>
+              <td><!-- Master Width of the center panel -->
+                
+                <!-- CENTER PANEL BG COLOR (to hide separation of tables on email forward from Outlook (known issue) -->
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
+                  <tr>                    
+                    <td style="display: inline-block; width: 50%; text-align: right;margin-bottom: 5px;">
+                      <p style="font-family: 'Montserrat', sans-serif; color: #6D7278; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 25px; display: inline-block;padding-right: 5px;margin: 0;">Childpool: </p>
+                    </td>
+                    <td style="display: inline-block; width: 50%;margin-bottom: 5px;">
+                      <p style="font-family: 'Montserrat', sans-serif; color: #6D7278; font-size: 14px; letter-spacing: 0; line-height: 25px;  display: inline-block; padding-left: 5px;margin: 0;"><%=partnerName%></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="display: inline-block; width: 50%; text-align: right;margin-bottom: 5px;">
+                      <p style="font-family: 'Montserrat', sans-serif;  color: #6D7278; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 25px; display: inline-block; text-align: right; padding-right: 5px;margin: 0;">Platform: </p>                    
+                    </td>
+                    <td style="display: inline-block;  color: #6D7278; font-family: 'Montserrat', sans-serif; font-size: 14px; letter-spacing: 0; line-height: 18px;padding-left: 5px;margin-bottom: 5px;">
+                      <img src="<%=icon%>" alt="" style="width: 30px; height: 30px; vertical-align: middle; margin-top: -5px; display: inline-block; padding-right: 5px;margin: 0;"><span"><%=platform%></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="display: inline-block; width: 36%; text-align: right;margin-bottom: 25px;">
+                      <p style="font-family: 'Montserrat', sans-serif; color: #6D7278; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 25px; display: inline-block; padding-right: 5px;margin: 0;">New address:</p>
+                    </td>
+                    <td style="display: inline-block; width: 62%;margin-bottom: 25px;">
+                      <p style="font-family: 'Montserrat', sans-serif; color: #0078FF; font-size: 14px; letter-spacing: 0; line-height: 18px; display: inline-block;margin: 0;"><%=rewardAddress%></p>
+                    </td>  
+                  </tr>
+                  <tr>
+                    <td>
+                      <div style="text-align: center">
+                        <a href="<%=link%>" style="background: rgb(0,224,147); background: -moz-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: -webkit-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); border:1px solid #00ABCD;border-radius:8px;-webkit-border-radius: 8px; -moz-border-radius: 8px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 18px; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;">View Detail</a>
+                      </div>                    
+                    </td>
+                  </tr>
+                </table>
+
+              <!-- /CENTER FLOAT WIDTH -->
+              </td>
+            </tr>
+          </table>
+      <!-- /CENTER FLOAT -->
+        </td>
+      </tr>
+    </table>
+  </body> 
+</html>
