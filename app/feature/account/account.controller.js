@@ -162,9 +162,8 @@ module.exports = {
         },
         order: [['created_at', 'DESC']]
       });
-
       return res.ok({
-        items: items,
+        items: items && items.length>0 ? items:[],
         offset: offset,
         limit: limit,
         total: total

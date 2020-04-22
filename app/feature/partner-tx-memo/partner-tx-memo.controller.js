@@ -10,7 +10,8 @@ module.exports = {
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getAll(req.params.partner_id, limit, offset);
       if (!items.code) {
-        return res.ok({ ...items.data, items: await _getUsername(items.data.items) });
+        let getUserNames = await _getUsername(items.data.items)
+        return res.ok({ ...items.data, items: getUserNames && getUserNames.length > 0 ? getUserNames : [] });
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
@@ -42,7 +43,8 @@ module.exports = {
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getHis(req.params.partner_id, limit, offset);
       if (!items.code) {
-        return res.ok({ ...items.data, items: await _getUsername(items.data.items) });
+        let getUserNames = await _getUsername(items.data.items)
+        return res.ok({ ...items.data, items: getUserNames && getUserNames.length > 0 ? getUserNames : [] });
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
