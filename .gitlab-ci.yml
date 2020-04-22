@@ -1,0 +1,51 @@
+stages:
+ - build
+ - test
+ - deploy   
+
+variables:
+ GIT_STRATEGY: none
+ ANSIBLE_DIR: "/home/ubuntu/staking-iac/ansible"
+ 
+.BuildJSApp:
+ stage: build
+ script:
+  - cd ${ANSIBLE_DIR}
+  - project=`echo ${CI_COMMIT_TAG} | awk -F'-' '{print $2}'`
+  - ansible_file=`grep ${CI_PROJECT_NAME}.git *.yml | awk '{print $1}'|awk -F':' '{print $1}' | grep ${_ENV} | grep $project`
+  - sudo su ubuntu -c "ansible-playbook $ansible_file --extra-vars=\"nuxt_git_version=${CI_COMMIT_TAG}\""
+  
+
+  
+.OnlyStagingMS:
+ only:
+  - /^.*-ms-rc$/
+ except:
+  - branches
+
+.OnlyStagingBS:
+ only:
+  - /^.*-bs-rc$/
+ except:
+  - branches
+
+.OnlyProductionMS:
+ only:
+  - /^.*-ms$/
+ except:
+  - branches
+
+.OnlyProductionBS:
+ only:
+  - /^.*-bs$/
+ except:
+  - branches
+
+DeployStagMS:
+ variables:
+  _ENV: "stage" 
+ extends:
+  - .BuildJSApp
+  - .OnlyStagingBS
+ tags:
+  - stage-stak-ap-ms-ansible
