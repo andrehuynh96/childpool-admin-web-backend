@@ -9,7 +9,7 @@ module.exports = {
             let offset = req.query.offset ? parseInt(req.query.offset) : 0;
             const { count: total, rows: items } = await Permission.findAndCountAll({ limit, offset, order: [['created_at', 'ASC']] });
             return res.ok({
-                items: items,
+                items: items && items.length>0 ? items:[],
                 offset: offset,
                 limit: limit,
                 total: total
@@ -46,7 +46,7 @@ module.exports = {
             }
             const { count: total, rows: items } = await Permission.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'ASC']] });
             return res.ok({
-                items: items,
+                items: items && items.length>0 ? items:[],
                 offset: offset,
                 limit: limit,
                 total: total

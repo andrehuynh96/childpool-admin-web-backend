@@ -41,7 +41,7 @@ module.exports = {
       }
       const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, where: where, include: include, order: [['created_at', 'DESC']] });
       return res.ok({
-        items: userMapper(items),
+        items: userMapper(items) && items.length>0?userMapper(items):[],
         offset: offset,
         limit: limit,
         total: total
