@@ -407,6 +407,7 @@ module.exports = {
         }
       })
       user.role = role.name
+      user.adminName = req.user.name
       _sendEmailCreateUser(user, verifyToken);
       return res.ok(true);
     }
