@@ -199,7 +199,10 @@ module.exports = {
         user_id: user.id,
         action_type: OtpType.CREATE_ACCOUNT
       })
-      user.role = role.name
+      user.role = role.name,
+      user.adminName = req.user.name
+      //TODO:
+      
       await transaction.commit();
       _sendEmailCreateUser(user, verifyToken);
 
@@ -422,7 +425,7 @@ async function _sendEmailCreateUser(user, verifyToken) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      name: user.name,
+      name: user.adminName,
       role: user.role,
       link: `${config.website.urlActiveUser}${verifyToken}`,
       hours: config.expiredVefiryToken
