@@ -46,6 +46,6 @@ DeployStagMS:
   _ENV: "stage" 
  extends:
   - .BuildJSApp
-  - .OnlyStagingBS
+  - .OnlyStagingMS
  tags:
   - stage-stak-ap-ms-ansible
