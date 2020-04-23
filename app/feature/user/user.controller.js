@@ -199,6 +199,7 @@ module.exports = {
         user_id: user.id,
         action_type: OtpType.CREATE_ACCOUNT
       })
+      user.role = role.name
       await transaction.commit();
       _sendEmailCreateUser(user, verifyToken);
 
@@ -393,6 +394,18 @@ module.exports = {
         user_id: user.id,
         action_type: OtpType.CREATE_ACCOUNT
       })
+      let userRole = await UserRole.findOne({
+        where:{
+          user_id: user.id
+        }
+      })
+
+      let  role = await Role.findOne({
+        where: {
+          id: userRole.role_id
+        }
+      })
+      user.role = role.name
       _sendEmailCreateUser(user, verifyToken);
       return res.ok(true);
     }
@@ -409,6 +422,8 @@ async function _sendEmailCreateUser(user, verifyToken) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
+      name: user.name,
+      role: user.role,
       link: `${config.website.urlActiveUser}${verifyToken}`,
       hours: config.expiredVefiryToken
     }
