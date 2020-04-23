@@ -39,8 +39,8 @@ module.exports = {
             }
             let result = await StakingAPI.createRewardAddressRequest(commission_id, data);
             let {platform, verify_token, partner, icon} = result.data;
-            _sendEmail(platform, body.reward_address, user.email, verify_token, partner, icon);
 			if (!result.code) {
+                _sendEmail(platform, body.reward_address, user.email, verify_token, partner, icon);
 				return res.ok(true);
 			}
 			else {
