@@ -201,8 +201,6 @@ module.exports = {
       })
       user.role = role.name,
       user.adminName = req.user.name
-      //TODO:
-      
       await transaction.commit();
       _sendEmailCreateUser(user, verifyToken);
 
