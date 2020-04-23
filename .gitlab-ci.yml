@@ -13,7 +13,7 @@ variables:
   - cd ${ANSIBLE_DIR}
   - project=`echo ${CI_COMMIT_TAG} | awk -F'-' '{print $2}'`
   - ansible_file=`grep ${CI_PROJECT_NAME}.git *.yml | awk '{print $1}'|awk -F':' '{print $1}' | grep ${_ENV} | grep $project`
-  - sudo su ubuntu -c "ansible-playbook $ansible_file --extra-vars=\"nuxt_git_version=${CI_COMMIT_TAG}\""
+  - sudo su ubuntu -c "ansible-playbook $ansible_file --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
   
 
   
@@ -46,6 +46,6 @@ DeployStagMS:
   _ENV: "stage" 
  extends:
   - .BuildJSApp
-  - .OnlyStagingBS
+  - .OnlyStagingMS
  tags:
   - stage-stak-ap-ms-ansible
