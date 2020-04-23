@@ -43,7 +43,6 @@ module.exports = {
     try {
       let items = await StakingAPI.updateCommission(req.params.partner_id, req.body.items, req.user.id);
       if (!items.code) {
-        console.log(items.data)
         return res.ok(mapper(await _getUsername(items.data)));
       }
       else {
@@ -107,6 +106,9 @@ module.exports = {
 }
 
 const _getUsername = async (arr) => {
+  if (!arr || arr.length == 0) {
+    return arr;
+  }
   let userNames = await User.findAll({
     attributes: [
       "id", "name"
