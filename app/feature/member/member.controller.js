@@ -26,9 +26,9 @@ module.exports = {
       if (req.query.phone) criteria.push({ phone: req.query.phone });
       if (criteria.length > 0) where[Op.or] = criteria;
 
-      const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
+      const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });      
       return res.ok({
-        items: userMapper(items),
+        items: userMapper(items) && items.length>0?userMapper(items):[],
         offset: offset,
         limit: limit,
         total: total

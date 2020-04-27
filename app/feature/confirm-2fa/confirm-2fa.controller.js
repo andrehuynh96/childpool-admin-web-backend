@@ -14,6 +14,9 @@ const ActionType = require("app/model/wallet/value-object/user-activity-action-t
 const uuidV4 = require('uuid/v4');
 const config = require("app/config");
 const mailer = require('app/lib/mailer');
+const Roles = require('app/model/wallet').roles;
+
+
 module.exports = async (req, res, next) => {
   try {
     let user_otp = await UserOTP.findOne({
@@ -56,10 +59,10 @@ module.exports = async (req, res, next) => {
     await UserOTP.update({
       used: true
     }, {
-      where: {
-        id: user_otp.id
-      },
-    });
+        where: {
+          id: user_otp.id
+        },
+      });
     const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
     let roles = await UserRole.findAll({
       attributes: ['role_id'],
@@ -81,13 +84,12 @@ module.exports = async (req, res, next) => {
       await UserOTP.update({
         expired: true
       }, {
-        where: {
-          user_id: user.id,
-          action_type: OtpType.CONFIRM_IP
-        },
-        returning: true
-      })
-
+          where: {
+            user_id: user.id,
+            action_type: OtpType.CONFIRM_IP
+          },
+          returning: true
+        })
       await UserOTP.create({
         code: verifyToken,
         used: false,
@@ -102,7 +104,22 @@ module.exports = async (req, res, next) => {
         allow_flg: false,
         verify_token: verifyToken
       })
-      _sendEmail(user, verifyToken);
+      let loginHistory = await UserActivityLog.findOne({
+        where: {
+          user_id: user.id,
+          client_ip: registerIp,
+          action: ActionType.LOGIN,
+          user_agent: req.headers['user-agent']
+        },
+        order: [['created_at', 'ASC']]
+      })
+      let roleName = await Roles.findOne({
+        where: {
+          id: roles[0].role_id
+        }
+      })
+      user.role = roleName.name
+      _sendEmail(user, verifyToken, loginHistory);
       return res.ok({
         confirm_ip: true,
       });
@@ -135,29 +152,42 @@ module.exports = async (req, res, next) => {
         id: rolePermissions
       }
     });
-    req.session.roles = permissions.map(ele => ele.name);
-    console.log(req.session.roles)
+    req.session.permissions = permissions.map(ele => ele.name);
+    roleList = await Roles.findAll({
+      attributes: [
+        "id", "name", "level", "root_flg"
+      ],
+      where: {
+        id: roleList
+      }
+    })
+    let response = userMapper(user);
+    response.roles = roleList;
+    req.session.roles = roleList;
     return res.ok({
       confirm_ip: false,
-      user: userMapper(user)});
+      user: response
+    });
   }
   catch (err) {
     logger.error("login fail: ", err);
     next(err);
   }
 };
-async function _sendEmail(user, verifyToken) {
+async function _sendEmail(user, verifyToken, loginHistory) {
   try {
-    let subject = 'Listco Account - New IP Confirmation';
-    let from = `Listco <${config.mailSendAs}>`;
+    let subject = `${config.emailTemplate.partnerName} - New IP Confirmation`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
-      email: user.email,
-      fullname: user.email,
-      link: `${config.website.urlConfirmIp}/${verifyToken}`,
-      hours: config.expiredVefiryToken
+      imageUrl: config.website.urlImages,
+      role: user.role,
+      link: `${config.website.urlConfirmNewIp}${verifyToken}`,
+      accessType: loginHistory.user_agent,
+      time: loginHistory.createdAt,
+      ipAddress: loginHistory.client_ip
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, user.email, data, "confirm-ip.ejs");
+    await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.confirmNewIp);
   } catch (err) {
     logger.error("send email confirm new IP fail", err);
   }

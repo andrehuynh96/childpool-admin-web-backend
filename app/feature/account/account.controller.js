@@ -162,9 +162,8 @@ module.exports = {
         },
         order: [['created_at', 'DESC']]
       });
-
       return res.ok({
-        items: items,
+        items: items && items.length>0 ? items:[],
         offset: offset,
         limit: limit,
         total: total
@@ -172,6 +171,26 @@ module.exports = {
     }
     catch (err) {
       logger.error('loginHistory fail:', err);
+      next(err);
+    }
+  },
+  updateProfile: async (req, res, next) => {
+    try {
+      let [_, response] = await User.update({
+        name: req.body.name
+      }, {
+        where: {
+          id: req.user.id
+        },
+        returning: true
+      })
+      if (!response || response.length == 0) {
+        return res.serverInternalError();
+      }
+      return res.ok(userMapper(response[0]));
+    }
+    catch (err) {
+      logger.error('updateProfile fail:', err);
       next(err);
     }
   }

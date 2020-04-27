@@ -44,6 +44,15 @@ module.exports = {
       "Operator2",
     ]
   },
+  "UPDATE_PROFILE_ACCOUNT": {
+    "KEY": "UPDATE_PROFILE_ACCOUNT",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
+  },
   "VIEW_LIST_GRANDCHILD": {
     "KEY": "VIEW_LIST_GRANDCHILD",
     "ROLES": [
@@ -112,7 +121,7 @@ module.exports = {
     "ROLES": [
       "Master",
       "Admin",
-      "Operator2",
+      "Operator1",
     ]
   },
   "UPDATE_USER": {
@@ -120,7 +129,7 @@ module.exports = {
     "ROLES": [
       "Master",
       "Admin",
-      "Operator2",
+      "Operator1",
     ]
   },
   "DELETE_USER": {
@@ -128,7 +137,7 @@ module.exports = {
     "ROLES": [
       "Master",
       "Admin",
-      "Operator2",
+      "Operator1",
     ]
   },
   "ACTIVE_USER": {
@@ -149,58 +158,73 @@ module.exports = {
       "Operator2",
     ]
   },
-  "CREATE_USER_ADMIN": {
-    "KEY": "CREATE_USER_ADMIN",
-    "ROLES": [
-      "Master"
-    ]
+  // "VIEW_LIST_ROLE": {
+  //   "KEY": "VIEW_LIST_ROLE",
+  //   "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  // },
+  // "CREATE_ROLE": {
+  //   "KEY": "CREATE_ROLE",
+  //   "ROLES": ["Master"]
+  // },
+  // "UPDATE_ROLE": {
+  //   "KEY": "UPDATE_ROLE",
+  //   "ROLES": ["Master"]
+  // },
+  // "DELETE_ROLE": {
+  //   "KEY": "DELETE_ROLE",
+  //   "ROLES": ["Master"]
+  // },
+  // "VIEW_ROLE_PERMISSIONS": {
+  //   "KEY": "VIEW_ROLE_PERMISSIONS",
+  //   "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  // },
+  "VIEW_LIST_PERMISSION": {
+    "KEY": "VIEW_LIST_PERMISSION",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "CREATE_USER_OPERATOR2": {
-    "KEY": "CREATE_USER_OPERATOR2",
-    "ROLES": [
-      "Admin"
-    ]
+  "VIEW_LIST_PERMISSION_DETAIL": {
+    "KEY": "VIEW_LIST_PERMISSION_DETAIL",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "CREATE_USER_OPERATOR1": {
-    "KEY": "CREATE_USER_OPERATOR1",
-    "ROLES": [
-      "Operator2"
-    ]
+
+  "CREATE_CHANGE_REWARD_ADDRESS_REQUEST": {
+    "KEY": "CREATE_CHANGE_REWARD_ADDRESS_REQUEST",
+    "ROLES": ["Master", "Admin"]
   },
-  "UPDATE_USER_ADMIN": {
-    "KEY": "UPDATE_USER_ADMIN",
-    "ROLES": [
-      "Master"
-    ]
+  "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST": {
+    "KEY": "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST",
+    "ROLES": ["Master"]
   },
-  "UPDATE_USER_OPERATOR2": {
-    "KEY": "UPDATE_USER_OPERATOR2",
-    "ROLES": [
-      "Admin"
-    ]
+  "VIEW_LIST_COMMISSION_PARTNER": {
+    "KEY": "VIEW_LIST_COMMISSION_PARTNER",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "UPDATE_USER_OPERATOR1": {
-    "KEY": "UPDATE_USER_OPERATOR1",
-    "ROLES": [
-      "Operator2"
-    ]
+  "VIEW_HISTORY_COMMISSION_PARTNER": {
+    "KEY": "VIEW_HISTORY_COMMISSION_PARTNER",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "DELETE_USER_ADMIN": {
-    "KEY": "DELETE_USER_ADMIN",
-    "ROLES": [
-      "Master"
-    ]
+  "CREATE_COMMISSION_PARTNER": {
+    "KEY": "CREATE_COMMISSION_PARTNER",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "DELETE_USER_OPERATOR2": {
-    "KEY": "DELETE_USER_OPERATOR2",
-    "ROLES": [
-      "Admin"
-    ]
+  "VIEW_LIST_PARTNER_TX_MEMO": {
+    "KEY": "VIEW_LIST_PARTNER_TX_MEMO",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "DELETE_USER_OPERATOR1": {
-    "KEY": "DELETE_USER_OPERATOR1",
-    "ROLES": [
-      "Operator2"
-    ]
+  "CREATE_PARTNER_TX_MEMO": {
+    "KEY": "CREATE_PARTNER_TX_MEMO",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_LIST_PARTNER_TX_MEMO_HISTORY": {
+    "KEY": "VIEW_LIST_PARTNER_TX_MEMO_HISTORY",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_LIST_MEMBER": {
+    "KEY": "VIEW_LIST_MEMBER",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "REVOKE_KEY_PARTNER": {
+    "KEY": "REVOKE_KEY_PARTNER",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
 }
