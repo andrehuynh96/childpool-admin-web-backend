@@ -60,18 +60,30 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data":{
-                      "confirm_ip":true,
-                      "twofa":true,
-                      "verify_token":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
-                      "user":{
-                        "id": 1,
-                        "email":"example@gmail.com",
-                        "twofa_enable_flg": true,
-                        "create_at":"",
-                        "user_sts":"ACTIVATED",
-                        "latest_login_at":"2020-02-11T16:03:09.497Z"
-                      }
+ *                 "data": {
+                        "confirm_ip": false,
+                        "twofa": false,
+                        "user": {
+                            "id": 10,
+                            "email": "trinhdn@blockchainlabs.asia",
+                            "twofa_enable_flg": false,
+                            "user_sts": "ACTIVATED",
+                            "latest_login_at": "2020-04-07T22:47:02.796Z",
+                            "roles": [
+                                {
+                                    "id": 1,
+                                    "name": "Master",
+                                    "level": 0,
+                                    "root_flg": true
+                                },
+                                {
+                                    "id": 2,
+                                    "name": "Admin",
+                                    "level": 10,
+                                    "root_flg": false
+                                }
+                            ]
+                        }
                     }
  *             }
  *       400:

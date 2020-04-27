@@ -8,11 +8,11 @@ module.exports = {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getAllApiKey(req.params.id, limit, offset);
-      if (items.data) {
+      if (!items.code) {
         return res.ok(items.data);
       }
       else {
-        return res.ok([]);
+        return res.status(parseInt(items.code)).send(items.data);
       }
     }
     catch (err) {
@@ -23,11 +23,11 @@ module.exports = {
   create: async (req, res, next) => {
     try {
       let items = await StakingAPI.createApiKey(req.params.id, req.body.name)
-      if (items.data) {
+      if (!items.code) {
         return res.ok(items.data);
       }
       else {
-        return res.ok([]);
+        return res.status(parseInt(items.code)).send(items.data);
       }
     }
     catch (err) {
