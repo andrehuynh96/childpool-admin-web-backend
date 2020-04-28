@@ -162,9 +162,8 @@ module.exports = {
         },
         order: [['created_at', 'DESC']]
       });
-
       return res.ok({
-        items: items,
+        items: items && items.length>0 ? items:[],
         offset: offset,
         limit: limit,
         total: total
@@ -188,7 +187,7 @@ module.exports = {
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
-      return res.ok(userMapper(response));
+      return res.ok(userMapper(response[0]));
     }
     catch (err) {
       logger.error('updateProfile fail:', err);

@@ -41,7 +41,7 @@ module.exports = {
       }
       const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, where: where, include: include, order: [['created_at', 'DESC']] });
       return res.ok({
-        items: userMapper(items),
+        items: userMapper(items) && items.length>0?userMapper(items):[],
         offset: offset,
         limit: limit,
         total: total
@@ -199,6 +199,8 @@ module.exports = {
         user_id: user.id,
         action_type: OtpType.CREATE_ACCOUNT
       })
+      user.role = role.name,
+      user.adminName = req.user.name
       await transaction.commit();
       _sendEmailCreateUser(user, verifyToken);
 
@@ -393,6 +395,19 @@ module.exports = {
         user_id: user.id,
         action_type: OtpType.CREATE_ACCOUNT
       })
+      let userRole = await UserRole.findOne({
+        where:{
+          user_id: user.id
+        }
+      })
+
+      let  role = await Role.findOne({
+        where: {
+          id: userRole.role_id
+        }
+      })
+      user.role = role.name
+      user.adminName = req.user.name
       _sendEmailCreateUser(user, verifyToken);
       return res.ok(true);
     }
@@ -409,6 +424,8 @@ async function _sendEmailCreateUser(user, verifyToken) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
+      name: user.adminName,
+      role: user.role,
       link: `${config.website.urlActiveUser}${verifyToken}`,
       hours: config.expiredVefiryToken
     }
@@ -447,7 +464,13 @@ async function _getRoleControl(roles) {
     });
 
     if (role) {
-      roleControl.push(role.id)
+      let roles = await Role.findAll({
+        where: {
+          level: role.level,
+          deleted_flg: false
+        }
+      });
+      roleControl = roleControl.concat(roles.map(x => x.id));
     }
   }
 

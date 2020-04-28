@@ -43,7 +43,13 @@ async function _getRoleControl(req) {
     });
 
     if (role) {
-      roleControl.push(role.id)
+      let roles = await Role.findAll({
+        where: {
+          level: role.level,
+          deleted_flg: false
+        }
+      });
+      roleControl = roleControl.concat(roles.map(x => x.id));
     }
   }
 
