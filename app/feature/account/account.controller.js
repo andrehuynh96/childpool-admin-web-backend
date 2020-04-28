@@ -5,7 +5,7 @@ const speakeasy = require("speakeasy");
 const userMapper = require("app/feature/response-schema/user.response-schema");
 const UserActivityLog = require("app/model/wallet").user_activity_logs;
 const ActionType = require("app/model/wallet/value-object/user-activity-action-type");
-
+const StakingAPI = require("app/lib/staking-api/partner-api-key")
 module.exports = {
   getMe: async (req, res, next) => {
     try {
@@ -18,8 +18,11 @@ module.exports = {
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-
-      return res.ok(userMapper(result));
+      let partner = await StakingAPI.getPartner();
+      return res.ok({
+        ...userMapper(result),
+        partner: partner ? partner.data : {}
+      });
     }
     catch (err) {
       logger.error('getMe fail:', err);
