@@ -70,7 +70,7 @@ const _getUsername = async (arr) => {
     return arr.map(ele => {
       return {
         ...ele,
-        updated_by_user_name: ele.partner_updated_by ? names[ele.updated_by] : null
+        updated_by_user_name: ele.partner_updated_by ? names[ele.updated_by] : 'Master Pool'
       };
     })
   }
