@@ -15,7 +15,7 @@ const uuidV4 = require('uuid/v4');
 const config = require("app/config");
 const mailer = require('app/lib/mailer');
 const Roles = require('app/model/wallet').roles;
-
+const StakingAPI = require("app/lib/staking-api/partner-api-key")
 
 module.exports = async (req, res, next) => {
   try {
@@ -164,9 +164,11 @@ module.exports = async (req, res, next) => {
     let response = userMapper(user);
     response.roles = roleList;
     req.session.roles = roleList;
+    let partner = await StakingAPI.getPartner();
     return res.ok({
       confirm_ip: false,
-      user: response
+      user: response,
+      partner: partner ? partner.data : {}
     });
   }
   catch (err) {

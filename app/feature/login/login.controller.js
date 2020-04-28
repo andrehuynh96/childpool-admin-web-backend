@@ -32,11 +32,11 @@ module.exports = {
       if (user.user_sts == UserStatus.UNACTIVATED) {
         return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
       }
-  
+
       if (user.user_sts == UserStatus.LOCKED) {
         return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
       }
-  
+
       const match = await bcrypt.compare(req.body.password, user.password_hash);
       if (!match) {
         if (user.attempt_login_number + 1 <= config.lockUser.maximumTriesLogin) {
@@ -85,12 +85,12 @@ module.exports = {
           }
         })
       }
-  
+
       if (user.twofa_enable_flg) {
         let verifyToken = Buffer.from(uuidV4()).toString('base64');
         let today = new Date();
         today.setHours(today.getHours() + config.expiredVefiryToken);
-  
+
         await UserOTP.update({
           expired: true
         }, {
@@ -100,7 +100,7 @@ module.exports = {
           },
           returning: true
         })
-  
+
         await UserOTP.create({
           code: verifyToken,
           used: false,
@@ -109,7 +109,7 @@ module.exports = {
           user_id: user.id,
           action_type: OtpType.TWOFA
         })
-  
+
         return res.ok({
           twofa: true,
           verify_token: verifyToken
@@ -149,7 +149,7 @@ module.exports = {
             },
             returning: true
           })
-  
+
           await UserOTP.create({
             code: verifyToken,
             used: false,
@@ -209,31 +209,19 @@ module.exports = {
           let response = userMapper(user);
           response.roles = roleList;
           req.session.roles = roleList;
+
+          let partner = await StakingAPI.getPartner();
           return res.ok({
             confirm_ip: false,
             twofa: false,
-            user: response
+            user: response,
+            partner: partner ? partner.data : {}
           });
         }
       }
     }
     catch (err) {
       logger.error("login fail: ", err);
-      next(err);
-    }
-  },
-  getPartner: async (req, res, next) => {
-    try {
-      let partner = await StakingAPI.getPartner();
-      if (partner.data) {
-        return res.ok(partner.data);
-      }
-      else {
-        return res.ok([]);
-      }
-    }
-    catch (err) {
-      logger.error("get partner info fail: ", err);
       next(err);
     }
   }

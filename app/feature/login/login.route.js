@@ -4,7 +4,6 @@ const verifyRecaptcha = require('app/middleware/verify-recaptcha.middleware');
 const validator = require('app/middleware/validator.middleware');
 const requestSchema = require('./login.request-schema');
 const controller = require('./login.controller');
-const authenticate = require('app/middleware/authenticate.middleware');
 const Recaptcha = require('express-recaptcha').RecaptchaV2;
 const recaptcha = new Recaptcha(config.recaptchaSiteKey, config.recaptchaSecret);
 const router = express.Router();
@@ -15,11 +14,6 @@ router.post(
   recaptcha.middleware.verify,
   verifyRecaptcha,
   controller.login
-);
-router.get(
-  '/login/me',
-  authenticate,
-  controller.getPartner
 );
 
 module.exports = router;
@@ -83,6 +77,19 @@ module.exports = router;
                                     "root_flg": false
                                 }
                             ]
+                        },
+                        "partner": {
+                                "id": "ed483de6-2d14-11ea-978f-2e728ce88125",
+                                "email": "phith1@blockchainlabs.asia",
+                                "name": "Infinito",
+                                "parent_id": "ed483de6-2d14-11ea-978f-2e728ce88125",
+                                "partner_type": "CHILD",
+                                "actived_flg": true,
+                                "deleted_flg": false,
+                                "created_by": 0,
+                                "updated_by": 73,
+                                "createdAt": "2020-03-05T11:22:04.602Z",
+                                "updatedAt": "2020-03-30T08:50:24.064Z"
                         }
                     }
  *             }
