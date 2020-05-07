@@ -24,8 +24,8 @@ router.post(
   authenticate,
   authority(PermissionKey.CHANGE_PASSWORD_ACCOUNT),
   validator(changePassword),
-  recaptcha.middleware.verify,
-  verifyRecaptcha,
+  //recaptcha.middleware.verify,
+  //verifyRecaptcha,
   controller.changePassword
 );
 router.get(
