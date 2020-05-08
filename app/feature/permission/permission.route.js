@@ -3,11 +3,13 @@ const controller = require("./permission.controller");
 const authenticate = require('app/middleware/authenticate.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const authority = require('app/middleware/authority.middleware');
+const authorityRoot = require('app/middleware/authority-root.middleware');
 const route = express.Router();
 
 route.get("/permissions",
   authenticate,
-  authority(PermissionKey.VIEW_LIST_PERMISSION),
+  // authority(PermissionKey.VIEW_LIST_PERMISSION),
+  authorityRoot,
   controller.getAll
 );
 route.get("/me/permissions",

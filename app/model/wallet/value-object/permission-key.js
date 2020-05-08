@@ -178,14 +178,14 @@ module.exports = {
   //   "KEY": "VIEW_ROLE_PERMISSIONS",
   //   "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   // },
-  "VIEW_LIST_PERMISSION": {
-    "KEY": "VIEW_LIST_PERMISSION",
-    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
-  },
-  "VIEW_LIST_PERMISSION_DETAIL": {
-    "KEY": "VIEW_LIST_PERMISSION_DETAIL",
-    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
-  },
+  // "VIEW_LIST_PERMISSION": {
+  //   "KEY": "VIEW_LIST_PERMISSION",
+  //   "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  // },
+  // "VIEW_LIST_PERMISSION_DETAIL": {
+  //   "KEY": "VIEW_LIST_PERMISSION_DETAIL",
+  //   "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  // },
 
   "CREATE_CHANGE_REWARD_ADDRESS_REQUEST": {
     "KEY": "CREATE_CHANGE_REWARD_ADDRESS_REQUEST",
