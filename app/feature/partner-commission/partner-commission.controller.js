@@ -94,9 +94,8 @@ module.exports = {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let items = await StakingAPI.getAllCommissionByPartner(limit, offset);
-      console.log("getAllCommissionByPartner", items);
       if (!items.code) {
-        let getUserNames = mapper(await _getUsername(items.data.items))
+        //let getUserNames = mapper(await _getUsername(items.data.items))
         return res.ok({ ...items.data, items: items.data.items });
       }
       else {
