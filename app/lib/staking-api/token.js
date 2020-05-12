@@ -20,7 +20,7 @@ module.exports = {
       }
     );
 
-    await cache.setAsync(redisResource.stakingApi.token, result.data.data.access_token, "EX", parseInt(result.data.data.expires_in) - 10);
+    await cache.setAsync(redisResource.stakingApi.token, result.data.data.access_token, "EX", 3600);
     return result.data.data.access_token;
   }
 }
