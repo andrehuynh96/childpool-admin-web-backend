@@ -96,7 +96,7 @@ module.exports = {
       let items = await StakingAPI.getAllCommissionByPartner(limit, offset);
       if (!items.code) {
         let getUserNames = mapper(await _getUsername(items.data.items))
-        return res.ok({ ...items.data, items: getUserNames && getUserNames.length > 0 ? getUserNames : [] });
+        return res.ok({ ...items.data, items: items.data.items });
       }
       else {
         return res.status(parseInt(items.code)).send(items.data);
