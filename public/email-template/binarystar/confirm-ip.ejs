@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> -->
+    <title>Email IP</title>
+    <style>
+      img {
+        border: none;
+        -ms-interpolation-mode: bicubic;
+        max-width: 100%;
+      }
+      a{
+        text-decoration: none !important;
+      }
+      body{
+        font-family: sans-serif;
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+        line-height: 1.4;
+        margin: 0;
+        padding: 0;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+        background: #fff;
+        color: #3C4B64;
+      }
+
+      table {
+        border-collapse: separate;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        width: 100%;
+      }
+      table tr{
+        clear: both;
+      }
+      table td {
+        font-family: sans-serif;
+        font-size: 14px;
+        vertical-align: top;
+      }
+
+      /* -------------------------------------
+          BODY & CONTAINER
+      ------------------------------------- */
+
+      /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+      .container {
+        display: block;
+        margin: 0 auto !important;
+        /* makes it centered */
+        max-width: 580px;
+        width: 580px;
+        border: 1px solid #D7DBE0;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        text-align: center;
+        padding: 50px;
+      }
+
+      /* -------------------------------------
+          HEADER, FOOTER, MAIN
+      ------------------------------------- */
+      .main {
+        width: 100%;
+      }
+
+      p, ul, ol {
+        font-family: sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding-left: 0;
+        margin: 0;
+        line-height: 21px;
+      }
+      ul li,
+      ol li {
+        list-style-position: inside;
+        margin-left: 5px;
+      }
+      a {
+        color: #3498db;
+        text-decoration: underline;
+      }
+      .span{
+        width: 100px;
+      }
+      /* -------------------------------------
+          RESPONSIVE AND MOBILE FRIENDLY STYLES
+      ------------------------------------- */
+      @media only screen and (max-width: 620px) {
+        .container{
+          width: 100%;
+          max-width: 100%;
+          padding: 0;
+        }
+        .content{
+          padding: 30px;
+        }
+        .span{
+          width: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <table border="0" cellpadding="0" cellspacing="0" class="body">
+      <tr>
+        <td class="container">
+          <div class="content">
+            <table class="main">
+              <tr>
+                <td style="text-align: center">
+                  <img src="<%=imageUrl%>/logo.png" alt="">
+                  <span style="width: 100%;height: 1px; background: #CACACC; margin: 30px 0; display: block;"></span>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align: center">
+                  <p style="font-size: 24px;text-align: center;font-weight: 500;margin-bottom: 15px; line-height: 30px">New IP Address Detected</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align: center">
+                  <p>You are getting this message, because someone is attempting to log into your</p>
+                  <p style="margin-bottom: 30px;text-align: center">Moonstake <%=role%> account from an unused/new IP address.</p>
+                </td>
+              </tr>
+              <tr>
+                <table>
+                  <tr>
+                    <td style="padding-right: 20px">
+                      <img src="<%=imageUrl%>/device.png" alt="">
+                    </td>
+                    <td style="text-align: left">
+                      <p><span style="display: inline-block;text-align: right;margin-right: 20px" class="span">Access type:</span><%=accessType%></p>
+                      <p><span style="display: inline-block;text-align: right;margin-right: 20px" class="span">Time:</span><%=time%></p>
+                      <p><span style="display: inline-block;text-align: right;margin-right: 20px" class="span">IP address:</span><%=ipAddress%></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="text-align: center" colspan="2">
+                      <p style="font-weight: bold; margin-top: 30px">Do you recognize this activity?</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="text-align: center" colspan="2">
+                      <!--[if mso]>
+                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%=link%>" style="height:36px;v-text-anchor:middle;width:180px;" arcsize="5%" strokecolor="#00ABCD" fillcolor="#00ABCD">
+                          <w:anchorlock/>
+                          <center style="color:#ffffff;font-family: 'Montserrat', sans-serif;font-size:14px; font-weight: 600; ">This was me. Log me in</center>
+                        </v:roundrect>
+                      <![endif]-->
+                      <a href="<%=link%>" style="background: rgb(0,224,147); background: -moz-linear-gradient(90deg, #2C75BF 0%, #55BF92 100%); background: -webkit-linear-gradient(90deg, #2C75BF 0%, #55BF92 100%); background: linear-gradient(90deg, #2C75BF 0%, #55BF92 100%);
+                      border-radius:4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 15px; margin: 10px 0 0 0; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;">This was me. Log me in</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="text-align: center" colspan="2">
+                      <p style="font-weight: bold; margin-top: 20px">This Log In button will remain active for the next 5 mins.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="text-align: center" colspan="2">
+                      <p style="margin-top: 30px">If not, someone might have your password.</p>
+                      <p style="margin-top: 5px">Contact support team.</p>
+                    </td>
+                  </tr>
+                </table>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+
+    </table>
+  </body>
+</html>

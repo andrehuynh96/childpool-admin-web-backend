@@ -1,0 +1,66 @@
+{
+  "name": "staking-childpool-admin-web-backend",
+  "version": "1.0.0",
+  "description": "staking pool child",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.blockchainlabs.asia/infinito/staking-childpool-admin-web-backend"
+  },
+  "keywords": [
+    "staking",
+    "pool",
+    "child"
+  ],
+  "author": "IBL",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "bcrypt": "^3.0.8",
+    "body-parser": "^1.19.0",
+    "connect-redis": "^4.0.4",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.0.1",
+    "email-templates": "^7.0.2",
+    "express": "^4.17.1",
+    "express-rate-limit": "^5.0.0",
+    "express-recaptcha": "^5.0.1",
+    "express-session": "^1.17.0",
+    "formidable": "^1.2.1",
+    "hashids": "^2.2.1",
+    "helmet": "^3.21.2",
+    "i18n": "^0.8.5",
+    "joi": "^14.3.1",
+    "jwks-rsa": "^1.7.0",
+    "log4js": "^6.1.1",
+    "minio": "^7.0.13",
+    "morgan": "^1.9.1",
+    "nodemailer": "^6.4.2",
+    "object-mapper": "^6.2.0",
+    "pg": "^7.18.1",
+    "pg-hstore": "^2.3.3",
+    "redis": "^3.0.2",
+    "rootpath": "^0.1.2",
+    "sequelize": "^5.21.4",
+    "sequelize-cli": "^5.5.1",
+    "sequelize-temporal": "^1.0.8",
+    "sequelize-temporalize": "^4.1.0",
+    "speakeasy": "^2.0.0",
+    "swagger-jsdoc": "^3.5.0",
+    "swagger-ui-express": "^4.1.3",
+    "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "mocha": "^7.0.1"
+  }
+}
