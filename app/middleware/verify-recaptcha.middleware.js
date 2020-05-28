@@ -6,6 +6,6 @@ module.exports = async function (req, res, next) {
   if (!req.recaptcha.error) {
     next()
   } else {
-    return res.failure('Invalid Recaptcha', 400);
+    return res.badRequest(res.__('RECAPTCHA_INVALID'), 'RECAPTCHA_INVALID');
   }
 };

@@ -50,7 +50,7 @@ const config = {
     pass: process.env.SMTP_PASS
   },
   mailSendAs: process.env.MAIL_SEND_AS || 'no-reply@infinito.io',
-  disableRecaptcha: true,
+  disableRecaptcha: process.env.DISABLE_RECAPTCHA == "1",
   CDN: {
     url: process.env.CDN_URL,
     accessKey: process.env.CDN_ACCESS_KEY,
@@ -94,7 +94,7 @@ const config = {
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
   },
   masterWebsite: {
-    urlViewRequest: process.env.MASTER_WEBSITE_URL + '/view-request'
+    urlViewRequest: process.env.MASTER_WEBSITE_URL + '/admin/childpool/detail'
   }
 };
 

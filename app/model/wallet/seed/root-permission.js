@@ -2,7 +2,8 @@ const Permission = require("app/model/wallet").permissions;
 const RolePermission = require("app/model/wallet").role_permissions;
 const Role = require("app/model/wallet").roles;
 
-(async () => {
+
+module.exports = async () => {
   let models = []
   let permissions = await Permission.findAll({
     attribute: ["id"],
@@ -32,4 +33,4 @@ const Role = require("app/model/wallet").roles;
     models, {
       returning: true
     });
-})();
+};

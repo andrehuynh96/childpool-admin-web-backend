@@ -24,8 +24,8 @@ router.post(
   authenticate,
   authority(PermissionKey.CHANGE_PASSWORD_ACCOUNT),
   validator(changePassword),
-  recaptcha.middleware.verify,
-  verifyRecaptcha,
+  //recaptcha.middleware.verify,
+  //verifyRecaptcha,
   controller.changePassword
 );
 router.get(
@@ -79,15 +79,28 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data":{
-                        "id": 1,
-                        "email":"example@gmail.com",
-                        "twofa_enable_flg": true,
-                        "create_at":"",
-                        "user_sts":"ACTIVATED"
-                    }
-
- *             }
+                  "data": {
+                      "id": 32,
+                      "email": "myhn@blockchainlabs.asia",
+                      "name": "Cuong Nguyen",
+                      "twofa_enable_flg": false,
+                      "user_sts": "ACTIVATED",
+                      "latest_login_at": "2020-04-28T04:04:26.642Z",
+                      "partner": {
+                          "id": "ed483de6-2d14-11ea-978f-2e728ce88125",
+                          "email": "phith1@blockchainlabs.asia",
+                          "name": "Infinito",
+                          "parent_id": "ed483de6-2d14-11ea-978f-2e728ce88125",
+                          "partner_type": "CHILD",
+                          "actived_flg": true,
+                          "deleted_flg": false,
+                          "created_by": 0,
+                          "updated_by": 73,
+                          "createdAt": "2020-03-05T11:22:04.602Z",
+                          "updatedAt": "2020-03-30T08:50:24.064Z"
+                      }
+                  }
+              }
  *       400:
  *         description: Error
  *         schema:
@@ -359,16 +372,14 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": [
-                        {
-                            "id": 10,
-                            "email": "trinhdn@blockchainlabs.asia",
-                            "name": "testttttttttt",
-                            "twofa_enable_flg": false,
-                            "user_sts": "ACTIVATED",
-                            "latest_login_at": "2020-04-15T04:44:38.951Z"
-                        }
-                    ]
+ *                 "data": {
+                        "id": 10,
+                        "email": "trinhdn@blockchainlabs.asia",
+                        "name": "testttttttttt",
+                        "twofa_enable_flg": false,
+                        "user_sts": "ACTIVATED",
+                        "latest_login_at": "2020-04-21T10:58:38.843Z"
+                    }
  *             }
  *       400:
  *         description: Error

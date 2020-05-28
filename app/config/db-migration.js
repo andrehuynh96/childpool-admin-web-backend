@@ -6,7 +6,7 @@ module.exports = {
   host: process.env.WALLET_DB_HOST,
   port: process.env.WALLET_DB_PORT,
   dialect: "postgres",
-  operatorsAliases: false,
+  operatorsAliases: 0,
   define: {
     underscored: true,
     underscoredAll: true

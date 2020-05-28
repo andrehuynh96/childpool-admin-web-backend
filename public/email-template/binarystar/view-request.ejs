@@ -3,8 +3,9 @@
   <head>
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Welcome</title>
+    <title>Confirm</title>
     <style>
+      @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
       img {
         border: none;
         -ms-interpolation-mode: bicubic;
@@ -14,16 +15,16 @@
         text-decoration: none !important;
       }
       body{
-        font-family: sans-serif;
+        font-family: 'Montserrat', sans-serif;
         -webkit-font-smoothing: antialiased;
         font-size: 14px;
-        line-height: 1.4;
+        line-height: 20px;
         margin: 0;
         padding: 0;
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
         background: #fff;
-        color: #3C4B64;
+        color: #676767;
       }
 
       table {
@@ -31,12 +32,13 @@
         mso-table-lspace: 0pt;
         mso-table-rspace: 0pt;
         width: 100%;
+        text-align: center;
       }
       table tr{
         clear: both;
       }
       table td {
-        font-family: sans-serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: 14px;
         vertical-align: top;
       }
@@ -50,14 +52,10 @@
         display: block;
         margin: 0 auto !important;
         /* makes it centered */
-        max-width: 580px;
-        width: 580px;
-        border: 1px solid #D7DBE0;
-        border-radius: 4px;
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
+        max-width: 600px;
+        width: 600px;
         text-align: center;
-        padding: 50px;
+        /* padding: 50px; */
       }
 
       /* -------------------------------------
@@ -68,22 +66,30 @@
       }
 
       p, ul, ol {
-        font-family: sans-serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: 14px;
         font-weight: normal;
         padding-left: 0;
         margin: 0;
-        line-height: 21px;
+        line-height: 20px;
       }
       ul li,
       ol li {
         list-style-position: inside;
         margin-left: 5px;
       }
+      .head-logo{
+        text-align: left;
+        background-color: #182850;
+        padding: 35px 65px 20px;
+      }
       a {
         color: #3498db;
         text-decoration: underline;
       }
+      /* .btn-cf a,.x_btn-cf a{
+        background: linear-gradient(209.27deg, #00E093 0%, #007CFF 100%);
+      } */
       /* -------------------------------------
           RESPONSIVE AND MOBILE FRIENDLY STYLES
       ------------------------------------- */
@@ -101,38 +107,42 @@
     </style>
   </head>
   <body>
-    <table border="0" cellpadding="0" cellspacing="0" class="body">
+    <table border="0" cellpadding="0" cellspacing="0" class="body" align="center">
       <tr>
         <td class="container">
           <div class="content">
-            <table class="main">
+            <table class="main" style="text-align: center;" align="center">
               <tr>
-                <td style="text-align: center">
-                  <img src="<%=imageUrl%>/logo.png" alt="">
-                  <span style="width: 100%;height: 1px; background: #CACACC; margin: 30px 0; display: block;"></span>
-                </td>
-              </tr>
-              <tr style="text-align: center">
-                <td><p style="font-size: 24px;font-weight: 500;margin-bottom: 20px; line-height: 30px">Hello! Welcome to Moonstake</p></td>
-              </tr>
-              <tr>
-                <td style="text-align: center">
-                  <p style="margin-bottom: 8px"><span style="font-weight: bold"><%=name%></span> added you as a new Moonstake <span style="font-weight: bold"><%=role%></span>.</p>
-                  <p style="margin-bottom: 8px">Activate your account by clicking the button below.</p>
-                  <p style="margin-bottom: 8px;font-weight: bold">This button is only valid for the next <%=hours%> hours.</p>
+                <td class="head-logo">
+                  <img src="<%=imageUrl%>/moon-logo.png" alt="">
                 </td>
               </tr>
               <tr>
-                <td style="text-align: center">
-                  <!--[if mso]>
+                <td style="padding-top: 108px">
+                  <img src="<%=imageUrl%>/moon-confirm.png" alt="" style="margin-bottom: 20px">
+                  <p style="font-size: 18px;font-weight: 500;margin-bottom: 15px; line-height: 30px; color: #182850">Verify your email address
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p style="margin-bottom: 3px;">Child Pool: <%=partnerName%></p>
+                  <p style="margin-bottom: 3px;">Platform: <%=platform%></p>
+                  <p style="margin-bottom: 3px;">New address: <%=rewardAddress%></p>
+                </td>
+              </tr>
+              <tr>
+                  <td>
+                    <div>
+                      <!--[if mso]>
                         <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%=link%>" style="height:36px;v-text-anchor:middle;width:150px;" arcsize="5%" strokecolor="#00ABCD" fillcolor="#00ABCD">
                           <w:anchorlock/>
-                          <center style="color:#ffffff;font-family: 'Montserrat', sans-serif;font-size:14px; font-weight: 600; ">Verify my email</center>
+                          <center style="color:#ffffff;font-family: 'Montserrat', sans-serif;font-size:14px; font-weight: 600; ">Verify email</center>
                         </v:roundrect>
                       <![endif]-->
-                      <a href="<%=link%>" style="background: rgb(0,224,147); background: -moz-linear-gradient(90deg, #2C75BF 0%, #55BF92 100%); background: -webkit-linear-gradient(90deg, #2C75BF 0%, #55BF92 100%); background: linear-gradient(90deg, #2C75BF 0%, #55BF92 100%);
-                      border-radius:4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 15px; margin: 10px 0 0 0; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;">Activate account</a>
-                </td>
+                      <a href="<%=link%>" style="background: rgb(0,224,147); background: -moz-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: -webkit-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%);border:1px solid #00ABCD;border-radius:8px;-webkit-border-radius: 8px; -moz-border-radius: 8px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 18px; margin: 18px 0 0 0; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;">View Detail</a>
+                    </div>                    
+                  </td>
               </tr>
             </table>
           </div>

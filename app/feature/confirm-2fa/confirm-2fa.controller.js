@@ -15,7 +15,7 @@ const uuidV4 = require('uuid/v4');
 const config = require("app/config");
 const mailer = require('app/lib/mailer');
 const Roles = require('app/model/wallet').roles;
-
+const StakingAPI = require("app/lib/staking-api/partner-api-key")
 
 module.exports = async (req, res, next) => {
   try {
@@ -113,6 +113,12 @@ module.exports = async (req, res, next) => {
         },
         order: [['created_at', 'ASC']]
       })
+      let roleName = await Roles.findOne({
+        where: {
+          id: roles[0].role_id
+        }
+      })
+      user.role = roleName.name
       _sendEmail(user, verifyToken, loginHistory);
       return res.ok({
         confirm_ip: true,
@@ -158,9 +164,11 @@ module.exports = async (req, res, next) => {
     let response = userMapper(user);
     response.roles = roleList;
     req.session.roles = roleList;
+    let partner = await StakingAPI.getPartner();
     return res.ok({
       confirm_ip: false,
-      user: response
+      user: response,
+      partner: partner ? partner.data : {}
     });
   }
   catch (err) {
@@ -174,6 +182,7 @@ async function _sendEmail(user, verifyToken, loginHistory) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
+      role: user.role,
       link: `${config.website.urlConfirmNewIp}${verifyToken}`,
       accessType: loginHistory.user_agent,
       time: loginHistory.createdAt,

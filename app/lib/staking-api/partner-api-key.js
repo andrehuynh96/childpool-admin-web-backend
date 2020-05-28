@@ -43,5 +43,21 @@ module.exports = {
       logger.error("create new API key fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
+  },
+  getPartner: async () => {
+    try {
+      let accessToken = await getToken();
+      let result = await axios.get(`${config.stakingApi.url}/me`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      return result.data;
+    }
+    catch (err) {
+      logger.error("get partner info fail:", err);
+      return { code: err.response.status, data: err.response.data };
+    }
   }
 } 

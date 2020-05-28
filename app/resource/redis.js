@@ -1,7 +1,7 @@
 const config = require('app/config');
 const keys = {
   stakingApi: {
-    token: `${config.redis.prefix}:stakingapi:token`,
+    token: `${config.redis.prefix}:staking:api:token`,
   },
 };
 

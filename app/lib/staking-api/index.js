@@ -148,5 +148,22 @@ module.exports = {
       logger.error("updateRewardAddressRequest fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
+  },
+  checkTokenRewardAddressRequest: async (token) => {
+    try {
+      let accessToken = await getToken();
+      let result = await axios.get(`${config.stakingApi.url}/commissions/requests/check-token/${token}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+
+      return result.data;
+    } catch (err) {
+      logger.error("checkTokenRewardAddressRequest fail:", err);
+      return { code: err.response.status, data: err.response.data };
+    }
   }
 } 

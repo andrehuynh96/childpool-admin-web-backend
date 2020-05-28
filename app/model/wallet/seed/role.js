@@ -1,7 +1,8 @@
 const Model = require("app/model/wallet").roles;
 const bcrypt = require('bcrypt');
 
-(async () => {
+
+module.exports = async () => {
   let count = await Model.count();
   if (count == 0) {
     await Model.bulkCreate([{
@@ -24,4 +25,4 @@ const bcrypt = require('bcrypt');
         returning: true
       });
   }
-})();
+};
