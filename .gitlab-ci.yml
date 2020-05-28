@@ -49,3 +49,31 @@ DeployStagMS:
   - .OnlyStagingMS
  tags:
   - stage-stak-ap-ms-ansible
+  
+DeployStagBS:
+ variables:
+  _ENV: "stage" 
+ extends:
+  - .BuildJSApp
+  - .OnlyStagingBS
+ tags:
+  - stage-stak-ap-bs-ansible
+
+DeployProdMS:
+ variables:
+  _ENV: "prod" 
+ extends:
+  - .BuildJSApp
+  - .OnlyProductionMS
+ tags:
+  - prod-stak-ap-ms-ansible
+  
+DeployProdBS:
+ variables:
+  _ENV: "prod" 
+ extends:
+  - .BuildJSApp
+  - .OnlyProductionBS
+ tags:
+  - prod-stak-ap-bs-ansible
+  
