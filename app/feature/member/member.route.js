@@ -9,7 +9,7 @@ const router = express.Router();
 router.get(
 	'/members',
 	authenticate,
-	authority(PermissionKey.VIEW_LIST_MEMBER),
+	// authority(PermissionKey.VIEW_LIST_MEMBER),
 	controller.search
 );
 
@@ -38,19 +38,19 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
- *       - name: member_sts
+ *       - name: name
  *         in: query
- *         type: string  UNACTIVATED|ACTIVATED|LOCKED
- *       - name: fullname
- *         in: query
- *         type: string
- *       - name: phone
- *         in: query
- *         type: string
- *       - name: address
- *         in: query
- *         type: string
+ *         type: string 
  *       - name: email
+ *         in: query
+ *         type: string
+ *       - name: membershipTypeId
+ *         in: query
+ *         type: string
+ *       - name: referralCode
+ *         in: query
+ *         type: string
+ *       - name: referrer
  *         in: query
  *         type: string
  *     produces:
