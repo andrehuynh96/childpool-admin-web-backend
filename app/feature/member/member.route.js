@@ -13,6 +13,11 @@ router.get(
 	controller.search
 );
 
+route.get("/members/:memberId",
+    authenticate, 
+  controller.getMemberDetail
+);
+
 module.exports = router;
 
 

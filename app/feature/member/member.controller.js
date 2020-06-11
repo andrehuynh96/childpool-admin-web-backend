@@ -48,4 +48,30 @@ module.exports = {
       next(err);
     }
   },
+  getMemberDetail: async (req, res, next) => {
+    try {
+        const { params } = req;
+        const user = await User.findOne({
+            id: params.memberId,
+            deleted_flg: false
+        });
+        if (!user){
+            return res.badRequest(res.__("MEMBER_NOT_FOUND"),"MEMBER_NOT_FOUND",{ fields: ["memberId"] });
+        }
+        const membershipType = await MembershipType.findOne({
+            id: user.membership_type_id,
+            deleted_flg: false
+        });
+
+        if (!membershipType){
+            return res.badRequest(res.__("MEMBERSHIP_TYPE_NOT_FOUND"),"MEMBERSHIP_TYPE_NOT_FOUND");
+        }
+        user.membership_type = membershipType.name;
+        return res.ok(userMapper(user));
+    } 
+    catch (error) {
+        logger.error('get member detail fail:', error);
+        next(error);
+    }
+},
 }
