@@ -79,9 +79,6 @@ const config = {
     jwksUrl: process.env.STAKING_API_JWK_URL,
     kid: process.env.STAKING_API_KID,
   },
-  membershipApi: {
-    url: process.env.MEMBERSHIP_API_URL
-  },
   enableSeed: process.env.ENABLE_SEED == "1",
   lockUser: {
     maximumTriesLogin: process.env.MAXIMUM_TRIES_LOGIN,
