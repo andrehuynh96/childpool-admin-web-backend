@@ -61,24 +61,36 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": {
-                      "items": [
-                          {
-                              "id": "fc59fa67-c05a-493b-bba5-1a1d823f1aad",
-                              "email": "trinhdn@blockchainlabs.asia",
-                              "twofa_enable_flg": false
-                          },
-                          {
-                              "id": "7a52ffc8-b185-49d3-ae62-2d6c06704238",
-                              "email": "test1@gmail.com",
-                              "twofa_enable_flg": false
-                          }
-                      ],
-                      "offset": 0,
-                      "limit": 10,
-                      "total": 2
-                  }
- *             }
+                    "data": {
+                        "items": [
+                            {
+                                "id": "b14a3095-d82a-46c7-9797-478c333c9c83",
+                                "email": "ngocmy12a06@gmail.com",
+                                "referral_code": "",
+                                "referrer_code": "",
+                                "kyc_id": "0",
+                                "kyc_level": 1,
+                                "kyc_status": "Approved",
+                                "deleted_flg": false,
+                                "plutx_userid_id": "fe61eee1-7540-403f-8bc2-03b9ec134f96"
+                            },
+                            {
+                                "id": "37394288-d0bf-47d3-8886-0ed68642b269",
+                                "email": "tommyalan2410@gmail.com",
+                                "referral_code": "",
+                                "referrer_code": "",
+                                "kyc_id": "0",
+                                "kyc_level": 1,
+                                "kyc_status": "Approved",
+                                "deleted_flg": false,
+                                "plutx_userid_id": "a4ca67fc-a8db-43be-83dd-e0c843d4b573"
+                            }
+                        ],
+                        "offset": 0,
+                        "limit": 10,
+                        "total": 2
+                    }
+                }
  *       400:
  *         description: Error
  *         schema:
