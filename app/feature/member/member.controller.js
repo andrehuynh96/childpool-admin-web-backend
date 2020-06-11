@@ -18,7 +18,7 @@ module.exports = {
       if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
       if (query.referralCode) where.referral_code = query.referralCode;
       if (query.referrerCode) where.referrer_code = query.referrerCode;
-      if (query.name) where.full_name = { [Op.iLike]: `%${req.query.name}%` };
+      if (query.name) where.name = { [Op.iLike]: `%${req.query.name}%` };
       if (query.email) where.email = { [Op.iLike]: `%${req.query.email}%` };
 
       const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
@@ -73,10 +73,10 @@ module.exports = {
         }
       });
 
-      if (!membershipType) {
-        return res.badRequest(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND");
+      if (membershipType) {
+        member.membership_type = membershipType.name;
       }
-      member.membership_type = membershipType.name;
+      
       return res.ok(memberMapper(member));
     }
     catch (error) {
