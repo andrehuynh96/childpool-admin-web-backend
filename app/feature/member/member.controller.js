@@ -1,6 +1,6 @@
 const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
-const MembershipType= require("app/model/wallet").membership_types;
+const MembershipType = require("app/model/wallet").membership_types;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
@@ -23,10 +23,14 @@ module.exports = {
 
       const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
       const membershipTypeIds = items.map(item => item.membership_type_id);
-      const membershipTypes = await MembershipType.findAll({
-        id: membershipTypeIds,
-        deleted_flg: false
-      });
+      const membershipTypes = await MembershipType.findAll(
+        {
+          where: {
+            id: membershipTypeIds,
+            deleted_flg: false
+          }
+        }
+      );
 
       items.forEach(item => {
         const membershipType = membershipTypes.find(membershipType => membershipType.id == item.membership_type_id);
@@ -50,28 +54,34 @@ module.exports = {
   },
   getMemberDetail: async (req, res, next) => {
     try {
-        const { params } = req;
-        const user = await User.findOne({
+      const { params } = req;
+      console.log(params.memberId);
+      const member = await Member.findOne(
+        {
+          where: {
             id: params.memberId,
             deleted_flg: false
+          }
         });
-        if (!user){
-            return res.badRequest(res.__("MEMBER_NOT_FOUND"),"MEMBER_NOT_FOUND",{ fields: ["memberId"] });
+      if (!member) {
+        return res.badRequest(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: member.membership_type_id,
+          deleted_flg: false
         }
-        const membershipType = await MembershipType.findOne({
-            id: user.membership_type_id,
-            deleted_flg: false
-        });
+      });
 
-        if (!membershipType){
-            return res.badRequest(res.__("MEMBERSHIP_TYPE_NOT_FOUND"),"MEMBERSHIP_TYPE_NOT_FOUND");
-        }
-        user.membership_type = membershipType.name;
-        return res.ok(userMapper(user));
-    } 
-    catch (error) {
-        logger.error('get member detail fail:', error);
-        next(error);
+      if (!membershipType) {
+        return res.badRequest(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND");
+      }
+      member.membership_type = membershipType.name;
+      return res.ok(memberMapper(member));
     }
-},
+    catch (error) {
+      logger.error('get member detail fail:', error);
+      next(error);
+    }
+  },
 }
