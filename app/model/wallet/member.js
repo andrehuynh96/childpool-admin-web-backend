@@ -106,15 +106,27 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0
-    }
+    },
+    plutx_userid_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    membership_type_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
-
+    underscored: true,
+    timestamps: true,
+  });
 
   Member.associate = (models) => {
-    Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" })
+    Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" });
+
+    Member.belongsTo(models.membership_types, {
+      as: 'MembershipType',
+      foreignKey: 'membership_type_id',
+    });
   };
 
   return Member;
