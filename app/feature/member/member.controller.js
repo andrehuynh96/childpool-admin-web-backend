@@ -29,7 +29,7 @@ module.exports = {
       });
 
       items.forEach(item => {
-        const membershipType = membershipTypes.find(membershipType => membershipType.id == item.membership_type_id);
+        const membershipType = membershipTypes.find(membershipType => membershipType.id === item.membership_type_id);
         if (membershipType) {
           item.membership_type = membershipType.name;
         }
