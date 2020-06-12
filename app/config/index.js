@@ -1,5 +1,7 @@
 /*eslint no-process-env: "off"*/
 require('dotenv').config();
+const pkg = require('../../package.json');
+
 const logFolder = process.env.LOG_FOLDER || './public/logs';
 
 const config = {
@@ -22,6 +24,13 @@ const config = {
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
+  app: {
+    name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
+    version: pkg.version,
+    buildNumber: process.env.BUILD_NUMBER || '',
+    description: pkg.description,
+    port: parseInt(process.env.PORT || process.env.APP_PORT),
+  },
   db: {
     wallet: {
       database: process.env.WALLET_DB_NAME,
@@ -95,7 +104,14 @@ const config = {
   },
   masterWebsite: {
     urlViewRequest: process.env.MASTER_WEBSITE_URL + '/admin/childpool/detail'
-  }
+  },
+  affiliate: {
+    url: process.env.AFFILIATE_URL,
+    apiKey: process.env.AFFILIATE_API_KEY,
+    secretKey: process.env.AFFILIATE_SECRET_KEY,
+    affiliateTypeId: process.env.AFFILIATE_AFFILIATE_TYPE_ID,
+    membershipTypeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID,
+  },
 };
 
 module.exports = config;
