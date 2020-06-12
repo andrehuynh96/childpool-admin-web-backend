@@ -25,6 +25,11 @@ router.put("/members/:memberId",
     controller.updateMembershipType,
 );
 
+router.get("/membership-types",
+    authenticate,
+    controller.getMembershipTypeList,
+);
+
 
 module.exports = router;
 
@@ -172,5 +177,63 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+/**
+ * @swagger
+ * /web/membership-types:
+ *   get:
+ *     summary: get dropdown list membership type
+ *     tags:
+ *       - Members
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": [
+                        {
+                            "id": "d146bc01-9e56-4664-9788-79e518877f0b",
+                            "name": "Free",
+                            "price": "0",
+                            "currency_symbol": "USD",
+                            "type": "Free",
+                            "display_order": null,
+                            "deleted_flg": false,
+                            "createdAt": "2020-06-12T02:20:50.472Z",
+                            "updatedAt": "2020-06-12T02:20:50.472Z"
+                        },
+                        {
+                            "id": "88fda933-0658-49c4-a9c7-4c0021e9a071",
+                            "name": "Paid",
+                            "price": "100",
+                            "currency_symbol": "USD",
+                            "type": "Paid",
+                            "display_order": 1,
+                            "deleted_flg": false,
+                            "createdAt": "2020-06-12T02:20:50.472Z",
+                            "updatedAt": "2020-06-12T02:20:50.472Z"
+                        }
+                    ]
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
 
 /*********************************************************************/
