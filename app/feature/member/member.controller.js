@@ -129,4 +129,15 @@ module.exports = {
       next(error);
     }
   },
+  getMembershipTypeList: async (req, res,next) => {
+    try {
+      const membershipType = await MembershipType.findAll();
+      return res.ok(membershipType);
+      
+    } catch (error) {
+      logger.error('get membership type list fail:', error);
+      next(error);
+    }
+  },
+
 }
