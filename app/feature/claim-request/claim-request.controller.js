@@ -12,16 +12,16 @@ module.exports = {
             const limit = query.limit ? parseInt(req.query.limit) : 10;
             const offset = query.offset ? parseInt(req.query.offset) : 0;
             const where = {};
-            let compareConds = []
             if (query.from) {
                 fromDate = moment(query.from).toDate();
-                compareConds.push({ [Op.gt] : fromDate });
+                where.created_at= {
+                    [Op.gt]: fromDate
+                };
             } 
             if (query.to) {
                 toDate = moment(query.to).toDate();
-                compareConds.push({ [Op.lt] : toDate });
+                where.created_at[Op.lt]= toDate
             }
-            if( compareConds.length>0 ) where.created_at = compareConds;
             if (query.email) where.email = { [Op.iLike]: `%${req.query.email}%` };
             if (query.payment) where.type= query.payment;
             if (query.status) where.status= query.status;
