@@ -14,27 +14,33 @@ module.exports = {
             const where = {};
             if (query.from) {
                 fromDate = moment(query.from).toDate();
-                where.created_at= {
+                where.created_at = {
                     [Op.gt]: fromDate
                 };
-            } 
+            }
             if (query.to) {
                 toDate = moment(query.to).toDate();
-                where.created_at[Op.lt]= toDate
+                where.created_at[Op.lt] = toDate
             }
-            if (query.email) where.email = { [Op.iLike]: `%${req.query.email}%` };
-            if (query.payment) where.type= query.payment;
-            if (query.status) where.status= query.status;
-            if (query.cryptoPlatform) where.currency_symbol = query.cryptoPlatform;
-            console.log(where)
+            if (query.email) {
+                where.email = { [Op.iLike]: `%${query.email}%` };
+            }
+            if (query.payment) {
+                where.type = { [Op.iLike]: `%${query.payment}%` };
+            if (query.status) {
+                where.status = { [Op.iLike]: `%${query.status}%` };
+            }
+            if (query.cryptoPlatform) {
+                where.currency_symbol = { [Op.iLike]: `%${query.cryptoPlatform}%` };
+            }
             const { count: total, rows: items } = await ClaimRequest.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
-            
+
             return res.ok({
                 items: items && items.length > 0 ? items : [],
                 offset: offset,
                 limit: limit,
                 total: total
-              });
+            });
         }
         catch (error) {
             logger.info('get claim request list fail', error);
