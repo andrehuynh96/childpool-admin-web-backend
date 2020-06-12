@@ -27,12 +27,14 @@ module.exports = {
             }
             if (query.payment) {
                 where.type = { [Op.iLike]: `%${query.payment}%` };
+            }
             if (query.status) {
                 where.status = { [Op.iLike]: `%${query.status}%` };
             }
             if (query.cryptoPlatform) {
                 where.currency_symbol = { [Op.iLike]: `%${query.cryptoPlatform}%` };
             }
+            
             const { count: total, rows: items } = await ClaimRequest.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
 
             return res.ok({
