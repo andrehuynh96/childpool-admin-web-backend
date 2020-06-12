@@ -19,6 +19,12 @@ router.get("/members/:memberId",
     controller.getMemberDetail
 );
 
+router.put("/members/:memberId",
+    authenticate,
+    // authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+    controller.updateMember
+);
+
 module.exports = router;
 
 

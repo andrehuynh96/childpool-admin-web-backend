@@ -4,6 +4,7 @@ const MembershipType = require("app/model/wallet").membership_types;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
+const affiliateApi = require('app/lib/affiliate-api');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -65,9 +66,8 @@ module.exports = {
           model: MembershipType,
         }]
       });
-
       if (!member) {
-        return res.badRequest(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
 
       if (member.MembershipType) {
@@ -78,6 +78,54 @@ module.exports = {
     }
     catch (error) {
       logger.error('get member detail fail:', error);
+      next(error);
+    }
+  },
+  updateMember: async (req, res, next) => {
+    try {
+      const { body, params } = req;
+      const { memberId } = params;
+      const membershipTypeId = body.membershipTypeId;
+
+      const member = await Member.findOne({
+        where: {
+          id: memberId,
+          deleted_flg: false
+        }
+      });
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: membershipTypeId
+        }
+      })
+      if (!membershipType) {
+        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
+      }
+      const data = {
+        membership_type_id: membershipTypeId
+      }
+
+      if (body.referrerCode && !member.referrer_code) {
+        data.referrer_code = body.referrerCode
+      }
+      await Member.update(
+        data,
+        {
+          where: {
+            id: memberId
+          }
+        });
+      // const updateMembershipTypeResult = await affiliateApi.updateMembershipType(member.email, membershipType);
+      // if (updateMembershipTypeResult.httpCode !== 200) {
+      //   return res.status(updateMembershipTypeResult.httpCode).send(updateMembershipTypeResult.data);
+      // }
+      return res.ok(true);
+    }
+    catch (error) {
+      logger.error('update member fail:', error);
       next(error);
     }
   },
