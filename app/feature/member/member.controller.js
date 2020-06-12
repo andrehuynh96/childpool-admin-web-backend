@@ -118,10 +118,10 @@ module.exports = {
             id: memberId
           }
         });
-      // const updateMembershipTypeResult = await affiliateApi.updateMembershipType(member.email, membershipType);
-      // if (updateMembershipTypeResult.httpCode !== 200) {
-      //   return res.status(updateMembershipTypeResult.httpCode).send(updateMembershipTypeResult.data);
-      // }
+      const updateMembershipTypeResult = await affiliateApi.updateMembershipType(member.email, membershipType);
+      if (updateMembershipTypeResult.httpCode !== 200) {
+        return res.status(updateMembershipTypeResult.httpCode).send(updateMembershipTypeResult.data);
+      }
       return res.ok(true);
     }
     catch (error) {
