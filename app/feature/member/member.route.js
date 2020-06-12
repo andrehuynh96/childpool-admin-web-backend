@@ -172,4 +172,59 @@ module.exports = router;
 *           $ref: '#/definitions/500'
 */
 
+/**
+ * @swagger
+ * /web/members/{memberId}:
+ *   put:
+ *     summary: update member
+ *     tags:
+ *       - Members
+ *     description: update user profile
+ *     parameters:
+ *       - name: memberId
+ *         in: path
+ *         type: string
+ *         required: true
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to update.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - membershipTypeId
+ *            - referrerCode
+ *            example:
+ *                  {
+                        "membershipTypeId": "88fda933-0658-49c4-a9c7-4c0021e9a071",
+                        "referrerCode":"S0GYV2CXY"
+ *                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
 /*********************************************************************/
