@@ -55,28 +55,25 @@ module.exports = {
   getMemberDetail: async (req, res, next) => {
     try {
       const { params } = req;
-      console.log(params.memberId);
-      const member = await Member.findOne(
-        {
-          where: {
-            id: params.memberId,
-            deleted_flg: false
-          }
-        });
+      const member = await Member.findOne({
+        where: {
+          id: params.memberId,
+          deleted_flg: false
+        },
+        include: [{
+          as: 'MembershipType',
+          model: MembershipType,
+        }]
+      });
+
       if (!member) {
         return res.badRequest(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
-      const membershipType = await MembershipType.findOne({
-        where: {
-          id: member.membership_type_id,
-          deleted_flg: false
-        }
-      });
 
-      if (membershipType) {
-        member.membership_type = membershipType.name;
+      if (member.MembershipType) {
+        member.membership_type = member.MembershipType.name;
       }
-      
+
       return res.ok(memberMapper(member));
     }
     catch (error) {

@@ -7,21 +7,19 @@ const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const router = express.Router();
 
 router.get(
-	'/members',
-	authenticate,
-	// authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
-	controller.search
+    '/members',
+    authenticate,
+    // authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
+    controller.search
 );
 
 router.get("/members/:memberId",
     authenticate,
     // authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
-  controller.getMemberDetail
+    controller.getMemberDetail
 );
 
 module.exports = router;
-
-
 
 
 /*********************************************************************/
@@ -46,7 +44,7 @@ module.exports = router;
  *         format: int32
  *       - name: name
  *         in: query
- *         type: string 
+ *         type: string
  *       - name: email
  *         in: query
  *         type: string
@@ -115,57 +113,57 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/members/{memberId}:
- *   get:
- *     summary: get member detail
- *     tags:
- *       - Members
- *     description:
- *     parameters:
- *       - name: memberId
- *         in: path
- *         type: string
- *         required: true
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
-                    "data": {
-                        "id": "8337b3e4-b8be-4594-bca3-d6dba7c751ea",
-                        "email": "myhn@blockchainlabs.asia",
-                        "referral_code": "CMMGT1VEX",
-                        "referrer_code": "",
-                        "membership_type_id": 1,
-                        "membership_type": "Free",
-                        "kyc_id": "5ea90045780db51bed6e756e",
-                        "kyc_level": 1,
-                        "kyc_status": "Approved",
-                        "deleted_flg": false,
-                        "plutx_userid_id": "6df1391b-96a7-4207-8640-d331b4e26768"
-                    }
-                }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/members/{memberId}:
+*   get:
+*     summary: get member detail
+*     tags:
+*       - Members
+*     description:
+*     parameters:
+*       - name: memberId
+*         in: path
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                   "data": {
+                       "id": "8337b3e4-b8be-4594-bca3-d6dba7c751ea",
+                       "email": "myhn@blockchainlabs.asia",
+                       "referral_code": "CMMGT1VEX",
+                       "referrer_code": "",
+                       "membership_type_id": 1,
+                       "membership_type": "Free",
+                       "kyc_id": "5ea90045780db51bed6e756e",
+                       "kyc_level": 1,
+                       "kyc_status": "Approved",
+                       "deleted_flg": false,
+                       "plutx_userid_id": "6df1391b-96a7-4207-8640-d331b4e26768"
+                   }
+               }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 /*********************************************************************/
