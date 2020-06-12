@@ -18,7 +18,7 @@ module.exports = router;
 /*********************************************************************/
 /**
  * @swagger
- * /web/members:
+ * /web/claim-requests:
  *   get:
  *     summary: search claim request
  *     tags:
@@ -33,19 +33,22 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
- *       - name: name
+ *       - name: from
+ *         in: query
+ *         type: string
+ *       - name: to
  *         in: query
  *         type: string
  *       - name: email
  *         in: query
  *         type: string
- *       - name: membershipTypeId
+ *       - name: status
  *         in: query
  *         type: string
- *       - name: referralCode
+ *       - name: payment
  *         in: query
  *         type: string
- *       - name: referrer
+ *       - name: CryptoPlatform
  *         in: query
  *         type: string
  *     produces:
