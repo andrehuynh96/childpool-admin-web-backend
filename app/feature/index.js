@@ -19,6 +19,7 @@ router.use(require('./partner-commission/partner-commission.route'));
 router.use(require('./change-reward-address/change-reward-address.route'));
 router.use(require('./partner-tx-memo/partner-tx-memo.route'));
 router.use(require('./check-token/check-token.route')); 
+router.use(require('./membership-order/membership-order.route')); 
 
 module.exports = router;
 

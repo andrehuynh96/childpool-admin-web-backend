@@ -6,13 +6,13 @@ const router = express.Router();
 
 router.get(
 	'/orders',
-	authenticate,
+	// authenticate,
 	controller.search
 );
 
 router.get("/orders/:id",
-    authenticate,
-  controller.getOrderDetail
+    // authenticate,
+    controller.getOrderDetail
 );
 
 module.exports = router;

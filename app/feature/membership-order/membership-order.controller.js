@@ -13,7 +13,6 @@ module.exports = {
       const limit = query.limit ? parseInt(query.limit) : 10;
       const offset = query.offset ? parseInt(query.offset) : 0;
       const where = {
-        deleted_flg: false
       };
       const memberWhere = {
         deleted_flg: false
@@ -26,12 +25,13 @@ module.exports = {
       if (query.email ) memberWhere.email = query.email
       if (query.from) where.created_at = {[Op.gte]: new Date(query.from)}
       if (query.to) where.created_at = {[Op.lte]: new Date(query.to)}
-      if (query.membership_type_id) where.membership_type_id = query.membership_type_id
+      // if (query.membership_type_id) where.membership_type_id = query.membership_type_id
       
       const { count: total, rows: items } = await MembershipOrder.findAndCountAll(
         { limit, 
           offset, 
           include: {
+            as: "Member",
             model: Member,
             where: memberWhere,
             required: true
@@ -67,11 +67,13 @@ module.exports = {
         {
           include:[
             {
+              as: "Member",
               model: Member,
               where: memberWhere,
               required: true
             },
             {
+              as: "MembershipType",
               model: MembershipType,
               where: membershipTypeWhere,
               required: true
