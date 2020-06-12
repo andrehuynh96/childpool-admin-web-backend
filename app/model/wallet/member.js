@@ -112,7 +112,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     membership_type_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: true,
     },
   }, {
