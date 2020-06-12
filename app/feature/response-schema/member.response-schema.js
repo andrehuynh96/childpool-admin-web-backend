@@ -4,7 +4,7 @@ const destObject = {
   array: {
     '[].id': '[].id',
     '[].email': '[].email',
-    '[].fullname': '[].fullname',
+    '[].name': '[].name',
     '[].actived_flg': '[].actived_flg',
     '[].referral_code': '[].referral_code',
     '[].referrer_code': '[].referrer_code',
@@ -14,13 +14,13 @@ const destObject = {
     '[].kyc_level': '[].kyc_level',
     '[].kyc_status': '[].kyc_status',
     '[].plutx_userid_id': '[].plutx_userid_id',
-    '[].created_at': '[].created_at',
-    '[].updated_at': '[].updated_at',
+    '[].createdAt': '[].created_at',
+    '[].updatedAt': '[].updated_at',
   },
   single: {
     id: 'id',
     email: 'email',
-    fullname: 'fullname',
+    name: 'name',
     actived_flg: 'actived_flg',
     referral_code: 'referral_code',
     referrer_code: 'referrer_code',
@@ -30,8 +30,8 @@ const destObject = {
     kyc_level: 'kyc_level',
     kyc_status: 'kyc_status',
     plutx_userid_id: 'plutx_userid_id',
-    created_at: 'created_at',
-    updated_at: 'updated_at',
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
   }
 };
 module.exports = srcObject => {

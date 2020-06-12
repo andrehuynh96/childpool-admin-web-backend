@@ -7,21 +7,31 @@ const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const router = express.Router();
 
 router.get(
-	'/members',
-	authenticate,
-	// authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
-	controller.search
+    '/members',
+    authenticate,
+    // authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
+    controller.search
 );
 
 router.get("/members/:memberId",
     authenticate,
     // authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
-  controller.getMemberDetail
+    controller.getMemberDetail
 );
 
+router.put("/members/:memberId",
+    authenticate,
+    // authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+    controller.updateMember
+);
+
+router.get("/membership-types",
+    authenticate,
+    controller.getMembershipTypeList,
+);
+
+
 module.exports = router;
-
-
 
 
 /*********************************************************************/
@@ -46,7 +56,7 @@ module.exports = router;
  *         format: int32
  *       - name: name
  *         in: query
- *         type: string 
+ *         type: string
  *       - name: email
  *         in: query
  *         type: string
@@ -115,19 +125,86 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
+/**
+* @swagger
+* /web/members/{memberId}:
+*   get:
+*     summary: get member detail
+*     tags:
+*       - Members
+*     description:
+*     parameters:
+*       - name: memberId
+*         in: path
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                   "data": {
+                       "id": "8337b3e4-b8be-4594-bca3-d6dba7c751ea",
+                       "email": "myhn@blockchainlabs.asia",
+                       "referral_code": "CMMGT1VEX",
+                       "referrer_code": "",
+                       "membership_type_id": 1,
+                       "membership_type": "Free",
+                       "kyc_id": "5ea90045780db51bed6e756e",
+                       "kyc_level": 1,
+                       "kyc_status": "Approved",
+                       "deleted_flg": false,
+                       "plutx_userid_id": "6df1391b-96a7-4207-8640-d331b4e26768"
+                   }
+               }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
  * @swagger
  * /web/members/{memberId}:
- *   get:
- *     summary: get member detail
+ *   put:
+ *     summary: update member
  *     tags:
  *       - Members
- *     description:
+ *     description: update user profile
  *     parameters:
  *       - name: memberId
  *         in: path
  *         type: string
  *         required: true
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to update.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - membershipTypeId
+ *            - referrerCode
+ *            example:
+ *                  {
+                        "membershipTypeId": "88fda933-0658-49c4-a9c7-4c0021e9a071",
+                        "referrerCode":"S0GYV2CXY"
+ *                  }
  *     produces:
  *       - application/json
  *     responses:
@@ -136,19 +213,65 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                    "data": {
-                        "id": "8337b3e4-b8be-4594-bca3-d6dba7c751ea",
-                        "email": "myhn@blockchainlabs.asia",
-                        "referral_code": "CMMGT1VEX",
-                        "referrer_code": "",
-                        "membership_type_id": 1,
-                        "membership_type": "Free",
-                        "kyc_id": "5ea90045780db51bed6e756e",
-                        "kyc_level": 1,
-                        "kyc_status": "Approved",
-                        "deleted_flg": false,
-                        "plutx_userid_id": "6df1391b-96a7-4207-8640-d331b4e26768"
-                    }
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/membership-types:
+ *   get:
+ *     summary: get dropdown list membership type
+ *     tags:
+ *       - Members
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": [
+                        {
+                            "id": "d146bc01-9e56-4664-9788-79e518877f0b",
+                            "name": "Free",
+                            "price": "0",
+                            "currency_symbol": "USD",
+                            "type": "Free",
+                            "display_order": null,
+                            "deleted_flg": false,
+                            "createdAt": "2020-06-12T02:20:50.472Z",
+                            "updatedAt": "2020-06-12T02:20:50.472Z"
+                        },
+                        {
+                            "id": "88fda933-0658-49c4-a9c7-4c0021e9a071",
+                            "name": "Paid",
+                            "price": "100",
+                            "currency_symbol": "USD",
+                            "type": "Paid",
+                            "display_order": 1,
+                            "deleted_flg": false,
+                            "createdAt": "2020-06-12T02:20:50.472Z",
+                            "updatedAt": "2020-06-12T02:20:50.472Z"
+                        }
+                    ]
                 }
  *       400:
  *         description: Error
