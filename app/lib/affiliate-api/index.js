@@ -21,7 +21,7 @@ const affiliateApi = {
             "x-use-checksum": true,
             "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            "x-affiliate-type-id": config.affiliate.affiliateTypeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -46,7 +46,7 @@ const affiliateApi = {
             "x-use-checksum": true,
             "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            "x-affiliate-type-id": config.affiliate.affiliateTypeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -65,7 +65,7 @@ const affiliateApi = {
         {
           headers: {
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            "x-affiliate-type-id": config.affiliate.affiliateTypeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
