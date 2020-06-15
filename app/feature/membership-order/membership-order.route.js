@@ -15,6 +15,11 @@ router.get("/orders/:id",
     controller.getOrderDetail
 );
 
+router.post("/orders/:id",
+    // authenticate,
+    controller.approveOrder
+);
+
 module.exports = router;
 
 

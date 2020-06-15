@@ -102,4 +102,7 @@ module.exports = {
       next(error);
     }
   },
+  approveOrder: async (req, res, next) => {
+
+  }
 }
