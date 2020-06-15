@@ -5,6 +5,7 @@ const MemberStatus = require("app/model/wallet/value-object/member-status");
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
 const affiliateApi = require('app/lib/affiliate-api');
+const database = require('app/lib/database').db().wallet;
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -82,6 +83,7 @@ module.exports = {
     }
   },
   updateMember: async (req, res, next) => {
+    let transaction;
     try {
       const { body, params } = req;
       const { memberId } = params;
@@ -125,25 +127,27 @@ module.exports = {
       if (body.referrerCode && !member.referrer_code) {
         data.referrer_code = body.referrerCode
       }
-      console.log({ email: member.email, referrerCode: body.referrerCode });
+      transaction = await database.transaction();
+      await Member.update(
+        data,
+        {
+          where: {
+            id: member.id
+          },
+          returning: true,
+          plain: true
+        },{ transaction });
+
       let result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
       
       if (result.httpCode == 200){
-        if (!result.data.data.isSuccess) {
+        if (!result.data.isSuccess) {
           return res.serverInternalError();
         }
-        await Member.update(
-          data,
-          {
-            where: {
-              id: member.id
-            },
-            returning: true,
-            plain: true
-          })
+        transaction.commit();
         return res.ok(true)
       }
-      
+        transaction.rollback();
         return res.status(result.httpCode).send(result.data);
     }
     catch (error) {
