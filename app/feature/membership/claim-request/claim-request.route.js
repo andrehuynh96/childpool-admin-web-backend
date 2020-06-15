@@ -12,7 +12,12 @@ router.get(
     authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST),
     controller.search
 );
-
+router.put(
+    '/claim-requests/:claimRequestId',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST),
+    controller.changeStatus
+);
 module.exports = router;
 
 /*********************************************************************/
@@ -33,10 +38,10 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
- *       - name: from
+ *       - name: from_date
  *         in: query
  *         type: string
- *       - name: to
+ *       - name: to_date
  *         in: query
  *         type: string
  *       - name: email
@@ -48,7 +53,7 @@ module.exports = router;
  *       - name: payment
  *         in: query
  *         type: string
- *       - name: CryptoPlatform
+ *       - name: crypto_platform
  *         in: query
  *         type: string
  *     produces:
@@ -67,15 +72,9 @@ module.exports = router;
                                 "member_account_id": 1,
                                 "type": "Bank",
                                 "status": "pending",
+                                "amount": "0",
                                 "currency_symbol": "ETH",
-                                "account_number": "test",
-                                "bank_name": "VCB",
-                                "branch_name": "Tan son nhat",
-                                "account_holder": "test",
-                                "wallet_address": "0x1d5b6c8390b5d1c94c1042f3ae74c02070ce35ce",
-                                "txid": "C52FD3D80BD7249D5094BDB5793317C2FCEBC221BCF313987AFA230A0518ECCD",
-                                "createdAt": "2020-05-29T06:15:07.006Z",
-                                "updatedAt": "2020-05-29T06:15:07.006Z"
+                                "created_at": "2020-05-29T06:15:07.006Z"
                             }
                         ],
                         "offset": 0,
