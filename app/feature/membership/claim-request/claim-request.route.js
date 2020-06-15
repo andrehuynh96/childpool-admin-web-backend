@@ -9,7 +9,7 @@ const router = express.Router();
 router.get(
     '/claim-requests',
     authenticate,
-    // authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST),
+    authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST),
     controller.search
 );
 

@@ -9,19 +9,19 @@ const router = express.Router();
 router.get(
     '/members',
     authenticate,
-    // authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
+    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
     controller.search
 );
 
 router.get("/members/:memberId",
     authenticate,
-    // authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
+    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
     controller.getMemberDetail
 );
 
 router.put("/members/:memberId",
     authenticate,
-    // authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
     controller.updateMember
 );
 
