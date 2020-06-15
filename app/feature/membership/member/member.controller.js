@@ -141,16 +141,19 @@ module.exports = {
       let result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
       
       if (result.httpCode == 200){
-        if (!result.data.isSuccess) {
-          return res.serverInternalError();
-        }
-        transaction.commit();
+        await transaction.commit();
         return res.ok(true)
       }
-        transaction.rollback();
-        return res.status(result.httpCode).send(result.data);
+
+      if (transaction) {
+        await transaction.rollback();
+      }
+      return res.status(result.httpCode).send(result.data);
     }
     catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
       logger.error('update member fail:', error);
       next(error);
     }
@@ -161,6 +164,7 @@ module.exports = {
       return res.ok(membershipType);
       
     } catch (error) {
+      
       logger.error('get membership type list fail:', error);
       next(error);
     }

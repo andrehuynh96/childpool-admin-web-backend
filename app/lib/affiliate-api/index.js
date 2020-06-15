@@ -95,7 +95,6 @@ const affiliateApi = {
             Authorization: `Bearer ${accessToken}`,
           }
         });
-
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
@@ -103,10 +102,10 @@ const affiliateApi = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
-  updateClaimRequest: async (claimRequestId,status) => {
+  updateClaimRequest: async (claimRewardId,status) => {
     try {
       const accessToken = await _getAccessToken();
-      const result = await axios.put(`${API_URL}/claim-rewards/${claimRequestId}`,
+      const result = await axios.put(`${API_URL}/claim-rewards/${claimRewardId}`,
         {
           status: status
         },
@@ -115,11 +114,10 @@ const affiliateApi = {
             "x-use-checksum": true,
             "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.affiliateTypeId,
+            "x-affiliate-type-id": config.affiliate.membershipTypeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
-
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {

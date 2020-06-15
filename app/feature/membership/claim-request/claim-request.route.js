@@ -3,7 +3,8 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./claim-request.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
-
+const validator = require("app/middleware/validator.middleware");
+const requestSchema = require('./claim-request.request-schema');
 const router = express.Router();
 
 router.get(
@@ -14,6 +15,7 @@ router.get(
 );
 router.put(
     '/claim-requests/:claimRequestId',
+    validator(requestSchema),
     authenticate,
     authority(PermissionKey.MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST),
     controller.changeStatus
