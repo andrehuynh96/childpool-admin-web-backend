@@ -21,6 +21,7 @@ router.use(require('./partner-tx-memo/partner-tx-memo.route'));
 router.use(require('./check-token/check-token.route'));
 router.use(require('./claim-request/claim-request.route'));
 router.use('/membership', require('./membership'));
+router.use(require('./platform/platform.route'));
 
 module.exports = router;
 
