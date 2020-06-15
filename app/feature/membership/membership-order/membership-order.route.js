@@ -30,7 +30,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/members:
+ * /web/membership/orders:
  *   get:
  *     summary: search member
  *     tags:
