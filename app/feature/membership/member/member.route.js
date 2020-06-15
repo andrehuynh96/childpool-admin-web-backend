@@ -38,7 +38,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/members:
+ * /web/membership/members:
  *   get:
  *     summary: search member
  *     tags:
@@ -126,7 +126,7 @@ module.exports = router;
 
 /**
 * @swagger
-* /web/members/{memberId}:
+* /web/membership/members/{memberId}:
 *   get:
 *     summary: get member detail
 *     tags:
@@ -179,7 +179,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/members/{memberId}:
+ * /web/membership/members/{memberId}:
  *   put:
  *     summary: update member
  *     tags:
@@ -234,7 +234,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership-types:
+ * /web/membership/membership-types:
  *   get:
  *     summary: get dropdown list membership type
  *     tags:

@@ -18,7 +18,7 @@ module.exports = router;
 /*********************************************************************/
 /**
  * @swagger
- * /web/claim-requests:
+ * /web/membership/claim-requests:
  *   get:
  *     summary: search claim request
  *     tags:
