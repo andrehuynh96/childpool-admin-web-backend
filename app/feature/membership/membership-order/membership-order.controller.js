@@ -2,7 +2,7 @@ const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const MembershipOrder = require("app/model/wallet").membership_orders;
 const MembershipType = require("app/model/wallet").membership_types;
-// const memberMapper = require("app/feature/response-schema/member.response-schema");
+const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status")
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -103,6 +103,53 @@ module.exports = {
     }
   },
   approveOrder: async (req, res, next) => {
-
+    const t = await sequelize.transaction();
+    try {
+      let order = MembershipOrder.findOne( {where: {id: req.params.id}})
+      if(!order)
+        return res.ok(false)
+      let status = req.body.action == 1 ? MembershipOrderStatus.Completed : MembershipOrderStatus.Rejected
+      await MembershipOrder.update({
+            notes: req.body.note,
+            approved_by_id: req.user.id,
+            status: status
+          }, {
+              where: {
+                id: req.params.id
+              },
+              returning: true
+            }, { transaction: t });
+      
+      if (status == MembershipOrderStatus.Completed){
+        await Member.update({
+            membership_type_id: membership_type_id
+          }, {
+              where: {
+                id: order.member_id
+              },
+              returning: true
+            }, { transaction: t });
+      }
+      await t.commit();
+      return res.ok(true)
+    }
+    catch (err) {
+      await t.rollback();
+      logger.error('update order fail:', err);
+      next(err);
+    }
   }
 }
+
+// async function _sendEmail(emails, membershipType) {
+//     try {
+//       let subject = `Membership payment`;
+//       let from = `Child membership department`;
+//       let data = {
+//       }
+//       data = Object.assign({}, data, config.email);
+//       await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.viewRequest);
+//     } catch (err) {
+//       logger.error("send confirmed email for changing reward address for master pool fail", err);
+//     }
+// }
