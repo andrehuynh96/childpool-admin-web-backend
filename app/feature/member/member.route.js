@@ -26,7 +26,6 @@ router.put("/members/:memberId",
 );
 
 router.get("/membership-types",
-    authenticate,
     controller.getMembershipTypeList,
 );
 
