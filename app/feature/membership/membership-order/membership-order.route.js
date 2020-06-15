@@ -6,17 +6,17 @@ const router = express.Router();
 
 router.get(
 	'/orders',
-	// authenticate,
+	authenticate,
 	controller.search
 );
 
 router.get("/orders/:id",
-    // authenticate,
+    authenticate,
     controller.getOrderDetail
 );
 
 router.post("/orders/:id",
-    // authenticate,
+    authenticate,
     controller.approveOrder
 );
 
@@ -118,7 +118,7 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/members/{memberId}:
+ * /web/membership/orders/{orderId}:
  *   get:
  *     summary: get member detail
  *     tags:
