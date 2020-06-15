@@ -93,14 +93,28 @@ module.exports = {
           deleted_flg: false
         }
       });
+
       if (!member) {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
+
+      if (member.member_sts == MemberStatus.LOCKED) {
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+      }
+  
+      if (member.member_sts == MemberStatus.UNACTIVATED) {
+        return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
+      }
+
+      if (member.referrer_code) {
+        return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
+      }
+
       const membershipType = await MembershipType.findOne({
         where: {
           id: membershipTypeId
         }
-      })
+      });
       if (!membershipType) {
         return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
       }
@@ -111,18 +125,26 @@ module.exports = {
       if (body.referrerCode && !member.referrer_code) {
         data.referrer_code = body.referrerCode
       }
-      await Member.update(
-        data,
-        {
-          where: {
-            id: memberId
-          }
-        });
-      const updateMembershipTypeResult = await affiliateApi.updateMembershipType(member.email, membershipType);
-      if (updateMembershipTypeResult.httpCode !== 200) {
-        return res.status(updateMembershipTypeResult.httpCode).send(updateMembershipTypeResult.data);
+      console.log({ email: member.email, referrerCode: body.referrerCode });
+      let result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
+      
+      if (result.httpCode == 200){
+        if (!result.data.data.isSuccess) {
+          return res.serverInternalError();
+        }
+        await Member.update(
+          data,
+          {
+            where: {
+              id: member.id
+            },
+            returning: true,
+            plain: true
+          })
+        return res.ok(true)
       }
-      return res.ok(true);
+      
+        return res.status(result.httpCode).send(result.data);
     }
     catch (error) {
       logger.error('update member fail:', error);
