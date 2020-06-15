@@ -306,5 +306,5 @@ module.exports = {
   "MEMBERSHIP_ADD_RECEIVING_ADDRESS": {
     "KEY": "MEMBERSHIP_ADD_RECEIVING_ADDRESS",
     "ROLES": ["Master"]
-  },
+  } 
 }

@@ -96,6 +96,7 @@ module.exports = route;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
 /**
 * @swagger
 * /web/partners/{id}/keys:
