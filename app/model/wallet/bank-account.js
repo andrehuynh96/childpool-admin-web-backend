@@ -8,18 +8,22 @@ module.exports = (sequelize, DataTypes) => {
     bank_name: {
       type: DataTypes.STRING(250),
       allowNull: false,
+      defaultValue: ""
     },
     branch_name: {
       type: DataTypes.STRING(250),
       allowNull: false,
+      defaultValue: ""
     },
     account_name: {
       type: DataTypes.STRING(250),
       allowNull: false,
+      defaultValue: ""
     },
     account_number: {
       type: DataTypes.STRING(250),
       allowNull: false,
+      defaultValue: ""
     },
     actived_flg: {
       type: DataTypes.BOOLEAN,
