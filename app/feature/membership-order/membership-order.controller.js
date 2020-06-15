@@ -25,23 +25,34 @@ module.exports = {
       if (query.email ) memberWhere.email = query.email
       if (query.from) where.created_at = {[Op.gte]: new Date(query.from)}
       if (query.to) where.created_at = {[Op.lte]: new Date(query.to)}
-      // if (query.membership_type_id) where.membership_type_id = query.membership_type_id
+      if (query.membership_type_id) where.membership_type_id = query.membership_type_id
       
       const { count: total, rows: items } = await MembershipOrder.findAndCountAll(
-        { limit, 
+        { 
+          limit, 
           offset, 
-          include: {
-            as: "Member",
-            model: Member,
-            where: memberWhere,
-            required: true
-          },
+          include: [
+            {
+              attributes: ['email', 'fullname', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              as: "Member",
+              model: Member,
+              where: memberWhere,
+              required: true
+            },
+            {
+              attributes: ['name', 'price', 'currency_symbol', 'type'],
+              as: "MembershipType",
+              model: MembershipType,
+              required: true
+            }
+          ],
           where: where, 
-          order: [['created_at', 'DESC']] }
+          order: [['created_at', 'DESC']] 
+        }
       );
     
       return res.ok({
-        items: items, //memberMapper(items) && items.length > 0 ? memberMapper(items) : [],
+        items: items,
         offset: offset,
         limit: limit,
         total: total
@@ -59,29 +70,26 @@ module.exports = {
       const memberWhere = {
         deleted_flg: false
       };
-      const membershipTypeWhere = {
-        deleted_flg: false
-      };
-      
+  
       const membershipOrder = await MembershipOrder.findOne(
         {
           include:[
             {
+              attributes: ['email', 'fullname', 'kyc_level', 'kyc_status', 'phone', 'city'],
               as: "Member",
               model: Member,
               where: memberWhere,
               required: true
             },
             {
+              attributes: ['name', 'price', 'currency_symbol', 'type'],
               as: "MembershipType",
               model: MembershipType,
-              where: membershipTypeWhere,
               required: true
             }
           ],
           where: {
-            id: params.id,
-            deleted_flg: false
+            id: params.id
           }
         });
       if (!membershipOrder) {
