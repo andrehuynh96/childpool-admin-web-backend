@@ -64,6 +64,6 @@ module.exports = (sequelize, DataTypes) => {
         underscored: true,
         timestamps: true,
     });
-
+    ClaimRequest.associate = (models) => { };
     return ClaimRequest;
 }
