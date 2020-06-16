@@ -57,7 +57,7 @@ module.exports = {
     }
     catch (err) {
       logger.error("get partner info fail:", err);
-      return { code: err.response.status, data: err.response.data };
+      return err.response ? { code: err.response.status, data: err.response.data } : null;
     }
   }
 } 
