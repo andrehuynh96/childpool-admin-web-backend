@@ -6,17 +6,17 @@ const router = express.Router();
 
 router.get(
 	'/orders',
-	// authenticate,
+	authenticate,
 	controller.search
 );
 
 router.get("/orders/:id",
-    // authenticate,
+    authenticate,
     controller.getOrderDetail
 );
 
 router.post("/orders/:id",
-    // authenticate,
+    authenticate,
     controller.approveOrder
 );
 
@@ -45,19 +45,25 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
- *       - name: name
+ *       - name: payment_status
  *         in: query
  *         type: string 
  *       - name: email
  *         in: query
  *         type: string
- *       - name: membershipTypeId
+ *       - name: membership_type_id
  *         in: query
  *         type: string
- *       - name: referralCode
+ *       - name: crypto_receive_address
  *         in: query
  *         type: string
- *       - name: referrer
+ *       - name: bank_account_number
+ *         in: query
+ *         type: string
+ *       - name: from
+ *         in: query
+ *         type: string
+ *       - name: to
  *         in: query
  *         type: string
  *     produces:
@@ -70,28 +76,6 @@ module.exports = router;
  *             {
                     "data": {
                         "items": [
-                            {
-                                "id": "b14a3095-d82a-46c7-9797-478c333c9c83",
-                                "email": "ngocmy12a06@gmail.com",
-                                "referral_code": "",
-                                "referrer_code": "",
-                                "kyc_id": "0",
-                                "kyc_level": 1,
-                                "kyc_status": "Approved",
-                                "deleted_flg": false,
-                                "plutx_userid_id": "fe61eee1-7540-403f-8bc2-03b9ec134f96"
-                            },
-                            {
-                                "id": "37394288-d0bf-47d3-8886-0ed68642b269",
-                                "email": "tommyalan2410@gmail.com",
-                                "referral_code": "",
-                                "referrer_code": "",
-                                "kyc_id": "0",
-                                "kyc_level": 1,
-                                "kyc_status": "Approved",
-                                "deleted_flg": false,
-                                "plutx_userid_id": "a4ca67fc-a8db-43be-83dd-e0c843d4b573"
-                            }
                         ],
                         "offset": 0,
                         "limit": 10,
@@ -118,14 +102,14 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/members/{memberId}:
+ * /web/membership/orders/{orderId}:
  *   get:
  *     summary: get member detail
  *     tags:
  *       - Members
  *     description:
  *     parameters:
- *       - name: memberId
+ *       - name: orderId
  *         in: path
  *         type: string
  *         required: true
