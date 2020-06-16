@@ -15,8 +15,10 @@ module.exports = {
             const limit = query.limit ? parseInt(req.query.limit) : 10;
             const offset = query.offset ? parseInt(req.query.offset) : 0;
             const where = {};
-            where.created_at = {};
             let fromDate, toDate;
+            if(query.from_date || query.to_date) {
+                where.created_at = {};
+            }
             if (query.from_date) {
                 fromDate = moment(query.from_date).toDate();
                 where.created_at[Op.gt] = fromDate;
