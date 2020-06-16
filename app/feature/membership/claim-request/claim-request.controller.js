@@ -175,15 +175,16 @@ module.exports = {
 
             items.forEach(element => {
                 element.member_email = element.Member.email;
-                element.member_fullname = element.Member.fullname;
                 element.created_at = moment(element.createdAt).format('YYYY-MM-DD HH:mm');
             });
             const data = await stringifyAsync(items, [
-                'id', 'member_id', 'member_email', 'member_fullname', 'member_acount_id',
-                { key: 'type', header: 'payment' },
-                'status',
-                { key: 'currency_symbol', header: 'crypto_platform' },
-                'created_at'
+                { key: 'id', header: 'Id' },{ key: 'created_at', header: 'Time' },
+                { key: 'member_email', header: 'Email' },
+                { key: 'amount', header: 'Claim Amount' },
+                { key: 'status', header: 'Status' },
+                { key: 'type', header: 'Payment' },
+                { key: 'currency_symbol', header: 'Crypto Platform' },
+                
             ]);
             res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
             res.set('Content-Type', 'text/csv');
