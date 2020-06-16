@@ -308,10 +308,6 @@ module.exports = {
     "KEY": "MEMBERSHIP_EXPORT_CSV_CLAIM_REQUESTS",
     "ROLES": ["Master"]
   },
-  "MEMBERSHIP_VIEW_UPGRADE_CONDITION": {
-    "KEY": "MEMBERSHIP_VIEW_UPGRADE_CONDITION",
-    "ROLES": ["Master"]
-  },
   "MEMBERSHIP_UPDATE_UPGRADE_CONDITION": {
     "KEY": "MEMBERSHIP_UPDATE_UPGRADE_CONDITION",
     "ROLES": ["Master"]
@@ -321,3 +317,13 @@ module.exports = {
     "ROLES": ["Master"]
   }
 }
+  },
+  "MEMBERSHIP_VIEW_POLICY_LIST": {
+    "KEY": "MEMBERSHIP_VIEW_POLICY_LIST",
+    "ROLES": ["Master"]
+  },
+  "MEMBERSHIP_UPDATE_POLICY": {
+    "KEY": "MEMBERSHIP_UPDATE_POLICY",
+    "ROLES": ["Master"]
+  } 
+};
