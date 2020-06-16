@@ -10,6 +10,12 @@ router.get(
 	controller.search
 );
 
+router.get(
+	'/orders-csv',
+	authenticate,
+	controller.downloadCSV
+);
+
 router.get("/orders/:id",
     authenticate,
     controller.getOrderDetail
