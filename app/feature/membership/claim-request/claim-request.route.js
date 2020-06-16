@@ -23,12 +23,13 @@ router.put(
 
 router.get(
 	'/claim-requests/csv',
-	authenticate,
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_CLAIM_REQUESTS),
 	controller.downloadCSV
 );
 module.exports = router;
 
-/*********************************************************************/
+/** *******************************************************************/
 /**
  * @swagger
  * /web/membership/claim-requests:
@@ -170,4 +171,59 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
-/*********************************************************************/
+
+ /**
+ * @swagger
+ * /web/membership/claim-requests/csv:
+ *   get:
+ *     summary: export csv claim request
+ *     tags:
+ *       - Claim Request
+ *     description:
+ *     parameters:
+ *       - name: from_date
+ *         in: query
+ *         type: string
+ *       - name: to_date
+ *         in: query
+ *         type: string
+ *       - name: email
+ *         in: query
+ *         type: string
+ *       - name: status
+ *         in: query
+ *         type: string
+ *       - name: payment
+ *         in: query
+ *         type: string
+ *       - name: crypto_platform
+ *         in: query
+ *         type: string
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+/** *******************************************************************/
