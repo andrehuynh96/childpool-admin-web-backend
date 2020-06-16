@@ -9,6 +9,8 @@ const mapper = require("app/feature/response-schema/claim-request.response-schem
 const Sequelize = require('sequelize');
 const stringify = require('csv-stringify');
 const Op = Sequelize.Op;
+const PaymentType = require("app/model/wallet/value-object/claim-request-payment-type");
+const Platform = require("app/model/wallet/value-object/platform");
 
 module.exports = {
     search: async (req, res, next) => {
@@ -195,6 +197,24 @@ module.exports = {
             next(error);
         }
     },
+    getPaymentType: async (req, res, next) => {
+        try {
+            return res.ok(PaymentType);
+        }
+        catch (error) {
+            logger.info('get payment type fail',error);
+            next(error);
+        }
+    },
+    getCryptoPlatform: async (req, res, next) => {
+        try {
+            return res.ok(Platform);
+        }
+        catch (error) {
+            logger.info('get crypto platform fail',error);
+            next(error);
+        }
+    }
 };
 
 function stringifyAsync(data, columns) {
