@@ -108,7 +108,7 @@ module.exports = {
         return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
       }
 
-      if (member.referrer_code) {
+      if (member.referrer_code && body.referrerCode) {
         return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
       }
 
@@ -122,10 +122,10 @@ module.exports = {
       }
       const data = {
         membership_type_id: membershipTypeId
-      }
+      };
 
       if (body.referrerCode && !member.referrer_code) {
-        data.referrer_code = body.referrerCode
+        data.referrer_code = body.referrerCode;
       }
       transaction = await database.transaction();
       try {
@@ -139,7 +139,13 @@ module.exports = {
             plain: true
           }, { transaction });
 
-        let result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
+        let result;
+        if (!body.referrerCode && member.referrer_code) {
+          result = await affiliateApi.updateMembershipType(member.email, { id: membershipTypeId });
+        }
+        else {
+          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
+        }
 
         if (result.httpCode !== 200) {
           await transaction.rollback();
@@ -154,11 +160,6 @@ module.exports = {
         await transaction.rollback();
         throw error;
       }
-
-      if (transaction) {
-        await transaction.rollback();
-      }
-      return res.status(result.httpCode).send(result.data);
     }
     catch (error) {
       if (transaction) {
@@ -180,4 +181,4 @@ module.exports = {
     }
   },
 
-}
+};

@@ -10,7 +10,7 @@ const API_URL = config.affiliate.url;
 const affiliateApi = {
   register: async ({ email, referrerCode }) => {
     try {
-      const accessToken = await _getToken();
+      const accessToken = await _getAccessToken();
       const result = await axios.post(`${API_URL}/clients`,
         {
           ext_client_id: email,

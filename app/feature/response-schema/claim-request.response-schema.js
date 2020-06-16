@@ -3,7 +3,7 @@ const objectMapper = require('object-mapper');
 const destObject = {
   array: {
     '[].id': '[].id',
-    '[].email': '[].email',
+    '[].Member.email': '[].email',
     '[].member_id': '[].member_id',
     '[].member_account_id': '[].member_account_id',
     '[].type': '[].type',
