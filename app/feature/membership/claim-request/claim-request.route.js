@@ -20,6 +20,12 @@ router.put(
     authority(PermissionKey.MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST),
     controller.changeStatus
 );
+
+router.get(
+	'/claim-requests/csv',
+	authenticate,
+	controller.downloadCSV
+);
 module.exports = router;
 
 /*********************************************************************/
