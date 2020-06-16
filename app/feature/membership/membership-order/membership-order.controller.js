@@ -130,8 +130,9 @@ module.exports = {
               where: {
                 id: req.params.id
               },
-              returning: true
-            }, { transaction: t });
+              returning: true,
+              transaction: t
+            });
       
       if (status == MembershipOrderStatus.Completed){
         await Member.update({
@@ -140,8 +141,9 @@ module.exports = {
               where: {
                 id: order.member_id
               },
-              returning: true
-            }, { transaction: t });
+              returning: true,
+              transaction: t
+            });
       }
       await t.commit();
       return res.ok(true)
