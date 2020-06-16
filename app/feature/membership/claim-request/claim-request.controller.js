@@ -1,5 +1,6 @@
 const logger = require('app/lib/logger');
 const ClaimRequest = require("app/model/wallet").claim_requests;
+const Member = require("app/model/wallet").members;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
 const affiliateApi = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
@@ -44,7 +45,21 @@ module.exports = {
             }
 
             const { count: total, rows: items } = await ClaimRequest.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
-
+            const memberIDs = items.map(item => item.member_id);
+            const members = await Member.findAll(
+                {
+                    where: {
+                        id: memberIDs,
+                        deleted_flg: false
+                    }
+                }
+            );
+            items.forEach(item => {
+                const member = members.find(member => member.id === item.member_id);
+                if (member) {
+                  item.email = member.email;
+                }
+              });
             return res.ok({
                 items: mapper(items) && items.length > 0 ? mapper(items) : [],
                 offset: offset,
