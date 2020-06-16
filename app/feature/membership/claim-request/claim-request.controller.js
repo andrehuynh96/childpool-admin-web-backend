@@ -71,32 +71,33 @@ module.exports = {
             if (claimRequest.status !== ClaimRequestStatus.Pending) {
                 return res.badRequest(res.__("CAN_NOT_APPROVE_REJECT_CLAIM_REQUEST"), "CAN_NOT_APPROVE_REJECT_CLAIM_REQUEST", { field: ['claimRequestId'] });
             }
-            let transaction = await database.transaction();
+
+            const transaction = await database.transaction();
             try {
                 await ClaimRequest.update(
                     { status: body.status },
                     {
-                      where: {
-                        id: claimRequest.id
-                      },
-                      returning: true
-                    },{ transaction });
-    
-                let result = await affiliateApi.updateClaimRequest(claimRequest.affiliate_claim_reward_id, body.status);
-    
-                if (result.httpCode == 200) {
-                    await transaction.commit();
-                    return res.ok(true);
-                }
-                else {
+                        where: {
+                            id: claimRequest.id
+                        },
+                        transaction: transaction,
+                        returning: true
+                    });
+
+                const result = await affiliateApi.updateClaimRequest(claimRequest.affiliate_claim_reward_id, body.status);
+
+                if (result.httpCode !== 200) {
                     await transaction.rollback();
+
+                    return res.status(result.httpCode).send(result.data);
                 }
-                return res.status(result.httpCode).send(result.data);
-                
-            } 
+
+                await transaction.commit();
+                return res.ok(true);
+            }
             catch (error) {
                 await transaction.rollback();
-                throw error
+                throw error;
             }
         }
         catch (error) {
