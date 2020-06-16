@@ -5,6 +5,9 @@ const MembershipType = require("app/model/wallet").membership_types;
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status")
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const moment = require('moment')
+const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
+
 
 module.exports = {
   search: async (req, res, next) => {
@@ -23,8 +26,18 @@ module.exports = {
       if (query.bank_account_number) where.account_number = query.bank_account_number
       if (query.crypto_receive_address) where.wallet_address = query.crypto_receive_address
       if (query.email ) memberWhere.email = query.email
-      if (query.from) where.created_at = {[Op.gte]: new Date(query.from)}
-      if (query.to) where.created_at = {[Op.lte]: new Date(query.to)}
+      if (query.from) {
+          let fromDate = moment(query.from).toDate();
+          where.created_at = {
+              [Op.gte]: fromDate
+          };
+      }
+      if (query.to) {
+          let toDate = moment(query.to).toDate();
+          where.created_at = {
+              [Op.lte]: toDate
+          };
+      }
       if (query.membership_type_id) where.membership_type_id = query.membership_type_id
       
       const { count: total, rows: items } = await MembershipOrder.findAndCountAll(
@@ -52,7 +65,7 @@ module.exports = {
       );
     
       return res.ok({
-        items: items,
+        items: membershipOrderMapper(items) && items.length > 0 ? membershipOrderMapper(items) : [],
         offset: offset,
         limit: limit,
         total: total
@@ -95,7 +108,7 @@ module.exports = {
       if (!membershipOrder) {
         return res.badRequest(res.__("MEMBERSHIPORDER_NOT_FOUND"), "MEMBERSHIPORDER_NOT_FOUND", { fields: ["id"] });
       }
-      return res.ok(membershipOrder);
+      return res.ok(membershipOrderMapper(membershipOrder));
     }
     catch (error) {
       logger.error('get membership order detail fail:', error);
