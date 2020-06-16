@@ -95,11 +95,35 @@ const affiliateApi = {
             Authorization: `Bearer ${accessToken}`,
           }
         });
-
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
       logger.error("create client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+  updateClaimRequest: async (claimRewardId, status) => {
+    try {
+      const accessToken = await _getAccessToken();
+      const result = await axios.put(`${API_URL}/claim-rewards/${claimRewardId}`,
+        {
+          status: status
+        },
+        {
+          headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("updateClaimRequest:", err);
+
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
