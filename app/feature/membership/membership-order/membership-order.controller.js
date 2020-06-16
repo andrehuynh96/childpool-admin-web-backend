@@ -1,5 +1,6 @@
 const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
+const database = require('app/lib/database').db().wallet;
 const MembershipOrder = require("app/model/wallet").membership_orders;
 const MembershipType = require("app/model/wallet").membership_types;
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status")
@@ -116,11 +117,13 @@ module.exports = {
     }
   },
   approveOrder: async (req, res, next) => {
-    const t = await sequelize.transaction();
+    const t = await database.transaction();
+
     try {
       let order = MembershipOrder.findOne({ where: { id: req.params.id } })
       if (!order)
         return res.ok(false)
+
       let status = req.body.action == 1 ? MembershipOrderStatus.Completed : MembershipOrderStatus.Rejected
       await MembershipOrder.update({
         notes: req.body.note,
