@@ -181,9 +181,9 @@ module.exports = {
                 { key: 'id', header: 'Id' },{ key: 'created_at', header: 'Time' },
                 { key: 'member_email', header: 'Email' },
                 { key: 'amount', header: 'Claim Amount' },
-                { key: 'status', header: 'Status' },
-                { key: 'type', header: 'Payment' },
                 { key: 'currency_symbol', header: 'Crypto Platform' },
+                { key: 'status', header: 'Status' },
+                { key: 'type', header: 'Payment' }
                 
             ]);
             res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');

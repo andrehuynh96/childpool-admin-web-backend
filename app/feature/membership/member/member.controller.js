@@ -139,7 +139,13 @@ module.exports = {
             plain: true
           }, { transaction });
 
-        let result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
+        let result;
+        if (!body.referrerCode && member.referrer_code) {
+          result = await affiliateApi.updateMembershipType(member.email, { id: membershipTypeId });
+        }
+        else {
+          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
+        }
 
         if (result.httpCode !== 200) {
           await transaction.rollback();
