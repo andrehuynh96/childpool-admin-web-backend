@@ -56,10 +56,19 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(500),
             allowNull: true,
         },
+        affiliate_claim_reward_id: {
+            type: DataTypes.UUID,
+            allowNull: false,
+        },
     }, {
         underscored: true,
         timestamps: true,
     });
-
+    ClaimRequest.associate = (models) => {
+        ClaimRequest.belongsTo(models.members, {
+            as: 'Member',
+            foreignKey: 'member_id',
+        });
+    };
     return ClaimRequest;
 }

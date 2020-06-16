@@ -1,22 +1,18 @@
+
 module.exports = (sequelize, DataTypes) => {
-  const ReceivingAddress = sequelize.define('receiving_addresses', {
+  return sequelize.define("settings", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
+      autoIncrement: true
     },
-    currency_symbol: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
+    key: {
+      type: DataTypes.STRING(128),
+      allowNull: false
     },
-    wallet_address: {
-      type: DataTypes.STRING(250),
-      allowNull: true,
-    },
-    actived_flg: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      default: true,
+    value: {
+      type: DataTypes.STRING(256),
+      allowNull: true
     },
     created_by: {
       type: DataTypes.INTEGER,
@@ -28,10 +24,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
+    type: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    property: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    }
   }, {
       underscored: true,
       timestamps: true,
     });
-
-  return ReceivingAddress;
-};
+} 

@@ -1,6 +1,8 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./member.controller');
+const validator = require("app/middleware/validator.middleware");
+const requestSchema = require('./member.request-schema');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 
@@ -9,19 +11,20 @@ const router = express.Router();
 router.get(
     '/members',
     authenticate,
-    // authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
+    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
     controller.search
 );
 
 router.get("/members/:memberId",
     authenticate,
-    // authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
+    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
     controller.getMemberDetail
 );
 
 router.put("/members/:memberId",
+    validator(requestSchema),
     authenticate,
-    // authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
     controller.updateMember
 );
 
@@ -33,12 +36,12 @@ router.get("/membership-types",
 module.exports = router;
 
 
-/*********************************************************************/
+/** *******************************************************************/
 
 
 /**
  * @swagger
- * /web/members:
+ * /web/membership/members:
  *   get:
  *     summary: search member
  *     tags:
@@ -126,7 +129,7 @@ module.exports = router;
 
 /**
 * @swagger
-* /web/members/{memberId}:
+* /web/membership/members/{memberId}:
 *   get:
 *     summary: get member detail
 *     tags:
@@ -179,7 +182,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/members/{memberId}:
+ * /web/membership/members/{memberId}:
  *   put:
  *     summary: update member
  *     tags:
@@ -234,7 +237,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership-types:
+ * /web/membership/membership-types:
  *   get:
  *     summary: get dropdown list membership type
  *     tags:
@@ -290,4 +293,4 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
-/*********************************************************************/
+/** *******************************************************************/

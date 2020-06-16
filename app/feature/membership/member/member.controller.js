@@ -5,6 +5,7 @@ const MemberStatus = require("app/model/wallet/value-object/member-status");
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
 const affiliateApi = require('app/lib/affiliate-api');
+const database = require('app/lib/database').db().wallet;
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -82,6 +83,7 @@ module.exports = {
     }
   },
   updateMember: async (req, res, next) => {
+    let transaction;
     try {
       const { body, params } = req;
       const { memberId } = params;
@@ -93,51 +95,90 @@ module.exports = {
           deleted_flg: false
         }
       });
+
       if (!member) {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
+
+      if (member.member_sts == MemberStatus.LOCKED) {
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+      }
+
+      if (member.member_sts == MemberStatus.UNACTIVATED) {
+        return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
+      }
+
+      if (member.referrer_code && body.referrerCode) {
+        return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
+      }
+
       const membershipType = await MembershipType.findOne({
         where: {
           id: membershipTypeId
         }
-      })
+      });
       if (!membershipType) {
         return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
       }
       const data = {
         membership_type_id: membershipTypeId
-      }
+      };
 
       if (body.referrerCode && !member.referrer_code) {
-        data.referrer_code = body.referrerCode
+        data.referrer_code = body.referrerCode;
       }
-      await Member.update(
-        data,
-        {
-          where: {
-            id: memberId
-          }
-        });
-      const updateMembershipTypeResult = await affiliateApi.updateMembershipType(member.email, membershipType);
-      if (updateMembershipTypeResult.httpCode !== 200) {
-        return res.status(updateMembershipTypeResult.httpCode).send(updateMembershipTypeResult.data);
+      transaction = await database.transaction();
+      try {
+        await Member.update(
+          data,
+          {
+            where: {
+              id: member.id
+            },
+            returning: true,
+            plain: true
+          }, { transaction });
+
+        let result;
+        if (!body.referrerCode && member.referrer_code) {
+          result = await affiliateApi.updateMembershipType(member.email, { id: membershipTypeId });
+        }
+        else {
+          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
+        }
+
+        if (result.httpCode !== 200) {
+          await transaction.rollback();
+
+          return res.status(result.httpCode).send(result.data);
+        }
+
+        await transaction.commit();
+        return res.ok(true);
       }
-      return res.ok(true);
+      catch (error) {
+        await transaction.rollback();
+        throw error;
+      }
     }
     catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
       logger.error('update member fail:', error);
       next(error);
     }
   },
-  getMembershipTypeList: async (req, res,next) => {
+  getMembershipTypeList: async (req, res, next) => {
     try {
       const membershipType = await MembershipType.findAll();
       return res.ok(membershipType);
-      
+
     } catch (error) {
+
       logger.error('get membership type list fail:', error);
       next(error);
     }
   },
 
-}
+};
