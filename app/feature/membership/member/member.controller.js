@@ -103,7 +103,7 @@ module.exports = {
       if (member.member_sts == MemberStatus.LOCKED) {
         return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
       }
-  
+
       if (member.member_sts == MemberStatus.UNACTIVATED) {
         return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
       }
@@ -128,21 +128,31 @@ module.exports = {
         data.referrer_code = body.referrerCode
       }
       transaction = await database.transaction();
-      await Member.update(
-        data,
-        {
-          where: {
-            id: member.id
-          },
-          returning: true,
-          plain: true
-        },{ transaction });
+      try {
+        await Member.update(
+          data,
+          {
+            where: {
+              id: member.id
+            },
+            returning: true,
+            plain: true
+          }, { transaction });
 
-      let result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
-      
-      if (result.httpCode == 200){
+        let result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
+
+        if (result.httpCode !== 200) {
+          await transaction.rollback();
+
+          return res.status(result.httpCode).send(result.data);
+        }
+
         await transaction.commit();
-        return res.ok(true)
+        return res.ok(true);
+      }
+      catch (error) {
+        await transaction.rollback();
+        throw error;
       }
 
       if (transaction) {
@@ -158,13 +168,13 @@ module.exports = {
       next(error);
     }
   },
-  getMembershipTypeList: async (req, res,next) => {
+  getMembershipTypeList: async (req, res, next) => {
     try {
       const membershipType = await MembershipType.findAll();
       return res.ok(membershipType);
-      
+
     } catch (error) {
-      
+
       logger.error('get membership type list fail:', error);
       next(error);
     }

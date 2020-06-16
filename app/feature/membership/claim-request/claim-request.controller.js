@@ -15,18 +15,18 @@ module.exports = {
             const limit = query.limit ? parseInt(req.query.limit) : 10;
             const offset = query.offset ? parseInt(req.query.offset) : 0;
             const where = {};
+            where.created_at = {};
+            let fromDate, toDate;
             if (query.from_date) {
-                const fromDate = moment(query.from_date).toDate();
-                where.created_at = {
-                    [Op.gt]: fromDate
-                };
-                if (query.to_date) {
-                    const toDate = moment(query.to_date).toDate();
-                    where.created_at[Op.lt] = toDate
-                    if (fromDate > toDate) {
-                        return res.badRequest(res.__("TO_DATE_INVALID"), "TO_DATE_INVALID", { field: ['from_date', 'to_date'] });
-                    }
-                }
+                fromDate = moment(query.from_date).toDate();
+                where.created_at[Op.gt] = fromDate;
+            }
+            if (query.to_date) {
+                toDate = moment(query.to_date).toDate();
+                where.created_at[Op.lt] = toDate;
+            }
+            if (fromDate && toDate && fromDate > toDate) {
+                return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
             }
             if (query.email) {
                 where.email = { [Op.iLike]: `%${query.email}%` };
