@@ -208,26 +208,20 @@ module.exports = {
         }
       );
       items.forEach(element => {
-        element.member_email = element.Member.email
-        element.member_fullname = element.Member.fullname
-        element.member_kyc_level = element.Member.kyc_level
-        element.member_kyc_status = element.Member.kyc_status
-        element.member_phone = element.Member.phone
-        element.member_city = element.Member.city
-        element.membership_type_name = element.MembershipType.name
-        element.membership_type_price = element.MembershipType.price
-        element.membership_type_currency_symbol = element.MembershipType.currency_symbol
-        element.membership_type_type = element.MembershipType.type
+        element.email = element.Member.email
+        element.membership_type_name = element.MembershipType.name      
       });
-      let data = await stringifyAsync(items, ['id', 'member_id', 'member_account_id', 'membership_type_id', 'payment_type',
-        'currency_symbol', 'amount', 'account_number', 'bank_name', { key: 'bracnch_name', header: 'branch_name' },
-        'account_holder', 'payment_ref_code', 'memo', 'wallet_address', 'txid', 'rate_by_usdt', 'status', 'notes', 'approved_by_id',
-        'member_email', 'member_fullname', 'member_kyc_level', 'member_kyc_status', 'member_phone', 'member_city',
-        'membership_type_name', 'membership_type_price', 'membership_type_currency_symbol', 'membership_type_type',
-        { key: 'createdAt', header: 'created_at' },
-        { key: 'updatedAt', header: 'updated_at' },
-      ])
 
+      let data = await stringifyAsync(items, [
+        { key: 'createdAt', header: 'Time' },
+        { key: 'id', header: 'Order No' },
+        { key: 'email', header: 'Email' },
+        { key: 'membership_type_name', header: 'Membership' },
+        { key: 'payment_type', header: 'Payment Type' },
+        { key: 'account_number', header: 'Bank Acc No' },
+        { key: 'wallet_address', header: 'Receive address' },
+        { key: 'status', header: 'Status' }
+      ])
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
