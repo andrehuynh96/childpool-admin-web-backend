@@ -315,8 +315,6 @@ module.exports = {
   "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE_CONFIG": {
     "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE_CONFIG",
     "ROLES": ["Master"]
-  }
-}
   },
   "MEMBERSHIP_VIEW_POLICY_LIST": {
     "KEY": "MEMBERSHIP_VIEW_POLICY_LIST",
@@ -325,5 +323,5 @@ module.exports = {
   "MEMBERSHIP_UPDATE_POLICY": {
     "KEY": "MEMBERSHIP_UPDATE_POLICY",
     "ROLES": ["Master"]
-  } 
-};
+  }
+}

@@ -127,8 +127,31 @@ const affiliateApi = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
+  getAllPolicy: async () => {
+    try {
+      const accessToken = await _getAccessToken();
+      const result = await axios.get(`${API_URL}/policies`,
+        {
+          headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
 
-}
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("updateClaimRequest:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+
+};
+
 
 async function _getAccessToken() {
   const key = redisResource.affiliate.token;
