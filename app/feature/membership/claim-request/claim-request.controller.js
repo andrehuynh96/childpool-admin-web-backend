@@ -7,7 +7,7 @@ const Member = require("app/model/wallet").members;
 const moment = require('moment');
 const mapper = require("app/feature/response-schema/claim-request.response-schema");
 const Sequelize = require('sequelize');
-const stringify = require('csv-stringify')
+const stringify = require('csv-stringify');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -126,74 +126,75 @@ module.exports = {
         }
     },
     downloadCSV: async (req, res, next) => {
-        const { query } = req;
-        const limit = query.limit ? parseInt(req.query.limit) : 10;
-        const offset = query.offset ? parseInt(req.query.offset) : 0;
-        const where = {};
-        let fromDate, toDate;
-        if (query.from_date || query.to_date) {
-            where.created_at = {};
-        }
-        if (query.from_date) {
-            fromDate = moment(query.from_date).toDate();
-            where.created_at[Op.gte] = fromDate;
-        }
-        if (query.to_date) {
-            toDate = moment(query.to_date).toDate();
-            where.created_at[Op.lte] = toDate;
-        }
-        if (fromDate && toDate && fromDate > toDate) {
-            return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
-        }
-        if (query.payment) {
-            where.type = { [Op.iLike]: `${query.payment}` };
-        }
-        if (query.status) {
-            where.status = { [Op.iLike]: `${query.status}` };
-        }
-        if (query.crypto_platform) {
-            where.currency_symbol = { [Op.iLike]: `${query.crypto_platform}` };
-        }
-        let memberCond = {
-            deleted_flg: false
-        };
-        if (query.email) {
-            memberCond.email = { [Op.iLike]: `%${query.email}%` };
-        }
-        const { count: total, rows: items } = await ClaimRequest.findAndCountAll({
-            limit,
-            offset,
-            include: [
-                {
-                    attributes: ['email', 'fullname'],
-                    as: "Member",
-                    model: Member,
-                    where: memberCond,
-                    required: true
-                }
-            ],
-            where: where,
-            order: [['created_at', 'DESC']]
-        });
+        try {
+            const { query } = req;
+            const where = {};
+            let fromDate, toDate;
+            if (query.from_date || query.to_date) {
+                where.created_at = {};
+            }
+            if (query.from_date) {
+                fromDate = moment(query.from_date).toDate();
+                where.created_at[Op.gte] = fromDate;
+            }
+            if (query.to_date) {
+                toDate = moment(query.to_date).toDate();
+                where.created_at[Op.lte] = toDate;
+            }
+            if (fromDate && toDate && fromDate > toDate) {
+                return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
+            }
+            if (query.payment) {
+                where.type = { [Op.iLike]: `${query.payment}` };
+            }
+            if (query.status) {
+                where.status = { [Op.iLike]: `${query.status}` };
+            }
+            if (query.crypto_platform) {
+                where.currency_symbol = { [Op.iLike]: `${query.crypto_platform}` };
+            }
+            let memberCond = {
+                deleted_flg: false
+            };
+            if (query.email) {
+                memberCond.email = { [Op.iLike]: `%${query.email}%` };
+            }
+            const items = await ClaimRequest.findAll({
+                include: [
+                    {
+                        attributes: ['email', 'fullname'],
+                        as: "Member",   
+                        model: Member,
+                        where: memberCond,
+                        required: true
+                    }
+                ],
+                where: where,
+                order: [['created_at', 'DESC']]
+            });
 
-        items.forEach(element => {
-            element.member_email = element.Member.email
-            element.member_fullname = element.Member.fullname
-            element.created_at=moment(element.createdAt, "YYYY-MM-DD HH:mm Z")
-            console.log(moment(element.createdAt, "YYYY-MM-DD HH:mm Z"));
-        });
-        const data = await stringifyAsync(items,[
-            'id','member_id','member_email','member_fullname','member_acount_id',
-            { key: 'type', header: 'payment' },
-            'status',
-            { key: 'currency_symbol', header: 'crypto_platform' },
-            'created_at'
-        ]);
-        res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
-        res.set('Content-Type', 'text/csv');
-        res.send(data);
+            items.forEach(element => {
+                element.member_email = element.Member.email;
+                element.member_fullname = element.Member.fullname;
+                element.created_at = moment(element.createdAt).format('YYYY-MM-DD HH:mm');
+            });
+            const data = await stringifyAsync(items, [
+                'id', 'member_id', 'member_email', 'member_fullname', 'member_acount_id',
+                { key: 'type', header: 'payment' },
+                'status',
+                { key: 'currency_symbol', header: 'crypto_platform' },
+                'created_at'
+            ]);
+            res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
+            res.set('Content-Type', 'text/csv');
+            res.send(data);
+        } 
+        catch (error) {
+            logger.info('download csv fail',error);
+            next(error);
+        }
     },
-}
+};
 
 function stringifyAsync(data, columns) {
     return new Promise(function (resolve, reject) {
@@ -202,10 +203,10 @@ function stringifyAsync(data, columns) {
             columns: columns
         }, function (err, data) {
             if (err) {
-                return reject(err)
+                return reject(err);
             }
-            return resolve(data)
+            return resolve(data);
         }
-        )
-    })
+        );
+    });
 }
