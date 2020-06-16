@@ -1,5 +1,4 @@
 const express = require('express');
-const config = require('app/config');
 const validator = require("app/middleware/validator.middleware");
 const { update } = require("./validator");
 const authenticate = require('app/middleware/authenticate.middleware');
