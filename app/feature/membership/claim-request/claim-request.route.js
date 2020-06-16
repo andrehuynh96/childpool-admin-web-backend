@@ -73,7 +73,17 @@ module.exports = router;
                                 "member_id": "8337b3e4-b8be-4594-bca3-d6dba7c751ea",
                                 "member_account_id": 1,
                                 "type": "Bank",
-                                "status": "pending",
+                                "status": "Pending",
+                                "amount": "0",
+                                "currency_symbol": "ETH",
+                                "created_at": "2020-05-29T06:15:07.006Z"
+                            },
+                            {
+                                "id": 2,
+                                "member_id": "8337b3e4-b8be-4594-bca3-d6dba7c751ea",
+                                "member_account_id": 1,
+                                "type": "Bank",
+                                "status": "Approved",
                                 "amount": "0",
                                 "currency_symbol": "ETH",
                                 "created_at": "2020-05-29T06:15:07.006Z"
@@ -84,6 +94,59 @@ module.exports = router;
                         "total": 1
                     }
                 }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/membership/claim-request/{claimRequestId}:
+ *   put:
+ *     summary: update member
+ *     tags:
+ *       - Members
+ *     description: update user profile
+ *     parameters:
+ *       - name: claimRequestId
+ *         in: path
+ *         type: integer
+ *         required: true
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to update.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - status
+ *            example:
+ *                  {
+                        "status":"Approved | Rejected"
+ *                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
  *       400:
  *         description: Error
  *         schema:
