@@ -100,14 +100,16 @@ module.exports = {
       await UserRole.destroy({
         where: {
           user_id: req.params.id
-        }
-      }, { transaction });
+        },
+        transaction: transaction
+      });
       let response = await User.destroy({
         where: {
           id: req.params.id
         },
-        returning: true
-      }, { transaction });
+        returning: true,
+        transaction: transaction
+      });
       await transaction.commit();
 
       if (!response || response.length == 0) {
@@ -165,8 +167,9 @@ module.exports = {
       await UserRole.destroy({
         where: {
           user_id: user.id,
-        }
-      }, { transaction });
+        },
+        transaction: transaction
+      });
 
       let userRole = await UserRole.create({
         user_id: user.id,
@@ -247,8 +250,9 @@ module.exports = {
           where: {
             id: req.params.id
           },
-          returning: true
-        }, { transaction });
+          returning: true,
+          transaction: transaction
+        });
       if (!response || response.length == 0) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();
@@ -257,8 +261,9 @@ module.exports = {
       await UserRole.destroy({
         where: {
           user_id: result.id,
-        }
-      }, { transaction });
+        },
+        transaction: transaction
+      });
 
       let userRole = await UserRole.create({
         user_id: result.id,
