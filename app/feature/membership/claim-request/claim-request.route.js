@@ -27,6 +27,19 @@ router.get(
     authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_CLAIM_REQUESTS),
 	controller.downloadCSV
 );
+
+router.get(
+	'/claim-requests/payment-type',
+    authenticate,
+	controller.getPaymentType
+);
+
+router.get(
+	'/claim-requests/crypto-platform',
+    authenticate,
+	controller.getCryptoPlatform
+);
+
 module.exports = router;
 
 /** *******************************************************************/
@@ -208,6 +221,98 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+/** *******************************************************************/
+/**
+ * @swagger
+ * /web/membership/claim-requests/payment-type:
+ *   get:
+ *     summary: get claim request payment types
+ *     tags:
+ *       - Claim Request
+ *     description:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": {
+                        "Bank": "Bank",
+                        "Crypto": "Crypto"
+                    }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+/** *******************************************************************/
+/**
+ * @swagger
+ * /web/membership/claim-requests/crypto-platform:
+ *   get:
+ *     summary: get claim request crypto platforms
+ *     tags:
+ *       - Claim Request
+ *     description:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": {
+                        "ETH": {
+                            "symbol": "ETH",
+                            "name": "Ethereum"
+                        },
+                        "ATOM": {
+                            "symbol": "ATOM",
+                            "name": "Cosmos"
+                        },
+                        "IRIS": {
+                            "symbol": "IRIS",
+                            "name": "Iris"
+                        },
+                        "ONT": {
+                            "symbol": "ONT",
+                            "name": "Ontology"
+                        }
+                    }
  *             }
  *       400:
  *         description: Error
