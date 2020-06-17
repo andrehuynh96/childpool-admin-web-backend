@@ -126,8 +126,9 @@ module.exports = {
       })
 
       let rolePermissions = await RolePermission.bulkCreate(data, {
-        returning: true
-      }, { transaction });
+        returning: true,
+        transaction: transaction
+      });
       if (!rolePermissions) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();
@@ -187,16 +188,18 @@ module.exports = {
             where: {
               id: req.params.id
             },
-            returning: true
-          }, { transaction });
+            returning: true,
+            transaction: transaction
+          });
         if (!updateRoleResponse) {
           if (transaction) await transaction.rollback();
           return res.serverInternalError();
         }
       }
       await RolePermission.destroy({
-        where: { role_id: req.params.id }
-      }, { transaction });
+        where: { role_id: req.params.id },
+        transaction: transaction
+      });
 
       let data = []
       permissionList.map(ele => {
@@ -207,8 +210,9 @@ module.exports = {
       })
 
       let rolePermissions = await RolePermission.bulkCreate(data, {
-        returning: true
-      }, { transaction });
+        returning: true,
+        transaction: transaction
+      });
       if (!rolePermissions) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();

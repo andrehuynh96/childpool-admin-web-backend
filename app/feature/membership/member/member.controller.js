@@ -136,8 +136,9 @@ module.exports = {
               id: member.id
             },
             returning: true,
-            plain: true
-          }, { transaction });
+            plain: true,
+            transaction: transaction
+          });
 
         let result;
         if (!body.referrerCode && member.referrer_code) {
