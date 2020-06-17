@@ -249,6 +249,8 @@ function getUrlTxid(txid, currencySymbol){
         return `https://www.blockchain.com/bch/tx/${origin}`
       case 'ETH':
         return `https://www.blockchain.com/eth/tx/0x${origin}`
+      case 'USDT':
+        return `https://etherscan.io/token/0x${origin}`
       default:
         return txid
     }
