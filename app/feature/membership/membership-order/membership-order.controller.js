@@ -66,7 +66,7 @@ module.exports = {
       );
 
       items.forEach(item => {
-        item.txid = getUrlTxid(item.txid, item.currency_symbol)
+        item.explorer_link = getUrlTxid(item.txid, item.currency_symbol)
       })
 
       return res.ok({
@@ -113,7 +113,7 @@ module.exports = {
       if (!membershipOrder) {
         return res.badRequest(res.__("MEMBERSHIPORDER_NOT_FOUND"), "MEMBERSHIPORDER_NOT_FOUND", { fields: ["id"] });
       }
-      membershipOrder.txid = getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol)
+      membershipOrder.explorer_link = getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol)
       return res.ok(membershipOrderMapper(membershipOrder));
     }
     catch (error) {
