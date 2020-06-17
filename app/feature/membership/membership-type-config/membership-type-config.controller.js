@@ -42,7 +42,8 @@ module.exports = {
               property: key
             },
             returning: true,
-          }, { transaction });
+            transaction: transaction
+          });
   
       }
       await transaction.commit();
