@@ -28,13 +28,13 @@ module.exports = {
       if (query.crypto_receive_address) where.wallet_address = query.crypto_receive_address
       if (query.email) memberWhere.email = query.email
       if (query.from) {
-        let fromDate = moment(query.from).toDate();
+        let fromDate = moment(query.from).add(1, 'minute').toDate();
         where.created_at = {
           [Op.gte]: fromDate
         };
       }
       if (query.to) {
-        let toDate = moment(query.to).toDate();
+        let toDate = moment(query.to).add(1, 'minute').toDate();
         where.created_at = {
           [Op.lte]: toDate
         };

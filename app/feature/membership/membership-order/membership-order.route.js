@@ -1,28 +1,33 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./membership-order.controller');
-
+const PermissionKey = require('app/model/wallet/value-object/permission-key');
+const authority = require('app/middleware/authority.middleware');
 const router = express.Router();
 
 router.get(
 	'/orders',
 	authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_ORDER_LIST),
 	controller.search
 );
 
 router.get(
 	'/orders-csv',
 	authenticate,
+    authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_ORDERS),
 	controller.downloadCSV
 );
 
 router.get("/orders/:id",
     authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_ORDER_DETAIL),
     controller.getOrderDetail
 );
 
 router.post("/orders/:id",
     authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_ORDER),
     controller.approveOrder
 );
 
