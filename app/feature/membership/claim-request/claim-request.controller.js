@@ -26,8 +26,8 @@ module.exports = {
                 where.created_at[Op.gte] = fromDate;
             }
             if (query.to_date) {
-                toDate = moment(query.to_date).toDate();
-                where.created_at[Op.lte] = toDate;
+                toDate = moment(query.to_date).add(1, 'minute').toDate();
+                where.created_at[Op.lt] = toDate;
             }
             if (fromDate && toDate && fromDate > toDate) {
                 return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
@@ -138,8 +138,8 @@ module.exports = {
                 where.created_at[Op.gte] = fromDate;
             }
             if (query.to_date) {
-                toDate = moment(query.to_date).toDate();
-                where.created_at[Op.lte] = toDate;
+                toDate = moment(query.to_date).add(1, 'minute').toDate();
+                where.created_at[Op.lt] = toDate;
             }
             if (fromDate && toDate && fromDate > toDate) {
                 return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
@@ -163,7 +163,7 @@ module.exports = {
                 include: [
                     {
                         attributes: ['email', 'fullname'],
-                        as: "Member",   
+                        as: "Member",
                         model: Member,
                         where: memberCond,
                         required: true
@@ -178,20 +178,20 @@ module.exports = {
                 element.created_at = moment(element.createdAt).format('YYYY-MM-DD HH:mm');
             });
             const data = await stringifyAsync(items, [
-                { key: 'id', header: 'Id' },{ key: 'created_at', header: 'Time' },
+                { key: 'id', header: 'Id' }, { key: 'created_at', header: 'Time' },
                 { key: 'member_email', header: 'Email' },
                 { key: 'amount', header: 'Claim Amount' },
                 { key: 'currency_symbol', header: 'Crypto Platform' },
                 { key: 'status', header: 'Status' },
                 { key: 'type', header: 'Payment' }
-                
+
             ]);
             res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
             res.set('Content-Type', 'text/csv');
             res.send(data);
-        } 
+        }
         catch (error) {
-            logger.info('download csv fail',error);
+            logger.info('download csv fail', error);
             next(error);
         }
     },
