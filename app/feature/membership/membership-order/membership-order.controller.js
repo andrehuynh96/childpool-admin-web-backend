@@ -65,6 +65,10 @@ module.exports = {
         }
       );
 
+      items.forEach(item => {
+        item.txid = getUrlTxid(item.txid, item.currency_symbol)
+      })
+
       return res.ok({
         items: membershipOrderMapper(items) && items.length > 0 ? membershipOrderMapper(items) : [],
         offset: offset,
@@ -109,6 +113,7 @@ module.exports = {
       if (!membershipOrder) {
         return res.badRequest(res.__("MEMBERSHIPORDER_NOT_FOUND"), "MEMBERSHIPORDER_NOT_FOUND", { fields: ["id"] });
       }
+      membershipOrder.txid = getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol)
       return res.ok(membershipOrderMapper(membershipOrder));
     }
     catch (error) {
@@ -231,6 +236,22 @@ module.exports = {
       next(err);
     }
   },
+}
+
+function getUrlTxid(txid, currencySymbol){
+    if(!txid || txid.length < 2)
+      return txid
+    let origin = txid[0] == '0' && txid[1] == 'x' ? txid.replace(/0x/g,'') : txid
+    switch(currencySymbol){
+      case 'BTC':
+        return `https://www.blockchain.com/btc/tx/${origin}`
+      case 'BCH':
+        return `https://www.blockchain.com/bch/tx/${origin}`
+      case 'ETH':
+        return `https://www.blockchain.com/eth/tx/0x${origin}`
+      default:
+        return txid
+    }
 }
 
 function stringifyAsync(data, columns) {

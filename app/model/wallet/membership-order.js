@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
-    bracnch_name: {
+    branch_name: {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
