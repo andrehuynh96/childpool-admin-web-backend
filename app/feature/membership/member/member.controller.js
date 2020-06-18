@@ -88,6 +88,15 @@ module.exports = {
       const { body, params } = req;
       const { memberId } = params;
       const membershipTypeId = body.membershipTypeId;
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: membershipTypeId
+        }
+      });
+
+      if (!membershipType) {
+        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
+      }
 
       const member = await Member.findOne({
         where: {
@@ -112,21 +121,17 @@ module.exports = {
         return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
       }
 
-      const membershipType = await MembershipType.findOne({
-        where: {
-          id: membershipTypeId
-        }
-      });
-      if (!membershipType) {
-        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
-      }
+      const hasChangedMembershipType = member.membership_type_id != membershipTypeId;
+      const hasUpdatedReferrerCode = !member.referrer_code && body.referrerCode;
+
       const data = {
         membership_type_id: membershipTypeId
       };
 
-      if (body.referrerCode && !member.referrer_code) {
+      if (hasUpdatedReferrerCode) {
         data.referrer_code = body.referrerCode;
       }
+
       transaction = await database.transaction();
       try {
         await Member.update(
@@ -141,17 +146,24 @@ module.exports = {
           });
 
         let result;
-        if (!body.referrerCode && member.referrer_code) {
-          result = await affiliateApi.updateMembershipType(member.email, { id: membershipTypeId });
+        if (hasChangedMembershipType) {
+          result = await affiliateApi.updateMembershipType(member.email, membershipType);
+
+          if (result.httpCode !== 200) {
+            await transaction.rollback();
+
+            return res.status(result.httpCode).send(result.data);
+          }
         }
-        else {
+
+        if (hasUpdatedReferrerCode) {
           result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
-        }
 
-        if (result.httpCode !== 200) {
-          await transaction.rollback();
+          if (result.httpCode !== 200) {
+            await transaction.rollback();
 
-          return res.status(result.httpCode).send(result.data);
+            return res.status(result.httpCode).send(result.data);
+          }
         }
 
         await transaction.commit();
