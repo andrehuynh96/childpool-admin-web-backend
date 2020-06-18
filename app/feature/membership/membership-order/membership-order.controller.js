@@ -165,6 +165,7 @@ module.exports = {
       await t.commit();
       if (status == MembershipOrderStatus.Completed) {
         await membershipAffiliateApi.register({email: order.Member.email, referrerCode: ''})
+        await _sendEmail(order.Member.email, order.id)
       }
       return res.ok(true)
     }
@@ -174,7 +175,6 @@ module.exports = {
       next(err);
     }
   },
-
   downloadCSV: async (req, res, next) => {
     try {
       const { query } = req;
@@ -283,15 +283,16 @@ function stringifyAsync(data, columns) {
   })
 }
 
-// async function _sendEmail(emails, membershipType) {
-//     try {
-//       let subject = `Membership payment`;
-//       let from = `Child membership department`;
-//       let data = {
-//       }
-//       data = Object.assign({}, data, config.email);
-//       await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.viewRequest);
-//     } catch (err) {
-//       logger.error("send confirmed email for changing reward address for master pool fail", err);
-//     }
-// }
+async function _sendEmail(emails, id) {
+    try {
+      let subject = `Membership payment`;
+      let from = `Child membership department`;
+      let data = {
+        id: id
+      }
+      data = Object.assign({}, data, config.email);
+      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrder);
+    } catch (err) {
+      logger.error("send confirmed membership order email", err);
+    }
+}
