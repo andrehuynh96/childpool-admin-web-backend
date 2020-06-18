@@ -165,6 +165,8 @@ module.exports = {
       }     
       if (status == MembershipOrderStatus.Completed) {
         let affiliate = await membershipAffiliateApi.register({email: order.Member.email, referrerCode: order.referrer_code})
+        if(affiliate.httpCode != 200)
+          throw affiliate.data
         await MembershipOrder.update({
           referral_code: affiliate.code
         }, {
