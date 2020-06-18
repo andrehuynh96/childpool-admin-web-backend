@@ -9,6 +9,7 @@ const Op = Sequelize.Op;
 const moment = require('moment')
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
 const stringify = require('csv-stringify')
+const membershipAffiliateApi = require("app/lib/membership-affiliate-api")
 
 module.exports = {
   search: async (req, res, next) => {
@@ -125,7 +126,15 @@ module.exports = {
     const t = await database.transaction();
 
     try {
-      let order = MembershipOrder.findOne({ where: { id: req.params.id } })
+      let order = MembershipOrder.findOne({ 
+        where: { id: req.params.id },
+        include: {
+          attributes: ['email'],
+          as: "Member",
+          model: Member,
+          required: true
+        }
+       })
       if (!order)
         return res.ok(false)
 
@@ -154,6 +163,9 @@ module.exports = {
         });
       }
       await t.commit();
+      if (status == MembershipOrderStatus.Completed) {
+        await membershipAffiliateApi.register({email: order.Member.email, referrerCode: ''})
+      }
       return res.ok(true)
     }
     catch (err) {
