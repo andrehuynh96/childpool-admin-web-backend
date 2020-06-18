@@ -82,6 +82,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(100),
       allowNull: true,
     },
+    referral_code: {
+      type: DataTypes.STRING(12),
+      allowNull: false
+    }
   }, {
     underscored: true,
     timestamps: true,
