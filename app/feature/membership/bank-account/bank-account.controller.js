@@ -49,8 +49,9 @@ module.exports = {
           where: {
             actived_flg: true,
           },
-          returning: true
-        }, { transaction });
+          returning: true,
+          transaction: transaction
+        });
       if (!updateCurrent) {
         if (transaction) {
           await transaction.rollback();

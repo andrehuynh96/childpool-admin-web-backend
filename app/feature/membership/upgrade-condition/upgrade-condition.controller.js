@@ -1,5 +1,4 @@
 const logger = require("app/lib/logger");
-const config = require("app/config");
 const database = require('app/lib/database').db().wallet;
 const Setting = require("app/model/wallet").settings;
 
@@ -57,7 +56,8 @@ module.exports = {
               property: key
             },
             returning: true,
-          }, { transaction });
+            transaction: transaction
+          });
   
       }
       await transaction.commit();
@@ -67,7 +67,7 @@ module.exports = {
       if (transaction) {
         await transaction.rollback();
       }
-      logger.error("active receiving addresses fail", err);
+      logger.error("update upgrade condition fail", err);
       next(err);
     }
   }
