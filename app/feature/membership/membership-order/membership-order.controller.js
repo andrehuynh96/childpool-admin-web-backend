@@ -164,7 +164,7 @@ module.exports = {
       }
       await t.commit();
       if (status == MembershipOrderStatus.Completed) {
-        let affiliate = await membershipAffiliateApi.register({email: order.Member.email, referrerCode: ''})
+        let affiliate = await membershipAffiliateApi.register({email: order.Member.email, referrerCode: order.referrer_code})
         await MembershipOrder.update({
           referral_code: affiliate.code
         }, {
