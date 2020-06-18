@@ -10,6 +10,8 @@ const moment = require('moment')
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
 const stringify = require('csv-stringify')
 const membershipAffiliateApi = require("app/lib/membership-affiliate-api")
+const config = require('app/config');
+const mailer = require('app/lib/mailer');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -126,7 +128,7 @@ module.exports = {
     const t = await database.transaction();
 
     try {
-      let order = MembershipOrder.findOne({ 
+      let order = await MembershipOrder.findOne({ 
         where: { id: req.params.id },
         include: {
           attributes: ['email'],
@@ -137,7 +139,6 @@ module.exports = {
        })
       if (!order)
         return res.ok(false)
-
       let status = req.body.action == 1 ? MembershipOrderStatus.Completed : MembershipOrderStatus.Rejected
       await MembershipOrder.update({
         notes: req.body.note,
@@ -161,8 +162,7 @@ module.exports = {
           returning: true,
           transaction: t
         });
-      }
-      await t.commit();
+      }     
       if (status == MembershipOrderStatus.Completed) {
         let affiliate = await membershipAffiliateApi.register({email: order.Member.email, referrerCode: order.referrer_code})
         await MembershipOrder.update({
@@ -175,6 +175,7 @@ module.exports = {
         });
         await _sendEmail(order.Member.email, order.id)
       }
+      await t.commit();
       return res.ok(true)
     }
     catch (err) {
