@@ -65,6 +65,8 @@ const affiliateApi = {
       const result = await axios.get(`${API_URL}/clients/invitees?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
         {
           headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
             "x-affiliate-type-id": config.affiliate.affiliateTypeId,
             Authorization: `Bearer ${accessToken}`,
