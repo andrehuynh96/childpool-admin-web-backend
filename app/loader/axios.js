@@ -1,5 +1,4 @@
 const axios = require("axios");
-const config = require("app/config");
 const crypto = require('crypto');
 const Url = require("url");
 const moment = require('moment');

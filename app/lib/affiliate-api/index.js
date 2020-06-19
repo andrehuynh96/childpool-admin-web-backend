@@ -4,6 +4,7 @@ const logger = require("app/lib/logger")
 const redisResource = require("app/resource/redis");
 const redis = require("app/lib/redis");
 const cache = redis.client();
+const MembershipTypeName = require("app/model/wallet/value-object/membership-type-name");
 
 const API_URL = config.affiliate.url;
 
@@ -64,6 +65,8 @@ const affiliateApi = {
       const result = await axios.get(`${API_URL}/clients/invitees?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
         {
           headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
             "x-affiliate-type-id": config.affiliate.affiliateTypeId,
             Authorization: `Bearer ${accessToken}`,
@@ -84,7 +87,7 @@ const affiliateApi = {
       const result = await axios.put(`${API_URL}/clients/membership-type`,
         {
           ext_client_id: email,
-          membership_type_id: membershipType.id,
+          membership_type_id: membershipType.type === MembershipTypeName.Free ? membershipType.id : null,
         },
         {
           headers: {
@@ -95,10 +98,11 @@ const affiliateApi = {
             Authorization: `Bearer ${accessToken}`,
           }
         });
+
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger.error("Update Membership Type:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
@@ -149,7 +153,7 @@ const affiliateApi = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
-  updatePolicy: async (policyId,data) => {
+  updatePolicy: async (policyId, data) => {
     try {
       const accessToken = await _getAccessToken();
       const result = await axios.put(`${API_URL}/policies/${policyId}`,
