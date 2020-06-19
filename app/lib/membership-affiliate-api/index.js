@@ -8,13 +8,14 @@ const cache = redis.client();
 const API_URL = config.affiliate.url;
 
 const membershipAffiliateApi = {
-  register: async ({ email, referrerCode }) => {
+  register: async ({ email, referrerCode, membershipTypeId }) => {
     try {
       const accessToken = await _getAccessToken();
       const result = await axios.post(`${API_URL}/clients`,
         {
           ext_client_id: email,
-          affiliate_code: referrerCode || ""
+          affiliate_code: referrerCode || "",
+          membership_type_id: membershipTypeId
         },
         {
           headers: {

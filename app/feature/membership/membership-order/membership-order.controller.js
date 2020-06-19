@@ -164,7 +164,7 @@ module.exports = {
         });
       }     
       if (status == MembershipOrderStatus.Completed) {
-        let affiliate = await membershipAffiliateApi.register({email: order.Member.email, referrerCode: order.referrer_code})
+        let affiliate = await membershipAffiliateApi.register({email: order.Member.email, referrerCode: order.referrer_code, membership_type_id: order.membership_type_id})
         if(affiliate.httpCode != 200)
           throw affiliate.data
         await MembershipOrder.update({
