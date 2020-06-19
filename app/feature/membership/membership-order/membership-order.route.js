@@ -45,7 +45,7 @@ module.exports = router;
  *   get:
  *     summary: search member
  *     tags:
- *       - Members
+ *       - Membership
  *     description:
  *     parameters:
  *       - name: offset
@@ -115,9 +115,9 @@ module.exports = router;
  * @swagger
  * /web/membership/orders/{orderId}:
  *   get:
- *     summary: get member detail
+ *     summary: get order detail
  *     tags:
- *       - Members
+ *       - Membership
  *     description:
  *     parameters:
  *       - name: orderId
@@ -163,5 +163,61 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+/**
+ * @swagger
+ * /web/membership/orders/{orderId}:
+ *   post:
+ *     summary: approve order
+ *     tags:
+ *       - Membership
+ *     description: 
+ *     parameters:
+ *       - name: orderId
+ *         in: path
+ *         type: string
+ *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for login.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - action
+ *            - node
+ *            - password
+ *            example:
+ *               {
+                        "action":1,
+                        "note":"note"
+                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
 
 /** *******************************************************************/
