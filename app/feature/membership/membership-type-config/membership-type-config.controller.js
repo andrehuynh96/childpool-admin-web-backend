@@ -13,7 +13,7 @@ module.exports = {
         membership_type_free_membership_flg: true,
         membership_type_upgrade_paid_member_flg: true
       };
-      for (e of results) {
+      for (let e of results) {
         if (e.key == 'MEMBERSHIP_TYPE_FREE_MEMBERSHIP_FLG') {
           data.membership_type_free_membership_flg = JSON.parse(e.value);
         } else if (e.key == 'MEMBERSHIP_TYPE_UPGRADE_PAID_MEMBER_FLG') {
@@ -33,18 +33,18 @@ module.exports = {
     let transaction;
     try {
       transaction = await database.transaction();
-      for (key of Object.keys(req.body)) {
+      for (let key of Object.keys(req.body)) {
         await Setting.update({
           value: req.body[key],
           updated_by: req.user.id
         }, {
-            where: {
-              property: key
-            },
-            returning: true,
-            transaction: transaction
-          });
-  
+          where: {
+            property: key
+          },
+          returning: true,
+          transaction: transaction
+        });
+
       }
       await transaction.commit();
       return res.ok(true);

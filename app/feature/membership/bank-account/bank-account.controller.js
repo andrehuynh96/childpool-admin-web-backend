@@ -1,5 +1,4 @@
 const logger = require("app/lib/logger");
-const config = require("app/config");
 const database = require('app/lib/database').db().wallet;
 const BankAccount = require("app/model/wallet").bank_accounts;
 
@@ -66,7 +65,7 @@ module.exports = {
         branch_name: req.body.branch_name,
         account_name: req.body.account_name,
         account_number: req.body.account_number,
-      }, { transaction })
+      }, { transaction });
       if (!result) {
         if (transaction) {
           await transaction.rollback();
@@ -85,4 +84,4 @@ module.exports = {
       next(err);
     }
   }
-}
+};

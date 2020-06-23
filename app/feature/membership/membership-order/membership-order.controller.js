@@ -9,7 +9,7 @@ const Op = Sequelize.Op;
 const moment = require('moment');
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
 const stringify = require('csv-stringify');
-const affiliateApi = require('app/lib/affiliate-api');
+const { membershipApi } = require('app/lib/affiliate-api');
 const config = require('app/config');
 const mailer = require('app/lib/mailer');
 
@@ -179,7 +179,7 @@ module.exports = {
       }
 
       if (status == MembershipOrderStatus.Completed) {
-        const result = await affiliateApi.registerMembership({
+        const result = await membershipApi.registerMembership({
           email: order.Member.email,
           referrerCode: order.referrer_code,
           membershipTypeId: order.membership_type_id

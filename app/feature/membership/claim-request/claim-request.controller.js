@@ -1,7 +1,7 @@
 const logger = require('app/lib/logger');
 const ClaimRequest = require("app/model/wallet").claim_requests;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
-const affiliateApi = require('app/lib/affiliate-api');
+const { membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
 const Member = require("app/model/wallet").members;
 const moment = require('moment');
@@ -106,7 +106,7 @@ module.exports = {
                         returning: true
                     });
 
-                const result = await affiliateApi.updateClaimRequest(claimRequest.affiliate_claim_reward_id, body.status);
+                const result = await membershipApi.updateClaimRequest(claimRequest.affiliate_claim_reward_id, body.status);
 
                 if (result.httpCode !== 200) {
                     await transaction.rollback();
