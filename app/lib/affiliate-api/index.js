@@ -111,6 +111,24 @@ class AffiliateApi {
     }
   }
 
+  async createPolicy(data) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.post(`${API_URL}/policies`,
+        data,
+        {
+          headers,
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("create membership policy fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
   async updatePolicy(policyId, data) {
     try {
       const headers = await this.getHeaders();
@@ -129,41 +147,41 @@ class AffiliateApi {
     }
   }
 
-// Private functions
-async getHeaders() {
-  const accessToken = await this.getAccessToken();
-  const headers = {
-    "x-use-checksum": true,
-    "x-secret": this.config.secretKey,
-    "Content-Type": "application/json",
-    "x-affiliate-type-id": this.config.affiliateTypeId,
-    Authorization: `Bearer ${accessToken}`,
-  };
+  // Private functions
+  async getHeaders() {
+    const accessToken = await this.getAccessToken();
+    const headers = {
+      "x-use-checksum": true,
+      "x-secret": this.config.secretKey,
+      "Content-Type": "application/json",
+      "x-affiliate-type-id": this.config.affiliateTypeId,
+      Authorization: `Bearer ${accessToken}`,
+    };
 
-  return headers;
-}
-
-async getAccessToken() {
-  const key = redisResource.affiliate.token;
-  const token = await cache.getAsync(key);
-  if (token) {
-    return token;
+    return headers;
   }
 
-  const result = await axios.post(`${API_URL}/auth/token`, {
-    api_key: this.config.apiKey,
-    secret_key: this.config.secretKey,
-    grant_type: "client_credentials"
-  });
+  async getAccessToken() {
+    const key = redisResource.affiliate.token;
+    const token = await cache.getAsync(key);
+    if (token) {
+      return token;
+    }
 
-  const data = result.data.data;
-  const accessToken = data.access_token;
+    const result = await axios.post(`${API_URL}/auth/token`, {
+      api_key: this.config.apiKey,
+      secret_key: this.config.secretKey,
+      grant_type: "client_credentials"
+    });
 
-  const expiredTime = Math.max(data.expires_in - 3, 1);
-  await cache.setAsync(key, accessToken, "EX", expiredTime);
+    const data = result.data.data;
+    const accessToken = data.access_token;
 
-  return accessToken;
-}
+    const expiredTime = Math.max(data.expires_in - 3, 1);
+    await cache.setAsync(key, accessToken, "EX", expiredTime);
+
+    return accessToken;
+  }
 
 }
 class MembershipApi extends AffiliateApi {

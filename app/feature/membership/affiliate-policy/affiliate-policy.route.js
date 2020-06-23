@@ -12,6 +12,14 @@ router.get(
     authority(PermissionKey.MEMBERSHIP_VIEW_AFFILIATE_POLICY_LIST),
     controller.getAll
 );
+
+router.post(
+    '/affiliate-policies',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_CREATE_AFFILIATE_POLICY),
+    controller.create
+);
+
 /* #region Search policies */
 /**
  * @swagger
@@ -124,6 +132,85 @@ router.get(
  *
  *       404:
  *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /* #region Create a new policy */
+/**
+ * @swagger
+ * /web/membership/affiliate-policies:
+ *   post:
+ *     summary: Create a new policy
+ *     tags:
+ *       - Affiliate Policy
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description:
+ *         schema:
+ *            type: object
+ *            required:
+ *            - name
+ *            example:
+ *              {
+                  "name": "AffiliateSystem - Membership Policy #01",
+                  "description": "",
+                  "type": "MEMBERSHIP_AFFILIATE",
+                  "proportion_share": 11.11,
+                  "max_levels": 5
+                  "rates": [
+                      50.11,
+                      30,
+                      11,
+                      9
+                  ]
+                }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": {
+                        "id": 50,
+                        "name": "AffiliateSystem - Membership Policy #01",
+                        "description": "",
+                        "type": "MEMBERSHIP_AFFILIATE",
+                        "proportion_share": "13.75",
+                        "max_levels": 5,
+                        "rates": [
+                            "26.11",
+                            "12",
+                            "25",
+                            "5",
+                            "7"
+                        ],
+                        "is_membership_system": false,
+                        "created_at": "2020-06-23T07:30:46.267Z",
+                        "updated_at": "2020-06-23T07:30:46.267Z"
+                    }
+                }
+ *       400:
+ *         description: Bad request
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *
+ *       404:
+ *         description: Not found
  *         schema:
  *           $ref: '#/definitions/404'
  *
