@@ -33,6 +33,13 @@ router.get(
     controller.getTypes
 );
 
+router.put(
+    '/affiliate-policies/:policyId',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_AFFILIATE_POLICY),
+    controller.update
+);
+
 /* #region Search policies */
 /**
  * @swagger

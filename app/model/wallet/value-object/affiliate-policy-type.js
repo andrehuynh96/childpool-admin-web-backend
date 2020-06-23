@@ -1,5 +1,5 @@
 module.exports = {
-    MEMBERSHIP: 'MEMBERSHIP',
-    MEMBERSHIP_AFFILIATE: 'MEMBERSHIP_AFFILIATE',
-    AFFILIATE: 'AFFILIATE'
-}
+    MEMBERSHIP: 'Membership',
+    MEMBERSHIP_AFFILIATE: 'Membership affiliate',
+    AFFILIATE: 'Affiliate'
+};
