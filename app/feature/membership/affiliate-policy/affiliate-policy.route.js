@@ -12,5 +12,125 @@ router.get(
     authority(PermissionKey.MEMBERSHIP_VIEW_AFFILIATE_POLICY_LIST),
     controller.getAll
 );
+/* #region Search policies */
+/**
+ * @swagger
+ * /web/membership/affiliate-policies:
+ *   get:
+ *     summary: get affiliate policy list
+ *     tags:
+ *       - Affiliate Policy
+ *     description:
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *         required: true
+ *       - name: offset
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *         required: true
+ *
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             { data:
+ *                {
+                    items: [
+                        {
+                          "id": 2,
+                          "name": "AffiliateSystem - Membership Affiliate Policy",
+                          "description": "",
+                          "type": "MEMBERSHIP_AFFILIATE",
+                          "proportion_share": "20.00000",
+                          "max_levels": 4,
+                          "rates": [
+                              "50",
+                              "30",
+                              "15",
+                              "5"
+                          ],
+                          "created_at": "2020-03-25T03:59:59.881Z",
+                          "updated_at": "2020-03-25T03:59:59.881Z"
+                      },
+                      {
+                          "id": 1,
+                          "name": "AffiliateSystem - Membership Policy",
+                          "description": "",
+                          "type": "MEMBERSHIP",
+                          "proportion_share": "10.00000",
+                          "max_levels": 4,
+                          "membership_rate": {
+                              "SILVER": 2,
+                              "GOLD": 5,
+                              "DIAMOND": 10
+                          },
+                          "created_at": "2020-03-25T03:59:59.881Z",
+                          "updated_at": "2020-03-25T03:59:59.881Z"
+                      },
+                      {
+                          "id": 4,
+                          "name": "MembershipSystem - Affiliate Policy",
+                          "description": "",
+                          "type": "AFFILIATE",
+                          "proportion_share": "20.00000",
+                          "max_levels": 5,
+                          "rates": [
+                              "50",
+                              "30",
+                              "15",
+                              "5"
+                          ],
+                          "created_at": "2020-03-25T03:59:59.881Z",
+                          "updated_at": "2020-03-25T03:59:59.881Z"
+                      },
+                      {
+                          "id": 3,
+                          "name": "AffiliateSystem - Membership Policy #01",
+                          "description": "",
+                          "type": "AFFILIATE",
+                          "proportion_share": "10.11100",
+                          "max_levels": 4,
+                          "rates": [
+                              "50",
+                              "35",
+                              "10",
+                              "5"
+                          ],
+                          "created_at": "2020-03-25T03:59:59.881Z",
+                          "updated_at": "2020-03-31T04:37:04.801Z"
+                      }
+                    ],
+                    "offset": 0,
+                    "limit": 10,
+                    "total": 3
+                  }
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
 
 module.exports = router;
