@@ -344,4 +344,4 @@ module.exports = {
     "KEY": "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL",
     "ROLES": ["Master"]
   },
-}
+};

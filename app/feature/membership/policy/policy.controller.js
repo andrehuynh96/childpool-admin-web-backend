@@ -3,7 +3,9 @@ const { membershipApi } = require('app/lib/affiliate-api');
 module.exports = {
     getAllPolicies: async (req, res, next) => {
         try {
-            const result = await membershipApi.getAllPolicies();
+            const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+            const offset = req.query.offset ? parseInt(req.query.offset) : 0;
+            const result = await membershipApi.getAllPolicies(limit,offset);
             if (result.httpCode !== 200) {
                 return res.status(result.httpCode).send(result.data);
             }
