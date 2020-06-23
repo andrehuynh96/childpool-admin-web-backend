@@ -174,7 +174,7 @@ const affiliateApi = {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("updateClaimRequest:", err);
+      logger.error("get membership policy fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -197,7 +197,29 @@ const affiliateApi = {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("updateClaimRequest:", err);
+      logger.error("update membership policy fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+  getAllAffiliatePolicy: async (limit, offset) => {
+    try {
+      const accessToken = await _getAccessToken();
+      const result = await axios.get(`${API_URL}/policies?limit=${limit}&offset=${offset}`,
+        {
+          headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": config.affiliate.affiliateTypeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("get affiliate policy list fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
