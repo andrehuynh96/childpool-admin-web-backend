@@ -129,6 +129,23 @@ class AffiliateApi {
     }
   }
 
+  async getPolicyDetail(policyId) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.get(`${API_URL}/policies/${policyId}`,
+        {
+          headers,
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("get membership policy detail fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
   async updatePolicy(policyId, data) {
     try {
       const headers = await this.getHeaders();

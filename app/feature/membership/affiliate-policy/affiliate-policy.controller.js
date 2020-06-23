@@ -1,5 +1,6 @@
 const logger = require('app/lib/logger');
 const { affiliateApi } = require('app/lib/affiliate-api');
+const  affiliatePolicyTypes = require('app/model/wallet/value-object/affiliate-policy-type');
 
 module.exports = {
     getAll: async (req, res, next) => {
@@ -29,6 +30,29 @@ module.exports = {
         }
         catch (err) {
             logger.error("create affiliate policy fail:", err);
+            next(err);
+        }
+    },
+    getDetail:async(req, res, next) => {
+        try {
+            let result = await affiliateApi.getPolicyDetail(req.params.policyId);
+
+            if (result.httpCode !== 200) {
+                return res.status(result.httpCode).send(result.data);
+            }
+            return res.ok(result.data);
+        }
+        catch (err) {
+            logger.error("get affiliate policy detail fail:", err);
+            next(err);
+        }
+    },
+    getTypes: async(req, res, next) => {
+        try {
+            return res.ok(affiliatePolicyTypes);
+        }
+        catch (err) {
+            logger.error("get affiliate policy types fail:", err);
             next(err);
         }
     },
