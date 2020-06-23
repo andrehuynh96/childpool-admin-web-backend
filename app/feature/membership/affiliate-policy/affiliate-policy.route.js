@@ -20,6 +20,26 @@ router.post(
     controller.create
 );
 
+router.get(
+    '/affiliate-policies/:policyId',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_AFFILIATE_POLICY_DETAIL),
+    controller.getDetail
+);
+
+router.get(
+    '/affiliate-policy-types',
+    authenticate,
+    controller.getTypes
+);
+
+router.put(
+    '/affiliate-policies/:policyId',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_AFFILIATE_POLICY),
+    controller.update
+);
+
 /* #region Search policies */
 /**
  * @swagger
@@ -164,8 +184,8 @@ router.post(
                   "description": "",
                   "type": "MEMBERSHIP_AFFILIATE",
                   "proportion_share": 11.11,
-                  "max_levels": 5
-                  "rates": [
+                  "max_levels": 5,
+                  "rates": [ 
                       50.11,
                       30,
                       11,
@@ -211,6 +231,123 @@ router.post(
  *
  *       404:
  *         description: Not found
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /* #region Get policy details */
+/**
+ * @swagger
+ * /web/membership/affiliate-policies/:policyId:
+ *   get:
+ *     summary: Get policy details
+ *     tags:
+ *       - Affiliate Policy
+ *     description:
+ *     parameters:
+ *       - in: params
+ *         name: policyId
+ *         required: true
+ *         description: Policy Id
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data":{
+                      "id": 1,
+                      "name": "AffiliateSystem - Membership Policy",
+                      "description": "",
+                      "type": "MEMBERSHIP",
+                      "proportion_share": 10,
+                      "max_levels": 4,
+                      "membership_rate": {
+                          "SILVER": 2,
+                          "GOLD": 5,
+                          "DIAMOND": 10
+                      },
+                      "created_at": "2020-03-25T03:59:59.881Z",
+                      "updated_at": "2020-03-25T03:59:59.881Z"
+                    }
+ *             }
+ *       400:
+ *         description: Bad request
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *
+ *       404:
+ *         description: Not found
+ *         schema:
+ *           properties:
+ *             message:
+ *              type: string
+ *             error:
+ *              type: string
+ *             code:
+ *              type: string
+ *             fields:
+ *              type: object
+ *           example:
+ *             message: Policy is not found.
+ *             error: error
+ *             code: POLICY_IS_NOT_FOUND
+ *             fields: ['policyId']
+ *
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /* #region get afffiliate policies type */
+/**
+ * @swagger
+ * /web/membership/affiliate-policy-types:
+ *   get:
+ *     summary: get affiliate policy types
+ *     tags:
+ *       - Affiliate Policy
+ *     description:
+ *     parameters:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": {
+                        "MEMBERSHIP": "MEMBERSHIP",
+                        "MEMBERSHIP_AFFILIATE": "MEMBERSHIP_AFFILIATE",
+                        "AFFILIATE": "AFFILIATE"
+                    }
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *
+ *       404:
+ *         description: Error
  *         schema:
  *           $ref: '#/definitions/404'
  *
