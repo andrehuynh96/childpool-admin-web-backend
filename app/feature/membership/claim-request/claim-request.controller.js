@@ -31,7 +31,7 @@ module.exports = {
                 toDate = moment(query.to_date).add(1, 'minute').toDate();
                 where.created_at[Op.lt] = toDate;
             }
-            if (fromDate && toDate && fromDate > toDate) {
+            if (fromDate && toDate && fromDate >= toDate) {
                 return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
             }
             if (query.payment) {
@@ -143,7 +143,7 @@ module.exports = {
                 toDate = moment(query.to_date).add(1, 'minute').toDate();
                 where.created_at[Op.lt] = toDate;
             }
-            if (fromDate && toDate && fromDate > toDate) {
+            if (fromDate && toDate && fromDate >= toDate) {
                 return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
             }
             if (query.payment) {
@@ -180,13 +180,13 @@ module.exports = {
                 element.created_at = moment(element.createdAt).format('YYYY-MM-DD HH:mm');
             });
             const data = await stringifyAsync(items, [
-                { key: 'id', header: 'Id' }, { key: 'created_at', header: 'Time' },
+                { key: 'id', header: 'Id' },
+                { key: 'created_at', header: 'Time' },
                 { key: 'member_email', header: 'Email' },
                 { key: 'amount', header: 'Claim Amount' },
                 { key: 'currency_symbol', header: 'Crypto Platform' },
                 { key: 'status', header: 'Status' },
                 { key: 'type', header: 'Payment' }
-
             ]);
             res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
             res.set('Content-Type', 'text/csv');
@@ -202,7 +202,7 @@ module.exports = {
             return res.ok(PaymentType);
         }
         catch (error) {
-            logger.info('get payment type fail',error);
+            logger.info('get payment type fail', error);
             next(error);
         }
     },
@@ -211,7 +211,7 @@ module.exports = {
             return res.ok(Platform);
         }
         catch (error) {
-            logger.info('get crypto platform fail',error);
+            logger.info('get crypto platform fail', error);
             next(error);
         }
     }

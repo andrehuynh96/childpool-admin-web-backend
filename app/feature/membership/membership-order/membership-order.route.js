@@ -25,7 +25,7 @@ router.get("/orders/:id",
     controller.getOrderDetail
 );
 
-router.post("/orders/:id",
+router.put("/orders/:id",
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_ORDER),
     controller.approveOrder
@@ -58,7 +58,7 @@ module.exports = router;
  *         format: int32
  *       - name: payment_status
  *         in: query
- *         type: string 
+ *         type: string
  *       - name: email
  *         in: query
  *         type: string
@@ -171,7 +171,7 @@ module.exports = router;
  *     summary: approve order
  *     tags:
  *       - Membership
- *     description: 
+ *     description:
  *     parameters:
  *       - name: orderId
  *         in: path
@@ -187,10 +187,10 @@ module.exports = router;
  *            - node
  *            - password
  *            example:
- *               {
+ *              {
                         "action":1,
                         "note":"note"
-                  }
+                }
  *     produces:
  *       - application/json
  *     responses:
