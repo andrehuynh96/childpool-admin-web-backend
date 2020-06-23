@@ -330,11 +330,20 @@ router.put(
  *         examples:
  *           application/json:
  *             {
-                    "data": {
-                        "MEMBERSHIP": "MEMBERSHIP",
-                        "MEMBERSHIP_AFFILIATE": "MEMBERSHIP_AFFILIATE",
-                        "AFFILIATE": "AFFILIATE"
-                    }
+                    "data": [
+                        {
+                            "value": "MEMBERSHIP",
+                            "label": "Membership"
+                        },
+                        {
+                            "value": "MEMBERSHIP_AFFILIATE",
+                            "label": "Membership affiliate"
+                        },
+                        {
+                            "value": "AFFILIATE",
+                            "label": "Affiliate"
+                        }
+                    ]
                 }
  *       400:
  *         description: Error
@@ -357,4 +366,96 @@ router.put(
  *           $ref: '#/definitions/500'
  */
 
+ /* #region Update a policy */
+/**
+ * @swagger
+ * /web/membership/affiliate-policies/:policyId:
+ *   put:
+ *     summary: Update a policy
+ *     tags:
+ *       - Affiliate Policy
+ *     description:
+ *     parameters:
+ *       - in: params
+ *         name: policyId
+ *         required: true
+ *         description: Policy Id
+ *       - in: body
+ *         name: data
+ *         description:
+ *         schema:
+ *            type: object
+ *            required:
+ *            - name
+ *            example:
+ *              {
+                  "name": "Membership system - Affiliate Policy",
+                  "description": "",
+                  "proportion_share": 10,
+                  "max_levels": 5,
+                  "rates": [
+                      "50",
+                      "30",
+                      "10",
+                      "7",
+                      "3"
+                  ]
+                }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data":{
+                      "id": 40,
+                      "name": "AffiliateSystem - AFFILIATE Policy #011",
+                      "description": "",
+                      "type": "AFFILIATE",
+                      "proportion_share": "10.12300",
+                      "rates": [
+                          "50.11",
+                          "30",
+                          "11",
+                          "9"
+                      ],
+                      "created_at": "2020-03-31T04:20:53.641Z",
+                      "updated_at": "2020-03-31T04:41:17.687Z"
+                    }
+ *             }
+ *       400:
+ *         description: Bad request
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *
+ *       404:
+ *         description: Not found
+ *         schema:
+ *           properties:
+ *             message:
+ *              type: string
+ *             error:
+ *              type: string
+ *             code:
+ *              type: string
+ *             fields:
+ *              type: object
+ *           example:
+ *             message: Policy is not found.
+ *             error: error
+ *             code: POLICY_IS_NOT_FOUND
+ *             fields: ['policyId']
+ *
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
 module.exports = router;
