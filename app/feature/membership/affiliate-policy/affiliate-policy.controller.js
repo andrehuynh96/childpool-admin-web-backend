@@ -18,4 +18,18 @@ module.exports = {
             next(error);
         }
     },
+    create: async (req, res, next) => {
+        try {
+            let result = await affiliateApi.createPolicy(req.body);
+
+            if (result.httpCode !== 200) {
+                return res.status(result.httpCode).send(result.data);
+            }
+            return res.ok(result.data);
+        }
+        catch (err) {
+            logger.error("create affiliate policy fail:", err);
+            next(err);
+        }
+    },
 };
