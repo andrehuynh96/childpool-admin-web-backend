@@ -31,7 +31,7 @@ module.exports = {
         where: {
           actived_flg: true,
           bank_name: req.body.bank_name,
-          branch_name: req.body.branch_name,
+          switf: req.body.switf,
           account_name: req.body.account_name,
           account_number: req.body.account_number,
         }
@@ -62,7 +62,7 @@ module.exports = {
         created_by: req.user.id,
         actived_flg: true,
         bank_name: req.body.bank_name,
-        branch_name: req.body.branch_name,
+        switf: req.body.switf,
         account_name: req.body.account_name,
         account_number: req.body.account_number,
       }, { transaction });

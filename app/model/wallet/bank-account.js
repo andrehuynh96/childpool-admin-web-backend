@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: ""
     },
-    branch_name: {
-      type: DataTypes.STRING(250),
-      allowNull: false,
+    switf: {
+      type: DataTypes.STRING(12),
+      allowNull: true,
       defaultValue: ""
     },
     account_name: {
@@ -41,9 +41,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0
     },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   return Model;
 };
