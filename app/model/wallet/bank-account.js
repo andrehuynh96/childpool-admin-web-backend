@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: ""
     },
-    switf: {
+    swift: {
       type: DataTypes.STRING(12),
       allowNull: true,
       defaultValue: ""

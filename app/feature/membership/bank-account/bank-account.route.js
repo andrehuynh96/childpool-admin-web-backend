@@ -44,7 +44,7 @@ module.exports = router;
                    "data": {
                        "id": 1100,
                        "bank_name": "Vietcombank",
-                       "switf": "123456h",
+                       "swift": "123456h",
                        "account_name": "NGUYEN VAN A",
                        "account_number": "34268909879"
                    }
@@ -87,7 +87,7 @@ module.exports = router;
 *            example:
 *               {
                   "bank_name": "Vietcombank",
-                  "switf": "1111One",
+                  "swift": "1111One",
                   "account_name": "NGUYEN VAN A",
                   "account_number": "34268909879"
                 }
