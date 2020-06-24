@@ -183,6 +183,7 @@ module.exports = {
                 { key: 'id', header: 'Id' },
                 { key: 'created_at', header: 'Time' },
                 { key: 'member_email', header: 'Email' },
+                { key: 'wallet_address', header: 'Wallet Address' },
                 { key: 'amount', header: 'Claim Amount' },
                 { key: 'currency_symbol', header: 'Crypto Platform' },
                 { key: 'status', header: 'Status' },
