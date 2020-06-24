@@ -4,6 +4,7 @@ const logger = require("app/lib/logger");
 const redisResource = require("app/resource/redis");
 const redis = require("app/lib/redis");
 const cache = redis.client();
+const queryString = require('query-string');
 const MembershipTypeName = require("app/model/wallet/value-object/membership-type-name");
 
 const API_URL = config.affiliate.url;
@@ -159,6 +160,37 @@ class AffiliateApi {
     }
     catch (err) {
       logger.error("update membership policy fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
+  async searchCaculateRewardRequest(query) {
+    try {
+      let limit = query.limit ? parseInt(query.limit) : 10;
+      let offset = query.offset ? parseInt(query.offset) : 0;
+
+      const data = {
+        limit: limit,
+        offset: offset
+      };
+
+      if (query.from_date) data.from_date = query.from_date;
+      if (query.to_date) data.to_date = query.to_date;
+      if (query.currency) data.currency = query.currency;
+      if (query.status) data.status = query.status;
+
+      const queryData = queryString.stringify(data);
+      const headers = await this.getHeaders();
+      const result = await axios.get(`${API_URL}/affiliate-requests?${queryData}`,
+        {
+          headers,
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("get caculate reward request list fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
