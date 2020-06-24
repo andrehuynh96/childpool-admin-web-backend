@@ -12,6 +12,13 @@ router.get(
     controller.search
 );
 
+router.get(
+    '/caculate-reward-requests/:requestId',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL),
+    controller.getDetail
+);
+
 /* #region search caculate reward requests */
 /**
  * @swagger
@@ -78,6 +85,60 @@ router.get(
                     "offset": 0,
                     "limit": 10,
                     "total": 3
+                  }
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/* #region Get affiliate request details */
+/**
+ * @swagger
+ * /web/membership/affiliate-requests/:requestId:
+ *   get:
+ *     summary: Get affiliate request details
+ *     tags:
+ *       - Caculate Reward Request
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: requestId
+ *         type: string
+ *         required: true
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                data:
+ *                {
+                    "id": "7a5f1990-7b3d-4b6b-9329-8949acce2d7f",
+                    "status": "COMPLETED",
+                    "currency_symbol": "ETH",
+                    "from_date": "2020-03-02T00:00:02.000Z",
+                    "to_date": "2020-03-03T00:00:01.000Z",
+                    "created_at": "2020-06-15T08:43:53.713Z",
+                    "updated_at": "2020-06-15T08:43:57.277Z"
                   }
                 }
  *       400:
