@@ -212,6 +212,23 @@ class AffiliateApi {
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
+
+  async getCaculateRewardRequestDetailList(requestId, limit, offset) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.get(`${API_URL}/affiliate-requests/${requestId}/details/?limit=${limit}&offset=${offset}`,
+        {
+          headers,
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("get caculate reward request detail list fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
   
 
   // Private functions
