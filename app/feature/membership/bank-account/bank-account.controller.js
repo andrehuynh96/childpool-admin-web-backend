@@ -34,6 +34,7 @@ module.exports = {
           swift: req.body.swift,
           account_name: req.body.account_name,
           account_number: req.body.account_number,
+          currency_symbol: req.body.currency_symbol,
         }
       });
       if (current) {
@@ -65,6 +66,7 @@ module.exports = {
         swift: req.body.swift,
         account_name: req.body.account_name,
         account_number: req.body.account_number,
+        currency_symbol: req.body.currency_symbol,
       }, { transaction });
       if (!result) {
         if (transaction) {

@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: ""
     },
+    currency_symbol: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+    },
     actived_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
