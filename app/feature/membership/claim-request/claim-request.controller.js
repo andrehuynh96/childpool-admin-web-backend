@@ -48,8 +48,9 @@ module.exports = {
                 deleted_flg: false
             };
             if (query.email) {
-                memberCond.email = { [Op.ilike]: `%${query.email}%` };
+                memberCond.email = { [Op.iLike]: `%${query.email}%` };
             }
+            console.log(memberCond);
             const { count: total, rows: items } = await ClaimRequest.findAndCountAll({
                 limit,
                 offset,
