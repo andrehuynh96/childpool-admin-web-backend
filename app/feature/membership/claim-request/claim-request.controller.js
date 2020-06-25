@@ -89,7 +89,7 @@ module.exports = {
             if (!claimRequest) {
                 return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
             }
-            claimRequest.txid = blockchainHelpper.getUrlTxid(claimRequest.txid, claimRequest.currency_symbol);
+            claimRequest.explorer_link = blockchainHelpper.getUrlTxid(claimRequest.txid, claimRequest.currency_symbol);
             return res.ok(mapper(claimRequest));
         }
         catch (error) {
