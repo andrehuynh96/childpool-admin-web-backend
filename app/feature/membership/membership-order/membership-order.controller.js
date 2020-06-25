@@ -29,7 +29,7 @@ module.exports = {
       if (query.payment_status) where.status = query.payment_status;
       if (query.bank_account_number) where.account_number = query.bank_account_number
       if (query.crypto_receive_address) where.wallet_address = query.crypto_receive_address
-      if (query.email) memberWhere.email = query.email
+      if (query.email) memberWhere.email = { [Op.iLike]: `%${query.email}%` }
       if (query.from) {
         let fromDate = moment(query.from).add(1, 'minute').toDate();
         where.created_at = {
