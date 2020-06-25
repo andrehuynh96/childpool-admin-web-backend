@@ -10,7 +10,7 @@ const config = require("app/config");
     require("./root-permission")();
   }
   catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }
-)()
+)();

@@ -9,14 +9,14 @@ const router = express.Router();
 router.get(
     '/policies',
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_POLICY_LIST),
+    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBERSHIP_POLICY_LIST),
     controller.getAllPolicies
 );
 
 router.put(
     '/policies/:policyId',
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_POLICY),
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBERSHIP_POLICY),
     controller.updatePolicy
 );
 module.exports = router;
