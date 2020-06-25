@@ -21,6 +21,8 @@ const destObject = {
     status: 'status',
     amount: 'amount',
     membership_type: 'membership_type',
+    txid: 'txid',
+    explorer_link: 'explorer_link',
     currency_symbol: 'currency_symbol',
     createdAt: 'created_at',
   }

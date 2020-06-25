@@ -11,6 +11,7 @@ const stringify = require('csv-stringify');
 const Op = Sequelize.Op;
 const PaymentType = require("app/model/wallet/value-object/claim-request-payment-type");
 const Platform = require("app/model/wallet/value-object/platform");
+const blockchainHelpper = require('app/lib/blockchain-helpper');
 
 module.exports = {
     search: async (req, res, next) => {
@@ -74,6 +75,51 @@ module.exports = {
         }
         catch (error) {
             logger.info('get claim request list fail', error);
+            next(error);
+        }
+    },
+    getDetail: async (req, res, next) => {
+        try {
+            const claimRequest = await ClaimRequest.findOne({
+                where: {
+                    id: req.params.claimRequestId
+                }
+            });
+
+            if (!claimRequest) {
+                return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+            }
+            claimRequest.explorer_link = blockchainHelpper.getUrlTxid(claimRequest.txid, claimRequest.currency_symbol);
+            return res.ok(mapper(claimRequest));
+        }
+        catch (error) {
+            logger.info('get claim request detail fail', error);
+            next(error);
+        }
+    },
+    updateTxid: async (req, res, next) => {
+        try {
+            const { body, params } = req;
+            const claimRequest = await ClaimRequest.findOne({
+                where: {
+                    id: params.claimRequestId
+                }
+            });
+            if (!claimRequest) {
+                return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+            }
+           await ClaimRequest.update(
+                { txid: body.txid },
+                {
+                    where: {
+                        id: claimRequest.id
+                    }
+                }
+            );
+            return res.ok(true);
+        }
+        catch (error) {
+            logger.info('update claim request tx_id fail', error);
             next(error);
         }
     },
