@@ -81,6 +81,17 @@ module.exports = {
     getDetail: async (req, res, next) => {
         try {
             const claimRequest = await ClaimRequest.findOne({
+                include: [
+                    {
+                        attributes: ['email'],
+                        as: "Member",
+                        model: Member,
+                        where: {
+                            deleted_flg: false
+                        },
+                        required: true
+                    }
+                ],
                 where: {
                     id: req.params.claimRequestId
                 }
