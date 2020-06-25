@@ -67,7 +67,7 @@ module.exports = {
           returning: true,
         });
 
-      if (!response || response.length == 0) {
+      if (!response) {
         return res.serverInternalError();
       }
 
@@ -101,7 +101,7 @@ module.exports = {
           returning: true,
         });
 
-      if (!response || response.length == 0) {
+      if (!response) {
         return res.serverInternalError();
       }
 
