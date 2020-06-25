@@ -94,7 +94,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(8),
       allowNull: false
     }
-
   }, {
     underscored: true,
     timestamps: true,
