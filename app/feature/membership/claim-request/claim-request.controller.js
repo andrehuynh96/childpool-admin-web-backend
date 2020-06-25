@@ -1,7 +1,7 @@
 const logger = require('app/lib/logger');
 const ClaimRequest = require("app/model/wallet").claim_requests;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
-const affiliateApi = require('app/lib/affiliate-api');
+const { membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
 const Member = require("app/model/wallet").members;
 const moment = require('moment');
@@ -11,6 +11,7 @@ const stringify = require('csv-stringify');
 const Op = Sequelize.Op;
 const PaymentType = require("app/model/wallet/value-object/claim-request-payment-type");
 const Platform = require("app/model/wallet/value-object/platform");
+const blockchainHelpper = require('app/lib/blockchain-helpper');
 
 module.exports = {
     search: async (req, res, next) => {
@@ -31,23 +32,23 @@ module.exports = {
                 toDate = moment(query.to_date).add(1, 'minute').toDate();
                 where.created_at[Op.lt] = toDate;
             }
-            if (fromDate && toDate && fromDate > toDate) {
+            if (fromDate && toDate && fromDate >= toDate) {
                 return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
             }
             if (query.payment) {
-                where.type = { [Op.iLike]: `${query.payment}` };
+                where.type = query.payment;
             }
             if (query.status) {
-                where.status = { [Op.iLike]: `${query.status}` };
+                where.status = query.status;
             }
             if (query.crypto_platform) {
-                where.currency_symbol = { [Op.iLike]: `${query.crypto_platform}` };
+                where.currency_symbol = query.crypto_platform;
             }
             const memberCond = {
                 deleted_flg: false
             };
             if (query.email) {
-                memberCond.email = { [Op.ilike]: `%${query.email}%` };
+                memberCond.email = { [Op.iLike]: `%${query.email}%` };
             }
             const { count: total, rows: items } = await ClaimRequest.findAndCountAll({
                 limit,
@@ -74,6 +75,62 @@ module.exports = {
         }
         catch (error) {
             logger.info('get claim request list fail', error);
+            next(error);
+        }
+    },
+    getDetail: async (req, res, next) => {
+        try {
+            const claimRequest = await ClaimRequest.findOne({
+                include: [
+                    {
+                        attributes: ['email'],
+                        as: "Member",
+                        model: Member,
+                        where: {
+                            deleted_flg: false
+                        },
+                        required: true
+                    }
+                ],
+                where: {
+                    id: req.params.claimRequestId
+                }
+            });
+
+            if (!claimRequest) {
+                return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+            }
+            claimRequest.explorer_link = blockchainHelpper.getUrlTxid(claimRequest.txid, claimRequest.currency_symbol);
+            return res.ok(mapper(claimRequest));
+        }
+        catch (error) {
+            logger.info('get claim request detail fail', error);
+            next(error);
+        }
+    },
+    updateTxid: async (req, res, next) => {
+        try {
+            const { body, params } = req;
+            const claimRequest = await ClaimRequest.findOne({
+                where: {
+                    id: params.claimRequestId
+                }
+            });
+            if (!claimRequest) {
+                return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+            }
+           await ClaimRequest.update(
+                { txid: body.txid },
+                {
+                    where: {
+                        id: claimRequest.id
+                    }
+                }
+            );
+            return res.ok(true);
+        }
+        catch (error) {
+            logger.info('update claim request tx_id fail', error);
             next(error);
         }
     },
@@ -106,7 +163,7 @@ module.exports = {
                         returning: true
                     });
 
-                const result = await affiliateApi.updateClaimRequest(claimRequest.affiliate_claim_reward_id, body.status);
+                const result = await membershipApi.updateClaimRequest(claimRequest.affiliate_claim_reward_id, body.status);
 
                 if (result.httpCode !== 200) {
                     await transaction.rollback();
@@ -143,7 +200,7 @@ module.exports = {
                 toDate = moment(query.to_date).add(1, 'minute').toDate();
                 where.created_at[Op.lt] = toDate;
             }
-            if (fromDate && toDate && fromDate > toDate) {
+            if (fromDate && toDate && fromDate >= toDate) {
                 return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
             }
             if (query.payment) {
@@ -180,13 +237,14 @@ module.exports = {
                 element.created_at = moment(element.createdAt).format('YYYY-MM-DD HH:mm');
             });
             const data = await stringifyAsync(items, [
-                { key: 'id', header: 'Id' }, { key: 'created_at', header: 'Time' },
+                { key: 'id', header: 'Id' },
+                { key: 'created_at', header: 'Time' },
                 { key: 'member_email', header: 'Email' },
+                { key: 'wallet_address', header: 'Wallet Address' },
                 { key: 'amount', header: 'Claim Amount' },
                 { key: 'currency_symbol', header: 'Crypto Platform' },
                 { key: 'status', header: 'Status' },
                 { key: 'type', header: 'Payment' }
-
             ]);
             res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
             res.set('Content-Type', 'text/csv');
@@ -202,7 +260,7 @@ module.exports = {
             return res.ok(PaymentType);
         }
         catch (error) {
-            logger.info('get payment type fail',error);
+            logger.info('get payment type fail', error);
             next(error);
         }
     },
@@ -211,7 +269,7 @@ module.exports = {
             return res.ok(Platform);
         }
         catch (error) {
-            logger.info('get crypto platform fail',error);
+            logger.info('get crypto platform fail', error);
             next(error);
         }
     }

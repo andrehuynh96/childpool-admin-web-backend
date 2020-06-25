@@ -10,7 +10,7 @@ router.get(
     '/policies',
     authenticate,
     authority(PermissionKey.MEMBERSHIP_VIEW_POLICY_LIST),
-    controller.getAllPolicy
+    controller.getAllPolicies
 );
 
 router.put(

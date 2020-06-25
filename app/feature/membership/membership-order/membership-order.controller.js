@@ -3,13 +3,14 @@ const Member = require("app/model/wallet").members;
 const database = require('app/lib/database').db().wallet;
 const MembershipOrder = require("app/model/wallet").membership_orders;
 const MembershipType = require("app/model/wallet").membership_types;
-const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status")
+const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
-const moment = require('moment')
+const moment = require('moment');
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
-const stringify = require('csv-stringify')
-const membershipAffiliateApi = require("app/lib/membership-affiliate-api")
+const stringify = require('csv-stringify');
+const { membershipApi } = require('app/lib/affiliate-api');
+const blockchainHelpper = require('app/lib/blockchain-helpper');
 const config = require('app/config');
 const mailer = require('app/lib/mailer');
 
@@ -30,19 +31,29 @@ module.exports = {
       if (query.bank_account_number) where.account_number = query.bank_account_number
       if (query.crypto_receive_address) where.wallet_address = query.crypto_receive_address
       if (query.email) memberWhere.email = { [Op.iLike]: `%${query.email}%` }
+
+      let fromDate, toDate;
+      if (query.from || query.to) {
+        where.created_at = {};
+      }
+
       if (query.from) {
         let fromDate = moment(query.from).add(1, 'minute').toDate();
-        where.created_at = {
-          [Op.gte]: fromDate
-        };
+        where.created_at[Op.gte] = fromDate;
       }
+
       if (query.to) {
         let toDate = moment(query.to).add(1, 'minute').toDate();
-        where.created_at = {
-          [Op.lte]: toDate
-        };
+        where.created_at[Op.lt] = toDate;
       }
-      if (query.membership_type_id) where.membership_type_id = query.membership_type_id
+
+      if (fromDate && toDate && fromDate >= toDate) {
+        return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
+      }
+
+      if (query.membership_type_id) {
+        where.membership_type_id = query.membership_type_id;
+      }
 
       const { count: total, rows: items } = await MembershipOrder.findAndCountAll(
         {
@@ -69,8 +80,8 @@ module.exports = {
       );
 
       items.forEach(item => {
-        item.explorer_link = getUrlTxid(item.txid, item.currency_symbol)
-      })
+        item.explorer_link = blockchainHelpper.getUrlTxid(item.txid, item.currency_symbol);
+      });
 
       return res.ok({
         items: membershipOrderMapper(items) && items.length > 0 ? membershipOrderMapper(items) : [],
@@ -116,7 +127,8 @@ module.exports = {
       if (!membershipOrder) {
         return res.badRequest(res.__("MEMBERSHIPORDER_NOT_FOUND"), "MEMBERSHIPORDER_NOT_FOUND", { fields: ["id"] });
       }
-      membershipOrder.explorer_link = getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol)
+
+      membershipOrder.explorer_link = blockchainHelpper.getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol);
       return res.ok(membershipOrderMapper(membershipOrder));
     }
     catch (error) {
@@ -128,7 +140,7 @@ module.exports = {
     const t = await database.transaction();
 
     try {
-      let order = await MembershipOrder.findOne({ 
+      let order = await MembershipOrder.findOne({
         where: { id: req.params.id },
         include: {
           attributes: ['email'],
@@ -136,10 +148,13 @@ module.exports = {
           model: Member,
           required: true
         }
-       })
-      if (!order)
-        return res.ok(false)
-      let status = req.body.action == 1 ? MembershipOrderStatus.Completed : MembershipOrderStatus.Rejected
+      });
+
+      if (!order) {
+        return res.ok(false);
+      }
+
+      let status = req.body.action == 1 ? MembershipOrderStatus.Completed : MembershipOrderStatus.Rejected;
       await MembershipOrder.update({
         notes: req.body.note,
         approved_by_id: req.user.id,
@@ -162,23 +177,36 @@ module.exports = {
           returning: true,
           transaction: t
         });
-      }     
+      }
+
       if (status == MembershipOrderStatus.Completed) {
-        let affiliate = await membershipAffiliateApi.register({email: order.Member.email, referrerCode: order.referrer_code, membership_type_id: order.membership_type_id})
-        if(affiliate.httpCode != 200)
-          throw affiliate.data
+        const result = await membershipApi.registerMembership({
+          email: order.Member.email,
+          referrerCode: order.referrer_code,
+          membershipTypeId: order.membership_type_id
+        });
+
+        if (result.httpCode != 200) {
+          await t.rollback();
+
+          return res.status(result.httpCode).send(result.data);
+        }
+
         await MembershipOrder.update({
-          referral_code: affiliate.code
+          referral_code: result.code
         }, {
           where: {
             id: order.id
           },
-          returning: true
+          returning: true,
+          transaction: t
         });
-        await _sendEmail(order.Member.email, order.id)
+
+        await _sendEmail(order.Member.email, order.id);
       }
       await t.commit();
-      return res.ok(true)
+
+      return res.ok(true);
     }
     catch (err) {
       await t.rollback();
@@ -197,24 +225,31 @@ module.exports = {
 
       if (query.order_id) where.id = query.order_id;
       if (query.payment_status) where.status = query.payment_status;
-      if (query.bank_account_number) where.account_number = query.bank_account_number
-      if (query.crypto_receive_address) where.wallet_address = query.crypto_receive_address
-      if (query.email) memberWhere.email = query.email
+      if (query.bank_account_number) where.account_number = query.bank_account_number;
+      if (query.crypto_receive_address) where.wallet_address = query.crypto_receive_address;
+      if (query.email) memberWhere.email = query.email;
+
+      let fromDate, toDate;
+      if (query.from || query.to) {
+        where.created_at = {};
+      }
       if (query.from) {
-        let fromDate = moment(query.from).toDate();
-        where.created_at = {
-          [Op.gte]: fromDate
-        };
+        fromDate = moment(query.from).add(1, 'minute').toDate();
+        where.created_at[Op.gte] = fromDate;
       }
       if (query.to) {
-        let toDate = moment(query.to).toDate();
-        where.created_at = {
-          [Op.lte]: toDate
-        };
+        toDate = moment(query.to).add(1, 'minute').toDate();
+        where.created_at[Op.lt] = toDate;
       }
-      if (query.membership_type_id) where.membership_type_id = query.membership_type_id
+      if (fromDate && toDate && fromDate >= toDate) {
+        return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
+      }
 
-      const { count: total, rows: items } = await MembershipOrder.findAndCountAll(
+      if (query.membership_type_id) {
+        where.membership_type_id = query.membership_type_id;
+      }
+
+      const items = await MembershipOrder.findAll(
         {
           include: [
             {
@@ -236,8 +271,8 @@ module.exports = {
         }
       );
       items.forEach(element => {
-        element.email = element.Member.email
-        element.membership_type_name = element.MembershipType.name      
+        element.email = element.Member.email;
+        element.membership_type_name = element.MembershipType.name;
       });
 
       let data = await stringifyAsync(items, [
@@ -249,7 +284,7 @@ module.exports = {
         { key: 'account_number', header: 'Bank Acc No' },
         { key: 'wallet_address', header: 'Receive address' },
         { key: 'status', header: 'Status' }
-      ])
+      ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
@@ -259,25 +294,7 @@ module.exports = {
       next(err);
     }
   },
-}
-
-function getUrlTxid(txid, currencySymbol){
-    if(!txid || txid.length < 2)
-      return txid
-    let origin = txid[0] == '0' && txid[1] == 'x' ? txid.replace(/0x/g,'') : txid
-    switch(currencySymbol){
-      case 'BTC':
-        return `https://www.blockchain.com/btc/tx/${origin}`
-      case 'BCH':
-        return `https://www.blockchain.com/bch/tx/${origin}`
-      case 'ETH':
-        return `https://www.blockchain.com/eth/tx/0x${origin}`
-      case 'USDT':
-        return `https://etherscan.io/token/0x${origin}`
-      default:
-        return txid
-    }
-}
+};
 
 function stringifyAsync(data, columns) {
   return new Promise(function (resolve, reject) {
@@ -286,24 +303,24 @@ function stringifyAsync(data, columns) {
       columns: columns
     }, function (err, data) {
       if (err) {
-        return reject(err)
+        return reject(err);
       }
-      return resolve(data)
+      return resolve(data);
     }
-    )
-  })
+    );
+  });
 }
 
 async function _sendEmail(emails, id) {
-    try {
-      let subject = `Membership payment`;
-      let from = `Child membership department`;
-      let data = {
-        id: id
-      }
-      data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrder);
-    } catch (err) {
-      logger.error("send confirmed membership order email", err);
-    }
+  try {
+    let subject = `Membership payment`;
+    let from = `Child membership department`;
+    let data = {
+      id: id
+    };
+    data = Object.assign({}, data, config.email);
+    await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrder);
+  } catch (err) {
+    logger.error("send confirmed membership order email", err);
+  }
 }

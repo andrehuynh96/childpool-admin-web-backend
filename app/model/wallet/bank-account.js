@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: ""
     },
-    branch_name: {
-      type: DataTypes.STRING(250),
-      allowNull: false,
+    swift: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
       defaultValue: ""
     },
     account_name: {
@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: false,
       defaultValue: ""
+    },
+    currency_symbol: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
     },
     actived_flg: {
       type: DataTypes.BOOLEAN,
@@ -41,9 +45,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0
     },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   return Model;
 };

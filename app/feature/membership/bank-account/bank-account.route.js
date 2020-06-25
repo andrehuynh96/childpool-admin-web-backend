@@ -1,5 +1,4 @@
 const express = require('express');
-const config = require('app/config');
 const validator = require("app/middleware/validator.middleware");
 const authenticate = require('app/middleware/authenticate.middleware');
 const requestSchema = require('./bank-account.request.schema');
@@ -45,7 +44,7 @@ module.exports = router;
                    "data": {
                        "id": 1100,
                        "bank_name": "Vietcombank",
-                       "branch_name": "District One",
+                       "swift": "123456h",
                        "account_name": "NGUYEN VAN A",
                        "account_number": "34268909879"
                    }
@@ -88,7 +87,7 @@ module.exports = router;
 *            example:
 *               {
                   "bank_name": "Vietcombank",
-                  "branch_name": "District One",
+                  "swift": "1111One",
                   "account_name": "NGUYEN VAN A",
                   "account_number": "34268909879"
                 }

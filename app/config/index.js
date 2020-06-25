@@ -1,4 +1,4 @@
-/*eslint no-process-env: "off"*/
+/* eslint no-process-env: "off"*/
 require('dotenv').config();
 const pkg = require('../../package.json');
 

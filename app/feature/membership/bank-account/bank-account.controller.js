@@ -1,5 +1,4 @@
 const logger = require("app/lib/logger");
-const config = require("app/config");
 const database = require('app/lib/database').db().wallet;
 const BankAccount = require("app/model/wallet").bank_accounts;
 
@@ -32,9 +31,10 @@ module.exports = {
         where: {
           actived_flg: true,
           bank_name: req.body.bank_name,
-          branch_name: req.body.branch_name,
+          swift: req.body.swift,
           account_name: req.body.account_name,
           account_number: req.body.account_number,
+          currency_symbol: req.body.currency_symbol,
         }
       });
       if (current) {
@@ -63,10 +63,11 @@ module.exports = {
         created_by: req.user.id,
         actived_flg: true,
         bank_name: req.body.bank_name,
-        branch_name: req.body.branch_name,
+        swift: req.body.swift,
         account_name: req.body.account_name,
         account_number: req.body.account_number,
-      }, { transaction })
+        currency_symbol: req.body.currency_symbol,
+      }, { transaction });
       if (!result) {
         if (transaction) {
           await transaction.rollback();
@@ -85,4 +86,4 @@ module.exports = {
       next(err);
     }
   }
-}
+};

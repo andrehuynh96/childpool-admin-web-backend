@@ -12,13 +12,13 @@ module.exports = {
       let data = {
         allow_upgrade_flg: true,
         num_of_paid_members: 0,
-        num_of_free_members : 0,
+        num_of_free_members: 0,
         staking_amount: 0,
         staking_amount_currency_symbol: "USD",
         staking_reward: 0,
         staking_reward_currency_symbol: "USD"
       };
-      for (e of results) {
+      for (let e of results) {
         if (e.key == 'ALLOW_UPGRADE_FLG') {
           data.allow_upgrade_flg = JSON.parse(e.value);
         } else if (e.key == 'NUM_OF_PAID_MEMBERS') {
@@ -47,18 +47,18 @@ module.exports = {
     let transaction;
     try {
       transaction = await database.transaction();
-      for (key of Object.keys(req.body)) {
+      for (let key of Object.keys(req.body)) {
         await Setting.update({
           value: req.body[key],
           updated_by: req.user.id
         }, {
-            where: {
-              property: key
-            },
-            returning: true,
-            transaction: transaction
-          });
-  
+          where: {
+            property: key
+          },
+          returning: true,
+          transaction: transaction
+        });
+
       }
       await transaction.commit();
       return res.ok(true);
@@ -71,4 +71,4 @@ module.exports = {
       next(err);
     }
   }
-}
+};

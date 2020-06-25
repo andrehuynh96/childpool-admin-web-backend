@@ -58,13 +58,13 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0
     }
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
-  User.associate = function(models) {
-      User.hasMany(models.user_roles, {foreignKey: 'user_id', sourceKey: 'id'});
-  }
+  User.associate = function (models) {
+    User.hasMany(models.user_roles, { foreignKey: 'user_id', sourceKey: 'id' });
+  };
 
   return User;
-}
+};

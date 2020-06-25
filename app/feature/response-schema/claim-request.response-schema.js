@@ -14,13 +14,15 @@ const destObject = {
   },
   single: {
     id: 'id',
-    email: 'email',
+    Member: 'member',
     member_id: 'member_id',
     member_account_id: 'member_account_id',
     type: 'type',
     status: 'status',
     amount: 'amount',
     membership_type: 'membership_type',
+    txid: 'txid',
+    explorer_link: 'explorer_link',
     currency_symbol: 'currency_symbol',
     createdAt: 'created_at',
   }

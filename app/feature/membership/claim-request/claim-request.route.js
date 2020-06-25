@@ -4,7 +4,7 @@ const controller = require('./claim-request.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require("app/middleware/validator.middleware");
-const requestSchema = require('./claim-request.request-schema');
+const { updateStatus, updateTxid } = require('./validator');
 const router = express.Router();
 
 router.get(
@@ -13,9 +13,22 @@ router.get(
     authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST),
     controller.search
 );
+router.get(
+    '/claim-requests/:claimRequestId',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_REQUEST_DETAIL),
+    controller.getDetail
+);
+router.put(
+    '/claim-requests/:claimRequestId/txid',
+    validator(updateTxid),
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID),
+    controller.updateTxid
+);
 router.put(
     '/claim-requests/:claimRequestId',
-    validator(requestSchema),
+    validator(updateStatus),
     authenticate,
     authority(PermissionKey.MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST),
     controller.changeStatus
@@ -313,6 +326,116 @@ module.exports = router;
                             "name": "Ontology"
                         }
                     }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /* #region Get policy details */
+/**
+ * @swagger
+ * /web/membership/claim-requests/:claimrequestId:
+ *   get:
+ *     summary: Get claim request details
+ *     tags:
+ *       - Claim Request
+ *     description:
+ *     parameters:
+ *       - in: params
+ *         name: claimrequestId
+ *         required: true
+ *         description: claim request Id
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": {
+                        "id": 2,
+                        "member": {
+                            "email": "myhn@blockchainlabs.asia"
+                        },
+                        "member_id": "8337b3e4-b8be-4594-bca3-d6dba7c751ea",
+                        "member_account_id": 1,
+                        "type": "Bank",
+                        "status": "Approved",
+                        "amount": "1.111",
+                        "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca",
+                        "explorer_link": "https://www.blockchain.com/eth/tx/0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca",
+                        "currency_symbol": "ETH",
+                        "created_at": "2020-05-29T06:15:07.006Z"
+                    }
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/membership/claim-requests/:claimrequestId/txid:
+ *   put:
+ *     summary: update claim request txid
+ *     tags:
+ *       - Claim Request
+ *     description: update claim request txid
+ *     parameters:
+ *       - name: claimrequestId
+ *         in: path
+ *         type: string
+ *         required: true
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to update.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - membershipTypeId
+ *            - referrerCode
+ *            example:
+ *                  {
+                        "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca"
+ *                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
  *             }
  *       400:
  *         description: Error

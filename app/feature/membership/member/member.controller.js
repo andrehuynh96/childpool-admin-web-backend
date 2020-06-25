@@ -4,7 +4,7 @@ const MembershipType = require("app/model/wallet").membership_types;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
-const affiliateApi = require('app/lib/affiliate-api');
+const { affiliateApi, membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
 const Op = Sequelize.Op;
 
@@ -147,7 +147,7 @@ module.exports = {
 
         let result;
         if (hasChangedMembershipType) {
-          result = await affiliateApi.updateMembershipType(member.email, membershipType);
+          result = await membershipApi.updateMembershipType(member.email, membershipType);
 
           if (result.httpCode !== 200) {
             await transaction.rollback();

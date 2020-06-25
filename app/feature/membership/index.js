@@ -9,5 +9,6 @@ router.use(require("./membership-order/membership-order.route"));
 router.use(require("./upgrade-condition/upgrade-condition.route"));
 router.use(require("./membership-type-config/membership-type-config.route"));
 router.use(require("./policy/policy.route"));
-
+router.use(require("./affiliate-policy/affiliate-policy.route"));
+router.use(require("./caculate-reward-request/caculate-reward-request.route"));
 module.exports = router;
