@@ -64,11 +64,13 @@ module.exports = (sequelize, DataTypes) => {
         underscored: true,
         timestamps: true,
     });
+
     ClaimRequest.associate = (models) => {
         ClaimRequest.belongsTo(models.members, {
             as: 'Member',
             foreignKey: 'member_id',
         });
     };
+
     return ClaimRequest;
-}
+};

@@ -41,8 +41,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
-    branch_name: {
-      type: DataTypes.STRING(250),
+    swift: {
+      type: DataTypes.STRING(50),
       allowNull: true,
     },
     account_holder: {
@@ -65,7 +65,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(500),
       allowNull: true,
     },
-    rate_by_usdt: {
+    rate_usd: {
       type: DataTypes.DECIMAL,
       allowNull: true,
     },
@@ -94,7 +94,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(8),
       allowNull: false
     }
-
   }, {
     underscored: true,
     timestamps: true,
