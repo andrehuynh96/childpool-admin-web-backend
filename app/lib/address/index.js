@@ -5,6 +5,7 @@ const NeonCore = require('@cityofzion/neon-core');
 module.exports = {
   validate: (platform, address) => {
     let valid = false;
+    platform = platform == "USDT" ? "ETH" : platform;
     if (platform == "ATOM") {
       valid = _verifyCosmosAddress(address);
     } else if (platform == "IRIS") {
