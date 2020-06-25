@@ -10,6 +10,7 @@ const moment = require('moment');
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
 const stringify = require('csv-stringify');
 const { membershipApi } = require('app/lib/affiliate-api');
+const blockchainHelpper = require('app/lib/blockchain-helpper');
 const config = require('app/config');
 const mailer = require('app/lib/mailer');
 
@@ -79,7 +80,7 @@ module.exports = {
       );
 
       items.forEach(item => {
-        item.explorer_link = getUrlTxid(item.txid, item.currency_symbol);
+        item.explorer_link = blockchainHelpper.getUrlTxid(item.txid, item.currency_symbol);
       });
 
       return res.ok({
@@ -127,7 +128,7 @@ module.exports = {
         return res.badRequest(res.__("MEMBERSHIPORDER_NOT_FOUND"), "MEMBERSHIPORDER_NOT_FOUND", { fields: ["id"] });
       }
 
-      membershipOrder.explorer_link = getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol);
+      membershipOrder.explorer_link = blockchainHelpper.getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol);
       return res.ok(membershipOrderMapper(membershipOrder));
     }
     catch (error) {
@@ -294,24 +295,6 @@ module.exports = {
     }
   },
 };
-
-function getUrlTxid(txid, currencySymbol) {
-  if (!txid || txid.length < 2)
-    return txid;
-  let origin = txid[0] == '0' && txid[1] == 'x' ? txid.replace(/0x/g, '') : txid;
-  switch (currencySymbol) {
-    case 'BTC':
-      return `https://www.blockchain.com/btc/tx/${origin}`;
-    case 'BCH':
-      return `https://www.blockchain.com/bch/tx/${origin}`;
-    case 'ETH':
-      return `https://www.blockchain.com/eth/tx/0x${origin}`;
-    case 'USDT':
-      return `https://etherscan.io/token/0x${origin}`;
-    default:
-      return txid;
-  }
-}
 
 function stringifyAsync(data, columns) {
   return new Promise(function (resolve, reject) {
