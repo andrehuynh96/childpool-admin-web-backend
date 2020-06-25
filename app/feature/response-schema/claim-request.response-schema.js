@@ -14,7 +14,7 @@ const destObject = {
   },
   single: {
     id: 'id',
-    email: 'email',
+    Member: 'member',
     member_id: 'member_id',
     member_account_id: 'member_account_id',
     type: 'type',
