@@ -229,6 +229,22 @@ class AffiliateApi {
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
+
+  async getTreeChart(memberEmail) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.get(`${API_URL}/clients/tree-chart?ext_client_id=${memberEmail}`,
+        {
+          headers,
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("get member tree chart fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
   
 
   // Private functions

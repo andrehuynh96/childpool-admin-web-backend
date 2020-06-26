@@ -32,6 +32,12 @@ router.get("/membership-types",
     controller.getMembershipTypeList,
 );
 
+router.get("/members/:memberId/tree-chart",
+    authenticate,
+    controller.getTreeChart
+);
+
+
 
 module.exports = router;
 
@@ -292,5 +298,55 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+ /**
+* @swagger
+* /web/membership/members/{memberId}/tree-chart:
+*   get:
+*     summary: get member tree chart
+*     tags:
+*       - Members
+*     description:
+*     parameters:
+*       - name: memberId
+*         in: path
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*              {
+                    "data": {
+                        "ext_client_id": "myhn@blockchainlabs.asia",
+                        "created_at": "2020-06-18T05:35:36.570Z",
+                        "updated_at": "2020-06-18T05:35:36.570Z",
+                        "referrer_client_affiliate_id": null,
+                        "id": "115",
+                        "children": [],
+                        "parent": null
+                    }
+                }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
 
 /** *******************************************************************/
