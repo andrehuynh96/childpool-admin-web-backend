@@ -101,7 +101,7 @@ module.exports = {
                 return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
             }
             claimRequest.explorer_link = blockchainHelpper.getUrlTxid(claimRequest.txid, claimRequest.currency_symbol);
-            return res.ok(mapper(claimRequest));
+            return res.ok(claimRequest);
         }
         catch (error) {
             logger.info('get claim request detail fail', error);
