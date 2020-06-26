@@ -193,5 +193,32 @@ module.exports = {
       next(error);
     }
   },
+  getTreeChart: async (req, res, next) => {
+    try {
+      console.log(req.params.memberId);
+      const member = await Member.findOne({
+        where: {
+          id: req.params.memberId,
+          deleted_flg: false
+        }
+      });
+
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      const result = await membershipApi.getTreeChart(member.email);
+
+      if (result.httpCode !== 200) {
+        return res.status(result.httpCode).send(result.data);
+      }
+      return res.ok(result.data);
+
+    } catch (error) {
+
+      logger.error('get member tree chart fail:', error);
+      next(error);
+    }
+  }
 
 };
