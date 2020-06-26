@@ -36,13 +36,13 @@ module.exports = {
                 return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
             }
             if (query.payment) {
-                where.type = query.payment;
+                where.type = { [Op.iLike]: `%${query.payment}%` };
             }
             if (query.status) {
-                where.status = query.status;
+                where.status = { [Op.iLike]: `%${query.status}%` };
             }
             if (query.crypto_platform) {
-                where.currency_symbol = query.crypto_platform;
+                where.currency_symbol = { [Op.iLike]: `%${query.crypto_platform}%` };
             }
             const memberCond = {
                 deleted_flg: false
@@ -204,13 +204,13 @@ module.exports = {
                 return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
             }
             if (query.payment) {
-                where.type = { [Op.iLike]: `${query.payment}` };
+                where.type = { [Op.iLike]: `%${query.payment}%` };
             }
             if (query.status) {
-                where.status = { [Op.iLike]: `${query.status}` };
+                where.status = { [Op.iLike]: `%${query.status}%` };
             }
             if (query.crypto_platform) {
-                where.currency_symbol = { [Op.iLike]: `${query.crypto_platform}` };
+                where.currency_symbol = { [Op.iLike]: `%${query.crypto_platform}%` };
             }
             let memberCond = {
                 deleted_flg: false
