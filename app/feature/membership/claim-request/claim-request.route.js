@@ -35,7 +35,7 @@ router.put(
 );
 
 router.get(
-	'/claim-requests/csv',
+	'/claim-requests-csv',
     authenticate,
     authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_CLAIM_REQUESTS),
 	controller.downloadCSV
@@ -200,7 +200,7 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/membership/claim-requests/csv:
+ * /web/membership/claim-requests-csv:
  *   get:
  *     summary: export csv claim request
  *     tags:
