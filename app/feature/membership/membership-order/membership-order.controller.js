@@ -26,11 +26,21 @@ module.exports = {
         deleted_flg: false
       };
 
-      if (query.order_id) where.id = query.order_id;
-      if (query.payment_status) where.status = query.payment_status;
-      if (query.bank_account_number) where.account_number = { [Op.iLike]: `%${query.bank_account_number}%` }
-      if (query.crypto_receive_address) where.wallet_address = { [Op.iLike]: `%${query.crypto_receive_address}%` }
-      if (query.email) memberWhere.email = { [Op.iLike]: `%${query.email}%` }
+      if (query.order_no) {
+        where.order_no = { [Op.iLike]: `%${query.order_no}%` };
+      }
+      if (query.payment_status) {
+        where.status = query.payment_status;
+      }
+      if (query.bank_account_number) {
+        where.account_number = { [Op.iLike]: `%${query.bank_account_number}%` };
+      }
+      if (query.crypto_receive_address) {
+        where.wallet_address = { [Op.iLike]: `%${query.crypto_receive_address}%` };
+      }
+      if (query.email) {
+        memberWhere.email = { [Op.iLike]: `%${query.email}%` };
+      }
 
       let fromDate, toDate;
       if (query.from || query.to) {
@@ -223,11 +233,21 @@ module.exports = {
         deleted_flg: false
       };
 
-      if (query.order_id) where.id = query.order_id;
-      if (query.payment_status) where.status = query.payment_status;
-      if (query.bank_account_number) where.account_number = query.bank_account_number;
-      if (query.crypto_receive_address) where.wallet_address = query.crypto_receive_address;
-      if (query.email) memberWhere.email = query.email;
+      if (query.order_no) {
+        where.order_no = { [Op.iLike]: `%${query.order_no}%` };
+      }
+      if (query.payment_status) {
+        where.status = query.payment_status;
+      }
+      if (query.bank_account_number) {
+        where.account_number = { [Op.iLike]: `%${query.bank_account_number}%` };
+      }
+      if (query.crypto_receive_address) {
+        where.wallet_address = { [Op.iLike]: `%${query.crypto_receive_address}%` };
+      }
+      if (query.email) {
+        memberWhere.email = { [Op.iLike]: `%${query.email}%` };
+      }
 
       let fromDate, toDate;
       if (query.from || query.to) {
