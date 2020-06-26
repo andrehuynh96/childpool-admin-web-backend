@@ -242,7 +242,11 @@ module.exports = {
                 { key: 'member_email', header: 'Email' },
                 { key: 'wallet_address', header: 'Wallet Address' },
                 { key: 'amount', header: 'Claim Amount' },
-                { key: 'currency_symbol', header: 'Crypto Platform' },
+                { key: 'currency_symbol', header: 'Currency' },
+                { key: 'account_number', header: 'Account Number' },
+                { key: 'bank_name', header: 'Bank Name' },
+                { key: 'branch_name', header: 'Branch Name' },
+                { key: 'account_holder', header: 'Account Holder' },
                 { key: 'status', header: 'Status' },
                 { key: 'type', header: 'Payment' }
             ]);
