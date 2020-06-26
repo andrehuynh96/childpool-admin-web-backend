@@ -18,10 +18,10 @@ module.exports = {
         deleted_flg: false
       };
       if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
-      if (query.referralCode) where.referral_code = query.referralCode;
-      if (query.referrerCode) where.referrer_code = query.referrerCode;
-      if (query.name) where.name = { [Op.iLike]: `%${req.query.name}%` };
-      if (query.email) where.email = { [Op.iLike]: `%${req.query.email}%` };
+      if (query.referralCode) where.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
+      if (query.referrerCode) where.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
+      if (query.name) where.name = { [Op.iLike]: `%${query.name}%` };
+      if (query.email) where.email = { [Op.iLike]: `%${query.email}%` };
 
       const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
       const membershipTypeIds = items.map(item => item.membership_type_id);
