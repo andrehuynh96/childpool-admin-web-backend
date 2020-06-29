@@ -245,7 +245,7 @@ class AffiliateApi {
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
-  
+
 
   // Private functions
   async getHeaders() {
@@ -298,7 +298,7 @@ class MembershipApi extends AffiliateApi {
   async registerMembership({ email, referrerCode, membershipTypeId }) {
     try {
       const headers = await this.getHeaders();
-      const result = await axios.post(`${API_URL}/clients`,
+      const result = await axios.post(`${API_URL}/membership-clients`,
         {
           ext_client_id: email,
           affiliate_code: referrerCode || "",
