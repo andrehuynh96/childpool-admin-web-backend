@@ -1,6 +1,7 @@
 const logger = require("app/lib/logger");
 const database = require('app/lib/database').db().wallet;
 const Setting = require("app/model/wallet").settings;
+const MembershipType = require("app/model/wallet").membership_types;
 
 module.exports = {
   get: async (req, res, next) => {
@@ -18,9 +19,7 @@ module.exports = {
           data.membership_type_free_membership_flg = JSON.parse(e.value);
         } else if (e.key == 'MEMBERSHIP_TYPE_UPGRADE_PAID_MEMBER_FLG') {
           data.membership_type_upgrade_paid_member_flg = JSON.parse(e.value);
-        } else if (e.key == 'UPGRADE_TO_MEMBERSHIP_TYPE_ID') {
-          data.upgrade_to_membership_type_id = e.value;
-        }
+        } 
       }
       return res.ok(data);
     }
@@ -34,17 +33,38 @@ module.exports = {
     try {
       transaction = await database.transaction();
       for (let key of Object.keys(req.body)) {
-        await Setting.update({
-          value: req.body[key],
-          updated_by: req.user.id
-        }, {
-          where: {
-            property: key
-          },
-          returning: true,
-          transaction: transaction
-        });
-
+        if (key == 'items') {
+          for (let item of req.body.items){
+            let data = {};
+            if (item.is_enabled != undefined) {
+              data.is_enabled = item.is_enabled;
+            }
+            if (item.name) {
+              data.name = item.name;
+            }
+            if (item.price) {
+              data.price = item.price;
+            }
+            await MembershipType.update(data, {
+              where: {
+                id: item.id
+              },
+              returning: true,
+              transaction: transaction
+            })
+          }
+        } else {
+          await Setting.update({
+            value: req.body[key],
+            updated_by: req.user.id
+          }, {
+            where: {
+              property: key
+            },
+            returning: true,
+            transaction: transaction
+          });
+        }
       }
       await transaction.commit();
       return res.ok(true);
