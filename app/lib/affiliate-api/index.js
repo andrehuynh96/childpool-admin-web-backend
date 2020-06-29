@@ -233,11 +233,11 @@ class AffiliateApi {
   async getTreeChart(memberEmail) {
     try {
       const headers = await this.getHeaders();
-      const result = await axios.get(`${API_URL}/clients/tree-chart?ext_client_id=${memberEmail}`,
+      const queryData = queryString.stringify({ ext_client_id: memberEmail });
+      const result = await axios.get(`${API_URL}/clients/tree-chart?${queryData}`,
         {
           headers,
         });
-
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
