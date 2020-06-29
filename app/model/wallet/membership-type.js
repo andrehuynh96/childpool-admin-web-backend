@@ -26,6 +26,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    is_enabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      default: false,
+    },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
