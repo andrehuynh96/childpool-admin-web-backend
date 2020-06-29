@@ -195,7 +195,6 @@ module.exports = {
   },
   getTreeChart: async (req, res, next) => {
     try {
-      console.log(req.params.memberId);
       const member = await Member.findOne({
         where: {
           id: req.params.memberId,
@@ -207,15 +206,21 @@ module.exports = {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
 
-      const result = await membershipApi.getTreeChart(member.email);
+      const getMembershipTreeTask = await membershipApi.getTreeChart(member.email);
+      const getAffiliateTreeChartTask = await affiliateApi.getTreeChart(member.email);
+      const [getMembershipTreeResult, getAffiliateTreeChartResult] = await Promise.all([getMembershipTreeTask, getAffiliateTreeChartTask]);
 
-      if (result.httpCode !== 200) {
-        return res.status(result.httpCode).send(result.data);
+      if (getMembershipTreeResult.httpCode !== 200) {
+        return res.status(getMembershipTreeResult.httpCode).send(getMembershipTreeResult.data);
       }
-      return res.ok(result.data);
+      if (getAffiliateTreeChartResult.httpCode !== 200) {
+        return res.status(getAffiliateTreeChartResult.httpCode).send(getAffiliateTreeChartResult.data);
+      }
 
+      const result = [getMembershipTreeResult.data, getAffiliateTreeChartResult.data];
+
+      return res.ok(result);
     } catch (error) {
-
       logger.error('get member tree chart fail:', error);
       next(error);
     }
