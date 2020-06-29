@@ -42,8 +42,7 @@ module.exports = router;
 *             {
                 "data": {
                       "membership_type_free_membership_flg" : true,
-                      "membership_type_upgrade_paid_member_flg" : true,
-                      "upgrade_to_membership_type_id": "88fda933-0658-49c4-a9c7-4c0021e9a071"
+                      "membership_type_upgrade_paid_member_flg" : true
               }
             }
 *       400:
@@ -83,7 +82,12 @@ module.exports = router;
 *                  {
                       "membership_type_free_membership_flg" : true,
                       "membership_type_upgrade_paid_member_flg" : true,
-                      "upgrade_to_membership_type_id": "88fda933-0658-49c4-a9c7-4c0021e9a071"
+                      "items": [{
+                        "id": "c4d5dc3b-13b9-45b3-8590-12395a326293",
+                        "name": "GOLD",
+                        "price": 500,
+                        "is_enabled": true
+                      }]
                     }
 *     produces:
 *       - application/json
