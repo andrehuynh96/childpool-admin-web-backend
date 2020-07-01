@@ -5,7 +5,6 @@ const redisResource = require("app/resource/redis");
 const redis = require("app/lib/redis");
 const cache = redis.client();
 const queryString = require('query-string');
-const MembershipTypeName = require("app/model/wallet/value-object/membership-type-name");
 
 const API_URL = config.affiliate.url;
 
