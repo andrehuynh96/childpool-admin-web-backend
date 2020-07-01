@@ -108,7 +108,6 @@ module.exports = {
   getOrderDetail: async (req, res, next) => {
     try {
       const { params } = req;
-      console.log(params.id);
       const memberWhere = {
         deleted_flg: false
       };
@@ -147,7 +146,7 @@ module.exports = {
     }
   },
   approveOrder: async (req, res, next) => {
-    const t = await database.transaction();
+    let transaction;
 
     try {
       let order = await MembershipOrder.findOne({
@@ -161,10 +160,15 @@ module.exports = {
       });
 
       if (!order) {
-        return res.ok(false);
+        return res.notFound(res.__("MEMBERSHIP_ORDER_NOT_FOUND"), "MEMBERSHIP_ORDER_NOT_FOUND");
       }
 
-      let status = req.body.action == 1 ? MembershipOrderStatus.Completed : MembershipOrderStatus.Rejected;
+      if (order.status !== MembershipOrderStatus.Pending) {
+        return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
+      }
+
+      transaction = await database.transaction();
+      let status = req.body.action == 1 ? MembershipOrderStatus.Approved : MembershipOrderStatus.Rejected;
       await MembershipOrder.update({
         notes: req.body.note,
         approved_by_id: req.user.id,
@@ -174,10 +178,10 @@ module.exports = {
           id: req.params.id
         },
         returning: true,
-        transaction: t
+        transaction: transaction
       });
 
-      if (status == MembershipOrderStatus.Completed) {
+      if (status == MembershipOrderStatus.Approved) {
         await Member.update({
           membership_type_id: order.membership_type_id
         }, {
@@ -185,11 +189,11 @@ module.exports = {
             id: order.member_id
           },
           returning: true,
-          transaction: t
+          transaction: transaction
         });
       }
 
-      if (status == MembershipOrderStatus.Completed) {
+      if (status == MembershipOrderStatus.Approved) {
         const result = await membershipApi.registerMembership({
           email: order.Member.email,
           referrerCode: order.referrer_code,
@@ -197,7 +201,7 @@ module.exports = {
         });
 
         if (result.httpCode != 200) {
-          await t.rollback();
+          await transaction.rollback();
 
           return res.status(result.httpCode).send(result.data);
         }
@@ -209,17 +213,21 @@ module.exports = {
             id: order.id
           },
           returning: true,
-          transaction: t
+          transaction: transaction
         });
 
         await _sendEmail(order.Member.email, order.id);
       }
-      await t.commit();
+
+      await transaction.commit();
 
       return res.ok(true);
     }
     catch (err) {
-      await t.rollback();
+      if (transaction) {
+        await transaction.rollback();
+      }
+
       logger.error('update order fail:', err);
       next(err);
     }

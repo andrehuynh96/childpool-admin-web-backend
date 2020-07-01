@@ -31,10 +31,12 @@ module.exports = {
         where: {
           actived_flg: true,
           bank_name: req.body.bank_name,
+          branch_name: req.body.branch_name,
           swift: req.body.swift,
           account_name: req.body.account_name,
           account_number: req.body.account_number,
           currency_symbol: req.body.currency_symbol,
+          account_type: req.body.account_type,
         }
       });
       if (current) {
@@ -46,12 +48,12 @@ module.exports = {
         updated_by: req.user.id,
         actived_flg: false
       }, {
-          where: {
-            actived_flg: true,
-          },
-          returning: true,
-          transaction: transaction
-        });
+        where: {
+          actived_flg: true,
+        },
+        returning: true,
+        transaction: transaction
+      });
       if (!updateCurrent) {
         if (transaction) {
           await transaction.rollback();
@@ -63,11 +65,14 @@ module.exports = {
         created_by: req.user.id,
         actived_flg: true,
         bank_name: req.body.bank_name,
+        branch_name: req.body.branch_name,
         swift: req.body.swift,
         account_name: req.body.account_name,
         account_number: req.body.account_number,
         currency_symbol: req.body.currency_symbol,
+        account_type: req.body.account_type,
       }, { transaction });
+
       if (!result) {
         if (transaction) {
           await transaction.rollback();

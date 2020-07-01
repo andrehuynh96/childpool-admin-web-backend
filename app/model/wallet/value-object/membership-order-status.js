@@ -1,8 +1,9 @@
 const MembershipOrderStatus = {
   Pending: "Pending",
-  InProcessing: "InProcessing",
-  Completed: "Completed",
   Rejected: "Rejected",
+  Approved: 'Approved',
+  // InProcessing: "InProcessing",
+  // Completed: "Completed",
 };
 
 module.exports = MembershipOrderStatus;
