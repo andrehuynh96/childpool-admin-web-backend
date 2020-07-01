@@ -32,6 +32,10 @@ router.get("/membership-types",
     controller.getMembershipTypeList,
 );
 
+router.get("/kyc-status",
+    controller.getKycStatus,
+);
+
 router.get("/members/:memberId/tree-chart",
     authenticate,
     controller.getTreeChart
@@ -69,6 +73,9 @@ module.exports = router;
  *         in: query
  *         type: string
  *       - name: membershipTypeId
+ *         in: query
+ *         type: string
+ *       - name: kycStatus
  *         in: query
  *         type: string
  *       - name: referralCode
@@ -347,6 +354,47 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+/**
+ * @swagger
+ * /web/membership/kyc-status:
+ *   get:
+ *     summary: get dropdown list kyc status
+ *     tags:
+ *       - Members
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": {
+                        "IN_REVIEW": "In Review",
+                        "APPROVED": "Approved",
+                        "INSUFFICIENT": "Insufficient",
+                        "DECLINED": "Declined",
+                        "EXPIRED": "Expired"
+                    }
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
 
 
 /** *******************************************************************/
