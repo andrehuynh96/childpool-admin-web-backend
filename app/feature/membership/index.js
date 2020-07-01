@@ -11,4 +11,5 @@ router.use(require("./membership-type-config/membership-type-config.route"));
 router.use(require("./policy/policy.route"));
 router.use(require("./affiliate-policy/affiliate-policy.route"));
 router.use(require("./caculate-reward-request/caculate-reward-request.route"));
+router.use(require("./member-kyc/member-kyc.route"));
 module.exports = router;
