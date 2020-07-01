@@ -322,7 +322,7 @@ class MembershipApi extends AffiliateApi {
       const result = await axios.put(`${API_URL}/clients/membership-type`,
         {
           ext_client_id: email,
-          membership_type_id: membershipType.type === MembershipTypeName.Free ? membershipType.id : null,
+          membership_type_id: membershipType.id,
         },
         {
           headers,
