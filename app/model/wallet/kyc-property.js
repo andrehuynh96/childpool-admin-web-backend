@@ -50,6 +50,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    group_name: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
   }, {
       underscored: true,
       timestamps: true,
