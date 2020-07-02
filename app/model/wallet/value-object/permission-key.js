@@ -483,20 +483,19 @@ module.exports = {
     "GROUP_NAME": "Affiliate Configuration",
     "ROLES": ["Master", "Admin"]
   },
-  "MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID": {
-    "KEY": "MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID",
-    "ROLES": ["Master"]
-  },
   "MEMBERSHIP_VIEW_MEMBER_KYC_LIST": {
     "KEY": "MEMBERSHIP_VIEW_MEMBER_KYC_LIST",
-    "ROLES": ["Master"]
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master","Admin"]
   },
   "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL": {
     "KEY": "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL",
-    "ROLES": ["Master"]
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master","Admin"]
   },
   "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS": {
     "KEY": "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS",
-    "ROLES": ["Master"]
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master","Admin"]
   },
 };
