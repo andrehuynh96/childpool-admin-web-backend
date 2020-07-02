@@ -1,5 +1,6 @@
 const MemberRewardCommissionMethod = require("./value-object/member-reward-transaction-commission-method");
 const MemberRewardAction = require("./value-object/member-reward-transaction-action");
+const SystemType = require('./value-object/system-type');
 
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define("member_reward_transaction_his", {
@@ -42,6 +43,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('medium'),
       allowNull: true
     },
+    system_type: {
+      type: DataTypes.STRING(125),
+      allowNull: true,
+      defaultValue: SystemType.MEMBERSHIP
+    }
   }, {
       underscored: true,
       timestamps: true,
