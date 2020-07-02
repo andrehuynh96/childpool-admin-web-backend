@@ -107,7 +107,7 @@ All configs related to migration in `.sequelizerc`
 ## Create Migration 
 - In order to create migration then you run command below
 ```
-sequelize migration:create --name name-of-migration
+sequelize migration:create --name name-of-migration || npx sequelize-cli migration:create --name name-of-migration
 ```
 
 - New file migration will be in `app/model/wallet/migration`

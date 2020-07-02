@@ -211,7 +211,7 @@ module.exports = {
         where.type = query.payment;
       }
       if (query.status) {
-        where.status = query.status
+        where.status = query.status;
       }
       if (query.crypto_platform) {
         where.currency_symbol = query.crypto_platform;
