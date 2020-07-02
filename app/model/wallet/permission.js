@@ -14,13 +14,17 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(512),
       allowNull: true
     },
+    group_name: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
     }
   }, {
-      underscored: true,
-      timestamps: true,
-    });
-} 
+    underscored: true,
+    timestamps: true,
+  });
+};

@@ -15,7 +15,7 @@ module.exports = async () => {
       created_by: 0,
       updated_by: 0
     }], {
-        returning: true
-      });
+      returning: true
+    });
   }
 };
