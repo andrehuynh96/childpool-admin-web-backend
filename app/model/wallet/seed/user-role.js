@@ -26,7 +26,7 @@ module.exports = async () => {
       await UserRole.create({
         user_id: user.id,
         role_id: adminRole.id,
-      })
+      });
     }
   }
 };

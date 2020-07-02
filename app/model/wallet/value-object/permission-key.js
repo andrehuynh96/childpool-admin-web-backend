@@ -1,15 +1,8 @@
 module.exports = {
-  "VIEW_USER": {
-    "KEY": "VIEW_USER",
-    "ROLES": [
-      "Master",
-      "Admin",
-      "Operator1",
-      "Operator2"
-    ]
-  },
   "CHANGE_PASSWORD_ACCOUNT": {
     "KEY": "CHANGE_PASSWORD_ACCOUNT",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Account",
     "ROLES": [
       "Master",
       "Admin",
@@ -19,6 +12,8 @@ module.exports = {
   },
   "VIEW_LOGIN_HISTORY_ACCOUNT": {
     "KEY": "VIEW_LOGIN_HISTORY_ACCOUNT",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Account",
     "ROLES": [
       "Master",
       "Admin",
@@ -28,6 +23,8 @@ module.exports = {
   },
   "VIEW_2FA_ACCOUNT": {
     "KEY": "VIEW_2FA_ACCOUNT",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Account",
     "ROLES": [
       "Master",
       "Admin",
@@ -37,6 +34,8 @@ module.exports = {
   },
   "UPDATE_2FA_ACCOUNT": {
     "KEY": "UPDATE_2FA_ACCOUNT",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Account",
     "ROLES": [
       "Master",
       "Admin",
@@ -46,6 +45,8 @@ module.exports = {
   },
   "UPDATE_PROFILE_ACCOUNT": {
     "KEY": "UPDATE_PROFILE_ACCOUNT",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Account",
     "ROLES": [
       "Master",
       "Admin",
@@ -53,53 +54,21 @@ module.exports = {
       "Operator2",
     ]
   },
-  "VIEW_LIST_GRANDCHILD": {
-    "KEY": "VIEW_LIST_GRANDCHILD",
+  "VIEW_USER": {
+    "KEY": "VIEW_USER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "User",
     "ROLES": [
       "Master",
       "Admin",
       "Operator1",
-      "Operator2",
-    ]
-  },
-  "CREATE_GRANDCHILD": {
-    "KEY": "CREATE_GRANDCHILD",
-    "ROLES": [
-      "Master",
-      "Admin",
-      "Operator1",
-      "Operator2",
-    ]
-  },
-  "UPDATE_GRANDCHILD": {
-    "KEY": "UPDATE_GRANDCHILD",
-    "ROLES": [
-      "Master",
-      "Admin",
-      "Operator1",
-      "Operator2",
-    ]
-  },
-  "VIEW_LIST_KEY_PARTNER": {
-    "KEY": "VIEW_LIST_KEY_PARTNER",
-    "ROLES": [
-      "Master",
-      "Admin",
-      "Operator1",
-      "Operator2",
-    ]
-  },
-  "CREATE_KEY_PARTNER": {
-    "KEY": "CREATE_KEY_PARTNER",
-    "ROLES": [
-      "Master",
-      "Admin",
-      "Operator1",
-      "Operator2",
+      "Operator2"
     ]
   },
   "VIEW_LIST_USER": {
     "KEY": "VIEW_LIST_USER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "User",
     "ROLES": [
       "Master",
       "Admin",
@@ -109,6 +78,8 @@ module.exports = {
   },
   "VIEW_USER_DETAIL": {
     "KEY": "VIEW_USER_DETAIL",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "User",
     "ROLES": [
       "Master",
       "Admin",
@@ -118,6 +89,8 @@ module.exports = {
   },
   "CREATE_USER": {
     "KEY": "CREATE_USER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "User",
     "ROLES": [
       "Master",
       "Admin",
@@ -126,6 +99,8 @@ module.exports = {
   },
   "UPDATE_USER": {
     "KEY": "UPDATE_USER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "User",
     "ROLES": [
       "Master",
       "Admin",
@@ -134,6 +109,8 @@ module.exports = {
   },
   "DELETE_USER": {
     "KEY": "DELETE_USER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "User",
     "ROLES": [
       "Master",
       "Admin",
@@ -142,6 +119,8 @@ module.exports = {
   },
   "ACTIVE_USER": {
     "KEY": "ACTIVE_USER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "User",
     "ROLES": [
       "Master",
       "Admin",
@@ -151,6 +130,8 @@ module.exports = {
   },
   "RESEND_EMAIL": {
     "KEY": "RESEND_EMAIL",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "User",
     "ROLES": [
       "Master",
       "Admin",
@@ -187,174 +168,320 @@ module.exports = {
   //   "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   // },
 
-  "CREATE_CHANGE_REWARD_ADDRESS_REQUEST": {
-    "KEY": "CREATE_CHANGE_REWARD_ADDRESS_REQUEST",
-    "ROLES": ["Master", "Admin"]
+  "VIEW_LIST_GRANDCHILD": {
+    "KEY": "VIEW_LIST_GRANDCHILD",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Childpool",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
   },
-  "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST": {
-    "KEY": "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST",
-    "ROLES": ["Master"]
+  "CREATE_GRANDCHILD": {
+    "KEY": "CREATE_GRANDCHILD",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Childpool",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
   },
-  "VIEW_LIST_COMMISSION_PARTNER": {
-    "KEY": "VIEW_LIST_COMMISSION_PARTNER",
-    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  "UPDATE_GRANDCHILD": {
+    "KEY": "UPDATE_GRANDCHILD",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Childpool",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
   },
-  "VIEW_HISTORY_COMMISSION_PARTNER": {
-    "KEY": "VIEW_HISTORY_COMMISSION_PARTNER",
-    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  "VIEW_LIST_KEY_PARTNER": {
+    "KEY": "VIEW_LIST_KEY_PARTNER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Partner",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
   },
-  "CREATE_COMMISSION_PARTNER": {
-    "KEY": "CREATE_COMMISSION_PARTNER",
-    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  "CREATE_KEY_PARTNER": {
+    "KEY": "CREATE_KEY_PARTNER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Partner",
+    "ROLES": [
+      "Master",
+      "Admin",
+      "Operator1",
+      "Operator2",
+    ]
   },
   "VIEW_LIST_PARTNER_TX_MEMO": {
     "KEY": "VIEW_LIST_PARTNER_TX_MEMO",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Partner",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "CREATE_PARTNER_TX_MEMO": {
     "KEY": "CREATE_PARTNER_TX_MEMO",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Partner",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "VIEW_LIST_PARTNER_TX_MEMO_HISTORY": {
     "KEY": "VIEW_LIST_PARTNER_TX_MEMO_HISTORY",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Partner",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "VIEW_LIST_MEMBER": {
-    "KEY": "VIEW_LIST_MEMBER",
+  "CREATE_COMMISSION_PARTNER": {
+    "KEY": "CREATE_COMMISSION_PARTNER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Partner",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_LIST_COMMISSION_PARTNER": {
+    "KEY": "VIEW_LIST_COMMISSION_PARTNER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Partner",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_HISTORY_COMMISSION_PARTNER": {
+    "KEY": "VIEW_HISTORY_COMMISSION_PARTNER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Partner",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "REVOKE_KEY_PARTNER": {
     "KEY": "REVOKE_KEY_PARTNER",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Partner",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+
+  "CREATE_CHANGE_REWARD_ADDRESS_REQUEST": {
+    "KEY": "CREATE_CHANGE_REWARD_ADDRESS_REQUEST",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Settings",
+    "ROLES": ["Master", "Admin"]
+  },
+  "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST": {
+    "KEY": "UPDATE_CHANGE_REWARD_ADDRESS_REQUEST",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Settings",
+    "ROLES": ["Master"]
+  },
+
   "MEMBERSHIP_VIEW_MEMBER_LIST": {
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Members",
     "KEY": "MEMBERSHIP_VIEW_MEMBER_LIST",
     "ROLES": ["Master"]
   },
   "MEMBERSHIP_VIEW_MEMBER_DETAIL": {
     "KEY": "MEMBERSHIP_VIEW_MEMBER_DETAIL",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Members",
     "ROLES": ["Master"]
   },
   "MEMBERSHIP_UPDATE_MEMBER": {
     "KEY": "MEMBERSHIP_UPDATE_MEMBER",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_ORDER_LIST": {
-    "KEY": "MEMBERSHIP_VIEW_ORDER_LIST",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_ORDER_DETAIL": {
-    "KEY": "MEMBERSHIP_VIEW_ORDER_DETAIL",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Members",
     "ROLES": ["Master"]
   },
 
+  "MEMBERSHIP_VIEW_ORDER_LIST": {
+    "KEY": "MEMBERSHIP_VIEW_ORDER_LIST",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Order",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "MEMBERSHIP_VIEW_ORDER_DETAIL": {
+    "KEY": "MEMBERSHIP_VIEW_ORDER_DETAIL",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Order",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
   "MEMBERSHIP_UPDATE_ORDER": {
     "KEY": "MEMBERSHIP_UPDATE_ORDER",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST": {
-    "KEY": "MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST",
-    "ROLES": ["Master"]
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Order",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "MEMBERSHIP_EXPORT_CSV_ORDERS": {
     "KEY": "MEMBERSHIP_EXPORT_CSV_ORDERS",
-    "ROLES": ["Master"]
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Order",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+
+  "MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST": {
+    "KEY": "MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Claim request",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+
   "MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST": {
     "KEY": "MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE": {
-    "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_MEMBERSHIP_AFFILIATE": {
-    "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_AFFILIATE",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_UPGRADE_CONDITION": {
-    "KEY": "MEMBERSHIP_VIEW_UPGRADE_CONDITION",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_BANK_ACCOUNT_REWARD": {
-    "KEY": "MEMBERSHIP_VIEW_BANK_ACCOUNT_REWARD",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_UPDATE_BANK_ACCOUNT_REWARD": {
-    "KEY": "MEMBERSHIP_UPDATE_BANK_ACCOUNT_REWARD",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_RECEIVING_ADDRESS": {
-    "KEY": "MEMBERSHIP_VIEW_RECEIVING_ADDRESS",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_RECEIVING_ADDRESS_DETAIL": {
-    "KEY": "MEMBERSHIP_VIEW_RECEIVING_ADDRESS_DETAIL",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_UPDATE_RECEIVING_ADDRESS": {
-    "KEY": "MEMBERSHIP_UPDATE_RECEIVING_ADDRESS",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_ADD_RECEIVING_ADDRESS": {
-    "KEY": "MEMBERSHIP_ADD_RECEIVING_ADDRESS",
-    "ROLES": ["Master"]
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Claim request",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "MEMBERSHIP_EXPORT_CSV_CLAIM_REQUESTS": {
     "KEY": "MEMBERSHIP_EXPORT_CSV_CLAIM_REQUESTS",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_UPDATE_UPGRADE_CONDITION": {
-    "KEY": "MEMBERSHIP_UPDATE_UPGRADE_CONDITION",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE_CONFIG": {
-    "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE_CONFIG",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_UPDATE_MEMBERSHIP_TYPE_CONFIG": {
-    "KEY": "MEMBERSHIP_UPDATE_MEMBERSHIP_TYPE_CONFIG",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_MEMBERSHIP_POLICY_LIST": {
-    "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_POLICY_LIST",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_UPDATE_MEMBERSHIP_POLICY": {
-    "KEY": "MEMBERSHIP_UPDATE_MEMBERSHIP_POLICY",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_AFFILIATE_POLICY_LIST": {
-    "KEY": "MEMBERSHIP_VIEW_AFFILIATE_POLICY_LIST",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_AFFILIATE_POLICY_DETAIL": {
-    "KEY": "MEMBERSHIP_VIEW_AFFILIATE_POLICY_DETAIL",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_CREATE_AFFILIATE_POLICY": {
-    "KEY": "MEMBERSHIP_CREATE_AFFILIATE_POLICY",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_UPDATE_AFFILIATE_POLICY": {
-    "KEY": "MEMBERSHIP_UPDATE_AFFILIATE_POLICY",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_LIST": {
-    "KEY": "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_LIST",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL": {
-    "KEY": "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL",
-    "ROLES": ["Master"]
-  },
-  "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL_LIST": {
-    "KEY": "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL_LIST",
-    "ROLES": ["Master"]
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Claim request",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "MEMBERSHIP_VIEW_CLAIM_REQUEST_DETAIL": {
     "KEY": "MEMBERSHIP_VIEW_CLAIM_REQUEST_DETAIL",
-    "ROLES": ["Master"]
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Claim request",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID": {
+    "KEY": "MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Claim request",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+
+  "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE": {
+    "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_UPGRADE_CONDITION": {
+    "KEY": "MEMBERSHIP_VIEW_UPGRADE_CONDITION",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_BANK_ACCOUNT_REWARD": {
+    "KEY": "MEMBERSHIP_VIEW_BANK_ACCOUNT_REWARD",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_UPDATE_BANK_ACCOUNT_REWARD": {
+    "KEY": "MEMBERSHIP_UPDATE_BANK_ACCOUNT_REWARD",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_RECEIVING_ADDRESS": {
+    "KEY": "MEMBERSHIP_VIEW_RECEIVING_ADDRESS",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_RECEIVING_ADDRESS_DETAIL": {
+    "KEY": "MEMBERSHIP_VIEW_RECEIVING_ADDRESS_DETAIL",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_UPDATE_RECEIVING_ADDRESS": {
+    "KEY": "MEMBERSHIP_UPDATE_RECEIVING_ADDRESS",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_ADD_RECEIVING_ADDRESS": {
+    "KEY": "MEMBERSHIP_ADD_RECEIVING_ADDRESS",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_UPDATE_UPGRADE_CONDITION": {
+    "KEY": "MEMBERSHIP_UPDATE_UPGRADE_CONDITION",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE_CONFIG": {
+    "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE_CONFIG",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_UPDATE_MEMBERSHIP_TYPE_CONFIG": {
+    "KEY": "MEMBERSHIP_UPDATE_MEMBERSHIP_TYPE_CONFIG",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_MEMBERSHIP_POLICY_LIST": {
+    "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_POLICY_LIST",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_UPDATE_MEMBERSHIP_POLICY": {
+    "KEY": "MEMBERSHIP_UPDATE_MEMBERSHIP_POLICY",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Membership Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+
+  "MEMBERSHIP_VIEW_AFFILIATE_POLICY_LIST": {
+    "KEY": "MEMBERSHIP_VIEW_AFFILIATE_POLICY_LIST",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Affiliate Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_AFFILIATE_POLICY_DETAIL": {
+    "KEY": "MEMBERSHIP_VIEW_AFFILIATE_POLICY_DETAIL",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Affiliate Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_CREATE_AFFILIATE_POLICY": {
+    "KEY": "MEMBERSHIP_CREATE_AFFILIATE_POLICY",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Affiliate Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_UPDATE_AFFILIATE_POLICY": {
+    "KEY": "MEMBERSHIP_UPDATE_AFFILIATE_POLICY",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Affiliate Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_LIST": {
+    "KEY": "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_LIST",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Affiliate Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL": {
+    "KEY": "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Affiliate Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL_LIST": {
+    "KEY": "MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL_LIST",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Affiliate Configuration",
+    "ROLES": ["Master", "Admin"]
+  },
+
+  "MEMBERSHIP_VIEW_MEMBERSHIP_AFFILIATE": {
+    "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_AFFILIATE",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Affiliate Configuration",
+    "ROLES": ["Master", "Admin"]
   },
   "MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID": {
     "KEY": "MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID",

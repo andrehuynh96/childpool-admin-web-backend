@@ -1,6 +1,4 @@
 const Model = require("app/model/wallet").roles;
-const bcrypt = require('bcrypt');
-
 
 module.exports = async () => {
   let count = await Model.count();
@@ -22,7 +20,7 @@ module.exports = async () => {
       name: "Operator2",
       level: 30
     }], {
-        returning: true
-      });
+      returning: true
+    });
   }
 };
