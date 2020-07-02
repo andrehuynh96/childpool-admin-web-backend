@@ -255,4 +255,55 @@ router.get(
  *           $ref: '#/definitions/500'
  */
 
+ /**
+ * @swagger
+ * /web/membership//caculate-reward-request-status:
+ *   get:
+ *     summary: get dropdown list caculate reward request
+ *     tags:
+ *       - Caculate Reward Request
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": [
+                        {
+                            "label": "PENDING",
+                            "value": "PENDING"
+                        },
+                        {
+                            "label": "PROCESSING",
+                            "value": "PROCESSING"
+                        },
+                        {
+                            "label": "COMPLETED",
+                            "value": "COMPLETED"
+                        },
+                        {
+                            "label": "FAILED",
+                            "value": "FAILED"
+                        }
+                    ]
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
 module.exports = router;
