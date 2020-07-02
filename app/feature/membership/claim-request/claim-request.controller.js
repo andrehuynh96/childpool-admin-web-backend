@@ -81,6 +81,7 @@ module.exports = {
   },
   getDetail: async (req, res, next) => {
     try {
+      console.log(SystemType.MEMBERSHIP);
       const claimRequest = await ClaimRequest.findOne({
         include: [
           {
@@ -89,13 +90,13 @@ module.exports = {
             model: Member,
             where: {
               deleted_flg: false,
-              system_type: SystemType.MEMBERSHIP
             },
             required: true
           }
         ],
         where: {
-          id: req.params.claimRequestId
+          id: req.params.claimRequestId,
+          system_type: SystemType.MEMBERSHIP
         }
       });
 
