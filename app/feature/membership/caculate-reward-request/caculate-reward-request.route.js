@@ -26,6 +26,11 @@ router.get(
     controller.getDetailList
 );
 
+router.get(
+    '/caculate-reward-request-status',
+    controller.getStatus
+);
+
 /* #region search caculate reward requests */
 /**
  * @swagger

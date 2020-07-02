@@ -1,6 +1,6 @@
 const logger = require('app/lib/logger');
 const { affiliateApi } = require('app/lib/affiliate-api');
-
+const CaculateRewardRequestStatus = require('app/model/wallet/value-object/caculate-reward-request-status');
 module.exports = {
     search: async (req, res, next) => {
         try {
@@ -45,4 +45,20 @@ module.exports = {
             next(error);
         }
     },
+    getStatus: async (req, res, next) => {
+        try {
+            const caculateRewardRequestStatus = Object.entries(CaculateRewardRequestStatus);
+            const dropdownList = [];
+            caculateRewardRequestStatus.forEach(item => {
+                dropdownList.push({
+                    label: item[0],
+                    value: item[1]
+                });
+            });
+            return res.ok(dropdownList);
+        } catch (error) {
+            logger.info('get caculate reward request status list fail', error);
+            next(error);
+        }
+    }
 };
