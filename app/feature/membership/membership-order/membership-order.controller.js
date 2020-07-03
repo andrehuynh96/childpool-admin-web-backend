@@ -1,18 +1,26 @@
+const moment = require('moment');
+const { map } = require('p-iteration');
+const addressParser = require('address-rfc2822');
 const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const database = require('app/lib/database').db().wallet;
 const MembershipOrder = require("app/model/wallet").membership_orders;
 const MembershipType = require("app/model/wallet").membership_types;
+const MemberRewardTransactionHistory = require("app/model/wallet").member_reward_transaction_his;
+const MemberRewardCommissionMethod = require("app/model/wallet/value-object/member-reward-transaction-commission-method");
+const MemberRewardAction = require("app/model/wallet/value-object/member-reward-transaction-action");
+const SystemType = require('app/model/wallet/value-object/system-type');
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
-const moment = require('moment');
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
+const Sequelize = require('sequelize');
 const stringify = require('csv-stringify');
 const { membershipApi } = require('app/lib/affiliate-api');
 const blockchainHelpper = require('app/lib/blockchain-helpper');
 const config = require('app/config');
 const mailer = require('app/lib/mailer');
+const maskify = require('app/lib/maskify');
+
+const Op = Sequelize.Op;
 
 module.exports = {
   search: async (req, res, next) => {
@@ -194,10 +202,21 @@ module.exports = {
       }
 
       if (status == MembershipOrderStatus.Approved) {
+        const membershipType = await MembershipType.findOne({
+          where: {
+            id: order.membership_type_id
+          }
+        });
+
+        if (!membershipType) {
+          return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
+        }
+
         const result = await membershipApi.registerMembership({
           email: order.Member.email,
           referrerCode: order.referrer_code,
-          membershipTypeId: order.membership_type_id
+          membershipOrderId: order.id.toString(),
+          membershipType,
         });
 
         if (result.httpCode != 200) {
@@ -206,8 +225,30 @@ module.exports = {
           return res.status(result.httpCode).send(result.data);
         }
 
+        // Save reward transaction histories
+        const memberRewardTransactionHistories = await map(result.data.rewards || [], async (item) => {
+          const member = await _findMemberByEmail(item.ext_client_id);
+          if (!member) {
+            return;
+          }
+
+          const introducedByEmail = _maskEmailAddress(item.introduced_by_ext_client_id);
+
+          return {
+            member_id: member.id,
+            currency_symbol: item.currency_symbol,
+            amount: item.amount,
+            commission_method: item.commisson_type.toUpperCase() === 'DIRECT' ? MemberRewardCommissionMethod.DIRECT : MemberRewardCommissionMethod.INDIRECT,
+            system_type: SystemType.MEMBERSHIP,
+            action: MemberRewardAction.REWARD_COMMISSION,
+            commission_from: introducedByEmail,
+            note: introducedByEmail ? `${introducedByEmail}` : null,
+          };
+        });
+        await MemberRewardTransactionHistory.bulkCreate(memberRewardTransactionHistories, { transaction });
+
         await MembershipOrder.update({
-          referral_code: result.code
+          referral_code: result.data.affiliate_code.code
         }, {
           where: {
             id: order.id
@@ -216,7 +257,7 @@ module.exports = {
           transaction: transaction
         });
 
-        await _sendEmail(order.Member.email, order.id);
+        // await _sendEmail(order.Member.email, order.id);
       }
 
       await transaction.commit();
@@ -351,4 +392,52 @@ async function _sendEmail(emails, id) {
   } catch (err) {
     logger.error("send confirmed membership order email", err);
   }
+}
+
+async function _findMemberByEmail(email) {
+  let member = await Member.findOne({
+    where: {
+      email: email.toLowerCase(),
+      deleted_flg: false,
+    },
+  });
+
+  // Try to get member which was deleted
+  if (!member) {
+    member = await Member.findOne({
+      where: {
+        email: email.toLowerCase(),
+      },
+    });
+  }
+
+  return member;
+}
+
+function _maskEmailAddress(email) {
+  if (!email) {
+    return email;
+  }
+
+  const addresses = addressParser.parse(email);
+  const address = addresses[0];
+  let name = address.user();
+  let host = address.host();
+  name = maskify(name, {
+    maskSymbol: "*",
+    matchPattern: /^.+$/,
+    visibleCharsStart: 2,
+    visibleCharsEnd: 2,
+    minChars: 2,
+  });
+
+  host = maskify(host, {
+    maskSymbol: "*",
+    matchPattern: /\w+$/,
+    visibleCharsStart: 2,
+    visibleCharsEnd: 0,
+    minChars: 2,
+  });
+
+  return name + '@' + host;
 }
