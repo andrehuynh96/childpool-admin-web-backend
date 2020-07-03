@@ -49,9 +49,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: SystemType.MEMBERSHIP
     }
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
   Model.associate = (models) => {
     Model.belongsTo(models.members, {
       as: 'Member',
@@ -60,4 +60,4 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
   return Model;
-} 
+};

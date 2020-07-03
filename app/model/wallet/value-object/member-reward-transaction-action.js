@@ -2,4 +2,5 @@ module.exports = {
   "PAYOUT_REQUEST": "PAYOUT_REQUEST",
   "APPROVED": "APPROVED",
   "SENT": "SENT",
-}
+  "REWARD_COMMISSION": "REWARD_COMMISSION",
+};

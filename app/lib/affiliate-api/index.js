@@ -294,15 +294,25 @@ class MembershipApi extends AffiliateApi {
     };
   }
 
-  async registerMembership({ email, referrerCode, membershipTypeId }) {
+  async registerMembership({
+    email,
+    referrerCode,
+    membershipOrderId,
+    membershipType,
+  }) {
     try {
       const headers = await this.getHeaders();
+      const data = {
+        ext_client_id: email,
+        affiliate_code: referrerCode || "",
+        membership_order_id: membershipOrderId,
+        membership_type_id: membershipType.id,
+        amount: Number(membershipType.price),
+        // currency_symbol: membershipType.currency_symbol,
+        currency_symbol: "USDT",
+      };
       const result = await axios.post(`${API_URL}/membership-clients`,
-        {
-          ext_client_id: email,
-          affiliate_code: referrerCode || "",
-          membership_type_id: membershipTypeId,
-        },
+        data,
         {
           headers,
         });
