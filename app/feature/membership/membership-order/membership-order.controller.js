@@ -257,7 +257,7 @@ module.exports = {
           transaction: transaction
         });
 
-        // await _sendEmail(order.Member.email, order.id);
+        await _sendEmail(order.Member.email, order.id);
       }
 
       await transaction.commit();

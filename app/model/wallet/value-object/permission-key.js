@@ -484,4 +484,17 @@ module.exports = {
     "ROLES": ["Master", "Admin"]
   },
 
+  "VIEW_SETTINGS_REWARD_SETTING": {
+    "KEY": "VIEW_SETTINGS_REWARD_SETTING",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Reward Setting",
+    "ROLES": ["Master", "Admin"]
+  },
+  "UPDATE_VIEW_SETTINGS_REWARD_SETTING": {
+    "KEY": "UPDATE_VIEW_SETTINGS_REWARD_SETTING",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Reward Setting",
+    "ROLES": ["Master", "Admin"]
+  },
+
 };
