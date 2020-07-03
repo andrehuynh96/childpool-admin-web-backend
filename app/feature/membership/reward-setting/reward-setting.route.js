@@ -10,14 +10,14 @@ const router = express.Router();
 router.get(
   '/reward-setting',
   authenticate,
-  authority(PermissionKey.VIEW_SETTINGS_REWARD_SETTING),
+  authority(PermissionKey.VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING),
   controller.get
 );
 
 router.put(
   '/reward-setting',
   authenticate,
-  authority(PermissionKey.UPDATE_VIEW_SETTINGS_REWARD_SETTING),
+  authority(PermissionKey.UPDATE_MEMBERSHIP_SETTINGS_REWARD_SETTING),
   validator(update),
   controller.update
 );
