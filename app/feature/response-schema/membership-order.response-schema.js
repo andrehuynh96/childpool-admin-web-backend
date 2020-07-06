@@ -26,6 +26,7 @@ const destObject = {
     '[].Member': '[].member',
     '[].MembershipType':'[].membership_type',
     '[].wallet_id': '[].wallet_id',
+    '[].branch_name': '[].branch_name',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
   },
@@ -54,6 +55,7 @@ const destObject = {
     'Member': 'member',
     'MembershipType':'membership_type',
     'wallet_id': 'wallet_id',
+    'branch_name': 'branch_name',
     'createdAt': 'created_at',
     'updatedAt': 'updated_at',
   }
