@@ -374,13 +374,28 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                    "data": {
-                        "IN_REVIEW": "In Review",
-                        "APPROVED": "Approved",
-                        "INSUFFICIENT": "Insufficient",
-                        "DECLINED": "Declined",
-                        "EXPIRED": "Expired"
-                    }
+                    "data": [
+                        {
+                            "value": "Active",
+                            "label": "Active"
+                        },
+                        {
+                            "value": "Verify payment",
+                            "label": "Verify payment"
+                        },
+                        {
+                            "value": "Free accepted",
+                            "label": "Free accepted"
+                        },
+                        {
+                            "value": "Commission paid",
+                            "label": "Commission paid"
+                        },
+                        {
+                            "value": "Deactive",
+                            "label": "Deactive"
+                        }
+                    ]
                 }
  *       400:
  *         description: Error

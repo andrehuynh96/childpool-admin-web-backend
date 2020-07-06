@@ -199,12 +199,12 @@ module.exports = {
   },
   getKycStatus: async (req, res, next) => {
     try {
-      const kycStatus = Object.entries(KycStatus);
+      const kycStatus = Object.values(KycStatus);
       const kycStatusdropdown = [];
       kycStatus.forEach( item => {
         kycStatusdropdown.push({
-          value: item[0],
-          label: item[1],
+          value: item,
+          label: item,
         });
       });
       return res.ok(kycStatusdropdown);
