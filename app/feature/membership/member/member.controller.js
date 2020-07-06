@@ -21,7 +21,7 @@ module.exports = {
       };
       if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
       if (query.kycLevel) where.kyc_level = query.kycLevel;
-      if (query.kycStatus) where.kycStatus = query.kycStatus;
+      if (query.kycStatus) where.kyc_status = query.kycStatus;
       if (query.referralCode) where.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
       if (query.referrerCode) where.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
       if (query.name) where.name = { [Op.iLike]: `%${query.name}%` };
