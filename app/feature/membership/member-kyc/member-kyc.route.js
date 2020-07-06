@@ -13,11 +13,18 @@ router.get(
     controller.getAllMemberKyc
 );
 
-// router.get(
-//     '/member-kycs/:memberKycId',
-//     authenticate,
-//     authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL),
-//     controller.getMemberKycDetail
-// );
+router.get(
+    '/member-kycs/:memberKycId',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL),
+    controller.getMemberKycDetail
+);
+
+router.put(
+    '/member-kycs/:memberKycId',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS),
+    controller.updateStatus
+);
 
 module.exports = router;
