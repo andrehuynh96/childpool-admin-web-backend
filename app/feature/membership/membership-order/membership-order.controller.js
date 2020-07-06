@@ -49,6 +49,9 @@ module.exports = {
       if (query.email) {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
+      if(query.memo){
+        where.memo = { [Op.iLike]: `%${query.memo}%` };
+      }
 
       let fromDate, toDate;
       if (query.from || query.to) {
@@ -297,6 +300,9 @@ module.exports = {
       if (query.email) {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
+      if(query.memo){
+        where.memo = { [Op.iLike]: `%${query.memo}%` };
+      }
 
       let fromDate, toDate;
       if (query.from || query.to) {
@@ -352,7 +358,8 @@ module.exports = {
         { key: 'payment_type', header: 'Payment Type' },
         { key: 'account_number', header: 'Bank Acc No' },
         { key: 'wallet_address', header: 'Receive address' },
-        { key: 'status', header: 'Status' }
+        { key: 'status', header: 'Status' },
+        { key: 'wallet_id', header: 'Walllet Id' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
