@@ -36,6 +36,10 @@ router.get("/kyc-status",
     controller.getKycStatus,
 );
 
+router.get("/kycs",
+    controller.getAllKyc,
+);
+
 router.get("/members/:memberId/tree-chart",
     authenticate,
     controller.getTreeChart
@@ -396,5 +400,52 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
+ /**
+ * @swagger
+ * /web/membership/kycs:
+ *   get:
+ *     summary: get dropdown list kycs
+ *     tags:
+ *       - Members
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": [
+                        {
+                            "label": "KYC 0",
+                            "value": " 0"
+                        },
+                        {
+                            "label": "KYC 1",
+                            "value": " 1"
+                        },
+                        {
+                            "label": "KYC 2",
+                            "value": " 2"
+                        }
+                    ]
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
 
 /** *******************************************************************/
