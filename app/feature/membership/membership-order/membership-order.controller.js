@@ -345,14 +345,15 @@ module.exports = {
           order: [['created_at', 'DESC']]
         }
       );
+      let timezone_offset = query.timezone_offset || 0
       items.forEach(element => {
         element.email = element.Member.email;
-        element.membership_type_name = element.MembershipType.name;
+        element.membership_type_name = element.MembershipType.name;        
+        element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm')
       });
-
       let data = await stringifyAsync(items, [
-        { key: 'createdAt', header: 'Time' },
-        { key: 'id', header: 'Order No' },
+        { key: 'order_no', header: 'Order No' },
+        { key: 'time', header: 'Time' },
         { key: 'email', header: 'Email' },
         { key: 'membership_type_name', header: 'Membership' },
         { key: 'payment_type', header: 'Payment Type' },
