@@ -99,6 +99,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       default: false,
     },
+    wallet_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    }
   }, {
       underscored: true,
       timestamps: true,
