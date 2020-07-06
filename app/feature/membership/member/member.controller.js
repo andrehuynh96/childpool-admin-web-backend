@@ -3,6 +3,7 @@ const Member = require("app/model/wallet").members;
 const MembershipType = require("app/model/wallet").membership_types;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const KycStatus = require("app/model/wallet/value-object/kyc-status");
+const Kyc = require("app/model/wallet").kycs;
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
 const { affiliateApi, membershipApi } = require('app/lib/affiliate-api');
@@ -19,7 +20,8 @@ module.exports = {
         deleted_flg: false
       };
       if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
-      if (query.kycStatus) where.kyc_status = query.kycStatus;
+      if (query.kycLevel) where.kyc_level = query.kycLevel;
+      if (query.kycStatus) where.kycStatus = query.kycStatus;
       if (query.referralCode) where.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
       if (query.referrerCode) where.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
       if (query.name) where.name = { [Op.iLike]: `%${query.name}%` };
@@ -197,15 +199,32 @@ module.exports = {
   },
   getKycStatus: async (req, res, next) => {
     try {
-      const kycStatus = Object.values(KycStatus);
+      const kycStatus = Object.entries(KycStatus);
       const kycStatusdropdown = [];
       kycStatus.forEach( item => {
         kycStatusdropdown.push({
-          label: item,
-          value: item
+          value: item[0],
+          label: item[1],
         });
       });
       return res.ok(kycStatusdropdown);
+
+    } catch (error) {
+
+      logger.error('get kyc status listt fail:', error);
+      next(error);
+    }
+  },
+  getAllKyc: async (req, res, next) => {
+    try {
+      const kycs = await Kyc.findAll();
+      const kycLevels = kycs.map(item => {
+        return {
+          label: item.name.replace('Level','KYC'),
+          value: item.name.replace('Level','')
+        };
+      });
+      return res.ok(kycLevels);
 
     } catch (error) {
 
