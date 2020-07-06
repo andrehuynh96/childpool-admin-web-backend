@@ -77,6 +77,9 @@ module.exports = router;
  *       - name: to
  *         in: query
  *         type: string
+ *       - name: memo
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
