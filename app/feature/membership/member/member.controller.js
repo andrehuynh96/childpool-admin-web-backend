@@ -21,7 +21,7 @@ module.exports = {
       };
       if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
       if (query.kycLevel) where.kyc_level = query.kycLevel;
-      if (query.kycStatus) where.kycStatus = query.kycStatus;
+      if (query.kycStatus) where.kyc_status = query.kycStatus;
       if (query.referralCode) where.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
       if (query.referrerCode) where.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
       if (query.name) where.name = { [Op.iLike]: `%${query.name}%` };
@@ -199,12 +199,12 @@ module.exports = {
   },
   getKycStatus: async (req, res, next) => {
     try {
-      const kycStatus = Object.entries(KycStatus);
+      const kycStatus = Object.values(KycStatus);
       const kycStatusdropdown = [];
       kycStatus.forEach( item => {
         kycStatusdropdown.push({
-          value: item[0],
-          label: item[1],
+          value: item,
+          label: item,
         });
       });
       return res.ok(kycStatusdropdown);
@@ -221,7 +221,7 @@ module.exports = {
       const kycLevels = kycs.map(item => {
         return {
           label: item.name.replace('Level','KYC'),
-          value: item.name.replace('Level','')
+          value: item.name.replace('Level ','')
         };
       });
       return res.ok(kycLevels);
