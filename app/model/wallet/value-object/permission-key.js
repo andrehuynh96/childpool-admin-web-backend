@@ -498,4 +498,18 @@ module.exports = {
     "GROUP_NAME": "Members",
     "ROLES": ["Master","Admin"]
   },
+
+  "VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING": {
+    "KEY": "VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Reward Setting",
+    "ROLES": ["Master", "Admin"]
+  },
+  "UPDATE_MEMBERSHIP_SETTINGS_REWARD_SETTING": {
+    "KEY": "UPDATE_MEMBERSHIP_SETTINGS_REWARD_SETTING",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Reward Setting",
+    "ROLES": ["Master", "Admin"]
+  },
+
 };
