@@ -98,14 +98,16 @@ module.exports = {
         return res.notFound(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND", { field: ['memberId', 'memberKycId'] });
       }
 
-      const memberKycStatus = Object.keys(KycStatus).find(item => status === item);
-      if (!memberKycStatus) {
+      if (status !== KycStatus.DECLINED || status !== KycStatus.APPROVED || status !== KycStatus.INSUFFICIENT) {
         return res.notFound(res.__("KYC_STATUS_NOT_FOUND"), "KYC_STATUS_NOT_FOUND", { field: ['status'] });
       }
-      await MemberKyc.update(
-        { status: status }, 
-        memberWhere
-      );
+
+      await MemberKyc.update({
+        status: status
+        }, {
+        where: memberWhere,
+        returning: true
+        });
     }
     catch (error) {
       logger.info('get update member kyc status fail', error);
