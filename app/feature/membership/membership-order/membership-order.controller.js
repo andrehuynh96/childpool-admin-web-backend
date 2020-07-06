@@ -5,6 +5,8 @@ const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const database = require('app/lib/database').db().wallet;
 const MembershipOrder = require("app/model/wallet").membership_orders;
+const Wallet = require("app/model/wallet").wallets;
+const ReceivingAddress = require("app/model/wallet").receiving_addresses;
 const MembershipType = require("app/model/wallet").membership_types;
 const MemberRewardTransactionHistory = require("app/model/wallet").member_reward_transaction_his;
 const MemberRewardCommissionMethod = require("app/model/wallet/value-object/member-reward-transaction-commission-method");
@@ -138,7 +140,17 @@ module.exports = {
               as: "MembershipType",
               model: MembershipType,
               required: true
-            }
+            },
+            {
+              attributes: ['id', 'name'],
+              as: "Wallet",
+              model: Wallet
+            },
+            {
+              attributes: ['id','currency_symbol', 'wallet_address'],
+              as: "ReceivingAddress",
+              model: ReceivingAddress
+            },
           ],
           where: {
             id: params.id
@@ -149,6 +161,7 @@ module.exports = {
       }
 
       membershipOrder.explorer_link = blockchainHelpper.getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol);
+      console.log(membershipOrder)
       return res.ok(membershipOrderMapper(membershipOrder));
     }
     catch (error) {
