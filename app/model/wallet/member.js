@@ -86,12 +86,12 @@ module.exports = (sequelize, DataTypes) => {
     kyc_level: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 1
+      defaultValue: 0
     },
     kyc_status: {
       type: DataTypes.STRING(16),
       allowNull: false,
-      defaultValue: KycStatus.APPROVED
+      defaultValue: KycStatus.ACTIVE
     },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
