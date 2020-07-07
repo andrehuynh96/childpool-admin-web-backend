@@ -51,7 +51,7 @@ module.exports = {
       if (query.email) {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
-      if(query.memo){
+      if (query.memo){
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
 
@@ -161,7 +161,7 @@ module.exports = {
       }
 
       membershipOrder.explorer_link = blockchainHelpper.getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol);
-      console.log(membershipOrder)
+      console.log(membershipOrder);
       return res.ok(membershipOrderMapper(membershipOrder));
     }
     catch (error) {
@@ -313,7 +313,7 @@ module.exports = {
       if (query.email) {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
-      if(query.memo){
+      if (query.memo){
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
 
@@ -358,11 +358,11 @@ module.exports = {
           order: [['created_at', 'DESC']]
         }
       );
-      let timezone_offset = query.timezone_offset || 0
+      let timezone_offset = query.timezone_offset || 0;
       items.forEach(element => {
         element.email = element.Member.email;
-        element.membership_type_name = element.MembershipType.name;        
-        element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm')
+        element.membership_type_name = element.MembershipType.name;
+        element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       let data = await stringifyAsync(items, [
         { key: 'order_no', header: 'Order No' },

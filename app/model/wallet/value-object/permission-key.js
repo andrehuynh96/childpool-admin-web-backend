@@ -493,7 +493,7 @@ module.exports = {
     "GROUP_NAME": "Members",
     "ROLES": ["Master","Admin"]
   },
-  
+
   "VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING": {
     "KEY": "VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING",
     "DESCRIPTION": "",
@@ -506,5 +506,19 @@ module.exports = {
     "GROUP_NAME": "Reward Setting",
     "ROLES": ["Master", "Admin"]
   },
+
+  "MEMBERSHIP_VIEW_FIAT_RATE": {
+    "KEY": "MEMBERSHIP_VIEW_FIAT_RATE",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Fiat Rate",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_UPDATE_FIAT_RATE": {
+    "KEY": "MEMBERSHIP_UPDATE_FIAT_RATE",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Fiat Rate",
+    "ROLES": ["Master", "Admin"]
+  },
+
 
 };
