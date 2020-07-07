@@ -51,12 +51,19 @@ module.exports = {
       if (query.email) {
         memberCond.email = { [Op.iLike]: `%${query.email}%` };
       }
+      if (query.name) {
+        memberCond[Op.or] = {
+          first_name: { [Op.iLike]: `%${query.name}%` },
+          last_name: { [Op.iLike]: `%${query.name}%` },
+        };
+      }
+
       const { count: total, rows: items } = await ClaimRequest.findAndCountAll({
         limit,
         offset,
         include: [
           {
-            attributes: ['email'],
+            attributes: ['email', 'fullname', 'first_name', 'last_name'],
             as: "Member",
             model: Member,
             where: memberCond,
@@ -85,7 +92,7 @@ module.exports = {
       const claimRequest = await ClaimRequest.findOne({
         include: [
           {
-            attributes: ['email'],
+            attributes: ['email', 'fullname', 'first_name', 'last_name'],
             as: "Member",
             model: Member,
             where: {
@@ -223,10 +230,17 @@ module.exports = {
       if (query.email) {
         memberCond.email = { [Op.iLike]: `%${query.email}%` };
       }
+      if (query.name) {
+        memberCond[Op.or] = {
+          first_name: { [Op.iLike]: `%${query.name}%` },
+          last_name: { [Op.iLike]: `%${query.name}%` },
+        };
+      }
+
       const items = await ClaimRequest.findAll({
         include: [
           {
-            attributes: ['email', 'fullname'],
+            attributes: ['email', 'fullname', 'first_name', 'last_name'],
             as: "Member",
             model: Member,
             where: memberCond,
@@ -237,13 +251,19 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
+      const timezone_offset = query.timezone_offset || 0;
+
       items.forEach(element => {
         element.member_email = element.Member.email;
-        element.created_at = moment(element.createdAt).format('YYYY-MM-DD HH:mm');
+        element.first_name = element.Member.first_name;
+        element.last_name = element.Member.last_name;
+        element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       const data = await stringifyAsync(items, [
         { key: 'id', header: 'Id' },
         { key: 'created_at', header: 'Time' },
+        { key: 'first_name', header: 'First Name' },
+        { key: 'last_name', header: 'Last Name' },
         { key: 'member_email', header: 'Email' },
         { key: 'wallet_address', header: 'Wallet Address' },
         { key: 'amount', header: 'Claim Amount' },

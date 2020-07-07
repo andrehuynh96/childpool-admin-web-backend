@@ -24,8 +24,14 @@ module.exports = {
       if (query.kycStatus) where.kyc_status = query.kycStatus;
       if (query.referralCode) where.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
       if (query.referrerCode) where.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
-      if (query.name) where.name = { [Op.iLike]: `%${query.name}%` };
       if (query.email) where.email = { [Op.iLike]: `%${query.email}%` };
+
+      if (query.name) {
+        where[Op.or] = {
+          first_name: { [Op.iLike]: `%${query.name}%` },
+          last_name: { [Op.iLike]: `%${query.name}%` },
+        };
+      }
 
       const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
       const membershipTypeIds = items.map(item => item.membership_type_id);
@@ -201,7 +207,7 @@ module.exports = {
     try {
       const kycStatus = Object.values(KycStatus);
       const kycStatusdropdown = [];
-      kycStatus.forEach( item => {
+      kycStatus.forEach(item => {
         kycStatusdropdown.push({
           value: item,
           label: item,
@@ -220,8 +226,8 @@ module.exports = {
       const kycs = await Kyc.findAll();
       const kycLevels = kycs.map(item => {
         return {
-          label: item.name.replace('Level','KYC'),
-          value: item.name.replace('Level ','')
+          label: item.name.replace('Level', 'KYC'),
+          value: item.name.replace('Level ', '')
         };
       });
       return res.ok(kycLevels);
