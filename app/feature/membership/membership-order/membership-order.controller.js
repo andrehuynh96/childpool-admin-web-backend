@@ -215,9 +215,7 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-      }
 
-      if (status == MembershipOrderStatus.Approved) {
         const membershipType = await MembershipType.findOne({
           where: {
             id: order.membership_type_id
@@ -273,9 +271,11 @@ module.exports = {
           transaction: transaction
         });
 
-        await _sendEmail(order.Member.email, order.id);
+        await _sendEmail(order.Member.email, order.id, true);
       }
-
+      else{
+        await _sendEmail(order.Member.email, order.id, false);
+      }
       await transaction.commit();
 
       return res.ok(true);
@@ -401,7 +401,7 @@ function stringifyAsync(data, columns) {
   });
 }
 
-async function _sendEmail(emails, id) {
+async function _sendEmail(emails, id, approved) {
   try {
     let subject = `Membership payment`;
     let from = `Child membership department`;
@@ -409,7 +409,10 @@ async function _sendEmail(emails, id) {
       id: id
     };
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrder);
+    if(approved)
+      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderApproved);
+    else
+      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderRejected);
   } catch (err) {
     logger.error("send confirmed membership order email", err);
   }
