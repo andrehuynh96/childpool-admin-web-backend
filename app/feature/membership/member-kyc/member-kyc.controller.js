@@ -11,7 +11,7 @@ module.exports = {
       const offset = query.offset ? parseInt(query.offset) : 0;
       const memberWhere = {
         member_id: params.memberId,
-        deleted_flg: false
+        // deleted_flg: false
       };
       const { count: total, rows: items } = await MemberKyc.findAndCountAll({
         limit,
@@ -19,16 +19,16 @@ module.exports = {
         include: [
           {
             attributes: ['id', 'member_kyc_id', 'property_id', 'field_name', 'field_key', 'value', 'createdAt', 'updatedAt'],
-            as: "MemberKycProperty",
+            as: "MemberKycProperties",
             model: MemberKycProperty,
             required: true
           },
-          {
-            attributes: ['id', 'kyc_id', 'field_name', 'field_key', 'description', 'data_type', 'member_field', 'require_flg', 'check_data_type_flg', 'order_index', 'enabled_flg', 'group_name', 'createdAt', 'updatedAt'],
-            as: "KycProperty",
-            model: KycProperty,
-            required: true
-          }
+          // {
+          //   attributes: ['id', 'kyc_id', 'field_name', 'field_key', 'description', 'data_type', 'member_field', 'require_flg', 'check_data_type_flg', 'order_index', 'enabled_flg', 'group_name', 'createdAt', 'updatedAt'],
+          //   as: "KycProperty",
+          //   model: KycProperty,
+          //   required: true
+          // }
         ],
         where: memberWhere,
         order: [['created_at', 'DESC']]
@@ -104,10 +104,10 @@ module.exports = {
 
       await MemberKyc.update({
         status: status
-        }, {
+      }, {
         where: memberWhere,
         returning: true
-        });
+      });
     }
     catch (error) {
       logger.info('get update member kyc status fail', error);
