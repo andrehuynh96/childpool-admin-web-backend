@@ -1,8 +1,9 @@
 const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const MembershipType = require("app/model/wallet").membership_types;
+const MembershipOrder = require("app/model/wallet").membership_orders;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
-const KycStatus = require("app/model/wallet/value-object/kyc-status");
+const MemberOrderStatusFillter = require("app/model/wallet/value-object/member-order-status-fillter");
 const Kyc = require("app/model/wallet").kycs;
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
@@ -16,18 +17,36 @@ module.exports = {
       const { query } = req;
       const limit = query.limit ? parseInt(req.query.limit) : 10;
       const offset = query.offset ? parseInt(req.query.offset) : 0;
-      const where = {
-        deleted_flg: false
-      };
+      const where = {};
+      const membershipOrderCond = {};
       if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
       if (query.kycLevel) where.kyc_level = query.kycLevel;
-      if (query.kycStatus) where.kyc_status = query.kycStatus;
+      if (query.status) {
+        if (query.status === MemberOrderStatusFillter.Fee_accepted) {
+          membershipOrderCond.status = MemberOrderStatusFillter.Fee_accepted;
+        }
+        if (query.status === MemberOrderStatusFillter.Verify_payment) {
+          membershipOrderCond.status = MemberOrderStatusFillter.Verify_payment;
+        }
+        if (query.status === MemberOrderStatusFillter.Active) {
+          membershipOrderCond.status = MemberOrderStatusFillter.Active;
+        }
+        if (query.status === MemberOrderStatusFillter.Deactivated) {
+          where.deleted_flg = true;
+        }
+      }
       if (query.referralCode) where.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
       if (query.referrerCode) where.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
-      if (query.name) where.name = { [Op.iLike]: `%${query.name}%` };
+      if (query.name) {
+        where[Op.or] = {
+          first_name: { [Op.iLike]: `%${query.name}%` },
+          last_name: { [Op.iLike]: `%${query.name}%` }
+        };
+      }
       if (query.email) where.email = { [Op.iLike]: `%${query.email}%` };
 
       const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
+
       const membershipTypeIds = items.map(item => item.membership_type_id);
       const membershipTypes = await MembershipType.findAll(
         {
@@ -43,8 +62,52 @@ module.exports = {
         if (membershipType) {
           item.membership_type = membershipType.name;
         }
+        else {
+          item.membership_type = 'Basic';
+        }
       });
 
+      const memberIds = items.map(item => item.id);
+      membershipOrderCond.member_id = memberIds;
+
+      const membershipOrders = await MembershipOrder.findAll({
+        where: membershipOrderCond,
+        order: [['created_at', 'DESC']]
+      });
+
+      const lastMembershipOrder = [];
+      memberIds.forEach(item => {
+        lastMembershipOrder.push({
+          member_id: item,
+          createdAt: new Date(1, 1, 1)
+        });
+      });
+
+      membershipOrders.forEach(item => {
+        lastMembershipOrder.forEach(x => {
+          if (item.createdAt > x.createdAt && item.member_id === x.member_id) {
+            x.createdAt = item.createdAt;
+            x.status = item.status;
+          }
+        });
+      });
+
+      items.forEach(item => {
+        if (item.deleted_flg) {
+          item.status = MemberOrderStatusFillter.Deactivated;
+        }
+        const membershipOrder = lastMembershipOrder.find(x => item.id === x.member_id && x.status);
+        if (membershipOrder) {
+          if ( membershipOrder.status === MemberOrderStatusFillter.Fee_accepted) item.status = 'Fee Accepted';
+          else if (membershipOrder.status === MemberOrderStatusFillter.Verify_payment) item.status = 'Pending';
+          else {
+            item.status = 'Active';
+          }
+        }
+        else {
+          item.status = 'Active';
+        }
+      });
 
       return res.ok({
         items: memberMapper(items) && items.length > 0 ? memberMapper(items) : [],
@@ -197,31 +260,32 @@ module.exports = {
       next(error);
     }
   },
-  getKycStatus: async (req, res, next) => {
+  getMemberOrderStatusFillter: async (req, res, next) => {
     try {
-      const kycStatus = Object.values(KycStatus);
-      const kycStatusdropdown = [];
-      kycStatus.forEach( item => {
-        kycStatusdropdown.push({
-          value: item,
-          label: item,
+      const memberOrderStatusFillter = Object.entries(MemberOrderStatusFillter);
+      const memberOrderStatusDropdown = [];
+      memberOrderStatusFillter.forEach(item => {
+        memberOrderStatusDropdown.push({
+          label: item[0],
+          value: item[1],
+
         });
       });
-      return res.ok(kycStatusdropdown);
+      return res.ok(memberOrderStatusDropdown);
 
     } catch (error) {
 
-      logger.error('get kyc status listt fail:', error);
+      logger.error('get member order status fillter list fail:', error);
       next(error);
     }
   },
   getAllKyc: async (req, res, next) => {
     try {
-      const kycs = await Kyc.findAll();
+      const kycs = await Kyc.findAll({ order: [['name', 'ASC']] });
       const kycLevels = kycs.map(item => {
         return {
-          label: item.name.replace('Level','KYC'),
-          value: item.name.replace('Level ','')
+          label: item.name.replace('Level', 'KYC'),
+          value: item.name.replace('Level ', '')
         };
       });
       return res.ok(kycLevels);

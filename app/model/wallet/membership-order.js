@@ -124,6 +124,7 @@ module.exports = (sequelize, DataTypes) => {
     MembershipOrder.belongsTo(models.members, {
       as: 'Member',
       foreignKey: 'member_id',
+      targetKey: 'id'
     });
 
     MembershipOrder.belongsTo(models.member_accounts, {

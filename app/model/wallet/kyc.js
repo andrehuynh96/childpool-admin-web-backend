@@ -41,6 +41,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
+    approve_membership_type_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    }
   }, {
       underscored: true,
       timestamps: true,
