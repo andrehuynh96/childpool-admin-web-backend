@@ -270,7 +270,21 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-
+        // reject all pending orders
+        await MembershipOrder.update({
+          status: MembershipOrderStatus.Rejected,
+          approved_by_id: req.user.id,
+          notes: 'The other is approved'
+        }, {
+          where: {
+            status: MembershipOrderStatus.Pending,
+            [Op.not]: [
+              { id: [order.id] }
+            ]
+          },
+          returning: true,
+          transaction: transaction
+        });
         await _sendEmail(order.Member.email, order.id, true);
       }
       else{
