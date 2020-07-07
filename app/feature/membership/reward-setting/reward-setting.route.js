@@ -10,14 +10,14 @@ const router = express.Router();
 router.get(
   '/reward-setting',
   authenticate,
-  authority(PermissionKey.VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING),
+  authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING),
   controller.get
 );
 
 router.put(
   '/reward-setting',
   authenticate,
-  authority(PermissionKey.UPDATE_MEMBERSHIP_SETTINGS_REWARD_SETTING),
+  authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_MEMBERSHIP_REWARD_SETTING),
   validator(update),
   controller.update
 );
@@ -41,8 +41,7 @@ module.exports = router;
 *           application/json:
 *             {
                 "data": {
-                  "usd_rate_by_jpy": 107.483,
-                  "membership_comission_usdt_minimum_claim_amount": 50
+                  "membership_commission_usdt_minimum_claim_amount": 50
                 }
             }
 *       400:
