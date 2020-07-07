@@ -86,7 +86,7 @@ module.exports = (sequelize, DataTypes) => {
     kyc_level: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 1
+      defaultValue: 0
     },
     kyc_status: {
       type: DataTypes.STRING(16),

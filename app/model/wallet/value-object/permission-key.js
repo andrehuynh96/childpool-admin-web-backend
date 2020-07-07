@@ -483,7 +483,17 @@ module.exports = {
     "GROUP_NAME": "Affiliate Configuration",
     "ROLES": ["Master", "Admin"]
   },
-
+  "MEMBERSHIP_VIEW_MEMBER_KYC_LIST": {
+    "KEY": "MEMBERSHIP_VIEW_MEMBER_KYC_LIST",
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master","Admin"]
+  },
+  "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL": {
+    "KEY": "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL",
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master","Admin"]
+  },
+  
   "VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING": {
     "KEY": "VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING",
     "DESCRIPTION": "",
