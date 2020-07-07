@@ -26,7 +26,7 @@ module.exports = {
           // {
           //   attributes: ['id', 'kyc_id', 'field_name', 'field_key', 'description', 'data_type', 'member_field', 'require_flg', 'check_data_type_flg', 'order_index', 'enabled_flg', 'group_name', 'createdAt', 'updatedAt'],
           //   as: "KycProperty",
-          //   model: KycProperty,
+          //   model: KycProperty,M
           //   required: true
           // }
         ],
