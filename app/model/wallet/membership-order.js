@@ -99,6 +99,22 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       default: false,
     },
+    wallet_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    receiving_addresses_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    your_wallet_address: {
+      type: DataTypes.STRING(250),
+      allowNull: false,
+    },
+    branch_name: {
+      type: DataTypes.STRING(250),
+      allowNull: false,
+    }
   }, {
       underscored: true,
       timestamps: true,
@@ -120,6 +136,15 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'membership_type_id',
     });
 
+    MembershipOrder.belongsTo(models.wallets, {
+      as: 'Wallet',
+      foreignKey: 'wallet_id',
+    });
+
+    MembershipOrder.belongsTo(models.receiving_addresses, {
+      as: 'ReceivingAddress',
+      foreignKey: 'receiving_addresses_id',
+    });
   };
 
   return MembershipOrder;
