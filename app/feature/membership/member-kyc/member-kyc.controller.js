@@ -10,8 +10,7 @@ module.exports = {
       const limit = query.limit ? parseInt(query.limit) : 10;
       const offset = query.offset ? parseInt(query.offset) : 0;
       const memberWhere = {
-        member_id: params.memberId,
-        deleted_flg: false
+        member_id: params.memberId
       };
       const { count: total, rows: items } = await MemberKyc.findAndCountAll({
         limit,
@@ -21,13 +20,13 @@ module.exports = {
             attributes: ['id', 'member_kyc_id', 'property_id', 'field_name', 'field_key', 'value', 'createdAt', 'updatedAt'],
             as: "MemberKycProperty",
             model: MemberKycProperty,
-            required: true
+            require: true
           },
           {
             attributes: ['id', 'kyc_id', 'field_name', 'field_key', 'description', 'data_type', 'member_field', 'require_flg', 'check_data_type_flg', 'order_index', 'enabled_flg', 'group_name', 'createdAt', 'updatedAt'],
             as: "KycProperty",
             model: KycProperty,
-            required: true
+            require: true
           }
         ],
         where: memberWhere,
@@ -52,7 +51,6 @@ module.exports = {
       const memberWhere = {
         member_id: memberId,
         id: memberKycId,
-        deleted_flg: false
       };
       const memberKyc = await MemberKyc.findAll({
         include: [
