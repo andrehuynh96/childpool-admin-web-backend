@@ -45,6 +45,13 @@ module.exports = {
       }
       if (query.email) where.email = { [Op.iLike]: `%${query.email}%` };
 
+      if (query.name) {
+        where[Op.or] = {
+          first_name: { [Op.iLike]: `%${query.name}%` },
+          last_name: { [Op.iLike]: `%${query.name}%` },
+        };
+      }
+
       const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
 
       const membershipTypeIds = items.map(item => item.membership_type_id);

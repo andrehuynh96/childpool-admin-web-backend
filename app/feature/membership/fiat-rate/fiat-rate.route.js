@@ -2,22 +2,22 @@ const express = require('express');
 const validator = require("app/middleware/validator.middleware");
 const { update } = require("./validator");
 const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./reward-setting.controller');
+const controller = require('./fiat-rate.controller');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const authority = require('app/middleware/authority.middleware');
 const router = express.Router();
 
 router.get(
-  '/reward-setting',
+  '/fiat-rate',
   authenticate,
-  authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING),
+  authority(PermissionKey.MEMBERSHIP_VIEW_FIAT_RATE),
   controller.get
 );
 
 router.put(
-  '/reward-setting',
+  '/fiat-rate',
   authenticate,
-  authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_MEMBERSHIP_REWARD_SETTING),
+  authority(PermissionKey.MEMBERSHIP_UPDATE_FIAT_RATE),
   validator(update),
   controller.update
 );
@@ -26,12 +26,11 @@ module.exports = router;
 
 /**
 * @swagger
-* /web/membership/reward-setting:
+* /web/membership/fiat-rate:
 *   get:
-*     summary: get config membership type
+*     summary: Get Fiat rate
 *     tags:
-*       - Membership Type Config
-*     description: get config membership type
+*       - Fiat rate
 *     produces:
 *       - application/json
 *     responses:
@@ -41,7 +40,8 @@ module.exports = router;
 *           application/json:
 *             {
                 "data": {
-                  "membership_commission_usdt_minimum_claim_amount": 50
+                  "usd_rate_by_jpy": 107.483,
+                  "usd_rate_by_jpy_updated_at": "2020/07/01"
                 }
             }
 *       400:
@@ -64,12 +64,11 @@ module.exports = router;
 
 /**
 * @swagger
-* /web/membership/reward-setting:
+* /web/membership/fiat-rate:
 *   put:
-*     summary: update config membership type
+*     summary: Update Fiat rate
 *     tags:
-*       - Membership Type Config
-*     description: update config membership type
+*       - Fiat rate
 *     parameters:
 *       - name: data
 *         in: body

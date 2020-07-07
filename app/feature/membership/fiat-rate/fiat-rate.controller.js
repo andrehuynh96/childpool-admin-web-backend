@@ -12,21 +12,21 @@ module.exports = {
 
       const data = {
         usd_rate_by_jpy: null,
-        membership_commission_usdt_minimum_claim_amount: null,
+        usd_rate_by_jpy_updated_at: null,
       };
 
       for (let e of results) {
         if (e.key === 'USD_RATE_BY_JPY') {
           data.usd_rate_by_jpy = Number(e.value);
-        } else if (e.key === 'MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT') {
-          data.membership_commission_usdt_minimum_claim_amount = Number(e.value);
+        } else if (e.key === 'USD_RATE_BY_JPY_UPDATED_AT') {
+          data.usd_rate_by_jpy_updated_at = e.value;
         }
       }
 
       return res.ok(data);
     }
     catch (err) {
-      logger.error("get reward settings fail", err);
+      logger.error("get  fiat rate", err);
       next(err);
     }
   },
@@ -51,7 +51,7 @@ module.exports = {
     }
     catch (err) {
       await transaction.rollback();
-      logger.error("update membership type config fail", err);
+      logger.error("update fiat rate", err);
       next(err);
     }
   }

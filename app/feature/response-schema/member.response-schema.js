@@ -4,7 +4,9 @@ const destObject = {
   array: {
     '[].id': '[].id',
     '[].email': '[].email',
-    '[].name': '[].name',    
+    '[].name': '[].name',
+    '[].first_name': '[].first_name',
+    '[].last_name': '[].last_name',
     '[].actived_flg': '[].actived_flg',
     '[].referral_code': '[].referral_code',
     '[].referrer_code': '[].referrer_code',
@@ -22,6 +24,8 @@ const destObject = {
     id: 'id',
     email: 'email',
     name: 'name',
+    first_name: 'first_name',
+    last_name: 'last_name',
     actived_flg: 'actived_flg',
     referral_code: 'referral_code',
     referrer_code: 'referrer_code',
@@ -47,4 +51,4 @@ module.exports = srcObject => {
   else {
     return objectMapper(srcObject, destObject.single);
   }
-};  
+};
