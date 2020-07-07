@@ -1,44 +1,34 @@
 const logger = require('app/lib/logger');
 const MemberKyc = require("app/model/wallet").member_kycs;
 const MemberKycProperty = require("app/model/wallet").member_kyc_properties;
-const KycProperty = require("app/model/wallet").kyc_properties;
 const KycStatus = require("app/model/wallet/value-object/kyc-status");
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 module.exports = {
   getAllMemberKyc: async (req, res, next) => {
     try {
-      const { query, params } = req;
-      const limit = query.limit ? parseInt(query.limit) : 10;
-      const offset = query.offset ? parseInt(query.offset) : 0;
       const memberWhere = {
-        member_id: params.memberId,
-        // deleted_flg: false
+        member_id: req.params.memberId
       };
-      const { count: total, rows: items } = await MemberKyc.findAndCountAll({
-        limit,
-        offset,
+      const memberKycPropertyCond = {
+          field_name: { [Op.notILike]: 'Password' },
+          field_key: { [Op.notILike]: 'password' }
+      };
+      const memberKycs = await MemberKyc.findAll({
         include: [
           {
             attributes: ['id', 'member_kyc_id', 'property_id', 'field_name', 'field_key', 'value', 'createdAt', 'updatedAt'],
             as: "MemberKycProperties",
             model: MemberKycProperty,
+            where: memberKycPropertyCond,
             required: true
-          },
-          // {
-          //   attributes: ['id', 'kyc_id', 'field_name', 'field_key', 'description', 'data_type', 'member_field', 'require_flg', 'check_data_type_flg', 'order_index', 'enabled_flg', 'group_name', 'createdAt', 'updatedAt'],
-          //   as: "KycProperty",
-          //   model: KycProperty,M
-          //   required: true
-          // }
+          }
         ],
         where: memberWhere,
         order: [['created_at', 'DESC']]
       });
-      return res.ok({
-        items: items && items.length > 0 ? items : [],
-        offset: offset,
-        limit: limit,
-        total: total
-      });
+
+      return res.ok(memberKycs);
     }
     catch (error) {
       logger.info('get member kyc list fail', error);
@@ -51,23 +41,22 @@ module.exports = {
       const { memberKycId, memberId } = params;
       const memberWhere = {
         member_id: memberId,
-        id: memberKycId,
-        deleted_flg: false
+        id: memberKycId
       };
+      const memberKycPropertyCond = {
+        member_kyc_id: memberKycId,
+        field_name: { [Op.notILike]: 'Password' },
+        field_key: { [Op.notILike]: 'password' }
+    };
       const memberKyc = await MemberKyc.findAll({
         include: [
           {
             attributes: ['id', 'member_kyc_id', 'property_id', 'field_name', 'field_key', 'value', 'createdAt', 'updatedAt'],
-            as: "MemberKycProperty",
+            as: "MemberKycProperties",
             model: MemberKycProperty,
+            where: memberKycPropertyCond,
             required: true
           },
-          {
-            attributes: ['id', 'kyc_id', 'field_name', 'field_key', 'description', 'data_type', 'member_field', 'require_flg', 'check_data_type_flg', 'order_index', 'enabled_flg', 'group_name', 'createdAt', 'updatedAt'],
-            as: "KycProperty",
-            model: KycProperty,
-            required: true
-          }
         ],
         where: memberWhere,
         order: [['created_at', 'DESC']]
