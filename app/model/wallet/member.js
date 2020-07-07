@@ -27,6 +27,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(128),
       allowNull: true
     },
+    last_name: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+    first_name: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
     phone: {
       type: DataTypes.STRING(32),
       allowNull: false,
@@ -130,4 +138,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return Member;
-} 
+};

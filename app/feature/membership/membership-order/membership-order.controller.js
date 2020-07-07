@@ -51,8 +51,15 @@ module.exports = {
       if (query.email) {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
-      if (query.memo){
+      if (query.memo) {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
+      }
+
+      if (query.name) {
+        memberWhere[Op.or] = {
+          first_name: { [Op.iLike]: `%${query.name}%` },
+          last_name: { [Op.iLike]: `%${query.name}%` },
+        };
       }
 
       let fromDate, toDate;
@@ -84,7 +91,7 @@ module.exports = {
           offset,
           include: [
             {
-              attributes: ['email', 'fullname', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -129,7 +136,7 @@ module.exports = {
         {
           include: [
             {
-              attributes: ['email', 'fullname', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -147,7 +154,7 @@ module.exports = {
               model: Wallet
             },
             {
-              attributes: ['id','currency_symbol', 'wallet_address'],
+              attributes: ['id', 'currency_symbol', 'wallet_address'],
               as: "ReceivingAddress",
               model: ReceivingAddress
             },
@@ -286,8 +293,7 @@ module.exports = {
           transaction: transaction
         });
         await _sendEmail(order.Member.email, order.id, true);
-      }
-      else{
+      } else {
         await _sendEmail(order.Member.email, order.id, false);
       }
       await transaction.commit();
@@ -327,7 +333,15 @@ module.exports = {
       if (query.email) {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
-      if (query.memo){
+
+      if (query.name) {
+        memberWhere[Op.or] = {
+          first_name: { [Op.iLike]: `%${query.name}%` },
+          last_name: { [Op.iLike]: `%${query.name}%` },
+        };
+      }
+
+      if (query.memo) {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
 
@@ -355,7 +369,7 @@ module.exports = {
         {
           include: [
             {
-              attributes: ['email', 'fullname', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -375,12 +389,16 @@ module.exports = {
       let timezone_offset = query.timezone_offset || 0;
       items.forEach(element => {
         element.email = element.Member.email;
+        element.first_name = element.Member.first_name;
+        element.last_name = element.Member.last_name;
         element.membership_type_name = element.MembershipType.name;
         element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       let data = await stringifyAsync(items, [
         { key: 'order_no', header: 'Order No' },
         { key: 'time', header: 'Time' },
+        { key: 'first_name', header: 'First Name' },
+        { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
         { key: 'membership_type_name', header: 'Membership' },
         { key: 'payment_type', header: 'Payment Type' },
@@ -423,7 +441,7 @@ async function _sendEmail(emails, id, approved) {
       id: id
     };
     data = Object.assign({}, data, config.email);
-    if(approved)
+    if (approved)
       await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderApproved);
     else
       await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderRejected);
