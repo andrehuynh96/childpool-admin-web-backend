@@ -27,9 +27,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: KycStatus.IN_REVIEW
     },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   Temporalize({
     model: Model,
@@ -47,11 +47,19 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'member_id',
       targetKey: 'id'
     });
+
     Model.belongsTo(models.kycs, {
       as: 'Kyc',
       foreignKey: 'kyc_id',
       targetKey: 'id'
     });
+
+    Model.hasMany(models.member_kyc_properties, {
+      as: 'MemberKycProperties',
+      foreignKey: 'member_kyc_id',
+      sourceKey: 'id',
+    });
+
   };
 
   return Model;
