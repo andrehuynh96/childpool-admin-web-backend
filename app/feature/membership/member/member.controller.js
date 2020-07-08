@@ -150,6 +150,8 @@ module.exports = {
         member.membership_type = member.MembershipType.name;
       }
 
+      member.kyc_level = member.kyc_level.replace('LEVEL_','');
+
       return res.ok(memberMapper(member));
     }
     catch (error) {
@@ -157,7 +159,7 @@ module.exports = {
       next(error);
     }
   },
-  updateMember: async (req, res, next) => {
+  updateMembershipType: async (req, res, next) => {
     let transaction;
     try {
       const { body, params } = req;
@@ -197,15 +199,10 @@ module.exports = {
       }
 
       const hasChangedMembershipType = member.membership_type_id != membershipTypeId;
-      const hasUpdatedReferrerCode = !member.referrer_code && body.referrerCode;
 
       const data = {
         membership_type_id: membershipTypeId
       };
-
-      if (hasUpdatedReferrerCode) {
-        data.referrer_code = body.referrerCode;
-      }
 
       transaction = await database.transaction();
       try {
@@ -230,9 +227,80 @@ module.exports = {
             return res.status(result.httpCode).send(result.data);
           }
         }
+        else {
+          return res.badRequest(res.__("MEMBERSHIP_TYPE_EXIST_ALREADY"), "MEMBERSHIP_TYPE_EXIST_ALREADY",{ fields: ["membershipTypeId"] });
+        }
+
+        await transaction.commit();
+        return res.ok(true);
+      }
+      catch (error) {
+        await transaction.rollback();
+        throw error;
+      }
+    }
+    catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
+      logger.error('update member fail:', error);
+      next(error);
+    }
+  },
+
+  updaterReferrerCode: async (req, res, next) => {
+    let transaction;
+    try {
+      const { body, params } = req;
+      const { memberId } = params;
+      const referralCode = body.referrerCode;
+
+      const member = await Member.findOne({
+        where: {
+          id: memberId,
+          deleted_flg: false
+        }
+      });
+
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      if (member.member_sts == MemberStatus.LOCKED) {
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+      }
+
+      if (member.member_sts == MemberStatus.UNACTIVATED) {
+        return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
+      }
+
+      if (member.referrer_code && body.referrerCode) {
+        return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
+      }
+
+      const hasUpdatedReferrerCode = !member.referrer_code && body.referrerCode;
+      const data = {};
+      if (hasUpdatedReferrerCode) {
+        data.referrer_code = referralCode;
+      }
+
+      transaction = await database.transaction();
+      try {
+        await Member.update(
+          data,
+          {
+            where: {
+              id: member.id
+            },
+            returning: true,
+            plain: true,
+            transaction: transaction
+          });
+
+        let result;
 
         if (hasUpdatedReferrerCode) {
-          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: body.referrerCode });
+          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: referralCode });
 
           if (result.httpCode !== 200) {
             await transaction.rollback();
@@ -257,6 +325,7 @@ module.exports = {
       next(error);
     }
   },
+
   getMembershipTypeList: async (req, res, next) => {
     try {
       const membershipType = await MembershipType.findAll();
