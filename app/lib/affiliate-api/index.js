@@ -245,6 +245,23 @@ class AffiliateApi {
     }
   }
 
+  async setRewardRequest(payload) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.post(`${API_URL}/rewards`,
+        payload,
+        {
+          headers,
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("setRewardRequest:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
 
   // Private functions
   async getHeaders() {
