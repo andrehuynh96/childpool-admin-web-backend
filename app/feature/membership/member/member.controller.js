@@ -269,12 +269,12 @@ module.exports = {
   },
   getMemberOrderStatusFillter: async (req, res, next) => {
     try {
-      const memberOrderStatusFillter = Object.entries(MemberOrderStatusFillter);
+      const memberOrderStatusFillter = Object.keys(MemberOrderStatusFillter);
       const memberOrderStatusDropdown = [];
       memberOrderStatusFillter.forEach(item => {
         memberOrderStatusDropdown.push({
-          label: item[0],
-          value: item[1],
+          label: item.replace('_',' '),
+          value: item
 
         });
       });
