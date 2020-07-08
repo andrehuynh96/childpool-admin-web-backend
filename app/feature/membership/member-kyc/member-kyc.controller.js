@@ -1,5 +1,6 @@
 const logger = require('app/lib/logger');
 const MemberKyc = require("app/model/wallet").member_kycs;
+const Kyc = require("app/model/wallet").kycs;
 const MemberKycProperty = require("app/model/wallet").member_kyc_properties;
 const KycStatus = require("app/model/wallet/value-object/kyc-status");
 const Sequelize = require('sequelize');
@@ -25,9 +26,23 @@ module.exports = {
           }
         ],
         where: memberWhere,
-        order: [['created_at', 'DESC']]
+        order: [['id', 'ASC']]
       });
 
+      const kycIds = memberKycs.map(item => item.kyc_id);
+
+      const kycs = await Kyc.findAll({
+        where: {
+          id: kycIds
+        }
+      });
+
+      memberKycs.forEach(item => {
+        const kyc = kycs.find(x => x.id === item.kyc_id);
+        if (kyc) {
+          item.kyc_id = kyc.key.replace('LEVEL_','');
+        }
+      });
       return res.ok(memberKycs);
     }
     catch (error) {
