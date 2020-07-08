@@ -12,10 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    member_account_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     membership_type_id: {
       type: DataTypes.UUID,
       allowNull: true,
@@ -125,11 +121,6 @@ module.exports = (sequelize, DataTypes) => {
       as: 'Member',
       foreignKey: 'member_id',
       targetKey: 'id'
-    });
-
-    MembershipOrder.belongsTo(models.member_accounts, {
-      as: 'MemberAccount',
-      foreignKey: 'member_account_id',
     });
 
     MembershipOrder.belongsTo(models.membership_types, {
