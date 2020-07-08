@@ -37,19 +37,16 @@ module.exports = {
       }
       if (query.referralCode) where.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
       if (query.referrerCode) where.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
-      if (query.name) {
-        where[Op.or] = {
-          first_name: { [Op.iLike]: `%${query.name}%` },
-          last_name: { [Op.iLike]: `%${query.name}%` }
-        };
-      }
-      if (query.email) where.email = { [Op.iLike]: `%${query.email}%` };
 
-      if (query.name) {
-        where[Op.or] = {
-          first_name: { [Op.iLike]: `%${query.name}%` },
-          last_name: { [Op.iLike]: `%${query.name}%` },
-        };
+      if (query.firstName) {
+        where.first_name = { [Op.iLike]: `%${query.firstName}%` };
+      }
+      if (query.lastName) {
+        where.last_name = { [Op.iLike]: `%${query.lastName}%` };
+      }
+
+      if (query.email) {
+        where.email = { [Op.iLike]: `%${query.email}%` };
       }
 
       const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
@@ -100,13 +97,13 @@ module.exports = {
       });
 
       items.forEach(item => {
-        item.kyc_level = item.kyc_level.replace('LEVEL_','');
+        item.kyc_level = item.kyc_level.replace('LEVEL_', '');
         if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
         }
         const membershipOrder = lastMembershipOrder.find(x => item.id === x.member_id && x.status);
         if (membershipOrder) {
-          if ( membershipOrder.status === MemberOrderStatusFillter.Fee_accepted) item.status = 'Fee cccepted';
+          if (membershipOrder.status === MemberOrderStatusFillter.Fee_accepted) item.status = 'Fee cccepted';
           else if (membershipOrder.status === MemberOrderStatusFillter.Verify_payment) item.status = 'Verify payment';
           else {
             item.status = 'Active';
@@ -150,7 +147,7 @@ module.exports = {
         member.membership_type = member.MembershipType.name;
       }
 
-      member.kyc_level = member.kyc_level.replace('LEVEL_','');
+      member.kyc_level = member.kyc_level.replace('LEVEL_', '');
 
       return res.ok(memberMapper(member));
     }
@@ -228,7 +225,7 @@ module.exports = {
           }
         }
         else {
-          return res.badRequest(res.__("MEMBERSHIP_TYPE_EXIST_ALREADY"), "MEMBERSHIP_TYPE_EXIST_ALREADY",{ fields: ["membershipTypeId"] });
+          return res.badRequest(res.__("MEMBERSHIP_TYPE_EXIST_ALREADY"), "MEMBERSHIP_TYPE_EXIST_ALREADY", { fields: ["membershipTypeId"] });
         }
 
         await transaction.commit();
@@ -342,7 +339,7 @@ module.exports = {
       const memberOrderStatusFillter = Object.keys(MemberOrderStatusFillter);
       const memberOrderStatusDropdown = [];
       memberOrderStatusFillter.forEach(item => {
-        if (item === 'FeeAccepted'){
+        if (item === 'FeeAccepted') {
           memberOrderStatusDropdown.push({
             label: 'Fee accepted',
             value: item
