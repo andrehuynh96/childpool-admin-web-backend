@@ -519,6 +519,17 @@ module.exports = {
     "GROUP_NAME": "Fiat Rate",
     "ROLES": ["Master", "Admin"]
   },
-
+  "AFFILIATE_VIEW_CLAIM_REWARD_SETTING": {
+    "KEY": "AFFILIATE_VIEW_CLAIM_REWARD_SETTING",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Claim Affiliate Reward Setting",
+    "ROLES": ["Master", "Admin"]
+  },
+  "AFFILIATE_UPDATE_CLAIM_REWARD_SETTING": {
+    "KEY": "AFFILIATE_UPDATE_CLAIM_REWARD_SETTING",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Claim Affiliate Reward Setting",
+    "ROLES": ["Master", "Admin"]
+  }
 
 };
