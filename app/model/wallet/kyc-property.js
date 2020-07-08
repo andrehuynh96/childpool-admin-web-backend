@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     enabled_flg: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
     group_name: {
