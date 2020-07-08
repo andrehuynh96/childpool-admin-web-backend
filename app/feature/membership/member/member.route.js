@@ -2,7 +2,7 @@ const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./member.controller');
 const validator = require("app/middleware/validator.middleware");
-const requestSchema = require('./member.request-schema');
+const { membershipType, referrer } = require('./validator');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 
@@ -21,11 +21,18 @@ router.get("/members/:memberId",
     controller.getMemberDetail
 );
 
-router.put("/members/:memberId",
-    validator(requestSchema),
+router.put("/members/:memberId/membership-types",
+    validator(membershipType),
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
-    controller.updateMember
+    controller.updateMembershipType
+);
+
+router.put("/members/:memberId/referrer-codes",
+    validator(referrer),
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+    controller.updaterReferrerCode
 );
 
 router.get("/membership-types",
@@ -199,12 +206,12 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership/members/{memberId}:
+ * /web/membership/members/{memberId}/membership-types:
  *   put:
- *     summary: update member
+ *     summary: update membershipn type
  *     tags:
  *       - Members
- *     description: update user profile
+ *     description: update membership type
  *     parameters:
  *       - name: memberId
  *         in: path
@@ -221,8 +228,61 @@ module.exports = router;
  *            - referrerCode
  *            example:
  *                  {
-                        "membershipTypeId": "88fda933-0658-49c4-a9c7-4c0021e9a071",
-                        "referrerCode":"S0GYV2CXY"
+                        "membershipTypeId": "88fda933-0658-49c4-a9c7-4c0021e9a071"
+ *                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/membership/members/{memberId}/referrer-codes:
+ *   put:
+ *     summary: update referrer code
+ *     tags:
+ *       - Members
+ *     description: update referrer code
+ *     parameters:
+ *       - name: memberId
+ *         in: path
+ *         type: string
+ *         required: true
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to update.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - membershipTypeId
+ *            - referrerCode
+ *            example:
+ *                  {
+                        "referrerCode": "3ZBCN9HLM"
  *                  }
  *     produces:
  *       - application/json
