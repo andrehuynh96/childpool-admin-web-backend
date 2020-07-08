@@ -41,10 +41,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(50),
       allowNull: true,
     },
-    account_holder: {
-      type: DataTypes.STRING(250),
-      allowNull: true,
-    },
     payment_ref_code: {
       type: DataTypes.STRING(100),
       allowNull: true,
@@ -112,9 +108,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     }
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   MembershipOrder.associate = (models) => {
     MembershipOrder.belongsTo(models.members, {
