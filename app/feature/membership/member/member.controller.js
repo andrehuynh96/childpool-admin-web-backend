@@ -100,6 +100,7 @@ module.exports = {
       });
 
       items.forEach(item => {
+        item.kyc_level = item.kyc_level.replace('LEVEL_','');
         if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
         }
