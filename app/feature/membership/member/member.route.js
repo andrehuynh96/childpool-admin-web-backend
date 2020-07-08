@@ -32,8 +32,8 @@ router.get("/membership-types",
     controller.getMembershipTypeList,
 );
 
-router.get("/kyc-status",
-    controller.getKycStatus,
+router.get("/member-order-status",
+    controller.getMemberOrderStatusFillter,
 );
 
 router.get("/kycs",

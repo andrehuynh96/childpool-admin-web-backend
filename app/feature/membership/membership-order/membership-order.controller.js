@@ -51,8 +51,15 @@ module.exports = {
       if (query.email) {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
-      if(query.memo){
+      if (query.memo) {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
+      }
+
+      if (query.name) {
+        memberWhere[Op.or] = {
+          first_name: { [Op.iLike]: `%${query.name}%` },
+          last_name: { [Op.iLike]: `%${query.name}%` },
+        };
       }
 
       let fromDate, toDate;
@@ -84,7 +91,7 @@ module.exports = {
           offset,
           include: [
             {
-              attributes: ['email', 'fullname', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -129,7 +136,7 @@ module.exports = {
         {
           include: [
             {
-              attributes: ['email', 'fullname', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -147,7 +154,7 @@ module.exports = {
               model: Wallet
             },
             {
-              attributes: ['id','currency_symbol', 'wallet_address'],
+              attributes: ['id', 'currency_symbol', 'wallet_address'],
               as: "ReceivingAddress",
               model: ReceivingAddress
             },
@@ -161,7 +168,7 @@ module.exports = {
       }
 
       membershipOrder.explorer_link = blockchainHelpper.getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol);
-      console.log(membershipOrder)
+      console.log(membershipOrder);
       return res.ok(membershipOrderMapper(membershipOrder));
     }
     catch (error) {
@@ -215,9 +222,7 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-      }
 
-      if (status == MembershipOrderStatus.Approved) {
         const membershipType = await MembershipType.findOne({
           where: {
             id: order.membership_type_id
@@ -272,10 +277,25 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-
-        await _sendEmail(order.Member.email, order.id);
+        // reject all pending orders
+        await MembershipOrder.update({
+          status: MembershipOrderStatus.Rejected,
+          approved_by_id: req.user.id,
+          notes: 'The other is approved'
+        }, {
+          where: {
+            status: MembershipOrderStatus.Pending,
+            [Op.not]: [
+              { id: [order.id] }
+            ]
+          },
+          returning: true,
+          transaction: transaction
+        });
+        await _sendEmail(order.Member.email, order.id, true);
+      } else {
+        await _sendEmail(order.Member.email, order.id, false);
       }
-
       await transaction.commit();
 
       return res.ok(true);
@@ -313,7 +333,15 @@ module.exports = {
       if (query.email) {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
-      if(query.memo){
+
+      if (query.name) {
+        memberWhere[Op.or] = {
+          first_name: { [Op.iLike]: `%${query.name}%` },
+          last_name: { [Op.iLike]: `%${query.name}%` },
+        };
+      }
+
+      if (query.memo) {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
 
@@ -341,7 +369,7 @@ module.exports = {
         {
           include: [
             {
-              attributes: ['email', 'fullname', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -358,15 +386,19 @@ module.exports = {
           order: [['created_at', 'DESC']]
         }
       );
-      let timezone_offset = query.timezone_offset || 0
+      let timezone_offset = query.timezone_offset || 0;
       items.forEach(element => {
         element.email = element.Member.email;
-        element.membership_type_name = element.MembershipType.name;        
-        element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm')
+        element.first_name = element.Member.first_name;
+        element.last_name = element.Member.last_name;
+        element.membership_type_name = element.MembershipType.name;
+        element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       let data = await stringifyAsync(items, [
         { key: 'order_no', header: 'Order No' },
         { key: 'time', header: 'Time' },
+        { key: 'first_name', header: 'First Name' },
+        { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
         { key: 'membership_type_name', header: 'Membership' },
         { key: 'payment_type', header: 'Payment Type' },
@@ -401,7 +433,7 @@ function stringifyAsync(data, columns) {
   });
 }
 
-async function _sendEmail(emails, id) {
+async function _sendEmail(emails, id, approved) {
   try {
     let subject = `Membership payment`;
     let from = `Child membership department`;
@@ -409,7 +441,10 @@ async function _sendEmail(emails, id) {
       id: id
     };
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrder);
+    if (approved)
+      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderApproved);
+    else
+      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderRejected);
   } catch (err) {
     logger.error("send confirmed membership order email", err);
   }

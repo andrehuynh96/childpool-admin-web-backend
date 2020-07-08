@@ -3,7 +3,7 @@ const objectMapper = require('object-mapper');
 const destObject = {
   array: {
     '[].id': '[].id',
-    '[].Member.email': '[].email',
+    '[].Member': '[].member',
     '[].member_id': '[].member_id',
     '[].member_account_id': '[].member_account_id',
     '[].type': '[].type',
@@ -38,4 +38,4 @@ module.exports = srcObject => {
   else {
     return objectMapper(srcObject, destObject.single);
   }
-};  
+};

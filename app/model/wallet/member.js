@@ -27,6 +27,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(128),
       allowNull: true
     },
+    last_name: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+    first_name: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
     phone: {
       type: DataTypes.STRING(32),
       allowNull: false,
@@ -91,7 +99,7 @@ module.exports = (sequelize, DataTypes) => {
     kyc_status: {
       type: DataTypes.STRING(16),
       allowNull: false,
-      defaultValue: KycStatus.ACTIVE
+      defaultValue: KycStatus.APPROVED
     },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
@@ -123,6 +131,8 @@ module.exports = (sequelize, DataTypes) => {
   Member.associate = (models) => {
     Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" });
 
+    Member.hasMany(models.membership_orders, { foreignKey: 'member_id', as: "membership_orders" });
+
     Member.belongsTo(models.membership_types, {
       as: 'MembershipType',
       foreignKey: 'membership_type_id',
@@ -130,4 +140,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return Member;
-} 
+};

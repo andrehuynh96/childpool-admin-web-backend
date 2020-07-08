@@ -493,23 +493,32 @@ module.exports = {
     "GROUP_NAME": "Members",
     "ROLES": ["Master","Admin"]
   },
-  "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS": {
-    "KEY": "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS",
-    "GROUP_NAME": "Members",
-    "ROLES": ["Master","Admin"]
+
+  "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING": {
+    "KEY": "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Claim Membership Reward Setting",
+    "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_UPDATE_CLAIM_MEMBERSHIP_REWARD_SETTING": {
+    "KEY": "MEMBERSHIP_UPDATE_CLAIM_MEMBERSHIP_REWARD_SETTING",
+    "DESCRIPTION": "",
+    "GROUP_NAME": "Claim Membership Reward Setting",
+    "ROLES": ["Master", "Admin"]
   },
 
-  "VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING": {
-    "KEY": "VIEW_MEMBERSHIP_SETTINGS_REWARD_SETTING",
+  "MEMBERSHIP_VIEW_FIAT_RATE": {
+    "KEY": "MEMBERSHIP_VIEW_FIAT_RATE",
     "DESCRIPTION": "",
-    "GROUP_NAME": "Reward Setting",
+    "GROUP_NAME": "Fiat Rate",
     "ROLES": ["Master", "Admin"]
   },
-  "UPDATE_MEMBERSHIP_SETTINGS_REWARD_SETTING": {
-    "KEY": "UPDATE_MEMBERSHIP_SETTINGS_REWARD_SETTING",
+  "MEMBERSHIP_UPDATE_FIAT_RATE": {
+    "KEY": "MEMBERSHIP_UPDATE_FIAT_RATE",
     "DESCRIPTION": "",
-    "GROUP_NAME": "Reward Setting",
+    "GROUP_NAME": "Fiat Rate",
     "ROLES": ["Master", "Admin"]
   },
+
 
 };

@@ -45,7 +45,7 @@ module.exports = router;
  *   get:
  *     summary: search member
  *     tags:
- *       - Membership
+ *       - Membership Order
  *     description:
  *     parameters:
  *       - name: offset
@@ -120,7 +120,7 @@ module.exports = router;
  *   get:
  *     summary: get order detail
  *     tags:
- *       - Membership
+ *       - Membership Order
  *     description:
  *     parameters:
  *       - name: orderId
@@ -170,10 +170,10 @@ module.exports = router;
 /**
  * @swagger
  * /web/membership/orders/{orderId}:
- *   post:
+ *   put:
  *     summary: approve order
  *     tags:
- *       - Membership
+ *       - Membership Order
  *     description:
  *     parameters:
  *       - name: orderId

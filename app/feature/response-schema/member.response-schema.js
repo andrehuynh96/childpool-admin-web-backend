@@ -5,11 +5,14 @@ const destObject = {
     '[].id': '[].id',
     '[].email': '[].email',
     '[].name': '[].name',
+    '[].first_name': '[].first_name',
+    '[].last_name': '[].last_name',
     '[].actived_flg': '[].actived_flg',
     '[].referral_code': '[].referral_code',
     '[].referrer_code': '[].referrer_code',
     '[].membership_type_id': '[].membership_type_id',
     '[].membership_type': '[].membership_type',
+    '[].status': '[].status',
     '[].kyc_id': '[].kyc_id',
     '[].kyc_level': '[].kyc_level',
     '[].kyc_status': '[].kyc_status',
@@ -21,11 +24,14 @@ const destObject = {
     id: 'id',
     email: 'email',
     name: 'name',
+    first_name: 'first_name',
+    last_name: 'last_name',
     actived_flg: 'actived_flg',
     referral_code: 'referral_code',
     referrer_code: 'referrer_code',
     membership_type_id: 'membership_type_id',
     membership_type: 'membership_type',
+    stasus: 'status',
     kyc_id: 'kyc_id',
     kyc_level: 'kyc_level',
     kyc_status: 'kyc_status',
@@ -45,4 +51,4 @@ module.exports = srcObject => {
   else {
     return objectMapper(srcObject, destObject.single);
   }
-};  
+};
