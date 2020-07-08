@@ -375,7 +375,7 @@ module.exports = {
       const kycLevels = kycs.map(item => {
         return {
           label: item.name.replace('Level', 'KYC'),
-          value: item.name.replace('Level ', '')
+          value: item.key
         };
       });
       return res.ok(kycLevels);
