@@ -1,6 +1,6 @@
 module.exports = {
     "Active":"Reject",
-    "Fee_accepted":"Approved",
-    "Verify_payment":"Pending",
+    "FeeAccepted":"Approved",
+    "VerifyPayment":"Pending",
     "Deactivated":"Deactivated"
 };

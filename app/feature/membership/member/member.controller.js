@@ -22,11 +22,11 @@ module.exports = {
       if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
       if (query.kycLevel) where.kyc_level = query.kycLevel;
       if (query.status) {
-        if (query.status === MemberOrderStatusFillter.Fee_accepted) {
-          membershipOrderCond.status = MemberOrderStatusFillter.Fee_accepted;
+        if (query.status === MemberOrderStatusFillter.FeeAccepted) {
+          membershipOrderCond.status = MemberOrderStatusFillter.FeeAccepted;
         }
-        if (query.status === MemberOrderStatusFillter.Verify_payment) {
-          membershipOrderCond.status = MemberOrderStatusFillter.Verify_payment;
+        if (query.status === MemberOrderStatusFillter.VerifyPayment) {
+          membershipOrderCond.status = MemberOrderStatusFillter.VerifyPayment;
         }
         if (query.status === MemberOrderStatusFillter.Active) {
           membershipOrderCond.status = MemberOrderStatusFillter.Active;
@@ -105,8 +105,8 @@ module.exports = {
         }
         const membershipOrder = lastMembershipOrder.find(x => item.id === x.member_id && x.status);
         if (membershipOrder) {
-          if ( membershipOrder.status === MemberOrderStatusFillter.Fee_accepted) item.status = 'Fee Accepted';
-          else if (membershipOrder.status === MemberOrderStatusFillter.Verify_payment) item.status = 'Pending';
+          if ( membershipOrder.status === MemberOrderStatusFillter.Fee_accepted) item.status = 'Fee cccepted';
+          else if (membershipOrder.status === MemberOrderStatusFillter.Verify_payment) item.status = 'Verify payment';
           else {
             item.status = 'Active';
           }
@@ -272,11 +272,24 @@ module.exports = {
       const memberOrderStatusFillter = Object.keys(MemberOrderStatusFillter);
       const memberOrderStatusDropdown = [];
       memberOrderStatusFillter.forEach(item => {
-        memberOrderStatusDropdown.push({
-          label: item.replace('_',' '),
-          value: item
-
-        });
+        if (item === 'FeeAccepted'){
+          memberOrderStatusDropdown.push({
+            label: 'Fee accepted',
+            value: item
+          });
+        }
+        else if (item === 'VerifyPayment') {
+          memberOrderStatusDropdown.push({
+            label: 'Verify payment',
+            value: item
+          });
+        }
+        else {
+          memberOrderStatusDropdown.push({
+            label: item,
+            value: item
+          });
+        }
       });
       return res.ok(memberOrderStatusDropdown);
 
