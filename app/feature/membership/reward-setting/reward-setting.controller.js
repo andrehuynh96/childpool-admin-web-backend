@@ -11,14 +11,11 @@ module.exports = {
       }
 
       const data = {
-        usd_rate_by_jpy: null,
         membership_commission_usdt_minimum_claim_amount: null,
       };
 
       for (let e of results) {
-        if (e.key === 'USD_RATE_BY_JPY') {
-          data.usd_rate_by_jpy = Number(e.value);
-        } else if (e.key === 'MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT') {
+        if (e.key === 'MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT') {
           data.membership_commission_usdt_minimum_claim_amount = Number(e.value);
         }
       }
