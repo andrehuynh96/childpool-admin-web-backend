@@ -253,7 +253,7 @@ module.exports = {
             return;
           }
 
-          const introducedByEmail = _maskEmailAddress(item.introduced_by_ext_client_id);
+          const introducedByEmail = item.introduced_by_ext_client_id;
 
           return {
             member_id: member.id,
@@ -262,8 +262,8 @@ module.exports = {
             commission_method: item.commisson_type.toUpperCase() === 'DIRECT' ? MemberRewardCommissionMethod.DIRECT : MemberRewardCommissionMethod.INDIRECT,
             system_type: SystemType.MEMBERSHIP,
             action: MemberRewardAction.REWARD_COMMISSION,
-            commission_from: introducedByEmail,
-            note: introducedByEmail ? `${introducedByEmail}` : null,
+            commission_from: null,
+            note: introducedByEmail,
           };
         });
         await MemberRewardTransactionHistory.bulkCreate(memberRewardTransactionHistories, { transaction });
