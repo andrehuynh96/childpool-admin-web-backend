@@ -550,33 +550,37 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                    "data": [
-                        {
-                            "num_of_level_1_affiliates": 7,
-                            "total": 25,
-                            "num_of_level_2_affiliates": 4,
-                            "num_of_level_3_affiliates": 20,
-                            "num_of_level_4_affiliates": 1
-                        },
-                        {
-                            "id": "41",
-                            "client_id": "90",
-                            "level": 2,
-                            "ext_client_id": "myhn@blockchainlabs.asia",
-                            "num_of_level_2_affiliates": 0,
-                            "num_of_level_3_affiliates": 0,
-                            "num_of_level_4_affiliates": 0
-                        },
-                        {
-                            "id": "151",
-                            "client_id": "192",
-                            "level": 2,
-                            "ext_client_id": "ducblc_@yopmail.com",
-                            "num_of_level_2_affiliates": 0,
-                            "num_of_level_3_affiliates": 0,
-                            "num_of_level_4_affiliates": 0
-                        }
-                    ]
+                    "data": {
+                        "email": "binhnt+3@blockchainlabs.asia",
+                        "affiliate": [
+                            {
+                                "num_of_level_1_affiliates": 2,
+                                "num_of_level_2_affiliates": 26,
+                                "num_of_level_3_affiliates": 6,
+                                "num_of_level_4_affiliates": 0,
+                                "total": 32
+                            },
+                            {
+                                "id": "197",
+                                "client_id": "228",
+                                "level": 3,
+                                "ext_client_id": "huy.pq+37@blockchainlabs.asia",
+                                "num_of_level_2_affiliates": 5,
+                                "num_of_level_3_affiliates": 0,
+                                "num_of_level_4_affiliates": 0
+                            },
+                            {
+                                "id": "192",
+                                "client_id": "226",
+                                "level": 3,
+                                "ext_client_id": "binhnt+6@blockchainlabs.asia",
+                                "num_of_level_2_affiliates": 21,
+                                "num_of_level_3_affiliates": 6,
+                                "num_of_level_4_affiliates": 0
+                            }
+                        ],
+                        "referrer_email": "trunglk+142@blockchainlabs.asia"
+                    }
                 }
  *       400:
  *         description: Error

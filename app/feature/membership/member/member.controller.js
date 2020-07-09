@@ -428,12 +428,22 @@ module.exports = {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
 
-      const memberRefStructure = await membershipApi.getMemberReferralStructure(member.email);
+      const memberRefStructure = await affiliateApi.getMemberReferralStructure(member.email);
 
       if (memberRefStructure.httpCode !== 200) {
         return res.status(memberRefStructure.httpCode).send(memberRefStructure.data);
       }
-      const result = memberRefStructure.data;
+
+      let result = {email: member.email, affiliate: memberRefStructure.data};
+      if (member.referrer_code) {
+        let referrer = await Member.findOne({
+          where: {
+            referral_code: member.referrer_code,
+            deleted_flg: false
+          }
+        });
+        result.referrer_email = referrer.email;
+      }
       return res.ok(result);
     } catch (error) {
       logger.error('get member referal structure fail:', error);

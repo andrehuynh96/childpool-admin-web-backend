@@ -248,14 +248,15 @@ class AffiliateApi {
   async getMemberReferralStructure(ext_client_id) {
     try {
       const headers = await this.getHeaders();
-      const result = await axios.get(`${API_URL}/clients/referral-structure?ext_client_id=${ext_client_id}`,
+      const result = await axios.get(`${API_URL}/clients/referral-structure?ext_client_id=${encodeURIComponent(ext_client_id)}`,
         {
           headers,
         });
+      console.log(result)
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get membership policy fail:", err);
+      logger.error("get membership referral structure fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
