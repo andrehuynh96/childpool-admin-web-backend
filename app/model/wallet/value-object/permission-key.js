@@ -297,6 +297,12 @@ module.exports = {
     "GROUP_NAME": "Members",
     "ROLES": ["Master"]
   },
+  "MEMBERSHIP_VIEW_REFERRAL_STRUCTURE": {
+    "KEY": "MEMBERSHIP_VIEW_REFERRAL_STRUCTURE",
+    "DESCRIPTION": "",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "GROUP_NAME": "Members",
+  },
 
   "MEMBERSHIP_VIEW_ORDER_LIST": {
     "KEY": "MEMBERSHIP_VIEW_ORDER_LIST",
@@ -530,6 +536,7 @@ module.exports = {
     "DESCRIPTION": "",
     "GROUP_NAME": "Claim Affiliate Reward Setting",
     "ROLES": ["Master", "Admin"]
-  }
+  },
+  
 
 };
