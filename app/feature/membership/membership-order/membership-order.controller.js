@@ -422,6 +422,7 @@ module.exports = {
         { key: 'wallet_address', header: 'Receive address' },
         { key: 'status', header: 'Status' },
         { key: 'wallet_id', header: 'Walllet Id' },
+        { key: 'currency_symbol', header: 'Currency symbol' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
