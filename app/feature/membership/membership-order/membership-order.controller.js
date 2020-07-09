@@ -65,7 +65,7 @@ module.exports = {
         where.payment_type = PaymentType.Bank
       }
       else{
-        if(query.is_crypto){
+        if(query.is_crypto && query.currency_symbol){
           where.currency_symbol = query.currency_symbol
           if(query.is_external)
             where.wallet_id =  {[Op.eq]: null}
@@ -422,6 +422,7 @@ module.exports = {
         { key: 'wallet_address', header: 'Receive address' },
         { key: 'status', header: 'Status' },
         { key: 'wallet_id', header: 'Walllet Id' },
+        { key: 'currency_symbol', header: 'Currency symbol' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
