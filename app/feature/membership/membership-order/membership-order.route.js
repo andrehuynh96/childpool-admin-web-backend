@@ -80,6 +80,18 @@ module.exports = router;
  *       - name: memo
  *         in: query
  *         type: string
+ *       - name: is_bank
+ *         in: query
+ *         type: string
+ *       - name: is_crypto
+ *         in: query
+ *         type: string
+ *       - name: currency_symbol
+ *         in: query
+ *         type: string
+ *       - name: is_external
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
