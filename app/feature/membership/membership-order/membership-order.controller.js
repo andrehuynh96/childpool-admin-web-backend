@@ -21,6 +21,7 @@ const blockchainHelpper = require('app/lib/blockchain-helpper');
 const config = require('app/config');
 const mailer = require('app/lib/mailer');
 const maskify = require('app/lib/maskify');
+const PaymentType = require('app/model/wallet/value-object/claim-request-payment-type')
 
 const Op = Sequelize.Op;
 
@@ -54,26 +55,31 @@ module.exports = {
       if (query.memo) {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
-
-      if (query.name) {
-        memberWhere[Op.or] = {
-          first_name: { [Op.iLike]: `%${query.name}%` },
-          last_name: { [Op.iLike]: `%${query.name}%` },
-        };
+      if (query.first_name) {
+        memberWhere.first_name = {[Op.iLike]: `%${query.first_name}%` }
+      }
+      if (query.last_name) {
+        memberWhere.last_name = {[Op.iLike]: `%${query.last_name}%` }
+      }
+      if(query.is_bank){
+        where.payment_type = PaymentType.Bank
+      }
+      else{
+        if(query.is_crypto){
+          where.currency_symbol = query.currency_symbol
+          if(query.is_external)
+            where.wallet_id =  {[Op.eq]: null}
+          else
+            where.wallet_id =  {[Op.ne]: null}        
+        }
       }
 
       let fromDate, toDate;
-      if (query.from || query.to) {
+      if (query.from && query.to) {
         where.created_at = {};
-      }
-
-      if (query.from) {
         let fromDate = moment(query.from).add(1, 'minute').toDate();
-        where.created_at[Op.gte] = fromDate;
-      }
-
-      if (query.to) {
         let toDate = moment(query.to).add(1, 'minute').toDate();
+        where.created_at[Op.gte] = fromDate; 
         where.created_at[Op.lt] = toDate;
       }
 
@@ -334,29 +340,39 @@ module.exports = {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
 
-      if (query.name) {
-        memberWhere[Op.or] = {
-          first_name: { [Op.iLike]: `%${query.name}%` },
-          last_name: { [Op.iLike]: `%${query.name}%` },
-        };
-      }
-
       if (query.memo) {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
 
+      if (query.first_name) {
+        memberWhere.first_name = {[Op.iLike]: `%${query.first_name}%` }
+      }
+      if (query.last_name) {
+        memberWhere.last_name = {[Op.iLike]: `%${query.last_name}%` }
+      }
+
+      if(query.is_bank){
+        where.payment_type = PaymentType.Bank
+      }
+      else{
+        if(query.is_crypto && query.currency_symbol){
+          where.currency_symbol = query.currency_symbol
+          if(query.is_external)
+            where.wallet_id =  {[Op.eq]: null}
+          else
+            where.wallet_id =  {[Op.ne]: null}        
+        }
+      }
+
       let fromDate, toDate;
-      if (query.from || query.to) {
+      if (query.from && query.to) {
         where.created_at = {};
-      }
-      if (query.from) {
-        fromDate = moment(query.from).add(1, 'minute').toDate();
-        where.created_at[Op.gte] = fromDate;
-      }
-      if (query.to) {
-        toDate = moment(query.to).add(1, 'minute').toDate();
+        let fromDate = moment(query.from).add(1, 'minute').toDate();
+        let toDate = moment(query.to).add(1, 'minute').toDate();
+        where.created_at[Op.gte] = fromDate; 
         where.created_at[Op.lt] = toDate;
       }
+
       if (fromDate && toDate && fromDate >= toDate) {
         return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
       }

@@ -106,7 +106,11 @@ module.exports = (sequelize, DataTypes) => {
     branch_name: {
       type: DataTypes.STRING(250),
       allowNull: false,
-    }
+    },
+    amount_usd: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,
