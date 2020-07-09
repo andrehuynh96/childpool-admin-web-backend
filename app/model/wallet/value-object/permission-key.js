@@ -530,6 +530,12 @@ module.exports = {
     "DESCRIPTION": "",
     "GROUP_NAME": "Claim Affiliate Reward Setting",
     "ROLES": ["Master", "Admin"]
+  },
+  "MEMBERSHIP_VIEW_REFERRAL_STRUCTURE": {
+    "KEY": "MEMBERSHIP_VIEW_REFERRAL_STRUCTURE",
+    "DESCRIPTION": "",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "GROUP_NAME": "Members",
   }
 
 };

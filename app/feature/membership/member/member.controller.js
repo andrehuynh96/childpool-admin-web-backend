@@ -414,6 +414,30 @@ module.exports = {
       logger.error('get member tree chart fail:', error);
       next(error);
     }
-  }
+  },
+  getMemberReferralStructure: async (req, res, next) => {
+    try {
+      const member = await Member.findOne({
+        where: {
+          id: req.params.memberId,
+          deleted_flg: false
+        }
+      });
 
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      const memberRefStructure = await membershipApi.getMemberReferralStructure(member.email);
+
+      if (memberRefStructure.httpCode !== 200) {
+        return res.status(memberRefStructure.httpCode).send(memberRefStructure.data);
+      }
+      const result = memberRefStructure.data;
+      return res.ok(result);
+    } catch (error) {
+      logger.error('get member referal structure fail:', error);
+      next(error);
+    }
+  },
 };

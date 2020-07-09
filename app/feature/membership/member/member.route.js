@@ -52,7 +52,11 @@ router.get("/members/:memberId/tree-chart",
     controller.getTreeChart
 );
 
-
+router.get("/members/:memberId/referral-structure",
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_REFERRAL_STRUCTURE),
+    controller.getMemberReferralStructure
+);
 
 module.exports = router;
 
@@ -258,59 +262,59 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/membership/members/{memberId}/referrer-codes:
- *   put:
- *     summary: update referrer code
- *     tags:
- *       - Members
- *     description: update referrer code
- *     parameters:
- *       - name: memberId
- *         in: path
- *         type: string
- *         required: true
- *       - name: data
- *         in: body
- *         required: true
- *         description: submit data JSON to update.
- *         schema:
- *            type: object
- *            required:
- *            - membershipTypeId
- *            - referrerCode
- *            example:
- *                  {
-                        "referrerCode": "3ZBCN9HLM"
- *                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/membership/members/{memberId}/referrer-codes:
+*   put:
+*     summary: update referrer code
+*     tags:
+*       - Members
+*     description: update referrer code
+*     parameters:
+*       - name: memberId
+*         in: path
+*         type: string
+*         required: true
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON to update.
+*         schema:
+*            type: object
+*            required:
+*            - membershipTypeId
+*            - referrerCode
+*            example:
+*                  {
+                       "referrerCode": "3ZBCN9HLM"
+*                  }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 /**
  * @swagger
@@ -370,7 +374,7 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
+/**
 * @swagger
 * /web/membership/members/{memberId}/tree-chart:
 *   get:
@@ -391,16 +395,16 @@ module.exports = router;
 *         examples:
 *           application/json:
 *              {
-                    "data": {
-                        "ext_client_id": "myhn@blockchainlabs.asia",
-                        "created_at": "2020-06-18T05:35:36.570Z",
-                        "updated_at": "2020-06-18T05:35:36.570Z",
-                        "referrer_client_affiliate_id": null,
-                        "id": "115",
-                        "children": [],
-                        "parent": null
-                    }
-                }
+                   "data": {
+                       "ext_client_id": "myhn@blockchainlabs.asia",
+                       "created_at": "2020-06-18T05:35:36.570Z",
+                       "updated_at": "2020-06-18T05:35:36.570Z",
+                       "referrer_client_affiliate_id": null,
+                       "id": "115",
+                       "children": [],
+                       "parent": null
+                   }
+               }
 *       400:
 *         description: Error
 *         schema:
@@ -475,13 +479,69 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
+/**
+* @swagger
+* /web/membership/kycs:
+*   get:
+*     summary: get dropdown list kycs
+*     tags:
+*       - Members
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                   "data": [
+                       {
+                           "label": "KYC 0",
+                           "value": " 0"
+                       },
+                       {
+                           "label": "KYC 1",
+                           "value": " 1"
+                       },
+                       {
+                           "label": "KYC 2",
+                           "value": " 2"
+                       }
+                   ]
+               }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/** *******************************************************************/
+
+/**
  * @swagger
- * /web/membership/kycs:
+ * /web/membership/members/:memberId/referral-structure:
  *   get:
- *     summary: get dropdown list kycs
+ *     summary: View member referral structure API
  *     tags:
  *       - Members
+ *     description:
+ *     parameters:
+ *       - name: memberId
+ *         in: path
+ *         type: string
+ *         required: true
  *     produces:
  *       - application/json
  *     responses:
@@ -492,16 +552,29 @@ module.exports = router;
  *             {
                     "data": [
                         {
-                            "label": "KYC 0",
-                            "value": " 0"
+                            "num_of_level_1_affiliates": 7,
+                            "total": 25,
+                            "num_of_level_2_affiliates": 4,
+                            "num_of_level_3_affiliates": 20,
+                            "num_of_level_4_affiliates": 1
                         },
                         {
-                            "label": "KYC 1",
-                            "value": " 1"
+                            "id": "41",
+                            "client_id": "90",
+                            "level": 2,
+                            "ext_client_id": "myhn@blockchainlabs.asia",
+                            "num_of_level_2_affiliates": 0,
+                            "num_of_level_3_affiliates": 0,
+                            "num_of_level_4_affiliates": 0
                         },
                         {
-                            "label": "KYC 2",
-                            "value": " 2"
+                            "id": "151",
+                            "client_id": "192",
+                            "level": 2,
+                            "ext_client_id": "ducblc_@yopmail.com",
+                            "num_of_level_2_affiliates": 0,
+                            "num_of_level_3_affiliates": 0,
+                            "num_of_level_4_affiliates": 0
                         }
                     ]
                 }
@@ -522,5 +595,3 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
-
-/** *******************************************************************/
