@@ -209,7 +209,8 @@ module.exports = {
       await MembershipOrder.update({
         notes: req.body.note,
         approved_by_id: req.user.id,
-        status: status
+        status: status,
+        approved_at: Sequelize.fn('NOW') 
       }, {
         where: {
           id: req.params.id
@@ -429,10 +430,31 @@ module.exports = {
       res.send(data);
     }
     catch (err) {
-      logger.error('search order fail:', err);
+      logger.error('csv order fail:', err);
       next(err);
     }
   },
+  updateDesciption: async(req, res, next) => {
+    try {
+      let id =  req.params.id
+      let des = req.body.description
+      if(!id)
+        return res.ok(false);
+      await MembershipOrder.update({
+          description: des
+        }, {
+          where: {
+            id: id
+          },
+          returning: true
+        });
+      return res.ok(true);
+    }
+    catch (err) {
+      logger.error('update order description fail:', err);
+      next(err);
+    }
+  }
 };
 
 function stringifyAsync(data, columns) {

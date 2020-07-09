@@ -111,6 +111,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL,
       allowNull: true,
     },
+    description: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+    },
+    approved_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    }
   }, {
     underscored: true,
     timestamps: true,
