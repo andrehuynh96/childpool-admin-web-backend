@@ -65,7 +65,7 @@ module.exports = {
         where.payment_type = PaymentType.Bank
       }
       else{
-        if(query.is_crypto){
+        if(query.is_crypto && query.currency_symbol){
           where.currency_symbol = query.currency_symbol
           if(query.is_external)
             where.wallet_id =  {[Op.eq]: null}
