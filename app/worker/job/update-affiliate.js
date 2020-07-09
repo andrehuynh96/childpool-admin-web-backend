@@ -24,21 +24,19 @@ module.exports = {
                     details: []
                 }
                 let addresses = contributions.map(x => x.address)
+                // find wallet_id 
+                let walletIds = await WalletPrivateKey.findAll({
+                    where: {
+                        attributes: ['id'],
+                        address: {
+                            [Op.in]: addresses
+                        },
+                        deleted_flg: false
+                    }
+                })
                 // find user of address
                 let wallets = await Wallet.findAll({
                     include: [
-                        {
-                            attributes: ['id', 'wallet_id', 'platform', 'address'],
-                            as: "privKeys",
-                            model: WalletPrivateKey,
-                            where: {
-                                address: {
-                                    [Op.in]: addresses
-                                },
-                                deleted_flg: false
-                            },
-                            required: true
-                        },
                         {
                             attributes: ['email'],
                             model: Member,
@@ -47,7 +45,12 @@ module.exports = {
                             },
                             required: true
                         },
-                    ]
+                    ],
+                    where:{
+                        id:{
+                            [Op.in]: walletIds
+                        }
+                    }
                 })
                 contributions.forEach(async (contribution) =>{
                     let address = contribution.address                
