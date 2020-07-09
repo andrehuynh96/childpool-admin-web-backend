@@ -252,7 +252,6 @@ class AffiliateApi {
         {
           headers,
         });
-      console.log(result)
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
