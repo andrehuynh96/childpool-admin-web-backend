@@ -442,7 +442,7 @@ module.exports = {
             deleted_flg: false
           }
         });
-        result.referrer_email = referrer.email;
+        if (referrer) result.referrer_email = referrer.email;
       }
       return res.ok(result);
     } catch (error) {

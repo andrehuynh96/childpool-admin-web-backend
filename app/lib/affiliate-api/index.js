@@ -248,7 +248,8 @@ class AffiliateApi {
   async getMemberReferralStructure(ext_client_id) {
     try {
       const headers = await this.getHeaders();
-      const result = await axios.get(`${API_URL}/clients/referral-structure?ext_client_id=${encodeURIComponent(ext_client_id)}`,
+      const queryData = queryString.stringify({ ext_client_id: ext_client_id });
+      const result = await axios.get(`${API_URL}/clients/referral-structure?${queryData}`,
         {
           headers,
         });
