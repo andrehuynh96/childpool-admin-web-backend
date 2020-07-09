@@ -33,20 +33,19 @@ module.exports = {
 
       const kycs = await Kyc.findAll({
         where: {
-          id: kycIds
+          id: kycIds,
+          key: { [Op.not]: 'LEVEL_0' }
         }
       });
-      const memberKycResponse = [];
+      const memberKycsResponse = [];
       memberKycs.forEach(item => {
         const kyc = kycs.find(x => x.id === item.kyc_id);
         if (kyc) {
           item.kyc_id = kyc.key.replace('LEVEL_','');
-        }
-        if (item.kyc_id != 0) {
-          memberKycResponse.push(item);
+          memberKycsResponse.push(item);
         }
       });
-      return res.ok(memberKycResponse);
+      return res.ok(memberKycsResponse);
     }
     catch (error) {
       logger.info('get member kyc list fail', error);
