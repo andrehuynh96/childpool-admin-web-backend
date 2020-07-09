@@ -473,20 +473,16 @@ function stringifyAsync(data, columns) {
 }
 
 async function _sendEmail(emails, id, approved) {
-  try {
-    let subject = `Membership payment`;
-    let from = `Child membership department`;
-    let data = {
-      id: id
-    };
-    data = Object.assign({}, data, config.email);
-    if (approved)
-      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderApproved);
-    else
-      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderRejected);
-  } catch (err) {
-    logger.error("send confirmed membership order email", err);
-  }
+  let subject = `Membership payment`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+  let data = {
+    id: id
+  };
+  data = Object.assign({}, data, config.email);
+  if (approved)
+    await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderApproved);
+  else
+    await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderRejected);
 }
 
 async function _findMemberByEmail(email) {
