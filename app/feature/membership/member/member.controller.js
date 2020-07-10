@@ -635,7 +635,12 @@ module.exports = {
 async function _createMemberCond(query) {
   const memberCond = {};
   if (query.membershipTypeId) {
-    memberCond.membership_type_id = query.membershipTypeId;
+    if (query.membershipTypeId == 'Basic') {
+      memberCond.membership_type_id = { [Op.is]: null };
+    }
+    else {
+      memberCond.membership_type_id = query.membershipTypeId;
+    }
   }
 
   if (query.kycLevel) {
