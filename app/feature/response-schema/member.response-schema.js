@@ -32,7 +32,7 @@ const destObject = {
     membership_type_id: 'membership_type_id',
     membership_type: 'membership_type',
     latest_membership_order_id: 'latest_membership_order_id?',
-    stasus: 'status',
+    status: 'status',
     kyc_id: 'kyc_id',
     kyc_level: 'kyc_level',
     kyc_status: 'kyc_status',
