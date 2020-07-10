@@ -1,6 +1,5 @@
 const moment = require('moment');
 const { map } = require('p-iteration');
-const addressParser = require('address-rfc2822');
 const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const database = require('app/lib/database').db().wallet;
@@ -20,8 +19,7 @@ const { membershipApi } = require('app/lib/affiliate-api');
 const blockchainHelpper = require('app/lib/blockchain-helpper');
 const config = require('app/config');
 const mailer = require('app/lib/mailer');
-const maskify = require('app/lib/maskify');
-const PaymentType = require('app/model/wallet/value-object/claim-request-payment-type')
+const PaymentType = require('app/model/wallet/value-object/claim-request-payment-type');
 
 const Op = Sequelize.Op;
 
@@ -56,21 +54,21 @@ module.exports = {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
       if (query.first_name) {
-        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` }
+        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` };
       }
       if (query.last_name) {
-        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` }
+        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` };
       }
       if (query.is_bank) {
-        where.payment_type = PaymentType.Bank
+        where.payment_type = PaymentType.Bank;
       }
       else {
         if (query.is_crypto && query.currency_symbol) {
-          where.currency_symbol = query.currency_symbol
+          where.currency_symbol = query.currency_symbol;
           if (query.is_external)
-            where.wallet_id = { [Op.eq]: null }
+            where.wallet_id = { [Op.eq]: null };
           else
-            where.wallet_id = { [Op.ne]: null }
+            where.wallet_id = { [Op.ne]: null };
         }
       }
 
@@ -346,22 +344,22 @@ module.exports = {
       }
 
       if (query.first_name) {
-        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` }
+        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` };
       }
       if (query.last_name) {
-        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` }
+        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` };
       }
 
       if (query.is_bank) {
-        where.payment_type = PaymentType.Bank
+        where.payment_type = PaymentType.Bank;
       }
       else {
         if (query.is_crypto && query.currency_symbol) {
-          where.currency_symbol = query.currency_symbol
+          where.currency_symbol = query.currency_symbol;
           if (query.is_external)
-            where.wallet_id = { [Op.eq]: null }
+            where.wallet_id = { [Op.eq]: null };
           else
-            where.wallet_id = { [Op.ne]: null }
+            where.wallet_id = { [Op.ne]: null };
         }
       }
 
@@ -436,8 +434,8 @@ module.exports = {
   },
   updateDesciption: async (req, res, next) => {
     try {
-      let id = req.params.id
-      let des = req.body.description
+      let id = req.params.id;
+      let des = req.body.description;
       if (!id)
         return res.ok(false);
       await MembershipOrder.update({
@@ -507,32 +505,4 @@ async function _findMemberByEmail(email) {
   }
 
   return member;
-}
-
-function _maskEmailAddress(email) {
-  if (!email) {
-    return email;
-  }
-
-  const addresses = addressParser.parse(email);
-  const address = addresses[0];
-  let name = address.user();
-  let host = address.host();
-  name = maskify(name, {
-    maskSymbol: "*",
-    matchPattern: /^.+$/,
-    visibleCharsStart: 2,
-    visibleCharsEnd: 2,
-    minChars: 2,
-  });
-
-  host = maskify(host, {
-    maskSymbol: "*",
-    matchPattern: /\w+$/,
-    visibleCharsStart: 2,
-    visibleCharsEnd: 0,
-    minChars: 2,
-  });
-
-  return name + '@' + host;
 }

@@ -4,6 +4,8 @@ const MembershipType = require("app/model/wallet").membership_types;
 const MembershipOrder = require("app/model/wallet").membership_orders;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const MemberOrderStatusFillter = require("app/model/wallet/value-object/member-order-status-fillter");
+const MemberFillterStatusText = require("app/model/wallet/value-object/member-fillter-status-text");
+const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
 const Kyc = require("app/model/wallet").kycs;
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
@@ -17,107 +19,157 @@ module.exports = {
       const { query } = req;
       const limit = query.limit ? parseInt(req.query.limit) : 10;
       const offset = query.offset ? parseInt(req.query.offset) : 0;
-      const where = {};
+      const memberCond = {
+      };
       const membershipOrderCond = {};
 
-      if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
-      if (query.kycLevel) where.kyc_level = query.kycLevel;
-      if (query.status) {
-        if (query.status === MemberOrderStatusFillter.FeeAccepted) {
-          membershipOrderCond.status = MemberOrderStatusFillter.FeeAccepted;
-        }
-        if (query.status === MemberOrderStatusFillter.VerifyPayment) {
-          membershipOrderCond.status = MemberOrderStatusFillter.VerifyPayment;
-        }
-        if (query.status === MemberOrderStatusFillter.Active) {
-          membershipOrderCond.status = MemberOrderStatusFillter.Active;
-        }
-        if (query.status === MemberOrderStatusFillter.Deactivated) {
-          where.deleted_flg = true;
-        }
+      if (query.membershipTypeId) {
+        memberCond.membership_type_id = query.membershipTypeId;
       }
-      if (query.referralCode) where.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
-      if (query.referrerCode) where.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
+
+      if (query.kycLevel) {
+        memberCond.kyc_level = query.kycLevel;
+      }
+
+      if (query.referralCode) {
+        memberCond.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
+      }
+      if (query.referrerCode) {
+        memberCond.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
+      }
 
       if (query.firstName) {
-        where.first_name = { [Op.iLike]: `%${query.firstName}%` };
+        memberCond.first_name = { [Op.iLike]: `%${query.firstName}%` };
       }
       if (query.lastName) {
-        where.last_name = { [Op.iLike]: `%${query.lastName}%` };
+        memberCond.last_name = { [Op.iLike]: `%${query.lastName}%` };
       }
 
       if (query.email) {
-        where.email = { [Op.iLike]: `%${query.email}%` };
+        memberCond.email = { [Op.iLike]: `%${query.email}%` };
       }
 
-      const { count: total, rows: items } = await Member.findAndCountAll({ limit, offset, where: where, order: [['created_at', 'DESC']] });
+      let filterStatus = query.status;
+      let requiredMembershipOrder = false;
+      let memberIdList = null;
+      let includeLatestMembershipOrder = true;
 
-      const membershipTypeIds = items.map(item => item.membership_type_id);
-      const membershipTypes = await MembershipType.findAll(
+      if (filterStatus) {
+        if (filterStatus === MemberOrderStatusFillter.Deactivated) {
+          memberCond.deleted_flg = true;
+        } else if (filterStatus === MemberOrderStatusFillter.FeeAccepted) {
+          requiredMembershipOrder = true;
+          membershipOrderCond.status = MembershipOrderStatus.Approved;
+        } else if (filterStatus === MemberOrderStatusFillter.VerifyPayment) {
+          requiredMembershipOrder = true;
+          membershipOrderCond.status = MembershipOrderStatus.Pending;
+        } else if (filterStatus === MemberOrderStatusFillter.Active) {
+          includeLatestMembershipOrder = false;
+
+          const membersWhichHasRejectdOrder = await Member.findAll({
+            where: memberCond,
+            include: [
+              {
+                attributes: ['id', 'status'],
+                as: "LatestMembershipOrder",
+                model: MembershipOrder,
+                where: {
+                  status: MembershipOrderStatus.Rejected,
+                },
+                required: true,
+              },
+            ],
+          });
+
+          memberIdList = membersWhichHasRejectdOrder.map(x => x.id);
+          memberCond.deleted_flg = false;
+          const orCond = [
+            {
+              latest_membership_order_id: { [Op.eq]: null }
+            },
+            {
+              id: { [Op.in]: memberIdList }
+            }
+          ];
+
+          memberCond[Op.or] = orCond;
+        }
+      }
+
+      const include = includeLatestMembershipOrder ? [
         {
-          where: {
-            id: membershipTypeIds,
-            deleted_flg: false
-          }
-        }
-      );
+          attributes: ['id', 'status'],
+          as: "LatestMembershipOrder",
+          model: MembershipOrder,
+          where: membershipOrderCond,
+          required: requiredMembershipOrder,
+          right: false,
+        },
+      ] : [];
 
-      items.forEach(item => {
-        const membershipType = membershipTypes.find(membershipType => membershipType.id === item.membership_type_id);
-        if (membershipType) {
-          item.membership_type = membershipType.name;
-        }
-        else {
-          item.membership_type = 'Basic';
-        }
-      });
-
-      const memberIds = items.map(item => item.id);
-      membershipOrderCond.member_id = memberIds;
-
-      const membershipOrders = await MembershipOrder.findAll({
-        where: membershipOrderCond,
+      const { count: total, rows: items } = await Member.findAndCountAll({
+        limit,
+        offset,
+        where: memberCond,
+        include,
         order: [['created_at', 'DESC']]
       });
 
-      const lastMembershipOrder = [];
-      memberIds.forEach(item => {
-        lastMembershipOrder.push({
-          member_id: item,
-          createdAt: new Date(1, 1, 1)
-        });
-      });
-
-      membershipOrders.forEach(item => {
-        lastMembershipOrder.forEach(x => {
-          if (item.createdAt > x.createdAt && item.member_id === x.member_id) {
-            x.createdAt = item.createdAt;
-            x.status = item.status;
-          }
-        });
+      const membershipTypeIds = items.map(item => item.membership_type_id);
+      const membershipTypes = await MembershipType.findAll({
+        where: {
+          id: membershipTypeIds,
+          deleted_flg: false
+        }
       });
 
       items.forEach(item => {
-        item.kyc_level = (item.kyc_level || '').replace('LEVEL_', '');
+        const membershipType = membershipTypes.find(membershipType => membershipType.id === item.membership_type_id);
+        item.membership_type = membershipType ? membershipType.name : 'Basic';
+        item.kyc_level = (item.kyc_level || '').replace('LEVEL_', '') || '0';
+      });
+
+      if (filterStatus) {
+        items.forEach(item => {
+          item.status = MemberFillterStatusText[filterStatus];
+        });
+
+        return res.ok({
+          items: items.length > 0 ? memberMapper(items) : [],
+          offset: offset,
+          limit: limit,
+          total: total
+        });
+      }
+
+      items.forEach(item => {
+        const latestMembershipOrder = item.LatestMembershipOrder;
 
         if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
-        }
-        const membershipOrder = lastMembershipOrder.find(x => item.id === x.member_id && x.status);
-        if (membershipOrder) {
-          if (membershipOrder.status === MemberOrderStatusFillter.Fee_accepted) item.status = 'Fee cccepted';
-          else if (membershipOrder.status === MemberOrderStatusFillter.Verify_payment) item.status = 'Verify payment';
-          else {
-            item.status = 'Active';
+        } else if (latestMembershipOrder) {
+          switch (latestMembershipOrder.status) {
+            case MembershipOrderStatus.Pending:
+              item.status = MemberOrderStatusFillter.VerifyPayment;
+              break;
+
+            case MembershipOrderStatus.Approved:
+              item.status = MemberOrderStatusFillter.FeeAccepted;
+              break;
+
+            case MembershipOrderStatus.Rejected:
+              item.status = MemberOrderStatusFillter.Active;
+              break;
           }
+        } else {
+          item.status = MemberOrderStatusFillter.Active;
         }
-        else {
-          item.status = 'Active';
-        }
+
+        item.status = MemberFillterStatusText[item.status];
       });
 
       return res.ok({
-        items: memberMapper(items) && items.length > 0 ? memberMapper(items) : [],
+        items: items.length > 0 ? memberMapper(items) : [],
         offset: offset,
         limit: limit,
         total: total
@@ -338,32 +390,15 @@ module.exports = {
   },
   getMemberOrderStatusFillter: async (req, res, next) => {
     try {
-      const memberOrderStatusFillter = Object.keys(MemberOrderStatusFillter);
-      const memberOrderStatusDropdown = [];
-      memberOrderStatusFillter.forEach(item => {
-        if (item === 'FeeAccepted') {
-          memberOrderStatusDropdown.push({
-            label: 'Fee accepted',
-            value: item
-          });
-        }
-        else if (item === 'VerifyPayment') {
-          memberOrderStatusDropdown.push({
-            label: 'Verify payment',
-            value: item
-          });
-        }
-        else {
-          memberOrderStatusDropdown.push({
-            label: item,
-            value: item
-          });
-        }
+      const memberOrderStatusDropdown = Object.keys(MemberFillterStatusText).map(key => {
+        return {
+          value: key,
+          label: MemberFillterStatusText[key]
+        };
       });
+
       return res.ok(memberOrderStatusDropdown);
-
     } catch (error) {
-
       logger.error('get member order status fillter list fail:', error);
       next(error);
     }
