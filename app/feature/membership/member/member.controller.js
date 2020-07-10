@@ -622,7 +622,6 @@ module.exports = {
         { key: 'referrer_code:::', header: 'Referrer' },
         { key: 'created_at', header: 'Joined' },
       ]);
-      console.log(items,items.length);
       res.setHeader('Content-disposition', 'attachment; filename=member.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
