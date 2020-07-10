@@ -19,7 +19,7 @@ module.exports = {
           data.membership_type_free_membership_flg = JSON.parse(e.value);
         } else if (e.key == 'MEMBERSHIP_TYPE_UPGRADE_PAID_MEMBER_FLG') {
           data.membership_type_upgrade_paid_member_flg = JSON.parse(e.value);
-        } 
+        }
       }
       return res.ok(data);
     }
@@ -34,24 +34,20 @@ module.exports = {
       transaction = await database.transaction();
       for (let key of Object.keys(req.body)) {
         if (key == 'items') {
-          for (let item of req.body.items){
-            let data = {};
-            if (item.is_enabled != undefined) {
-              data.is_enabled = item.is_enabled;
-            }
-            if (item.name) {
-              data.name = item.name;
-            }
-            if (item.price) {
-              data.price = item.price;
-            }
+          for (let item of req.body.items) {
+            const data = {
+              is_enabled: item.is_enabled,
+              name: item.name,
+              price: item.price,
+            };
+
             await MembershipType.update(data, {
               where: {
                 id: item.id
               },
               returning: true,
               transaction: transaction
-            })
+            });
           }
         } else {
           await Setting.update({
@@ -77,4 +73,4 @@ module.exports = {
       next(err);
     }
   }
-}
+};

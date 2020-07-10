@@ -6,9 +6,9 @@ const schema = Joi.object().keys({
   items: Joi.array().optional().items(
     Joi.object().keys({
       id: Joi.string().required(),
-      name: Joi.string().optional(),
-      price: Joi.number().optional(),
-      is_enabled: Joi.boolean().optional()
+      name: Joi.string().required(),
+      price: Joi.number().required(),
+      is_enabled: Joi.boolean().required(),
     })
   )
 });
