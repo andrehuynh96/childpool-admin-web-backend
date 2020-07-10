@@ -56,21 +56,21 @@ module.exports = {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
       if (query.first_name) {
-        memberWhere.first_name = {[Op.iLike]: `%${query.first_name}%` }
+        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` }
       }
       if (query.last_name) {
-        memberWhere.last_name = {[Op.iLike]: `%${query.last_name}%` }
+        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` }
       }
-      if(query.is_bank){
+      if (query.is_bank) {
         where.payment_type = PaymentType.Bank
       }
-      else{
-        if(query.is_crypto && query.currency_symbol){
+      else {
+        if (query.is_crypto && query.currency_symbol) {
           where.currency_symbol = query.currency_symbol
-          if(query.is_external)
-            where.wallet_id =  {[Op.eq]: null}
+          if (query.is_external)
+            where.wallet_id = { [Op.eq]: null }
           else
-            where.wallet_id =  {[Op.ne]: null}        
+            where.wallet_id = { [Op.ne]: null }
         }
       }
 
@@ -79,7 +79,7 @@ module.exports = {
         where.created_at = {};
         let fromDate = moment(query.from).add(1, 'minute').toDate();
         let toDate = moment(query.to).add(1, 'minute').toDate();
-        where.created_at[Op.gte] = fromDate; 
+        where.created_at[Op.gte] = fromDate;
         where.created_at[Op.lt] = toDate;
       }
 
@@ -210,7 +210,7 @@ module.exports = {
         notes: req.body.note,
         approved_by_id: req.user.id,
         status: status,
-        approved_at: Sequelize.fn('NOW') 
+        approved_at: Sequelize.fn('NOW')
       }, {
         where: {
           id: req.params.id
@@ -346,22 +346,22 @@ module.exports = {
       }
 
       if (query.first_name) {
-        memberWhere.first_name = {[Op.iLike]: `%${query.first_name}%` }
+        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` }
       }
       if (query.last_name) {
-        memberWhere.last_name = {[Op.iLike]: `%${query.last_name}%` }
+        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` }
       }
 
-      if(query.is_bank){
+      if (query.is_bank) {
         where.payment_type = PaymentType.Bank
       }
-      else{
-        if(query.is_crypto && query.currency_symbol){
+      else {
+        if (query.is_crypto && query.currency_symbol) {
           where.currency_symbol = query.currency_symbol
-          if(query.is_external)
-            where.wallet_id =  {[Op.eq]: null}
+          if (query.is_external)
+            where.wallet_id = { [Op.eq]: null }
           else
-            where.wallet_id =  {[Op.ne]: null}        
+            where.wallet_id = { [Op.ne]: null }
         }
       }
 
@@ -370,7 +370,7 @@ module.exports = {
         where.created_at = {};
         let fromDate = moment(query.from).add(1, 'minute').toDate();
         let toDate = moment(query.to).add(1, 'minute').toDate();
-        where.created_at[Op.gte] = fromDate; 
+        where.created_at[Op.gte] = fromDate;
         where.created_at[Op.lt] = toDate;
       }
 
@@ -434,20 +434,20 @@ module.exports = {
       next(err);
     }
   },
-  updateDesciption: async(req, res, next) => {
+  updateDesciption: async (req, res, next) => {
     try {
-      let id =  req.params.id
+      let id = req.params.id
       let des = req.body.description
-      if(!id)
+      if (!id)
         return res.ok(false);
       await MembershipOrder.update({
-          description: des
-        }, {
-          where: {
-            id: id
-          },
-          returning: true
-        });
+        description: des
+      }, {
+        where: {
+          id: id
+        },
+        returning: true
+      });
       return res.ok(true);
     }
     catch (err) {
@@ -472,17 +472,21 @@ function stringifyAsync(data, columns) {
   });
 }
 
-async function _sendEmail(emails, id, approved) {
+async function _sendEmail(email, id, approved) {
+  email = 'hungtv@blockchainlabs.asia';
+
   let subject = `Membership payment`;
-    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+  let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
   let data = {
     id: id
   };
   data = Object.assign({}, data, config.email);
-  if (approved)
-    await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderApproved);
-  else
-    await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderRejected);
+
+  if (approved) {
+    await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderApproved);
+  } else {
+    await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderRejected);
+  }
 }
 
 async function _findMemberByEmail(email) {

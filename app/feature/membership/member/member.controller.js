@@ -19,6 +19,7 @@ module.exports = {
       const offset = query.offset ? parseInt(req.query.offset) : 0;
       const where = {};
       const membershipOrderCond = {};
+
       if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
       if (query.kycLevel) where.kyc_level = query.kycLevel;
       if (query.status) {
@@ -97,7 +98,8 @@ module.exports = {
       });
 
       items.forEach(item => {
-        item.kyc_level = item.kyc_level.replace('LEVEL_', '');
+        item.kyc_level = (item.kyc_level || '').replace('LEVEL_', '');
+
         if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
         }
@@ -414,6 +416,44 @@ module.exports = {
       logger.error('get member tree chart fail:', error);
       next(error);
     }
-  }
+  },
+  getMemberReferralStructure: async (req, res, next) => {
+    try {
+      const member = await Member.findOne({
+        where: {
+          id: req.params.memberId,
+          deleted_flg: false
+        }
+      });
 
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      const memberRefStructure = await affiliateApi.getMemberReferralStructure(member.email);
+
+      if (memberRefStructure.httpCode !== 200) {
+        return res.status(memberRefStructure.httpCode).send(memberRefStructure.data);
+      }
+
+      let result = { email: member.email, affiliate: memberRefStructure.data };
+      if (member.referrer_code) {
+        let referrer = await Member.findOne({
+          where: {
+            referral_code: member.referrer_code,
+            deleted_flg: false
+          }
+        });
+
+        if (referrer) {
+          result.referrer_email = referrer.email;
+        }
+      }
+
+      return res.ok(result);
+    } catch (error) {
+      logger.error('get member referal structure fail:', error);
+      next(error);
+    }
+  },
 };
