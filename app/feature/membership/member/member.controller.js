@@ -577,28 +577,6 @@ module.exports = {
         items.forEach(item => {
           item.status = MemberFillterStatusText[filterStatus];
         });
-
-        const timezone_offset = query.timezone_offset || 0;
-        items.forEach(element => {
-          element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
-        });
-
-        const data = await stringifyAsync(items, [
-          { key: 'id', header: 'Id' },
-          { key: 'last_name', header: 'Last Name' },
-          { key: 'first_name', header: 'First Name' },
-          { key: 'email', header: 'Email' },
-          { key: 'kyc_level', header: 'KYC' },
-          { key: 'membership_type:', header: 'Membership' },
-          { key: 'status:', header: 'Status' },
-          { key: 'referral_code::', header: 'Referral' },
-          { key: 'referrer_code:::', header: 'Referrer' },
-          { key: 'created_at', header: 'Joined' },
-        ]);
-
-        res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
-        res.set('Content-Type', 'text/csv');
-        res.send(data);
       }
 
       items.forEach(item => {
@@ -644,8 +622,8 @@ module.exports = {
         { key: 'referrer_code:::', header: 'Referrer' },
         { key: 'created_at', header: 'Joined' },
       ]);
-      
-      res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
+      console.log(items,items.length);
+      res.setHeader('Content-disposition', 'attachment; filename=member.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
     }
