@@ -97,7 +97,7 @@ module.exports = {
       });
 
       items.forEach(item => {
-        item.kyc_level = item.kyc_level.replace('LEVEL_', '');
+        item.kyc_level = (item.kyc_level || '').replace('LEVEL_', '');
         if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
         }
@@ -147,7 +147,7 @@ module.exports = {
         member.membership_type = member.MembershipType.name;
       }
 
-      member.kyc_level = member.kyc_level.replace('LEVEL_', '');
+      member.kyc_level = (member.kyc_level || '').replace('LEVEL_', '');
 
       return res.ok(memberMapper(member));
     }
