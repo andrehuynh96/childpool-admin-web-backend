@@ -14,6 +14,13 @@ router.get(
   controller.get
 );
 
+router.get(
+  '/fiat-rate/histories',
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_FIAT_RATE),
+  controller.getFiatRateHistories
+);
+
 router.put(
   '/fiat-rate',
   authenticate,
@@ -61,6 +68,73 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+/**
+* @swagger
+* /web/membership/fiat-rate/histories:
+*   get:
+*     summary: Get Fiat rate histories
+*     tags:
+*       - Fiat rate
+*     parameters:
+*       - name: offset
+*         in: query
+*         type: integer
+*         format: int32
+*       - name: limit
+*         in: query
+*         type: integer
+*         format: int32
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": {
+                  "items": [
+                    {
+                      "id": 14,
+                      "rate": "1",
+                      "currency_exchange": "USD/JPY",
+                      "end_date": "2020-07-10T06:25:51.545Z",
+                      "createdAt": "2020-07-10T06:22:57.755Z",
+                      "updatedAt": "2020-07-10T06:25:53.369Z"
+                    },
+                    {
+                      "id": 15,
+                      "rate": "1",
+                      "currency_exchange": "USD/JPY",
+                      "end_date": null,
+                      "createdAt": "2020-07-10T06:25:53.604Z",
+                      "updatedAt": "2020-07-10T06:25:53.604Z"
+                    }
+                  ],
+                  "offset": 0,
+                  "limit": 10,
+                  "total": 2
+                }
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
 
 /**
 * @swagger
