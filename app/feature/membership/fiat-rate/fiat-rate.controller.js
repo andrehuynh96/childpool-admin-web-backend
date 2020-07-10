@@ -63,11 +63,11 @@ module.exports = {
         });
       }
 
-      let count = await FiatRateHistory.count();
-      if (count > 0) {
-        const rateHistory = await FiatRateHistory.findOne({ 
-          order: [['created_at','DESC']] 
-        });
+      const rateHistory = await FiatRateHistory.findOne({ 
+        order: [['created_at','DESC']] 
+      });
+
+      if (rateHistory){
         await FiatRateHistory.update({
           end_date: Sequelize.fn('NOW')
         }, {
