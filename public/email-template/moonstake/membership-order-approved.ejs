@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Membership order suceeded</title>
+    <title>Membership order succeeded</title>
     <style>
       img {
         border: none;
@@ -56,7 +56,7 @@
         border-radius: 4px;
         -webkit-border-radius: 4px;
         -moz-border-radius: 4px;
-        text-align: center;
+        text-align: left;
         padding: 50px;
       }
 
@@ -107,16 +107,22 @@
           <div class="content">
             <table class="main">
               <tr>
-                <td style="text-align: center">
-                  <span style="width: 100%;height: 1px; background: #CACACC; margin: 30px 0; display: block;"></span>
+                <td>
+                  <img src="<%=imageUrl%>/logo.png" alt="">
+                  <!-- <span style="width: 100%;height: 1px; background: #CACACC; margin: 30px 0; display: block;"></span> -->
                 </td>
               </tr>
-              <tr style="text-align: center">
-                <td><p style="font-size: 24px;font-weight: 500;margin-bottom: 20px; line-height: 30px">Hello! This is Moonstake</p></td>
+              <tr>
+                <td><p style="font-weight: 500;margin-bottom: 20px; line-height: 8px">Hi! <%=firstName%> <%=lastName%></p></td>
               </tr>
               <tr>
-                <td style="text-align: center">
-                  <p style="margin-bottom: 8px">The order <span style="font-weight: bold">#<%=id%></span> succeeded.</p>
+                <td>
+                  <p style="margin-bottom: 8px"> Congratulate, your Membership payment has been approved.</p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p style="margin-bottom: 8px; margin-top: 25px">Moonstake</p>
                 </td>
               </tr>
             </table>
