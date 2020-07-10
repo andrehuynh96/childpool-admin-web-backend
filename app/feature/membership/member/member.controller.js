@@ -19,6 +19,7 @@ module.exports = {
       const offset = query.offset ? parseInt(req.query.offset) : 0;
       const where = {};
       const membershipOrderCond = {};
+
       if (query.membershipTypeId) where.membership_type_id = query.membershipTypeId;
       if (query.kycLevel) where.kyc_level = query.kycLevel;
       if (query.status) {
@@ -97,7 +98,8 @@ module.exports = {
       });
 
       items.forEach(item => {
-        item.kyc_level = item.kyc_level.replace('LEVEL_', '');
+        item.kyc_level = (item.kyc_level || '').replace('LEVEL_', '');
+
         if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
         }
@@ -132,21 +134,27 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: params.memberId,
-          deleted_flg: false
         },
-        include: [{
-          as: 'MembershipType',
-          model: MembershipType,
-        }]
       });
       if (!member) {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
 
-      if (member.MembershipType) {
-        member.membership_type = member.MembershipType.name;
+      if (!member.membership_type_id) {
+        member.membership_type = 'Basic';
+        return res.ok(memberMapper(member));
       }
 
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: member.membership_type_id
+        }
+      });
+
+      if (!membershipType) {
+        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND");
+      }
+      member.membership_type = membershipType.name;
       member.kyc_level = member.kyc_level.replace('LEVEL_', '');
 
       return res.ok(memberMapper(member));
@@ -434,7 +442,7 @@ module.exports = {
         return res.status(memberRefStructure.httpCode).send(memberRefStructure.data);
       }
 
-      let result = {email: member.email, affiliate: memberRefStructure.data};
+      let result = { email: member.email, affiliate: memberRefStructure.data };
       if (member.referrer_code) {
         let referrer = await Member.findOne({
           where: {
@@ -442,8 +450,12 @@ module.exports = {
             deleted_flg: false
           }
         });
-        if (referrer) result.referrer_email = referrer.email;
+
+        if (referrer) {
+          result.referrer_email = referrer.email;
+        }
       }
+
       return res.ok(result);
     } catch (error) {
       logger.error('get member referal structure fail:', error);

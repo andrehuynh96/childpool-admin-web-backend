@@ -56,21 +56,21 @@ module.exports = {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
       if (query.first_name) {
-        memberWhere.first_name = {[Op.iLike]: `%${query.first_name}%` }
+        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` }
       }
       if (query.last_name) {
-        memberWhere.last_name = {[Op.iLike]: `%${query.last_name}%` }
+        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` }
       }
-      if(query.is_bank){
+      if (query.is_bank) {
         where.payment_type = PaymentType.Bank
       }
-      else{
-        if(query.is_crypto){
+      else {
+        if (query.is_crypto && query.currency_symbol) {
           where.currency_symbol = query.currency_symbol
-          if(query.is_external)
-            where.wallet_id =  {[Op.eq]: null}
+          if (query.is_external)
+            where.wallet_id = { [Op.eq]: null }
           else
-            where.wallet_id =  {[Op.ne]: null}        
+            where.wallet_id = { [Op.ne]: null }
         }
       }
 
@@ -79,7 +79,7 @@ module.exports = {
         where.created_at = {};
         let fromDate = moment(query.from).add(1, 'minute').toDate();
         let toDate = moment(query.to).add(1, 'minute').toDate();
-        where.created_at[Op.gte] = fromDate; 
+        where.created_at[Op.gte] = fromDate;
         where.created_at[Op.lt] = toDate;
       }
 
@@ -209,7 +209,8 @@ module.exports = {
       await MembershipOrder.update({
         notes: req.body.note,
         approved_by_id: req.user.id,
-        status: status
+        status: status,
+        approved_at: Sequelize.fn('NOW')
       }, {
         where: {
           id: req.params.id
@@ -282,7 +283,7 @@ module.exports = {
           },
           returning: true,
           transaction: transaction
-        });
+        });        
         // reject all pending orders
         await MembershipOrder.update({
           status: MembershipOrderStatus.Rejected,
@@ -298,12 +299,12 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-        await _sendEmail(order.Member.email, order.id, true);
+        await _sendEmail(order.Member.email, {id: order.id}, true);
       } else {
-        await _sendEmail(order.Member.email, order.id, false);
+        await _sendEmail(order.Member.email, {id: order.id, note: req.body.note}, false);
       }
       await transaction.commit();
-
+      
       return res.ok(true);
     }
     catch (err) {
@@ -345,22 +346,22 @@ module.exports = {
       }
 
       if (query.first_name) {
-        memberWhere.first_name = {[Op.iLike]: `%${query.first_name}%` }
+        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` }
       }
       if (query.last_name) {
-        memberWhere.last_name = {[Op.iLike]: `%${query.last_name}%` }
+        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` }
       }
 
-      if(query.is_bank){
+      if (query.is_bank) {
         where.payment_type = PaymentType.Bank
       }
-      else{
-        if(query.is_crypto && query.currency_symbol){
+      else {
+        if (query.is_crypto && query.currency_symbol) {
           where.currency_symbol = query.currency_symbol
-          if(query.is_external)
-            where.wallet_id =  {[Op.eq]: null}
+          if (query.is_external)
+            where.wallet_id = { [Op.eq]: null }
           else
-            where.wallet_id =  {[Op.ne]: null}        
+            where.wallet_id = { [Op.ne]: null }
         }
       }
 
@@ -369,7 +370,7 @@ module.exports = {
         where.created_at = {};
         let fromDate = moment(query.from).add(1, 'minute').toDate();
         let toDate = moment(query.to).add(1, 'minute').toDate();
-        where.created_at[Op.gte] = fromDate; 
+        where.created_at[Op.gte] = fromDate;
         where.created_at[Op.lt] = toDate;
       }
 
@@ -422,16 +423,38 @@ module.exports = {
         { key: 'wallet_address', header: 'Receive address' },
         { key: 'status', header: 'Status' },
         { key: 'wallet_id', header: 'Walllet Id' },
+        { key: 'currency_symbol', header: 'Currency symbol' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
     }
     catch (err) {
-      logger.error('search order fail:', err);
+      logger.error('csv order fail:', err);
       next(err);
     }
   },
+  updateDesciption: async (req, res, next) => {
+    try {
+      let id = req.params.id
+      let des = req.body.description
+      if (!id)
+        return res.ok(false);
+      await MembershipOrder.update({
+        description: des
+      }, {
+        where: {
+          id: id
+        },
+        returning: true
+      });
+      return res.ok(true);
+    }
+    catch (err) {
+      logger.error('update order description fail:', err);
+      next(err);
+    }
+  }
 };
 
 function stringifyAsync(data, columns) {
@@ -449,20 +472,21 @@ function stringifyAsync(data, columns) {
   });
 }
 
-async function _sendEmail(emails, id, approved) {
-  try {
-    let subject = `Membership payment`;
-    let from = `Child membership department`;
-    let data = {
-      id: id
-    };
-    data = Object.assign({}, data, config.email);
-    if (approved)
-      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderApproved);
-    else
-      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderRejected);
-  } catch (err) {
-    logger.error("send confirmed membership order email", err);
+async function _sendEmail(email, payload, approved) {
+  email = 'hungtv@blockchainlabs.asia';
+
+  let subject = `Membership payment`;
+  let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+  let data = {
+    id: payload.id,
+    note: payload.note
+  };
+  data = Object.assign({}, data, config.email);
+
+  if (approved) {
+    await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderApproved);
+  } else {
+    await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderRejected);
   }
 }
 
