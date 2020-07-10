@@ -58,6 +58,13 @@ router.get("/members/:memberId/referral-structure",
     controller.getMemberReferralStructure
 );
 
+router.get(
+	'/members-csv',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_MEMBERS),
+	controller.downloadCSV
+);
+
 module.exports = router;
 
 

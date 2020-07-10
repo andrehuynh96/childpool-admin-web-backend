@@ -539,6 +539,11 @@ module.exports = {
     "GROUP_NAME": "Claim Affiliate Reward Setting",
     "ROLES": ["Master", "Admin"]
   },
-  
+  "MEMBERSHIP_EXPORT_CSV_MEMBERS": {
+    "KEY": "MEMBERSHIP_EXPORT_CSV_MEMBERS",
+    "DESCRIPTION": "Export members to CSV file",
+    "GROUP_NAME": "Member",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 
 };
