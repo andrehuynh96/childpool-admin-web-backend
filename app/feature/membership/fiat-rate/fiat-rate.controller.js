@@ -35,12 +35,12 @@ module.exports = {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
-      const  { count: total, rows: _his } = await FiatRateHistory.findAndCountAll({ offset: offset, limit: limit});
+      const  { count: total, rows: _his } = await FiatRateHistory.findAndCountAll({ offset: offset, limit: limit });
       return res.ok({
         items: _his,
         offset: offset,
         limit: limit,
-        total: total});
+        total: total });
     }
     catch (err) {
       logger.error("get  fiat rate histories", err);
@@ -64,10 +64,11 @@ module.exports = {
       }
 
       let count = await FiatRateHistory.count();
-      if(count > 0){
-        const rateHistory = await FiatRateHistory.findOne({attributes: [
+      if (count > 0) {
+        const rateHistory = await FiatRateHistory.findOne({ 
+          attributes: [
           [Sequelize.fn('max', Sequelize.col('id')), 'id']
-        ]})
+        ] });
         await FiatRateHistory.update({
           end_date: Sequelize.fn('NOW')
         }, {
@@ -82,7 +83,7 @@ module.exports = {
       const fiatRateHistories = {
         currency_exchange: "USD/JPY",
         rate: req.body.usd_rate_by_jpy
-      }
+      };
       await FiatRateHistory.create(fiatRateHistories, { transaction });
 
       await transaction.commit();
