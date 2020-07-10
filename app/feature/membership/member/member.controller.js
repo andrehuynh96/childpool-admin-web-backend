@@ -192,6 +192,23 @@ module.exports = {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
 
+      const membershipOrder = await MembershipOrder.findOne({
+        where: {
+          member_id: member.id
+        },
+        order: [['created_at','DESC']]
+      });
+      
+      if ( membershipOrder && membershipOrder.status == 'Approved') {
+        member.status = MemberFillterStatusText.FeeAccepted;
+      }
+      else if (membershipOrder && membershipOrder.status == 'Pending') {
+        member.status = MemberFillterStatusText.VerifyPayment;
+        member.latest_membership_order_id = membershipOrder.id;
+      }
+      else {
+        member.status = MemberFillterStatusText.Active;
+      }
       if (!member.membership_type_id) {
         member.membership_type = 'Basic';
         return res.ok(memberMapper(member));

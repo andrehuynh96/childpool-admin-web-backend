@@ -281,7 +281,7 @@ module.exports = {
           },
           returning: true,
           transaction: transaction
-        });        
+        });
         // reject all pending orders
         await MembershipOrder.update({
           status: MembershipOrderStatus.Rejected,
@@ -297,12 +297,12 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-        await _sendEmail(order.Member.email, {id: order.id}, true);
+        await _sendEmail(order.Member.email, { id: order.id }, true);
       } else {
-        await _sendEmail(order.Member.email, {id: order.id, note: req.body.note}, false);
+        await _sendEmail(order.Member.email, { id: order.id, note: req.body.note }, false);
       }
       await transaction.commit();
-      
+
       return res.ok(true);
     }
     catch (err) {
