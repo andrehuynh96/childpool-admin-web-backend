@@ -134,21 +134,27 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: params.memberId,
-          deleted_flg: false
         },
-        include: [{
-          as: 'MembershipType',
-          model: MembershipType,
-        }]
       });
       if (!member) {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
 
-      if (member.MembershipType) {
-        member.membership_type = member.MembershipType.name;
+      if (!member.membership_type_id) {
+        member.membership_type = 'Basic';
+        return res.ok(memberMapper(member));
       }
 
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: member.membership_type_id
+        }
+      });
+
+      if (!membershipType) {
+        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND");
+      }
+      member.membership_type = membershipType.name;
       member.kyc_level = member.kyc_level.replace('LEVEL_', '');
 
       return res.ok(memberMapper(member));
