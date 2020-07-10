@@ -11,6 +11,8 @@ const memberMapper = require("app/feature/response-schema/member.response-schema
 const Sequelize = require('sequelize');
 const { affiliateApi, membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
+const stringify = require('csv-stringify');
+const moment = require('moment');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -19,35 +21,8 @@ module.exports = {
       const { query } = req;
       const limit = query.limit ? parseInt(req.query.limit) : 10;
       const offset = query.offset ? parseInt(req.query.offset) : 0;
-      const memberCond = {
-      };
+      const memberCond = await _createMemberCond(query);
       const membershipOrderCond = {};
-
-      if (query.membershipTypeId) {
-        memberCond.membership_type_id = query.membershipTypeId;
-      }
-
-      if (query.kycLevel) {
-        memberCond.kyc_level = query.kycLevel;
-      }
-
-      if (query.referralCode) {
-        memberCond.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
-      }
-      if (query.referrerCode) {
-        memberCond.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
-      }
-
-      if (query.firstName) {
-        memberCond.first_name = { [Op.iLike]: `%${query.firstName}%` };
-      }
-      if (query.lastName) {
-        memberCond.last_name = { [Op.iLike]: `%${query.lastName}%` };
-      }
-
-      if (query.email) {
-        memberCond.email = { [Op.iLike]: `%${query.email}%` };
-      }
 
       let filterStatus = query.status;
       let requiredMembershipOrder = false;
@@ -196,10 +171,10 @@ module.exports = {
         where: {
           member_id: member.id
         },
-        order: [['created_at','DESC']]
+        order: [['created_at', 'DESC']]
       });
-      
-      if ( membershipOrder && membershipOrder.status == 'Approved') {
+
+      if (membershipOrder && membershipOrder.status == 'Approved') {
         member.status = MemberFillterStatusText.FeeAccepted;
       }
       else if (membershipOrder && membershipOrder.status == 'Pending') {
@@ -514,4 +489,195 @@ module.exports = {
       next(error);
     }
   },
+  downloadCSV: async (req, res, next) => {
+    try {
+      const { query } = req;
+      const memberCond = await _createMemberCond(query);
+      const membershipOrderCond = {};
+
+      let filterStatus = query.status;
+      let requiredMembershipOrder = false;
+      let memberIdList = null;
+      let includeLatestMembershipOrder = true;
+
+      if (filterStatus) {
+        if (filterStatus === MemberOrderStatusFillter.Deactivated) {
+          memberCond.deleted_flg = true;
+        } else if (filterStatus === MemberOrderStatusFillter.FeeAccepted) {
+          requiredMembershipOrder = true;
+          membershipOrderCond.status = MembershipOrderStatus.Approved;
+        } else if (filterStatus === MemberOrderStatusFillter.VerifyPayment) {
+          requiredMembershipOrder = true;
+          membershipOrderCond.status = MembershipOrderStatus.Pending;
+        } else if (filterStatus === MemberOrderStatusFillter.Active) {
+          includeLatestMembershipOrder = false;
+
+          const membersWhichHasRejectdOrder = await Member.findAll({
+            where: memberCond,
+            include: [
+              {
+                attributes: ['id', 'status'],
+                as: "LatestMembershipOrder",
+                model: MembershipOrder,
+                where: {
+                  status: MembershipOrderStatus.Rejected,
+                },
+                required: true,
+              },
+            ],
+          });
+
+          memberIdList = membersWhichHasRejectdOrder.map(x => x.id);
+          memberCond.deleted_flg = false;
+          const orCond = [
+            {
+              latest_membership_order_id: { [Op.eq]: null }
+            },
+            {
+              id: { [Op.in]: memberIdList }
+            }
+          ];
+
+          memberCond[Op.or] = orCond;
+        }
+      }
+
+      const include = includeLatestMembershipOrder ? [
+        {
+          attributes: ['id', 'status'],
+          as: "LatestMembershipOrder",
+          model: MembershipOrder,
+          where: membershipOrderCond,
+          required: requiredMembershipOrder,
+          right: false,
+        },
+      ] : [];
+
+      const items = await Member.findAll({
+        where: memberCond,
+        include,
+        order: [['created_at', 'DESC']]
+      });
+
+      const membershipTypeIds = items.map(item => item.membership_type_id);
+      const membershipTypes = await MembershipType.findAll({
+        where: {
+          id: membershipTypeIds,
+          deleted_flg: false
+        }
+      });
+
+      items.forEach(item => {
+        const membershipType = membershipTypes.find(membershipType => membershipType.id === item.membership_type_id);
+        item.membership_type = membershipType ? membershipType.name : 'Basic';
+        item.kyc_level = (item.kyc_level || '').replace('LEVEL_', '') || '0';
+      });
+
+      if (filterStatus) {
+        items.forEach(item => {
+          item.status = MemberFillterStatusText[filterStatus];
+        });
+      }
+
+      items.forEach(item => {
+        const latestMembershipOrder = item.LatestMembershipOrder;
+
+        if (item.deleted_flg) {
+          item.status = MemberOrderStatusFillter.Deactivated;
+        } else if (latestMembershipOrder) {
+          switch (latestMembershipOrder.status) {
+            case MembershipOrderStatus.Pending:
+              item.status = MemberOrderStatusFillter.VerifyPayment;
+              break;
+
+            case MembershipOrderStatus.Approved:
+              item.status = MemberOrderStatusFillter.FeeAccepted;
+              break;
+
+            case MembershipOrderStatus.Rejected:
+              item.status = MemberOrderStatusFillter.Active;
+              break;
+          }
+        } else {
+          item.status = MemberOrderStatusFillter.Active;
+        }
+
+        item.status = MemberFillterStatusText[item.status];
+      });
+
+      const timezone_offset = query.timezone_offset || 0;
+      items.forEach(element => {
+        element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+      });
+
+      const data = await stringifyAsync(items, [
+        { key: 'id', header: 'Id' },
+        { key: 'last_name', header: 'Last Name' },
+        { key: 'first_name', header: 'First Name' },
+        { key: 'email', header: 'Email' },
+        { key: 'kyc_level', header: 'KYC' },
+        { key: 'membership_type:', header: 'Membership' },
+        { key: 'status:', header: 'Status' },
+        { key: 'referral_code::', header: 'Referral' },
+        { key: 'referrer_code:::', header: 'Referrer' },
+        { key: 'created_at', header: 'Joined' },
+      ]);
+      res.setHeader('Content-disposition', 'attachment; filename=member.csv');
+      res.set('Content-Type', 'text/csv');
+      res.send(data);
+    }
+    catch (error) {
+      logger.error('download member CSV fail:', error);
+      next(error);
+    }
+  }
 };
+async function _createMemberCond(query) {
+  const memberCond = {};
+  if (query.membershipTypeId) {
+    if (query.membershipTypeId == 'Basic') {
+      memberCond.membership_type_id = { [Op.is]: null };
+    }
+    else {
+      memberCond.membership_type_id = query.membershipTypeId;
+    }
+  }
+
+  if (query.kycLevel) {
+    memberCond.kyc_level = query.kycLevel;
+  }
+
+  if (query.referralCode) {
+    memberCond.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
+  }
+  if (query.referrerCode) {
+    memberCond.referrer_code = { [Op.iLike]: `%${query.referrerCode}%` };
+  }
+
+  if (query.firstName) {
+    memberCond.first_name = { [Op.iLike]: `%${query.firstName}%` };
+  }
+  if (query.lastName) {
+    memberCond.last_name = { [Op.iLike]: `%${query.lastName}%` };
+  }
+
+  if (query.email) {
+    memberCond.email = { [Op.iLike]: `%${query.email}%` };
+  }
+  return memberCond;
+}
+
+function stringifyAsync(data, columns) {
+  return new Promise(function (resolve, reject) {
+    stringify(data, {
+      header: true,
+      columns: columns
+    }, function (err, data) {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(data);
+    }
+    );
+  });
+}
