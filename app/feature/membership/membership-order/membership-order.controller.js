@@ -283,7 +283,7 @@ module.exports = {
           },
           returning: true,
           transaction: transaction
-        });
+        });        
         // reject all pending orders
         await MembershipOrder.update({
           status: MembershipOrderStatus.Rejected,
@@ -299,12 +299,12 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-        await _sendEmail(order.Member.email, order.id, true);
+        await _sendEmail(order.Member.email, {id: order.id}, true);
       } else {
-        await _sendEmail(order.Member.email, order.id, false);
+        await _sendEmail(order.Member.email, {id: order.id, note: req.body.note}, false);
       }
       await transaction.commit();
-
+      
       return res.ok(true);
     }
     catch (err) {
@@ -472,13 +472,14 @@ function stringifyAsync(data, columns) {
   });
 }
 
-async function _sendEmail(email, id, approved) {
+async function _sendEmail(email, payload, approved) {
   email = 'hungtv@blockchainlabs.asia';
 
   let subject = `Membership payment`;
   let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
   let data = {
-    id: id
+    id: payload.id,
+    note: payload.note
   };
   data = Object.assign({}, data, config.email);
 
