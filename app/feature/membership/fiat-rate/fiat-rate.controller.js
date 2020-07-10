@@ -66,9 +66,8 @@ module.exports = {
       let count = await FiatRateHistory.count();
       if (count > 0) {
         const rateHistory = await FiatRateHistory.findOne({ 
-          attributes: [
-          [Sequelize.fn('max', Sequelize.col('id')), 'id']
-        ] });
+          order: [['created_at','DESC']] 
+        });
         await FiatRateHistory.update({
           end_date: Sequelize.fn('NOW')
         }, {
