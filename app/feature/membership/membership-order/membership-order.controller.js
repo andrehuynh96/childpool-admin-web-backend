@@ -296,6 +296,7 @@ module.exports = {
         }, {
           where: {
             status: MembershipOrderStatus.Pending,
+            member_id: order.member_id,
             [Op.not]: [
               { id: [order.id] }
             ]
