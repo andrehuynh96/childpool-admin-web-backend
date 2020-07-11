@@ -116,7 +116,9 @@ module.exports = {
         });
       }
       else {
-        const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
+        const registerIpString = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip);
+        let regiterIps = registerIpString.split(',')
+        const registerIp = regiterIps.length > 0 ? regiterIps[0].trim() : ''
         let roles = await UserRole.findAll({
           attributes: ['role_id'],
           where: {
