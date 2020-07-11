@@ -6,7 +6,7 @@ module.exports = {
       'user_ips',
       'client_ip',
       {
-        type: Sequelize.DataTypes.STRING(200),
+        type: Sequelize.DataTypes.STRING(100),
         allowNull: true
       }
     )
