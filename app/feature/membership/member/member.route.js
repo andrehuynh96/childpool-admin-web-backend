@@ -52,7 +52,18 @@ router.get("/members/:memberId/tree-chart",
     controller.getTreeChart
 );
 
+router.get("/members/:memberId/referral-structure",
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_REFERRAL_STRUCTURE),
+    controller.getMemberReferralStructure
+);
 
+router.get(
+	'/members-csv',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_MEMBERS),
+	controller.downloadCSV
+);
 
 module.exports = router;
 
@@ -258,59 +269,59 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/membership/members/{memberId}/referrer-codes:
- *   put:
- *     summary: update referrer code
- *     tags:
- *       - Members
- *     description: update referrer code
- *     parameters:
- *       - name: memberId
- *         in: path
- *         type: string
- *         required: true
- *       - name: data
- *         in: body
- *         required: true
- *         description: submit data JSON to update.
- *         schema:
- *            type: object
- *            required:
- *            - membershipTypeId
- *            - referrerCode
- *            example:
- *                  {
-                        "referrerCode": "3ZBCN9HLM"
- *                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/membership/members/{memberId}/referrer-codes:
+*   put:
+*     summary: update referrer code
+*     tags:
+*       - Members
+*     description: update referrer code
+*     parameters:
+*       - name: memberId
+*         in: path
+*         type: string
+*         required: true
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON to update.
+*         schema:
+*            type: object
+*            required:
+*            - membershipTypeId
+*            - referrerCode
+*            example:
+*                  {
+                       "referrerCode": "3ZBCN9HLM"
+*                  }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 /**
  * @swagger
@@ -370,7 +381,7 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
+/**
 * @swagger
 * /web/membership/members/{memberId}/tree-chart:
 *   get:
@@ -391,16 +402,16 @@ module.exports = router;
 *         examples:
 *           application/json:
 *              {
-                    "data": {
-                        "ext_client_id": "myhn@blockchainlabs.asia",
-                        "created_at": "2020-06-18T05:35:36.570Z",
-                        "updated_at": "2020-06-18T05:35:36.570Z",
-                        "referrer_client_affiliate_id": null,
-                        "id": "115",
-                        "children": [],
-                        "parent": null
-                    }
-                }
+                   "data": {
+                       "ext_client_id": "myhn@blockchainlabs.asia",
+                       "created_at": "2020-06-18T05:35:36.570Z",
+                       "updated_at": "2020-06-18T05:35:36.570Z",
+                       "referrer_client_affiliate_id": null,
+                       "id": "115",
+                       "children": [],
+                       "parent": null
+                   }
+               }
 *       400:
 *         description: Error
 *         schema:
@@ -475,13 +486,69 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
+/**
+* @swagger
+* /web/membership/kycs:
+*   get:
+*     summary: get dropdown list kycs
+*     tags:
+*       - Members
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                   "data": [
+                       {
+                           "label": "KYC 0",
+                           "value": " 0"
+                       },
+                       {
+                           "label": "KYC 1",
+                           "value": " 1"
+                       },
+                       {
+                           "label": "KYC 2",
+                           "value": " 2"
+                       }
+                   ]
+               }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/** *******************************************************************/
+
+/**
  * @swagger
- * /web/membership/kycs:
+ * /web/membership/members/:memberId/referral-structure:
  *   get:
- *     summary: get dropdown list kycs
+ *     summary: View member referral structure API
  *     tags:
  *       - Members
+ *     description:
+ *     parameters:
+ *       - name: memberId
+ *         in: path
+ *         type: string
+ *         required: true
  *     produces:
  *       - application/json
  *     responses:
@@ -490,20 +557,37 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                    "data": [
-                        {
-                            "label": "KYC 0",
-                            "value": " 0"
-                        },
-                        {
-                            "label": "KYC 1",
-                            "value": " 1"
-                        },
-                        {
-                            "label": "KYC 2",
-                            "value": " 2"
-                        }
-                    ]
+                    "data": {
+                        "email": "binhnt+3@blockchainlabs.asia",
+                        "affiliate": [
+                            {
+                                "num_of_level_1_affiliates": 2,
+                                "num_of_level_2_affiliates": 26,
+                                "num_of_level_3_affiliates": 6,
+                                "num_of_level_4_affiliates": 0,
+                                "total": 32
+                            },
+                            {
+                                "id": "197",
+                                "client_id": "228",
+                                "level": 3,
+                                "ext_client_id": "huy.pq+37@blockchainlabs.asia",
+                                "num_of_level_2_affiliates": 5,
+                                "num_of_level_3_affiliates": 0,
+                                "num_of_level_4_affiliates": 0
+                            },
+                            {
+                                "id": "192",
+                                "client_id": "226",
+                                "level": 3,
+                                "ext_client_id": "binhnt+6@blockchainlabs.asia",
+                                "num_of_level_2_affiliates": 21,
+                                "num_of_level_3_affiliates": 6,
+                                "num_of_level_4_affiliates": 0
+                            }
+                        ],
+                        "referrer_email": "trunglk+142@blockchainlabs.asia"
+                    }
                 }
  *       400:
  *         description: Error
@@ -522,5 +606,3 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
-
-/** *******************************************************************/

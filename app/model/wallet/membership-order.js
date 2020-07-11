@@ -106,6 +106,18 @@ module.exports = (sequelize, DataTypes) => {
     branch_name: {
       type: DataTypes.STRING(250),
       allowNull: false,
+    },
+    amount_usd: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
+    description: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+    },
+    approved_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
     }
   }, {
     underscored: true,

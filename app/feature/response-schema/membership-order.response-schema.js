@@ -25,8 +25,11 @@ const destObject = {
     '[].MembershipType':'[].membership_type',
     '[].wallet_id': '[].wallet_id',
     '[].branch_name': '[].branch_name',
+    '[].amount_usd': '[].amount_usd',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
+    '[].description': '[].description',
+    '[].approved_at': '[].approved_at'
   },
   single: {
     'id': 'id',
@@ -55,8 +58,11 @@ const destObject = {
     'your_wallet_address': 'your_wallet_address',
     'Wallet':'wallet',
     'ReceivingAddress': 'receiving_address',
+    'amount_usd': 'amount_usd',
     'createdAt': 'created_at',
     'updatedAt': 'updated_at',
+    'description': 'description',
+    'approved_at': 'approved_at'
   }
 };
 module.exports = srcObject => {

@@ -1,6 +1,5 @@
 const moment = require('moment');
 const { map } = require('p-iteration');
-const addressParser = require('address-rfc2822');
 const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const database = require('app/lib/database').db().wallet;
@@ -20,7 +19,7 @@ const { membershipApi } = require('app/lib/affiliate-api');
 const blockchainHelpper = require('app/lib/blockchain-helpper');
 const config = require('app/config');
 const mailer = require('app/lib/mailer');
-const maskify = require('app/lib/maskify');
+const PaymentType = require('app/model/wallet/value-object/claim-request-payment-type');
 
 const Op = Sequelize.Op;
 
@@ -54,26 +53,31 @@ module.exports = {
       if (query.memo) {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
-
-      if (query.name) {
-        memberWhere[Op.or] = {
-          first_name: { [Op.iLike]: `%${query.name}%` },
-          last_name: { [Op.iLike]: `%${query.name}%` },
-        };
+      if (query.first_name) {
+        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` };
+      }
+      if (query.last_name) {
+        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` };
+      }
+      if (query.is_bank) {
+        where.payment_type = PaymentType.Bank;
+      }
+      else {
+        if (query.is_crypto && query.currency_symbol) {
+          where.currency_symbol = query.currency_symbol;
+          if (query.is_external)
+            where.wallet_id = { [Op.eq]: null };
+          else
+            where.wallet_id = { [Op.ne]: null };
+        }
       }
 
       let fromDate, toDate;
-      if (query.from || query.to) {
+      if (query.from && query.to) {
         where.created_at = {};
-      }
-
-      if (query.from) {
         let fromDate = moment(query.from).add(1, 'minute').toDate();
-        where.created_at[Op.gte] = fromDate;
-      }
-
-      if (query.to) {
         let toDate = moment(query.to).add(1, 'minute').toDate();
+        where.created_at[Op.gte] = fromDate;
         where.created_at[Op.lt] = toDate;
       }
 
@@ -203,7 +207,8 @@ module.exports = {
       await MembershipOrder.update({
         notes: req.body.note,
         approved_by_id: req.user.id,
-        status: status
+        status: status,
+        approved_at: Sequelize.fn('NOW')
       }, {
         where: {
           id: req.params.id
@@ -253,7 +258,7 @@ module.exports = {
             return;
           }
 
-          const introducedByEmail = _maskEmailAddress(item.introduced_by_ext_client_id);
+          const introducedByEmail = item.introduced_by_ext_client_id;
 
           return {
             member_id: member.id,
@@ -262,8 +267,8 @@ module.exports = {
             commission_method: item.commisson_type.toUpperCase() === 'DIRECT' ? MemberRewardCommissionMethod.DIRECT : MemberRewardCommissionMethod.INDIRECT,
             system_type: SystemType.MEMBERSHIP,
             action: MemberRewardAction.REWARD_COMMISSION,
-            commission_from: introducedByEmail,
-            note: introducedByEmail ? `${introducedByEmail}` : null,
+            commission_from: null,
+            note: introducedByEmail,
           };
         });
         await MemberRewardTransactionHistory.bulkCreate(memberRewardTransactionHistories, { transaction });
@@ -292,9 +297,9 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-        await _sendEmail(order.Member.email, order.id, true);
+        await _sendEmail(order.Member.email, { id: order.id }, true);
       } else {
-        await _sendEmail(order.Member.email, order.id, false);
+        await _sendEmail(order.Member.email, { id: order.id, note: req.body.note }, false);
       }
       await transaction.commit();
 
@@ -334,29 +339,39 @@ module.exports = {
         memberWhere.email = { [Op.iLike]: `%${query.email}%` };
       }
 
-      if (query.name) {
-        memberWhere[Op.or] = {
-          first_name: { [Op.iLike]: `%${query.name}%` },
-          last_name: { [Op.iLike]: `%${query.name}%` },
-        };
-      }
-
       if (query.memo) {
         where.memo = { [Op.iLike]: `%${query.memo}%` };
       }
 
+      if (query.first_name) {
+        memberWhere.first_name = { [Op.iLike]: `%${query.first_name}%` };
+      }
+      if (query.last_name) {
+        memberWhere.last_name = { [Op.iLike]: `%${query.last_name}%` };
+      }
+
+      if (query.is_bank) {
+        where.payment_type = PaymentType.Bank;
+      }
+      else {
+        if (query.is_crypto && query.currency_symbol) {
+          where.currency_symbol = query.currency_symbol;
+          if (query.is_external)
+            where.wallet_id = { [Op.eq]: null };
+          else
+            where.wallet_id = { [Op.ne]: null };
+        }
+      }
+
       let fromDate, toDate;
-      if (query.from || query.to) {
+      if (query.from && query.to) {
         where.created_at = {};
-      }
-      if (query.from) {
-        fromDate = moment(query.from).add(1, 'minute').toDate();
+        let fromDate = moment(query.from).add(1, 'minute').toDate();
+        let toDate = moment(query.to).add(1, 'minute').toDate();
         where.created_at[Op.gte] = fromDate;
-      }
-      if (query.to) {
-        toDate = moment(query.to).add(1, 'minute').toDate();
         where.created_at[Op.lt] = toDate;
       }
+
       if (fromDate && toDate && fromDate >= toDate) {
         return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
       }
@@ -406,16 +421,38 @@ module.exports = {
         { key: 'wallet_address', header: 'Receive address' },
         { key: 'status', header: 'Status' },
         { key: 'wallet_id', header: 'Walllet Id' },
+        { key: 'currency_symbol', header: 'Currency symbol' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
     }
     catch (err) {
-      logger.error('search order fail:', err);
+      logger.error('csv order fail:', err);
       next(err);
     }
   },
+  updateDesciption: async (req, res, next) => {
+    try {
+      let id = req.params.id;
+      let des = req.body.description;
+      if (!id)
+        return res.ok(false);
+      await MembershipOrder.update({
+        description: des
+      }, {
+        where: {
+          id: id
+        },
+        returning: true
+      });
+      return res.ok(true);
+    }
+    catch (err) {
+      logger.error('update order description fail:', err);
+      next(err);
+    }
+  }
 };
 
 function stringifyAsync(data, columns) {
@@ -433,20 +470,21 @@ function stringifyAsync(data, columns) {
   });
 }
 
-async function _sendEmail(emails, id, approved) {
-  try {
-    let subject = `Membership payment`;
-    let from = `Child membership department`;
-    let data = {
-      id: id
-    };
-    data = Object.assign({}, data, config.email);
-    if (approved)
-      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderApproved);
-    else
-      await mailer.sendWithTemplate(subject, from, emails, data, config.emailTemplate.membershipOrderRejected);
-  } catch (err) {
-    logger.error("send confirmed membership order email", err);
+async function _sendEmail(email, payload, approved) {
+  email = 'hungtv@blockchainlabs.asia';
+
+  let subject = `Membership payment`;
+  let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+  let data = {
+    id: payload.id,
+    note: payload.note
+  };
+  data = Object.assign({}, data, config.email);
+
+  if (approved) {
+    await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderApproved);
+  } else {
+    await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderRejected);
   }
 }
 
@@ -468,32 +506,4 @@ async function _findMemberByEmail(email) {
   }
 
   return member;
-}
-
-function _maskEmailAddress(email) {
-  if (!email) {
-    return email;
-  }
-
-  const addresses = addressParser.parse(email);
-  const address = addresses[0];
-  let name = address.user();
-  let host = address.host();
-  name = maskify(name, {
-    maskSymbol: "*",
-    matchPattern: /^.+$/,
-    visibleCharsStart: 2,
-    visibleCharsEnd: 2,
-    minChars: 2,
-  });
-
-  host = maskify(host, {
-    maskSymbol: "*",
-    matchPattern: /\w+$/,
-    visibleCharsStart: 2,
-    visibleCharsEnd: 0,
-    minChars: 2,
-  });
-
-  return name + '@' + host;
 }

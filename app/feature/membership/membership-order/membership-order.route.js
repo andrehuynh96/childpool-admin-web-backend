@@ -31,6 +31,12 @@ router.put("/orders/:id",
     controller.approveOrder
 );
 
+router.put("/orders/:id/description",
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_ORDER),
+    controller.updateDesciption
+);
+
 module.exports = router;
 
 
@@ -78,6 +84,18 @@ module.exports = router;
  *         in: query
  *         type: string
  *       - name: memo
+ *         in: query
+ *         type: string
+ *       - name: is_bank
+ *         in: query
+ *         type: string
+ *       - name: is_crypto
+ *         in: query
+ *         type: string
+ *       - name: currency_symbol
+ *         in: query
+ *         type: string
+ *       - name: is_external
  *         in: query
  *         type: string
  *     produces:
@@ -193,6 +211,60 @@ module.exports = router;
  *              {
                         "action":1,
                         "note":"note"
+                }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/membership/orders/{orderId}/description:
+ *   put:
+ *     summary: update description order
+ *     tags:
+ *       - Membership Order
+ *     description:
+ *     parameters:
+ *       - name: orderId
+ *         in: path
+ *         type: string
+ *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for login.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - action
+ *            - node
+ *            - password
+ *            example:
+ *              {
+                        "description":"note"
                 }
  *     produces:
  *       - application/json
