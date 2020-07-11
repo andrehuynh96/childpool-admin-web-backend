@@ -216,9 +216,9 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
-      let emailPayload =  { 
-        id: order.id, 
-        note: req.body.note, 
+      let emailPayload = {
+        id: order.id,
+        note: req.body.note,
         imageUrl: config.website.urlImages,
         firstName: order.Member.first_name,
         lastName: order.Member.last_name,
@@ -308,7 +308,7 @@ module.exports = {
         await _sendEmail(order.Member.email, emailPayload, false);
       }
       await transaction.commit();
- 
+
       return res.ok(true);
     }
     catch (err) {
@@ -477,11 +477,9 @@ function stringifyAsync(data, columns) {
 }
 
 async function _sendEmail(email, payload, approved) {
-  email = 'hungtv@blockchainlabs.asia';
-
   let subject = `Membership payment`;
   let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
-  data = Object.assign({}, payload, config.email);
+  const data = Object.assign({}, payload, config.email);
 
   if (approved) {
     await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderApproved);
