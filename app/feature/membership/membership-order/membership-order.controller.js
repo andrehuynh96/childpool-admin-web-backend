@@ -222,10 +222,12 @@ module.exports = {
         imageUrl: config.website.urlImages,
         firstName: order.Member.first_name,
         lastName: order.Member.last_name,
-      }
+      };
+
       if (status == MembershipOrderStatus.Approved) {
         await Member.update({
-          membership_type_id: order.membership_type_id
+          membership_type_id: order.membership_type_id,
+          latest_membership_order_id: order.id,
         }, {
           where: {
             id: order.member_id
@@ -288,6 +290,7 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
+
         // reject all pending orders
         await MembershipOrder.update({
           status: MembershipOrderStatus.Rejected,
@@ -303,6 +306,7 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
+
         await _sendEmail(order.Member.email, emailPayload, true);
       } else {
         await _sendEmail(order.Member.email, emailPayload, false);
