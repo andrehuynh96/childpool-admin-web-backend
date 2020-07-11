@@ -187,7 +187,7 @@ module.exports = {
       let order = await MembershipOrder.findOne({
         where: { id: req.params.id },
         include: {
-          attributes: ['email'],
+          attributes: ['email', 'first_name', 'last_name'],
           as: "Member",
           model: Member,
           required: true
@@ -216,7 +216,13 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
-
+      let emailPayload =  { 
+        id: order.id, 
+        note: req.body.note, 
+        imageUrl: config.website.urlImages,
+        firstName: order.Member.first_name,
+        lastName: order.Member.last_name,
+      }
       if (status == MembershipOrderStatus.Approved) {
         await Member.update({
           membership_type_id: order.membership_type_id
@@ -297,12 +303,12 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-        await _sendEmail(order.Member.email, { id: order.id }, true);
+        await _sendEmail(order.Member.email, emailPayload, true);
       } else {
-        await _sendEmail(order.Member.email, { id: order.id, note: req.body.note }, false);
+        await _sendEmail(order.Member.email, emailPayload, false);
       }
       await transaction.commit();
-
+ 
       return res.ok(true);
     }
     catch (err) {
@@ -475,11 +481,7 @@ async function _sendEmail(email, payload, approved) {
 
   let subject = `Membership payment`;
   let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
-  let data = {
-    id: payload.id,
-    note: payload.note
-  };
-  data = Object.assign({}, data, config.email);
+  data = Object.assign({}, payload, config.email);
 
   if (approved) {
     await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderApproved);
