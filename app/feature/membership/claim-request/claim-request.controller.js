@@ -65,7 +65,7 @@ module.exports = {
         offset,
         include: [
           {
-            attributes: ['email', 'fullname', 'first_name', 'last_name'],
+            attributes: ['id','email', 'fullname', 'first_name', 'last_name'],
             as: "Member",
             model: Member,
             where: memberCond,

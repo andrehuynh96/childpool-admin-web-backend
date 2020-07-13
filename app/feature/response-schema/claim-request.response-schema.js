@@ -10,6 +10,7 @@ const destObject = {
     '[].status': '[].status',
     '[].amount': '[].amount',
     '[].currency_symbol': '[].currency_symbol',
+    '[].payout_transferred': '[].payout_transferred',
     '[].createdAt': '[].created_at',
   },
   single: {
@@ -24,6 +25,7 @@ const destObject = {
     txid: 'txid',
     explorer_link: 'explorer_link',
     currency_symbol: 'currency_symbol',
+    payout_transferred: 'payout_transferred',
     createdAt: 'created_at',
   }
 };
