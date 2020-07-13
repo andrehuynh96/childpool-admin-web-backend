@@ -187,7 +187,7 @@ module.exports = {
       let order = await MembershipOrder.findOne({
         where: { id: req.params.id },
         include: {
-          attributes: ['email'],
+          attributes: ['email', 'first_name', 'last_name'],
           as: "Member",
           model: Member,
           required: true
@@ -216,10 +216,18 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
+      let emailPayload = {
+        id: order.id,
+        note: req.body.note,
+        imageUrl: config.website.urlImages,
+        firstName: order.Member.first_name,
+        lastName: order.Member.last_name,
+      };
 
       if (status == MembershipOrderStatus.Approved) {
         await Member.update({
-          membership_type_id: order.membership_type_id
+          membership_type_id: order.membership_type_id,
+          latest_membership_order_id: order.id,
         }, {
           where: {
             id: order.member_id
@@ -282,6 +290,7 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
+
         // reject all pending orders
         await MembershipOrder.update({
           status: MembershipOrderStatus.Rejected,
@@ -290,6 +299,7 @@ module.exports = {
         }, {
           where: {
             status: MembershipOrderStatus.Pending,
+            member_id: order.member_id,
             [Op.not]: [
               { id: [order.id] }
             ]
@@ -297,9 +307,10 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-        await _sendEmail(order.Member.email, { id: order.id }, true);
+
+        await _sendEmail(order.Member.email, emailPayload, true);
       } else {
-        await _sendEmail(order.Member.email, { id: order.id, note: req.body.note }, false);
+        await _sendEmail(order.Member.email, emailPayload, false);
       }
       await transaction.commit();
 
@@ -471,15 +482,9 @@ function stringifyAsync(data, columns) {
 }
 
 async function _sendEmail(email, payload, approved) {
-  email = 'hungtv@blockchainlabs.asia';
-
   let subject = `Membership payment`;
   let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
-  let data = {
-    id: payload.id,
-    note: payload.note
-  };
-  data = Object.assign({}, data, config.email);
+  const data = Object.assign({}, payload, config.email);
 
   if (approved) {
     await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderApproved);
