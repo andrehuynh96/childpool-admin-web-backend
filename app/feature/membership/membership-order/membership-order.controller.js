@@ -412,7 +412,7 @@ module.exports = {
           order: [['created_at', 'DESC']]
         }
       );
-      let timezone_offset = query.timezone_offset || 0;
+      let timezone_offset = query.time_offset || 0;
       items.forEach(element => {
         element.email = element.Member.email;
         element.first_name = element.Member.first_name;
@@ -421,17 +421,17 @@ module.exports = {
         element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       let data = await stringifyAsync(items, [
-        { key: 'order_no', header: 'Order No' },
-        { key: 'time', header: 'Time' },
+        { key: 'order_no', header: 'Order' },
+        { key: 'time', header: 'Date/Time' },
         { key: 'first_name', header: 'First Name' },
         { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
         { key: 'membership_type_name', header: 'Membership' },
         { key: 'payment_type', header: 'Payment Type' },
-        { key: 'account_number', header: 'Bank Acc No' },
+        // { key: 'account_number', header: 'Bank Acc No' },
         { key: 'wallet_address', header: 'Receive address' },
         { key: 'status', header: 'Status' },
-        { key: 'wallet_id', header: 'Walllet Id' },
+        // { key: 'wallet_id', header: 'Walllet Id' },
         { key: 'currency_symbol', header: 'Currency symbol' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
