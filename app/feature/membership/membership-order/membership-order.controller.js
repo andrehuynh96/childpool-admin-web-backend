@@ -412,7 +412,7 @@ module.exports = {
           order: [['created_at', 'DESC']]
         }
       );
-      let timezone_offset = query.timez_offset || 0;
+      let timezone_offset = query.time_offset || 0;
       items.forEach(element => {
         element.email = element.Member.email;
         element.first_name = element.Member.first_name;

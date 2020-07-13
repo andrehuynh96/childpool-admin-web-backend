@@ -132,6 +132,97 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
+/**
+ * @swagger
+ * /web/membership/orders-csv:
+ *   get:
+ *     summary: search member
+ *     tags:
+ *       - Membership Order
+ *     description:
+ *     parameters:
+ *       - name: offset
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: time_offset
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: payment_status
+ *         in: query
+ *         type: string
+ *       - name: email
+ *         in: query
+ *         type: string
+ *       - name: membership_type_id
+ *         in: query
+ *         type: string
+ *       - name: crypto_receive_address
+ *         in: query
+ *         type: string
+ *       - name: bank_account_number
+ *         in: query
+ *         type: string
+ *       - name: from
+ *         in: query
+ *         type: string
+ *       - name: to
+ *         in: query
+ *         type: string
+ *       - name: memo
+ *         in: query
+ *         type: string
+ *       - name: is_bank
+ *         in: query
+ *         type: string
+ *       - name: is_crypto
+ *         in: query
+ *         type: string
+ *       - name: currency_symbol
+ *         in: query
+ *         type: string
+ *       - name: is_external
+ *         in: query
+ *         type: string
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": {
+                        "items": [
+                        ],
+                        "offset": 0,
+                        "limit": 10,
+                        "total": 2
+                    }
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
  /**
  * @swagger
  * /web/membership/orders/{orderId}:
