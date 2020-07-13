@@ -20,11 +20,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: ""
     },
-    swift: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      defaultValue: ""
-    },
     account_name: {
       type: DataTypes.STRING(250),
       allowNull: false,
