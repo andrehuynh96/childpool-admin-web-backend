@@ -80,6 +80,11 @@ module.exports = (sequelize, DataTypes) => {
       as: 'Member',
       foreignKey: 'member_id',
     });
+
+    ClaimRequest.belongsTo(models.member_accounts, {
+      as: 'MemberAccount',
+      foreignKey: 'member_account_id',
+    });
   };
 
   return ClaimRequest;

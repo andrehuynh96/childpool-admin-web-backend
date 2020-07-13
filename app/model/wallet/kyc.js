@@ -52,6 +52,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Model.associate = (models) => {
     Model.hasMany(models.kyc_properties, { foreignKey: 'kyc_id' });
+    Model.hasMany(models.member_kycs, { foreignKey: 'kyc_id' });
   };
   return Model;
 } 

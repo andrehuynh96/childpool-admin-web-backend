@@ -92,9 +92,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: '0'
     },
     kyc_level: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
+      type: DataTypes.STRING(256),
+      allowNull: true,
     },
     kyc_status: {
       type: DataTypes.STRING(16),
@@ -115,6 +114,18 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
+    affiliate_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
+    domain_id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true
+    },
+    domain_name: {
+      type: DataTypes.STRING(256)
+    },
     plutx_userid_id: {
       type: DataTypes.UUID,
       allowNull: true,
@@ -127,10 +138,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    country_phone_code: {
+      type: DataTypes.STRING(64),
+      allowNull: true
+    },
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 
   Member.associate = (models) => {
     Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" });
