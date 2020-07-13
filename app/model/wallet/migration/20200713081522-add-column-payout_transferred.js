@@ -10,7 +10,7 @@ module.exports = {
               return Promise.resolve();
             }
 
-            await queryInterface.addColumn('claim_request', 'payout_transferred', {
+            await queryInterface.addColumn('claim_requests', 'payout_transferred', {
               type: Sequelize.DataTypes.DATE,
               allowNull: true,
             });
@@ -25,7 +25,7 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.removeColumn('claim_request', 'payout_transferred', { transaction: t }),
+        queryInterface.removeColumn('claim_requests', 'payout_transferred', { transaction: t }),
       ]);
     });
   }
