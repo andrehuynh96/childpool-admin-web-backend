@@ -7,9 +7,12 @@ const Address = require("app/lib/address");
 module.exports = {
   getAll: async (req, res, next) => {
     try {
+      let where = {}
+      let currency_symbol = req.query.currency_symbol
+      if(currency_symbol)
+        where.currency_symbol = currency_symbol.toUpperCase()
       let results = await ReceivingAddress.findAll({
-        where: {
-        },
+        where,
         order: [['created_at', 'DESC']]
       });
 

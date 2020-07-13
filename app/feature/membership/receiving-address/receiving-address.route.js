@@ -53,6 +53,10 @@ module.exports = router;
 *     tags:
 *       - Membership Receiving Address
 *     description: get list receiving address
+*     parameters:
+*       - name: currency_symbol
+*         in: query
+*         type: string
 *     produces:
 *       - application/json
 *     responses:
