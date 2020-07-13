@@ -1,5 +1,5 @@
 const logger = require('app/lib/logger');
-const ClaimRequest = require("app/model/wallet").claim_request;
+const ClaimRequest = require("app/model/wallet").claim_requests;
 const MemberRewardTransactionHis = require("app/model/wallet").member_reward_transaction_his;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
 const MemberRewardTransactionAction = require("app/model/wallet/value-object/member-reward-transaction-action");
@@ -90,7 +90,6 @@ module.exports = {
   },
   getDetail: async (req, res, next) => {
     try {
-      console.log(SystemType.MEMBERSHIP);
       const claimRequest = await ClaimRequest.findOne({
         include: [
           {
