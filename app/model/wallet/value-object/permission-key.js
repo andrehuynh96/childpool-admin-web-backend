@@ -336,9 +336,9 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
 
-  "MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST": {
-    "KEY": "MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST",
-    "DESCRIPTION": "Approve/Reject membership claim request",
+  "MEMBERSHIP_APPROVE_CLAIM_REQUEST": {
+    "KEY": "MEMBERSHIP_APPROVE_CLAIM_REQUEST",
+    "DESCRIPTION": "Approvet membership claim request",
     "GROUP_NAME": "Claim request",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },

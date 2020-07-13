@@ -1,5 +1,5 @@
 const logger = require('app/lib/logger');
-const ClaimRequest = require("app/model/wallet").claim_requests;
+const ClaimRequest = require("app/model/wallet").claim_request;
 const MemberRewardTransactionHis = require("app/model/wallet").member_reward_transaction_his;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
 const MemberRewardTransactionAction = require("app/model/wallet/value-object/member-reward-transaction-action");
@@ -147,47 +147,52 @@ module.exports = {
       next(error);
     }
   },
-  changeStatus: async (req, res, next) => {
+  changeClaimRewardsStatus: async (req, res, next) => {
     try {
-      const { body, params } = req;
-      const claimRequest = await ClaimRequest.findOne({
+      const { body } = req;
+      const claimRequests = await ClaimRequest.findAll({
         where: {
-          id: params.claimRequestId,
+          id: body.claimRequestIds,
           system_type: SystemType.MEMBERSHIP
         }
       });
 
-      if (!claimRequest) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
-      }
-
-      if (claimRequest.status !== ClaimRequestStatus.Pending) {
-        return res.badRequest(res.__("CAN_NOT_APPROVE_REJECT_CLAIM_REQUEST"), "CAN_NOT_APPROVE_REJECT_CLAIM_REQUEST", { field: ['claimRequestId'] });
-      }
+      claimRequests.forEach(item => {
+        if (item.status !== ClaimRequestStatus.Pending) {
+          return res.badRequest(res.__("CAN_NOT_APPROVE_ONCE_CLAIM_REQUEST_IN_LIST"), "CAN_NOT_APPROVE_ONCE_CLAIM_REQUEST_IN_LIST", { field: ['claimRequestIds'] });
+        }
+      });
 
       const transaction = await database.transaction();
       try {
         await ClaimRequest.update(
-          { status: body.status },
+          { status: ClaimRequestStatus.Approved },
           {
             where: {
-              id: claimRequest.id
+              id: body.claimRequestIds
             },
             transaction: transaction,
             returning: true
           });
-          if (body.status === ClaimRequestStatus.Approved) {
-            const dataTrackingReward = {
-              member_id: claimRequest.member_id,
-              currency_symbol: claimRequest.currency_symbol,
-              amount: claimRequest.amount,
-              action: MemberRewardTransactionAction.REWARD_COMMISSION,
-              tx_id: claimRequest.tx_id,
-              system_type: claimRequest.system_type
-            };
-            await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });
-          }
-        const result = await membershipApi.updateClaimRequest(claimRequest.affiliate_claim_reward_id, body.status);
+          const dataRewardTracking = [];
+          claimRequests.forEach(item => {
+            dataRewardTracking.push({
+              member_id: item.member_id,
+              currency_symbol: item.currency_symbol,
+              amount: item.amount,
+              action: MemberRewardTransactionAction.SENT,
+              tx_id: item.tx_id,
+              system_type: item.system_type
+            });
+          });
+          await MemberRewardTransactionHis.bulkCreate(
+            dataRewardTracking,
+            {
+             transaction: transaction,
+             returning: true,
+            });
+
+        const result = await membershipApi.updateClaimRequest(body.claimRequestIds);
 
         if (result.httpCode !== 200) {
           await transaction.rollback();

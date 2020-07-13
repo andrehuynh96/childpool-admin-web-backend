@@ -27,11 +27,11 @@ router.put(
     controller.updateTxid
 );
 router.put(
-    '/claim-requests/:claimRequestId',
+    '/claim-requests/approves',
     validator(updateStatus),
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST),
-    controller.changeStatus
+    authority(PermissionKey.MEMBERSHIP_APPROVE_CLAIM_REQUEST),
+    controller.changeClaimRewardsStatus
 );
 
 router.get(
@@ -147,17 +147,13 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/membership/claim-request/{claimRequestId}:
+ * /web/membership/claim-request/approves:
  *   put:
- *     summary: update member
+ *     summary: Approve claim requests
  *     tags:
- *       - Members
+ *       - Claim Request
  *     description: update user profile
  *     parameters:
- *       - name: claimRequestId
- *         in: path
- *         type: integer
- *         required: true
  *       - name: data
  *         in: body
  *         required: true
@@ -168,7 +164,7 @@ module.exports = router;
  *            - status
  *            example:
  *                  {
-                        "status":"Approved | Rejected"
+                        "claimRequestIds":[203,201,205]
  *                  }
  *     produces:
  *       - application/json
