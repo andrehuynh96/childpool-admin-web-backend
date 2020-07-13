@@ -609,17 +609,16 @@ module.exports = {
       items.forEach(element => {
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
-
       const data = await stringifyAsync(items, [
         { key: 'id', header: 'Id' },
-        { key: 'last_name', header: 'Last Name' },
         { key: 'first_name', header: 'First Name' },
+        { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
         { key: 'kyc_level', header: 'KYC' },
-        { key: 'membership_type:', header: 'Membership' },
-        { key: 'status:', header: 'Status' },
-        { key: 'referral_code::', header: 'Referral' },
-        { key: 'referrer_code:::', header: 'Referrer' },
+        { key: 'membership_type', header: 'Membership' },
+        { key: 'status', header: 'Status' },
+        { key: 'referral_code', header: 'Referral' },
+        { key: 'referrer_code', header: 'Referrer' },
         { key: 'created_at', header: 'Joined' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=member.csv');
