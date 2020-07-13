@@ -159,14 +159,16 @@ module.exports = {
 
       claimRequests.forEach(item => {
         if (item.status !== ClaimRequestStatus.Pending) {
-          return res.badRequest(res.__("CAN_NOT_APPROVE_ONCE_CLAIM_REQUEST_IN_LIST"), "CAN_NOT_APPROVE_ONCE_CLAIM_REQUEST_IN_LIST", { field: ['claimRequestIds'] });
+          return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['claimRequestIds'] });
         }
       });
 
       const transaction = await database.transaction();
       try {
         await ClaimRequest.update(
-          { status: ClaimRequestStatus.Approved },
+          { status: ClaimRequestStatus.Approved,
+            payout_transferred: Sequelize.fn('NOW')
+           },
           {
             where: {
               id: body.claimRequestIds
