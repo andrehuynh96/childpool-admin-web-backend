@@ -1,6 +1,8 @@
 const logger = require('app/lib/logger');
 const ClaimRequest = require("app/model/wallet").claim_requests;
+const MemberRewardTransactionHis = require("app/model/wallet").member_reward_transaction_his;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
+const MemberRewardTransactionAction = require("app/model/wallet/value-object/member-reward-transaction-action");
 const { membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
 const Member = require("app/model/wallet").members;
@@ -174,7 +176,17 @@ module.exports = {
             transaction: transaction,
             returning: true
           });
-
+          if (body.status === ClaimRequestStatus.Approved) {
+            const dataTrackingReward = {
+              member_id: claimRequest.member_id,
+              currency_symbol: claimRequest.currency_symbol,
+              amount: claimRequest.amount,
+              action: MemberRewardTransactionAction.REWARD_COMMISSION,
+              tx_id: claimRequest.tx_id,
+              system_type: claimRequest.system_type
+            };
+            await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });
+          }
         const result = await membershipApi.updateClaimRequest(claimRequest.affiliate_claim_reward_id, body.status);
 
         if (result.httpCode !== 200) {

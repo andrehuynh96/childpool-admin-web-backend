@@ -46,7 +46,9 @@ module.exports = {
   },
 
   active: async (req, res, next) => {
+    let transaction;
     try {
+      transaction = await database.transaction();
       let result = await ReceivingAddress.findOne({
         where: {
           id: req.params.id
@@ -57,6 +59,19 @@ module.exports = {
         return res.notFound();
       }
 
+      let responseAllUpdate = await ReceivingAddress.update({
+        actived_flg: false,
+        updated_by: req.user.id,
+      }, {
+          where: {
+            currency_symbol: result.currency_symbol
+          },
+          returning: true,
+          transaction: transaction
+        });
+      if (!responseAllUpdate) {
+        return res.serverInternalError();
+      }
       let [_, response] = await ReceivingAddress.update({
         actived_flg: true,
         updated_by: req.user.id,
@@ -65,15 +80,19 @@ module.exports = {
             id: result.id
           },
           returning: true,
+          transaction: transaction
         });
 
       if (!response) {
         return res.serverInternalError();
       }
-
+      await transaction.commit();
       return res.ok(response[0]);
     }
     catch (err) {
+      if (transaction) {
+        await transaction.rollback();
+      }
       logger.error("active receiving addresses fail", err);
       next(err);
     }
