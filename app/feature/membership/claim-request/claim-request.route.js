@@ -72,6 +72,12 @@ module.exports = router;
  *       - name: limit
  *         in: query
  *         type: integer
+ *       - name: first_name
+ *         in: query
+ *         type: string
+ *       - name: last_name
+ *         in: query
+ *         type: string
  *         format: int32
  *       - name: from_date
  *         in: query

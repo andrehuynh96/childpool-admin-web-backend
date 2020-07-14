@@ -54,11 +54,11 @@ module.exports = {
       if (query.email) {
         memberCond.email = { [Op.iLike]: `%${query.email}%` };
       }
-      if (query.name) {
-        memberCond[Op.or] = {
-          first_name: { [Op.iLike]: `%${query.name}%` },
-          last_name: { [Op.iLike]: `%${query.name}%` },
-        };
+      if (query.first_name) {
+        memberCond.first_name = { [Op.iLike]: `%${query.first_name}%` };
+      }
+      if (query.last_name) {
+        memberCond.last_name = { [Op.iLike]: `%${query.last_name}%` };
       }
 
       const { count: total, rows: items } = await ClaimRequest.findAndCountAll({
@@ -186,7 +186,7 @@ module.exports = {
               system_type: item.system_type
             });
           });
-
+          const idList = claimRequests.map(item => item.affiliate_reward_id);
           await MemberRewardTransactionHis.bulkCreate(
             dataRewardTracking,
             {
@@ -194,7 +194,7 @@ module.exports = {
              returning: true,
             });
 
-        const result = await membershipApi.updateClaimRequests(body.claimRequestIds,ClaimRequestStatus.Approved);
+        const result = await membershipApi.updateClaimRequests(idList, ClaimRequestStatus.Approved);
 
         if (result.httpCode !== 200) {
           await transaction.rollback();
