@@ -194,7 +194,7 @@ module.exports = {
              returning: true,
             });
 
-        const result = await membershipApi.updateClaimRequest(body.claimRequestIds,ClaimRequestStatus.Approved);
+        const result = await membershipApi.updateClaimRequests(body.claimRequestIds,ClaimRequestStatus.Approved);
 
         if (result.httpCode !== 200) {
           await transaction.rollback();
