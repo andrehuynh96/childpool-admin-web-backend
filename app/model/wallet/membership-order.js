@@ -95,6 +95,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: true,
     },
+    bank_account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     receiving_addresses_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
