@@ -114,6 +114,9 @@ const config = {
     affiliateTypeId: process.env.AFFILIATE_AFFILIATE_TYPE_ID,
     membershipTypeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID,
   },
+  schedule: {
+    updateAffiliate: process.env.SCHEDULE_UPDATE_AFFILIATE_REWARD
+  }
 };
 
 module.exports = config;
