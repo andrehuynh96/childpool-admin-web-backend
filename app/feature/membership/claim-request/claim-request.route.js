@@ -97,6 +97,12 @@ module.exports = router;
  *       - name: crypto_platform
  *         in: query
  *         type: string
+ *       - name: payout_from_date
+ *         in: query
+ *         type: string
+ *       - name: payout_to_date
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:

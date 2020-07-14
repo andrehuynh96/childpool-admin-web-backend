@@ -62,15 +62,15 @@ module.exports = {
       }
 
       let payoutFromDate, payoutToDate;
-      if (query.payoutFromDate || query.payoutToDate) {
+      if (query.payout_from_date || query.payout_to_date) {
         where.payout_transferred = {};
       }
-      if (query.payoutFromDate) {
-        payoutFromDate = moment(query.payoutFromDate).toDate();
+      if (query.payout_from_date) {
+        payoutFromDate = moment(query.payout_from_date).toDate();
         where.payout_transferred[Op.gte] = payoutFromDate;
       }
-      if (query.payoutToDate) {
-        payoutToDate = moment(query.payoutToDate).add(1, 'minute').toDate();
+      if (query.payout_to_date) {
+        payoutToDate = moment(query.payout_to_date).add(1, 'minute').toDate();
         where.payout_transferred[Op.lt] = payoutToDate;
       }
 
@@ -270,15 +270,15 @@ module.exports = {
       }
 
       let payoutFromDate, payoutToDate;
-      if (query.payoutFromDate || query.payoutToDate) {
+      if (query.payout_from_date || query.payout_to_date) {
         where.payout_transferred = {};
       }
-      if (query.payoutFromDate) {
-        payoutFromDate = moment(query.payoutFromDate).toDate();
+      if (query.payout_from_date) {
+        payoutFromDate = moment(query.payout_from_date).toDate();
         where.payout_transferred[Op.gte] = payoutFromDate;
       }
-      if (query.payoutToDate) {
-        payoutToDate = moment(query.payoutToDate).add(1, 'minute').toDate();
+      if (query.payout_to_date) {
+        payoutToDate = moment(query.payout_to_date).add(1, 'minute').toDate();
         where.payout_transferred[Op.lt] = payoutToDate;
       }
 
