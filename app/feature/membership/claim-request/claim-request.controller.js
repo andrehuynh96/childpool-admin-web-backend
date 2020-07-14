@@ -61,6 +61,19 @@ module.exports = {
         memberCond.last_name = { [Op.iLike]: `%${query.last_name}%` };
       }
 
+      let payoutFromDate, payoutToDate;
+      if (query.payout_from_date || query.payout_to_date) {
+        where.payout_transferred = {};
+      }
+      if (query.payout_from_date) {
+        payoutFromDate = moment(query.payout_from_date).toDate();
+        where.payout_transferred[Op.gte] = payoutFromDate;
+      }
+      if (query.payout_to_date) {
+        payoutToDate = moment(query.payout_to_date).add(1, 'minute').toDate();
+        where.payout_transferred[Op.lt] = payoutToDate;
+      }
+
       const { count: total, rows: items } = await ClaimRequest.findAndCountAll({
         limit,
         offset,
@@ -249,11 +262,24 @@ module.exports = {
       if (query.email) {
         memberCond.email = { [Op.iLike]: `%${query.email}%` };
       }
-      if (query.name) {
-        memberCond[Op.or] = {
-          first_name: { [Op.iLike]: `%${query.name}%` },
-          last_name: { [Op.iLike]: `%${query.name}%` },
-        };
+      if (query.first_name) {
+        memberCond.first_name = { [Op.iLike]: `%${query.first_name}%` };
+      }
+      if (query.last_name) {
+        memberCond.last_name = { [Op.iLike]: `%${query.last_name}%` };
+      }
+
+      let payoutFromDate, payoutToDate;
+      if (query.payout_from_date || query.payout_to_date) {
+        where.payout_transferred = {};
+      }
+      if (query.payout_from_date) {
+        payoutFromDate = moment(query.payout_from_date).toDate();
+        where.payout_transferred[Op.gte] = payoutFromDate;
+      }
+      if (query.payout_to_date) {
+        payoutToDate = moment(query.payout_to_date).add(1, 'minute').toDate();
+        where.payout_transferred[Op.lt] = payoutToDate;
       }
 
       const items = await ClaimRequest.findAll({

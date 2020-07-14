@@ -69,6 +69,10 @@ module.exports = (sequelize, DataTypes) => {
     payout_transferred: {
       type: DataTypes.DATE,
       allowNull: true,
+    },
+    sent_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
     }
   }, {
       underscored: true,
