@@ -138,10 +138,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    country_phone_code: {
-      type: DataTypes.STRING(64),
-      allowNull: true
-    },
+    // country_phone_code: {
+    //   type: DataTypes.STRING(64),
+    //   allowNull: true
+    // },
   }, {
       underscored: true,
       timestamps: true,
