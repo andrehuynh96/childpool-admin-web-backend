@@ -2,6 +2,7 @@ const logger = require('app/lib/logger');
 const ClaimRequest = require("app/model/wallet").claim_requests;
 const MemberRewardTransactionHis = require("app/model/wallet").member_reward_transaction_his;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
+const ClaimRequestStatusText = require("app/model/wallet/value-object/claim-request-status-text");
 const MemberRewardTransactionAction = require("app/model/wallet/value-object/member-reward-transaction-action");
 const { membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
@@ -90,7 +91,6 @@ module.exports = {
   },
   getDetail: async (req, res, next) => {
     try {
-      console.log(SystemType.MEMBERSHIP);
       const claimRequest = await ClaimRequest.findOne({
         include: [
           {
@@ -147,47 +147,54 @@ module.exports = {
       next(error);
     }
   },
-  changeStatus: async (req, res, next) => {
+  changeClaimRewardsStatus: async (req, res, next) => {
     try {
-      const { body, params } = req;
-      const claimRequest = await ClaimRequest.findOne({
+      const { body } = req;
+      const claimRequests = await ClaimRequest.findAll({
         where: {
-          id: params.claimRequestId,
+          id: body.claimRequestIds,
           system_type: SystemType.MEMBERSHIP
         }
       });
 
-      if (!claimRequest) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
-      }
-
-      if (claimRequest.status !== ClaimRequestStatus.Pending) {
-        return res.badRequest(res.__("CAN_NOT_APPROVE_REJECT_CLAIM_REQUEST"), "CAN_NOT_APPROVE_REJECT_CLAIM_REQUEST", { field: ['claimRequestId'] });
-      }
+      claimRequests.forEach(item => {
+        if (item.status !== ClaimRequestStatus.Pending) {
+          return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['claimRequestIds'] });
+        }
+      });
 
       const transaction = await database.transaction();
       try {
         await ClaimRequest.update(
-          { status: body.status },
+          { status: ClaimRequestStatus.Approved,
+            payout_transferred: Sequelize.fn('NOW')
+           },
           {
             where: {
-              id: claimRequest.id
+              id: body.claimRequestIds
             },
             transaction: transaction,
             returning: true
           });
-          if (body.status === ClaimRequestStatus.Approved) {
-            const dataTrackingReward = {
-              member_id: claimRequest.member_id,
-              currency_symbol: claimRequest.currency_symbol,
-              amount: claimRequest.amount,
-              action: MemberRewardTransactionAction.REWARD_COMMISSION,
-              tx_id: claimRequest.tx_id,
-              system_type: claimRequest.system_type
-            };
-            await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });
-          }
-        const result = await membershipApi.updateClaimRequest(claimRequest.affiliate_claim_reward_id, body.status);
+          const dataRewardTracking = claimRequests.map(item => {
+            return ({
+              member_id: item.member_id,
+              currency_symbol: item.currency_symbol,
+              amount: item.amount,
+              action: MemberRewardTransactionAction.SENT,
+              tx_id: item.tx_id,
+              system_type: item.system_type
+            });
+          });
+
+          await MemberRewardTransactionHis.bulkCreate(
+            dataRewardTracking,
+            {
+             transaction: transaction,
+             returning: true,
+            });
+
+        const result = await membershipApi.updateClaimRequests(body.claimRequestIds,ClaimRequestStatus.Approved);
 
         if (result.httpCode !== 200) {
           await transaction.rollback();
@@ -269,6 +276,12 @@ module.exports = {
         element.member_email = element.Member.email;
         element.first_name = element.Member.first_name;
         element.last_name = element.Member.last_name;
+        if (element.status === ClaimRequestStatus.Approved) {
+          element.status = ClaimRequestStatusText.Approved;
+        }
+        if (element.status === ClaimRequestStatus.Pending) {
+          element.status = ClaimRequestStatusText.Pending;
+        }
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       const data = await stringifyAsync(items, [
@@ -280,10 +293,6 @@ module.exports = {
         { key: 'wallet_address', header: 'Wallet Address' },
         { key: 'amount', header: 'Claim Amount' },
         { key: 'currency_symbol', header: 'Currency' },
-        { key: 'account_number', header: 'Account Number' },
-        { key: 'bank_name', header: 'Bank Name' },
-        { key: 'branch_name', header: 'Branch Name' },
-        { key: 'account_holder', header: 'Account Holder' },
         { key: 'status', header: 'Status' },
         { key: 'type', header: 'Payment' }
       ]);

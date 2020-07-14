@@ -74,11 +74,12 @@ class AffiliateApi {
     }
   }
 
-  async updateClaimRequest(claimRewardId, status) {
+  async updateClaimRequests(claimRewardIds,status) {
     try {
       const headers = await this.getHeaders();
-      const result = await axios.put(`${API_URL}/claim-rewards/${claimRewardId}`,
+      const result = await axios.put(`${API_URL}/claim-rewards`,
         {
+          id_list: claimRewardIds,
           status: status
         },
         {
