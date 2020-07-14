@@ -107,6 +107,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: false,
     },
+    account_name: {
+      type: DataTypes.STRING(250),
+      allowNull: true,
+    },
+    account_type: {
+      type: DataTypes.STRING(250),
+      allowNull: true,
+      defaultValue: ""
+    },
     amount_usd: {
       type: DataTypes.DECIMAL,
       allowNull: true,
@@ -120,9 +129,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     }
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 
   MembershipOrder.associate = (models) => {
     MembershipOrder.belongsTo(models.members, {
