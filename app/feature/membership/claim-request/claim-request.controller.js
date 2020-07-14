@@ -175,9 +175,8 @@ module.exports = {
             transaction: transaction,
             returning: true
           });
-          const dataRewardTracking = [];
-          claimRequests.forEach(item => {
-            dataRewardTracking.push({
+          const dataRewardTracking = claimRequests.map(item => {
+            return ({
               member_id: item.member_id,
               currency_symbol: item.currency_symbol,
               amount: item.amount,
@@ -186,6 +185,7 @@ module.exports = {
               system_type: item.system_type
             });
           });
+
           await MemberRewardTransactionHis.bulkCreate(
             dataRewardTracking,
             {
@@ -193,7 +193,7 @@ module.exports = {
              returning: true,
             });
 
-        const result = await membershipApi.updateClaimRequest(body.claimRequestIds);
+        const result = await membershipApi.updateClaimRequest(body.claimRequestIds,ClaimRequestStatus.Approved);
 
         if (result.httpCode !== 200) {
           await transaction.rollback();
