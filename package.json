@@ -45,6 +45,7 @@
     "minio": "^7.0.13",
     "moment": "^2.26.0",
     "morgan": "^1.9.1",
+    "node-cron": "^2.0.3",
     "nodemailer": "^6.4.2",
     "object-mapper": "^6.2.0",
     "p-iteration": "^1.1.8",
