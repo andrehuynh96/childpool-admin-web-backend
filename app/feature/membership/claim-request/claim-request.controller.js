@@ -186,7 +186,7 @@ module.exports = {
               system_type: item.system_type
             });
           });
-          const idList = claimRequests.map(item => item.affiliate_reward_id);
+          const idList = claimRequests.map(item => item.affiliate_claim_reward_id);
           await MemberRewardTransactionHis.bulkCreate(
             dataRewardTracking,
             {
