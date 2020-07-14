@@ -16,6 +16,7 @@ const config = require("app/config");
 const mailer = require('app/lib/mailer');
 const Roles = require('app/model/wallet').roles;
 const StakingAPI = require("app/lib/staking-api/partner-api-key")
+const ipCountry = require('app/lib/ip-country');
 
 module.exports = async (req, res, next) => {
   try {
@@ -63,9 +64,7 @@ module.exports = async (req, res, next) => {
           id: user_otp.id
         },
       });
-    const registerIpString = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip);
-    let regiterIps = registerIpString.split(',')
-    const registerIp = regiterIps.length > 0 ? regiterIps[0].trim() : ''
+    const registerIp = ipCountry.getIpClient(req);
     let roles = await UserRole.findAll({
       attributes: ['role_id'],
       where: {
