@@ -2,6 +2,7 @@ const logger = require('app/lib/logger');
 const ClaimRequest = require("app/model/wallet").claim_requests;
 const MemberRewardTransactionHis = require("app/model/wallet").member_reward_transaction_his;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
+const ClaimRequestStatusText = require("app/model/wallet/value-object/claim-request-status-text");
 const MemberRewardTransactionAction = require("app/model/wallet/value-object/member-reward-transaction-action");
 const { membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
@@ -275,6 +276,12 @@ module.exports = {
         element.member_email = element.Member.email;
         element.first_name = element.Member.first_name;
         element.last_name = element.Member.last_name;
+        if (element.status === ClaimRequestStatus.Approved) {
+          element.status = ClaimRequestStatusText.Approved;
+        }
+        if (element.status === ClaimRequestStatus.Pending) {
+          element.status = ClaimRequestStatusText.Pending;
+        }
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       const data = await stringifyAsync(items, [
@@ -286,10 +293,6 @@ module.exports = {
         { key: 'wallet_address', header: 'Wallet Address' },
         { key: 'amount', header: 'Claim Amount' },
         { key: 'currency_symbol', header: 'Currency' },
-        { key: 'account_number', header: 'Account Number' },
-        { key: 'bank_name', header: 'Bank Name' },
-        { key: 'branch_name', header: 'Branch Name' },
-        { key: 'account_holder', header: 'Account Holder' },
         { key: 'status', header: 'Status' },
         { key: 'type', header: 'Payment' }
       ]);
