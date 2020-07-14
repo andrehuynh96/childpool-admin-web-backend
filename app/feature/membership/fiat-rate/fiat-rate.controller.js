@@ -35,7 +35,7 @@ module.exports = {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
-      const  { count: total, rows: _his } = await FiatRateHistory.findAndCountAll({ offset: offset, limit: limit });
+      const  { count: total, rows: _his } = await FiatRateHistory.findAndCountAll({ offset: offset, limit: limit, order: [['created_at','DESC']] });
       return res.ok({
         items: _his,
         offset: offset,
