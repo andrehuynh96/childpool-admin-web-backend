@@ -103,6 +103,7 @@ module.exports = {
     }
   },
   getDetail: async (req, res, next) => {
+    console.log('tokenPayoutId', req.params.tokenPayoutId)
     try {
       const claimRequest = await ClaimRequest.findOne({
         include: [
@@ -117,13 +118,13 @@ module.exports = {
           }
         ],
         where: {
-          id: req.params.claimRequestId,
+          id: req.params.tokenPayoutId,
           system_type: AppSystemType.AFFILIATE
         }
       });
 
       if (!claimRequest) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['tokenPayoutId'] });
       }
       claimRequest.explorer_link = blockchainHelpper.getUrlTxid(claimRequest.txid, claimRequest.currency_symbol);
       return res.ok(claimRequest);
@@ -138,12 +139,12 @@ module.exports = {
       const { body, params } = req;
       const claimRequest = await ClaimRequest.findOne({
         where: {
-          id: params.claimRequestId,
+          id: params.tokenPayoutId,
           system_type: AppSystemType.AFFILIATE
         }
       });
       if (!claimRequest) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['tokenPayoutId'] });
       }
       await ClaimRequest.update(
         { txid: body.txid },
@@ -165,14 +166,14 @@ module.exports = {
       const { body } = req;
       const claimRequests = await ClaimRequest.findAll({
         where: {
-          id: body.claimRequestIds,
+          id: body.token_payout_ids,
           system_type: AppSystemType.AFFILIATE
         }
       });
 
       claimRequests.forEach(item => {
         if (item.status !== ClaimRequestStatus.Pending) {
-          return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['claimRequestIds'] });
+          return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['tokenPayoutIds'] });
         }
       });
 
@@ -184,7 +185,7 @@ module.exports = {
            },
           {
             where: {
-              id: body.claimRequestIds
+              id: body.token_payout_ids
             },
             transaction: transaction,
             returning: true
@@ -322,7 +323,7 @@ module.exports = {
         { key: 'status', header: 'Status' },
         { key: 'type', header: 'Payment' }
       ]);
-      res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
+      res.setHeader('Content-disposition', 'attachment; filename=token-payment.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
     }
@@ -333,6 +334,7 @@ module.exports = {
   },
   getPaymentType: async (req, res, next) => {
     try {
+      console.log('getPaymentType', 'r')
       return res.ok(PaymentType);
     }
     catch (error) {

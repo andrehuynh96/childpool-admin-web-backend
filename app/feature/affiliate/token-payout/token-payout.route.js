@@ -13,19 +13,22 @@ router.get(
     authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_VIEW_LIST),
     controller.search
 );
+
 router.get(
-    '/token-payout/:claimRequestId',
-    authenticate,
-    authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_VIEW_DETAIL),
+    '/token-payout/detail/:tokenPayoutId',
+     authenticate,
+     authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_VIEW_DETAIL),
     controller.getDetail
 );
+
 router.put(
-    '/token-payout/:claimRequestId/txid',
+    '/token-payout/update/:tokenPayoutId/txid',
     validator(updateTxid),
     authenticate,
     authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_UPDATE_TX_ID),
     controller.updateTxid
 );
+
 router.put(
     '/token-payout/approves',
     validator(updateStatus),
@@ -52,17 +55,17 @@ router.get(
     authenticate,
 	controller.getCryptoPlatform
 );
-
 module.exports = router;
 
-/** *******************************************************************/
+/** ******************************************************************/
+
 /**
  * @swagger
- * /web/membership/token-payout:
+ * /web/affiliate/token-payout:
  *   get:
  *     summary: search Token Payout
  *     tags:
- *       - Token Payout
+ *       - Affiliate
  *     description:
  *     parameters:
  *       - name: offset
@@ -159,11 +162,11 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/membership/token-payout/approves:
+ * /web/affiliate/token-payout/approves:
  *   put:
  *     summary: Approve Token Payouts
  *     tags:
- *       - Token Payout
+ *       - Affiliate
  *     description: update user profile
  *     parameters:
  *       - name: data
@@ -176,7 +179,7 @@ module.exports = router;
  *            - status
  *            example:
  *                  {
-                        "claimRequestIds":[203,201,205]
+                        "token_payout_ids":[203,201,205]
  *                  }
  *     produces:
  *       - application/json
@@ -208,11 +211,11 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/membership/token-payout-csv:
+ * /web/affiliate/token-payout-csv:
  *   get:
  *     summary: export csv Token Payout
  *     tags:
- *       - Token Payout
+ *       - Affiliate
  *     description:
  *     parameters:
  *       - name: from_date
@@ -260,14 +263,14 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
-/** *******************************************************************/
+
 /**
  * @swagger
- * /web/membership/token-payout/payment-type:
+ * /web/affiliate/token-payout/payment-type:
  *   get:
  *     summary: get Token Payout payment types
  *     tags:
- *       - Token Payout
+ *       - Affiliate
  *     description:
  *     produces:
  *       - application/json
@@ -299,14 +302,14 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
-/** *******************************************************************/
+
 /**
  * @swagger
- * /web/membership/token-payout/crypto-platform:
+ * /web/affiliate/token-payout/crypto-platform:
  *   get:
  *     summary: get Token Payout crypto platforms
  *     tags:
- *       - Token Payout
+ *       - Affiliate
  *     description:
  *     produces:
  *       - application/json
@@ -356,17 +359,17 @@ module.exports = router;
  /* #region Get policy details */
 /**
  * @swagger
- * /web/membership/token-payout/:claimrequestId:
+ * /web/affiliate/token-payout/detail/{tokenPayoutId}:
  *   get:
  *     summary: Get Token Payout details
  *     tags:
- *       - Token Payout
+ *       - Affiliate
  *     description:
  *     parameters:
- *       - in: params
- *         name: claimrequestId
+ *       - in: path
+ *         name: tokenPayoutId
+ *         type: string
  *         required: true
- *         description: Token Payout Id
  *     produces:
  *       - application/json
  *     responses:
@@ -411,14 +414,14 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/membership/token-payout/:claimrequestId/txid:
+ * /web/affiliate/token-payout/update/{tokenPayoutId}/txid:
  *   put:
  *     summary: update Token Payout txid
  *     tags:
- *       - Token Payout
+ *       - Affiliate
  *     description: update Token Payout txid
  *     parameters:
- *       - name: claimrequestId
+ *       - name: tokenPayoutId
  *         in: path
  *         type: string
  *         required: true

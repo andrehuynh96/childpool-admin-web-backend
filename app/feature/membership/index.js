@@ -14,6 +14,5 @@ router.use(require("./caculate-reward-request/caculate-reward-request.route"));
 router.use(require("./member-kyc/member-kyc.route"));
 router.use(require("./reward-setting/reward-setting.route"));
 router.use(require("./fiat-rate/fiat-rate.route"));
-router.use(require("./token-payout/token-payout.route"));
 
 module.exports = router;
