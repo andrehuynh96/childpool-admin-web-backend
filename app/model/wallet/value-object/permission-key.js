@@ -359,7 +359,37 @@ module.exports = {
     "GROUP_NAME": "Claim request",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "MEMBERSHIP_TOKEN_PAYOUT_VIEW_LIST": {
+    "KEY": "MEMBERSHIP_TOKEN_PAYOUT_VIEW_LIST",
+    "DESCRIPTION": "View membership token payout list",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 
+  "MEMBERSHIP_TOKEN_PAYOUT_APPROVE": {
+    "KEY": "MEMBERSHIP_TOKEN_PAYOUT_APPROVE",
+    "DESCRIPTION": "Approvet membership token payout",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "MEMBERSHIP_TOKEN_PAYOUT_EXPORT_CSV": {
+    "KEY": "MEMBERSHIP_TOKEN_PAYOUT_EXPORT_CSV",
+    "DESCRIPTION": "Export membership token payout to CSV file",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "MEMBERSHIP_TOKEN_PAYOUT_VIEW_DETAIL": {
+    "KEY": "MEMBERSHIP_TOKEN_PAYOUT_VIEW_DETAIL",
+    "DESCRIPTION": "View membership token payout detail",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "MEMBERSHIP_TOKEN_PAYOUT_UPDATE_TX_ID": {
+    "KEY": "MEMBERSHIP_TOKEN_PAYOUT_UPDATE_TX_ID",
+    "DESCRIPTION": "Update transaction id of a membership token payout",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
   "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE": {
     "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE",
     "DESCRIPTION": "View membership type",

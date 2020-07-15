@@ -10,34 +10,34 @@ const router = express.Router();
 router.get(
     '/token-payout',
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST),
+    authority(PermissionKey.MEMBERSHIP_TOKEN_PAYOUT_VIEW_LIST),
     controller.search
 );
 router.get(
     '/token-payout/:claimRequestId',
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_REQUEST_DETAIL),
+    authority(PermissionKey.MEMBERSHIP_TOKEN_PAYOUT_VIEW_DETAIL),
     controller.getDetail
 );
 router.put(
     '/token-payout/:claimRequestId/txid',
     validator(updateTxid),
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID),
+    authority(PermissionKey.MEMBERSHIP_TOKEN_PAYOUT_UPDATE_TX_ID),
     controller.updateTxid
 );
 router.put(
     '/token-payout/approves',
     validator(updateStatus),
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_APPROVE_CLAIM_REQUEST),
+    authority(PermissionKey.MEMBERSHIP_TOKEN_PAYOUT_APPROVE),
     controller.changeClaimRewardsStatus
 );
 
 router.get(
 	'/token-payout-csv',
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_CLAIM_REQUESTS),
+    authority(PermissionKey.MEMBERSHIP_TOKEN_PAYOUT_EXPORT_CSV),
 	controller.downloadCSV
 );
 
