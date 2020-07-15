@@ -15,7 +15,7 @@ const Op = Sequelize.Op;
 const PaymentType = require("app/model/wallet/value-object/claim-request-payment-type");
 const Platform = require("app/model/wallet/value-object/platform");
 const blockchainHelpper = require('app/lib/blockchain-helpper');
-const SystemType = require("app/model/wallet/value-object/system-type");
+const AppSystemType = require("app/model/wallet/value-object/system-type");
 
 module.exports = {
   search: async (req, res, next) => {
@@ -23,7 +23,7 @@ module.exports = {
       const { query } = req;
       const limit = query.limit ? parseInt(req.query.limit) : 10;
       const offset = query.offset ? parseInt(req.query.offset) : 0;
-      const where = { system_type: SystemType.AFFILIATE };
+      const where = { system_type: AppSystemType.AFFILIATE };
       let fromDate, toDate;
       if (query.from_date || query.to_date) {
         where.created_at = {};
@@ -118,7 +118,7 @@ module.exports = {
         ],
         where: {
           id: req.params.claimRequestId,
-          system_type: SystemType.AFFILIATE
+          system_type: AppSystemType.AFFILIATE
         }
       });
 
@@ -139,7 +139,7 @@ module.exports = {
       const claimRequest = await ClaimRequest.findOne({
         where: {
           id: params.claimRequestId,
-          system_type: SystemType.AFFILIATE
+          system_type: AppSystemType.AFFILIATE
         }
       });
       if (!claimRequest) {
@@ -166,7 +166,7 @@ module.exports = {
       const claimRequests = await ClaimRequest.findAll({
         where: {
           id: body.claimRequestIds,
-          system_type: SystemType.AFFILIATE
+          system_type: AppSystemType.AFFILIATE
         }
       });
 
@@ -231,7 +231,7 @@ module.exports = {
   downloadCSV: async (req, res, next) => {
     try {
       const { query } = req;
-      const where = { system_type: SystemType.AFFILIATE };
+      const where = { system_type: AppSystemType.AFFILIATE };
       let fromDate, toDate;
       if (query.from_date || query.to_date) {
         where.created_at = {};
