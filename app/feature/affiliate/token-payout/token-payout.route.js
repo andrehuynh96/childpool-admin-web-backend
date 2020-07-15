@@ -176,11 +176,10 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - status
  *            example:
  *                  {
-                        "token_payout_ids":[203,201,205]
- *                  }
+                        "token_payout_ids": [203,123]
+                    }
  *     produces:
  *       - application/json
  *     responses:
