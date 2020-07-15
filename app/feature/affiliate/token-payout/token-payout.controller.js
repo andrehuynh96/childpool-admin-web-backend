@@ -103,7 +103,6 @@ module.exports = {
     }
   },
   getDetail: async (req, res, next) => {
-    console.log('tokenPayoutId', req.params.tokenPayoutId)
     try {
       const claimRequest = await ClaimRequest.findOne({
         include: [
