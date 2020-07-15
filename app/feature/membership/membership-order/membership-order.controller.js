@@ -12,7 +12,7 @@ const MemberRewardCommissionMethod = require("app/model/wallet/value-object/memb
 const MemberRewardAction = require("app/model/wallet/value-object/member-reward-transaction-action");
 const SystemType = require('app/model/wallet/value-object/system-type');
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
-const claimRequestPaymentType = require("app/model/wallet/value-object/claim-request-payment-type")
+const ClaimRequestPaymentType = require("app/model/wallet/value-object/claim-request-payment-type")
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
 const Sequelize = require('sequelize');
 const stringify = require('csv-stringify');
@@ -426,7 +426,7 @@ module.exports = {
         element.membership_type_name = element.MembershipType.name;
         element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
         element.status_string = MembershipOrderStatusEnum[element.status]
-        element.payment = element.payment_type == claimRequestPaymentType.Bank ? 'Bank' : element.wallet_id ? element.currency_symbol : `*${element.currency_symbol}`
+        element.payment = element.payment_type == ClaimRequestPaymentType.Bank ? 'Bank' : element.wallet_id ? element.currency_symbol : `*${element.currency_symbol}`
       });
       let data = await stringifyAsync(items, [
         { key: 'order_no', header: 'Order' },
