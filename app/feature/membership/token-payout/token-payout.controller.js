@@ -91,7 +91,7 @@ module.exports = {
       });
 
       return res.ok({
-        items: mapper(items) && items.length > 0 ? mapper(items) : [],
+        items: items.length > 0 ? mapper(items) : [],
         offset: offset,
         limit: limit,
         total: total
