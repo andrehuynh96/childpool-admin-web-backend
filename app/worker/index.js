@@ -4,6 +4,6 @@ const CheckDistributeRewardSchedule = require("./check-distribute-reward.schedul
 module.exports = {
   start: () => {
     UpdateAffiliateSchedule.run();
-    CheckDistributeRewardSchedule.run();
+    // CheckDistributeRewardSchedule.run();
   }
 }
