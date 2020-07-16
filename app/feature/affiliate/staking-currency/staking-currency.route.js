@@ -13,7 +13,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership/staking-currencies:
+ * /web/affiliate/staking-currencies:
  *   get:
  *     summary: get staking currency list
  *     tags:
