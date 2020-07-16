@@ -63,7 +63,7 @@ module.exports = {
           ids.push(contribution.id)
         })
         // update affiliate
-        const result = await affiliateApi.getAllPolicies(affiliatePayload);
+        const result = await affiliateApi.setRewardRequest(affiliatePayload);
         if (result.httpCode !== 200) {
           // update account contribution
           await AccountContributionAPI.set(element, { ids: ids })
