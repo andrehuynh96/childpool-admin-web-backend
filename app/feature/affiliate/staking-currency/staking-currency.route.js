@@ -1,6 +1,6 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./claim-request.controller');
+const controller = require('./staking-currency.controller');
 const router = express.Router();
 
 router.get(
