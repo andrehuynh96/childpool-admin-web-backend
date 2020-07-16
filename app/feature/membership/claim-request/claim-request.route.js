@@ -42,7 +42,7 @@ router.get(
 );
 
 router.get(
-	'/claim-requests/payment-type',
+	'/payment-types',
     authenticate,
 	controller.getPaymentType
 );
@@ -263,7 +263,7 @@ module.exports = router;
 /** *******************************************************************/
 /**
  * @swagger
- * /web/membership/claim-requests/payment-type:
+ * /web/membership/payment-types:
  *   get:
  *     summary: get claim request payment types
  *     tags:

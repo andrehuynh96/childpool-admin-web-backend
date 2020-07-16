@@ -79,7 +79,7 @@ module.exports = {
         offset,
         include: [
           {
-            attributes: ['id','email', 'fullname', 'first_name', 'last_name'],
+            attributes: ['id', 'email', 'fullname', 'first_name', 'last_name'],
             as: "Member",
             model: Member,
             where: memberCond,
@@ -179,9 +179,10 @@ module.exports = {
       const transaction = await database.transaction();
       try {
         await ClaimRequest.update(
-          { status: ClaimRequestStatus.Approved,
+          {
+            status: ClaimRequestStatus.Approved,
             payout_transferred: Sequelize.fn('NOW')
-           },
+          },
           {
             where: {
               id: body.claimRequestIds
@@ -189,23 +190,23 @@ module.exports = {
             transaction: transaction,
             returning: true
           });
-          const dataRewardTracking = claimRequests.map(item => {
-            return ({
-              member_id: item.member_id,
-              currency_symbol: item.currency_symbol,
-              amount: item.amount,
-              action: MemberRewardTransactionAction.SENT,
-              tx_id: item.tx_id,
-              system_type: item.system_type
-            });
+        const dataRewardTracking = claimRequests.map(item => {
+          return ({
+            member_id: item.member_id,
+            currency_symbol: item.currency_symbol,
+            amount: item.amount,
+            action: MemberRewardTransactionAction.SENT,
+            tx_id: item.tx_id,
+            system_type: item.system_type
           });
-          const idList = claimRequests.map(item => item.affiliate_claim_reward_id);
-          await MemberRewardTransactionHis.bulkCreate(
-            dataRewardTracking,
-            {
-             transaction: transaction,
-             returning: true,
-            });
+        });
+        const idList = claimRequests.map(item => item.affiliate_claim_reward_id);
+        await MemberRewardTransactionHis.bulkCreate(
+          dataRewardTracking,
+          {
+            transaction: transaction,
+            returning: true,
+          });
 
         const result = await membershipApi.updateClaimRequests(idList, ClaimRequestStatus.Approved);
 
@@ -348,7 +349,7 @@ module.exports = {
       logger.info('get crypto platform fail', error);
       next(error);
     }
-  }
+  },
 };
 
 function stringifyAsync(data, columns) {
