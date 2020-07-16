@@ -114,6 +114,7 @@ const config = {
     affiliateTypeId: process.env.AFFILIATE_AFFILIATE_TYPE_ID,
     membershipTypeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID,
   },
+  stakingCurrency: process.env.STAKING_CURRENCY
 };
 
 module.exports = config;
