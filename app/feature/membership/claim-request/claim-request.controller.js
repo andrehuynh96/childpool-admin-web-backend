@@ -1,5 +1,4 @@
 const logger = require('app/lib/logger');
-const config = require("app/config");
 const ClaimRequest = require("app/model/wallet").claim_requests;
 const MemberRewardTransactionHis = require("app/model/wallet").member_reward_transaction_his;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
@@ -348,24 +347,6 @@ module.exports = {
     }
     catch (error) {
       logger.info('get crypto platform fail', error);
-      next(error);
-    }
-  },
-  getStakingCurrencyList: async (req, res, next) => {
-    try {
-      const stakingCurrencyStr = config.stakingCurrency;
-      const stakingCurrencies = stakingCurrencyStr.split(',');
-      const stakingCurrencyList = stakingCurrencies.map(item => {
-        return {
-          currency_symbol: item,
-          name: item,
-        };
-      });
-
-      return res.ok(stakingCurrencyList);
-    }
-    catch (error) {
-      logger.error("get staking currency list fail", error);
       next(error);
     }
   },

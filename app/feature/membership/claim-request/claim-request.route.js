@@ -48,12 +48,6 @@ router.get(
 );
 
 router.get(
-	'/staking-currencies',
-    authenticate,
-	controller.getStakingCurrencyList
-);
-
-router.get(
 	'/claim-requests/crypto-platform',
     authenticate,
 	controller.getCryptoPlatform
@@ -396,55 +390,6 @@ module.exports = router;
                         "currency_symbol": "ETH",
                         "created_at": "2020-05-29T06:15:07.006Z"
                     }
-                }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
-
-/**
- * @swagger
- * /web/membership/staking-currencies:
- *   get:
- *     summary: get staking currency list
- *     tags:
- *       - Claim Request
- *     description:
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
-                    "data": [
-                        {
-                            "currency_symbol": "ATOM",
-                            "name": "ATOM"
-                        },
-                        {
-                            "currency_symbol": "IRIS",
-                            "name": "IRIS"
-                        },
-                        {
-                            "currency_symbol": "ONG",
-                            "name": "ONG"
-                        }
-                    ]
                 }
  *       400:
  *         description: Error
