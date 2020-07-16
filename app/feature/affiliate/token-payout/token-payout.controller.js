@@ -4,7 +4,7 @@ const MemberRewardTransactionHis = require("app/model/wallet").member_reward_tra
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
 const ClaimRequestStatusText = require("app/model/wallet/value-object/claim-request-status-text");
 const MemberRewardTransactionAction = require("app/model/wallet/value-object/member-reward-transaction-action");
-const { membershipApi } = require('app/lib/affiliate-api');
+const { affiliateApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
 const Member = require("app/model/wallet").members;
 const moment = require('moment');
@@ -15,7 +15,7 @@ const Op = Sequelize.Op;
 const PaymentType = require("app/model/wallet/value-object/claim-request-payment-type");
 const Platform = require("app/model/wallet/value-object/platform");
 const blockchainHelpper = require('app/lib/blockchain-helpper');
-const SystemType = require("app/model/wallet/value-object/system-type");
+const AppSystemType = require("app/model/wallet/value-object/system-type");
 
 module.exports = {
   search: async (req, res, next) => {
@@ -23,7 +23,7 @@ module.exports = {
       const { query } = req;
       const limit = query.limit ? parseInt(req.query.limit) : 10;
       const offset = query.offset ? parseInt(req.query.offset) : 0;
-      const where = { system_type: SystemType.MEMBERSHIP };
+      const where = { system_type: AppSystemType.AFFILIATE };
       let fromDate, toDate;
       if (query.from_date || query.to_date) {
         where.created_at = {};
@@ -79,7 +79,7 @@ module.exports = {
         offset,
         include: [
           {
-            attributes: ['id', 'email', 'fullname', 'first_name', 'last_name'],
+            attributes: ['id','email', 'fullname', 'first_name', 'last_name'],
             as: "Member",
             model: Member,
             where: memberCond,
@@ -91,7 +91,7 @@ module.exports = {
       });
 
       return res.ok({
-        items: mapper(items) && items.length > 0 ? mapper(items) : [],
+        items: items.length > 0 ? mapper(items) : [],
         offset: offset,
         limit: limit,
         total: total
@@ -117,13 +117,13 @@ module.exports = {
           }
         ],
         where: {
-          id: req.params.claimRequestId,
-          system_type: SystemType.MEMBERSHIP
+          id: req.params.tokenPayoutId,
+          system_type: AppSystemType.AFFILIATE
         }
       });
 
       if (!claimRequest) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['tokenPayoutId'] });
       }
       claimRequest.explorer_link = blockchainHelpper.getUrlTxid(claimRequest.txid, claimRequest.currency_symbol);
       return res.ok(claimRequest);
@@ -138,12 +138,12 @@ module.exports = {
       const { body, params } = req;
       const claimRequest = await ClaimRequest.findOne({
         where: {
-          id: params.claimRequestId,
-          system_type: SystemType.MEMBERSHIP
+          id: params.tokenPayoutId,
+          system_type: AppSystemType.AFFILIATE
         }
       });
       if (!claimRequest) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['tokenPayoutId'] });
       }
       await ClaimRequest.update(
         { txid: body.txid },
@@ -165,50 +165,49 @@ module.exports = {
       const { body } = req;
       const claimRequests = await ClaimRequest.findAll({
         where: {
-          id: body.claimRequestIds,
-          system_type: SystemType.MEMBERSHIP
+          id: body.token_payout_ids,
+          system_type: AppSystemType.AFFILIATE
         }
       });
 
       claimRequests.forEach(item => {
         if (item.status !== ClaimRequestStatus.Pending) {
-          return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['claimRequestIds'] });
+          return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['tokenPayoutIds'] });
         }
       });
 
       const transaction = await database.transaction();
       try {
         await ClaimRequest.update(
-          {
-            status: ClaimRequestStatus.Approved,
+          { status: ClaimRequestStatus.Approved,
             payout_transferred: Sequelize.fn('NOW')
-          },
+           },
           {
             where: {
-              id: body.claimRequestIds
+              id: body.token_payout_ids
             },
             transaction: transaction,
             returning: true
           });
-        const dataRewardTracking = claimRequests.map(item => {
-          return ({
-            member_id: item.member_id,
-            currency_symbol: item.currency_symbol,
-            amount: item.amount,
-            action: MemberRewardTransactionAction.SENT,
-            tx_id: item.tx_id,
-            system_type: item.system_type
+          const dataRewardTracking = claimRequests.map(item => {
+            return ({
+              member_id: item.member_id,
+              currency_symbol: item.currency_symbol,
+              amount: item.amount,
+              action: MemberRewardTransactionAction.SENT,
+              tx_id: item.tx_id,
+              system_type: item.system_type
+            });
           });
-        });
-        const idList = claimRequests.map(item => item.affiliate_claim_reward_id);
-        await MemberRewardTransactionHis.bulkCreate(
-          dataRewardTracking,
-          {
-            transaction: transaction,
-            returning: true,
-          });
+          const idList = claimRequests.map(item => item.affiliate_claim_reward_id);
+          await MemberRewardTransactionHis.bulkCreate(
+            dataRewardTracking,
+            {
+             transaction: transaction,
+             returning: true,
+            });
 
-        const result = await membershipApi.updateClaimRequests(idList, ClaimRequestStatus.Approved);
+        const result = await affiliateApi.updateClaimRequests(idList, ClaimRequestStatus.Approved);
 
         if (result.httpCode !== 200) {
           await transaction.rollback();
@@ -232,7 +231,7 @@ module.exports = {
   downloadCSV: async (req, res, next) => {
     try {
       const { query } = req;
-      const where = { system_type: SystemType.MEMBERSHIP };
+      const where = { system_type: AppSystemType.AFFILIATE };
       let fromDate, toDate;
       if (query.from_date || query.to_date) {
         where.created_at = {};
@@ -323,7 +322,7 @@ module.exports = {
         { key: 'status', header: 'Status' },
         { key: 'type', header: 'Payment' }
       ]);
-      res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
+      res.setHeader('Content-disposition', 'attachment; filename=token-payment.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
     }
@@ -334,6 +333,7 @@ module.exports = {
   },
   getPaymentType: async (req, res, next) => {
     try {
+      console.log('getPaymentType', 'r')
       return res.ok(PaymentType);
     }
     catch (error) {
@@ -349,7 +349,7 @@ module.exports = {
       logger.info('get crypto platform fail', error);
       next(error);
     }
-  },
+  }
 };
 
 function stringifyAsync(data, columns) {

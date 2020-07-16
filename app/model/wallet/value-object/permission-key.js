@@ -6,7 +6,6 @@ module.exports = {
     "ROLES": [
       "Master",
       "Admin",
-      "Operator1",
       "Operator2"
     ]
   },
@@ -283,25 +282,25 @@ module.exports = {
     "DESCRIPTION": "View membership member list",
     "GROUP_NAME": "Members",
     "KEY": "MEMBERSHIP_VIEW_MEMBER_LIST",
-    "ROLES": ["Master"]
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "MEMBERSHIP_VIEW_MEMBER_DETAIL": {
     "KEY": "MEMBERSHIP_VIEW_MEMBER_DETAIL",
     "DESCRIPTION": "View membership member detail",
     "GROUP_NAME": "Members",
-    "ROLES": ["Master"]
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "MEMBERSHIP_UPDATE_MEMBER": {
     "KEY": "MEMBERSHIP_UPDATE_MEMBER",
     "DESCRIPTION": "Update membership member",
     "GROUP_NAME": "Members",
-    "ROLES": ["Master"]
+    "ROLES": ["Master", "Admin"]
   },
   "MEMBERSHIP_VIEW_REFERRAL_STRUCTURE": {
     "KEY": "MEMBERSHIP_VIEW_REFERRAL_STRUCTURE",
     "DESCRIPTION": "View membership member referral structure",
-    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "GROUP_NAME": "Members",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
   },
 
   "MEMBERSHIP_VIEW_ORDER_LIST": {
@@ -336,9 +335,9 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
 
-  "MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST": {
-    "KEY": "MEMBERSHIP_APPROVE_REJECT_CLAIM_REQUEST",
-    "DESCRIPTION": "Approve/Reject membership claim request",
+  "MEMBERSHIP_APPROVE_CLAIM_REQUEST": {
+    "KEY": "MEMBERSHIP_APPROVE_CLAIM_REQUEST",
+    "DESCRIPTION": "Approvet membership claim request",
     "GROUP_NAME": "Claim request",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
@@ -360,7 +359,37 @@ module.exports = {
     "GROUP_NAME": "Claim request",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "AFFILIATE_TOKEN_PAYOUT_VIEW_LIST": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_VIEW_LIST",
+    "DESCRIPTION": "View token payout list",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 
+  "AFFILIATE_TOKEN_PAYOUT_APPROVE": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_APPROVE",
+    "DESCRIPTION": "Approvet membership token payout",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "AFFILIATE_TOKEN_PAYOUT_EXPORT_CSV": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_EXPORT_CSV",
+    "DESCRIPTION": "Export token payout to CSV file",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "AFFILIATE_TOKEN_PAYOUT_VIEW_DETAIL": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_VIEW_DETAIL",
+    "DESCRIPTION": "View token payout details",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "AFFILIATE_TOKEN_PAYOUT_UPDATE_TX_ID": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_UPDATE_TX_ID",
+    "DESCRIPTION": "Update transaction id of a token payout",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
   "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE": {
     "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE",
     "DESCRIPTION": "View membership type",
@@ -487,39 +516,39 @@ module.exports = {
     "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_AFFILIATE",
     "DESCRIPTION": "View membership affiliate",
     "GROUP_NAME": "Affiliate Configuration",
-    "ROLES": ["Master", "Admin"]
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "MEMBERSHIP_VIEW_MEMBER_KYC_LIST": {
     "KEY": "MEMBERSHIP_VIEW_MEMBER_KYC_LIST",
     "DESCRIPTION": "View membership member KYC list",
     "GROUP_NAME": "Members",
-    "ROLES": ["Master","Admin"]
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL": {
     "KEY": "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL",
     "DESCRIPTION": "View membership member KYC detail",
     "GROUP_NAME": "Members",
-    "ROLES": ["Master","Admin"]
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
 
   "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING": {
     "KEY": "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING",
     "DESCRIPTION": "View claim membership reward setting",
     "GROUP_NAME": "Claim Membership Reward Setting",
-    "ROLES": ["Master", "Admin"]
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "MEMBERSHIP_UPDATE_CLAIM_MEMBERSHIP_REWARD_SETTING": {
     "KEY": "MEMBERSHIP_UPDATE_CLAIM_MEMBERSHIP_REWARD_SETTING",
     "DESCRIPTION": "Update claim membership reward setting",
     "GROUP_NAME": "Claim Membership Reward Setting",
-    "ROLES": ["Master", "Admin"]
+    "ROLES": ["Master", "Admin", "Operator1"]
   },
 
   "MEMBERSHIP_VIEW_FIAT_RATE": {
     "KEY": "MEMBERSHIP_VIEW_FIAT_RATE",
     "DESCRIPTION": "View fiat rate",
     "GROUP_NAME": "Fiat Rate",
-    "ROLES": ["Master", "Admin"]
+    "ROLES": ["Master", "Admin", "Operator1"]
   },
   "MEMBERSHIP_UPDATE_FIAT_RATE": {
     "KEY": "MEMBERSHIP_UPDATE_FIAT_RATE",
@@ -531,7 +560,7 @@ module.exports = {
     "KEY": "AFFILIATE_VIEW_CLAIM_REWARD_SETTING",
     "DESCRIPTION": "View affiliate claim reward setting",
     "GROUP_NAME": "Claim Affiliate Reward Setting",
-    "ROLES": ["Master", "Admin"]
+    "ROLES": ["Master", "Admin", "Operator1"]
   },
   "AFFILIATE_UPDATE_CLAIM_REWARD_SETTING": {
     "KEY": "AFFILIATE_UPDATE_CLAIM_REWARD_SETTING",

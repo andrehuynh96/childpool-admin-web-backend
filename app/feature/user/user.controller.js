@@ -16,10 +16,17 @@ const UserRole = require("app/model/wallet").user_roles;
 module.exports = {
   search: async (req, res, next) => {
     try {
+      let { query } = req;
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let rolesControl = await _getRoleControl(req.roles);
       let where = { deleted_flg: false };
+      if (query.name) {
+        where.name = { [Op.iLike]: `%${query.name}%` };
+      }
+      if (query.email) {
+        where.email = { [Op.iLike]: `%${query.email}%` };
+      }
       let include = [
         {
           model: UserRole,
@@ -41,7 +48,7 @@ module.exports = {
       }
       const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, where: where, include: include, order: [['created_at', 'DESC']] });
       return res.ok({
-        items: userMapper(items) && items.length>0?userMapper(items):[],
+        items: items.length > 0 ? userMapper(items) : [],
         offset: offset,
         limit: limit,
         total: total
@@ -187,12 +194,12 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-          where: {
-            user_id: user.id,
-            action_type: OtpType.CREATE_ACCOUNT
-          },
-          returning: true
-        })
+        where: {
+          user_id: user.id,
+          action_type: OtpType.CREATE_ACCOUNT
+        },
+        returning: true
+      })
 
       await OTP.create({
         code: verifyToken,
@@ -203,7 +210,7 @@ module.exports = {
         action_type: OtpType.CREATE_ACCOUNT
       })
       user.role = role.name,
-      user.adminName = req.user.name
+        user.adminName = req.user.name
       await transaction.commit();
       _sendEmailCreateUser(user, verifyToken);
 
@@ -247,12 +254,12 @@ module.exports = {
         // email: req.body.email.toLowerCase(),
         name: req.body.name
       }, {
-          where: {
-            id: req.params.id
-          },
-          returning: true,
-          transaction: transaction
-        });
+        where: {
+          id: req.params.id
+        },
+        returning: true,
+        transaction: transaction
+      });
       if (!response || response.length == 0) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();
@@ -329,11 +336,11 @@ module.exports = {
         password_hash: passWord,
         user_sts: UserStatus.ACTIVATED
       }, {
-          where: {
-            id: user.id
-          },
-          returning: true
-        });
+        where: {
+          id: user.id
+        },
+        returning: true
+      });
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
@@ -342,13 +349,13 @@ module.exports = {
       await OTP.update({
         used: true
       }, {
-          where: {
-            user_id: user.id,
-            code: req.body.verify_token,
-            action_type: OtpType.CREATE_ACCOUNT
-          },
-          returning: true
-        })
+        where: {
+          user_id: user.id,
+          code: req.body.verify_token,
+          action_type: OtpType.CREATE_ACCOUNT
+        },
+        returning: true
+      })
 
       return res.ok(true);
     }
@@ -385,12 +392,12 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-          where: {
-            user_id: user.id,
-            action_type: OtpType.CREATE_ACCOUNT
-          },
-          returning: true
-        })
+        where: {
+          user_id: user.id,
+          action_type: OtpType.CREATE_ACCOUNT
+        },
+        returning: true
+      })
 
       await OTP.create({
         code: verifyToken,
@@ -401,12 +408,12 @@ module.exports = {
         action_type: OtpType.CREATE_ACCOUNT
       })
       let userRole = await UserRole.findOne({
-        where:{
+        where: {
           user_id: user.id
         }
       })
 
-      let  role = await Role.findOne({
+      let role = await Role.findOne({
         where: {
           id: userRole.role_id
         }

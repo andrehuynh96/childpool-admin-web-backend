@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const schema = Joi.object().keys({
-  claimRequestIds: Joi.array().required()
+  txid: Joi.string().min(10).max(200).required()
 });
 
 module.exports = schema;

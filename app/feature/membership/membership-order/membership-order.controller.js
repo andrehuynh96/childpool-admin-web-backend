@@ -12,6 +12,7 @@ const MemberRewardCommissionMethod = require("app/model/wallet/value-object/memb
 const MemberRewardAction = require("app/model/wallet/value-object/member-reward-transaction-action");
 const SystemType = require('app/model/wallet/value-object/system-type');
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
+const ClaimRequestPaymentType = require("app/model/wallet/value-object/claim-request-payment-type")
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
 const Sequelize = require('sequelize');
 const stringify = require('csv-stringify');
@@ -22,6 +23,11 @@ const mailer = require('app/lib/mailer');
 const PaymentType = require('app/model/wallet/value-object/claim-request-payment-type');
 
 const Op = Sequelize.Op;
+const MembershipOrderStatusEnum = {
+  Pending: 'Verify payment',
+  Rejected: 'Rejected',
+  Approved: 'Approved',
+};
 
 module.exports = {
   search: async (req, res, next) => {
@@ -419,6 +425,8 @@ module.exports = {
         element.last_name = element.Member.last_name;
         element.membership_type_name = element.MembershipType.name;
         element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        element.status_string = MembershipOrderStatusEnum[element.status]
+        element.payment = element.payment_type == ClaimRequestPaymentType.Bank ? 'Bank' : element.wallet_id ? element.currency_symbol : `*${element.currency_symbol}`
       });
       let data = await stringifyAsync(items, [
         { key: 'order_no', header: 'Order' },
@@ -427,12 +435,12 @@ module.exports = {
         { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
         { key: 'membership_type_name', header: 'Membership' },
-        { key: 'payment_type', header: 'Payment Type' },
+        { key: 'payment', header: 'Payment' },
         // { key: 'account_number', header: 'Bank Acc No' },
         { key: 'wallet_address', header: 'Receive address' },
-        { key: 'status', header: 'Status' },
+        { key: 'status_string', header: 'Status' },
         // { key: 'wallet_id', header: 'Walllet Id' },
-        { key: 'currency_symbol', header: 'Currency symbol' },
+        // { key: 'currency_symbol', header: 'Currency symbol' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');

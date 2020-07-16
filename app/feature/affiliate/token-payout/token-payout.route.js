@@ -1,6 +1,6 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./claim-request.controller');
+const controller = require('./token-payout.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require("app/middleware/validator.middleware");
@@ -8,61 +8,64 @@ const { updateStatus, updateTxid } = require('./validator');
 const router = express.Router();
 
 router.get(
-    '/claim-requests',
+    '/token-payout',
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_REQUEST_LIST),
+    authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_VIEW_LIST),
     controller.search
 );
+
 router.get(
-    '/claim-requests/:claimRequestId',
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_CLAIM_REQUEST_DETAIL),
+    '/token-payout/detail/:tokenPayoutId',
+     authenticate,
+     authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_VIEW_DETAIL),
     controller.getDetail
 );
+
 router.put(
-    '/claim-requests/:claimRequestId/txid',
+    '/token-payout/update/:tokenPayoutId/txid',
     validator(updateTxid),
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID),
+    authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_UPDATE_TX_ID),
     controller.updateTxid
 );
+
 router.put(
-    '/claim-requests/approves',
+    '/token-payout/approves',
     validator(updateStatus),
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_APPROVE_CLAIM_REQUEST),
+    authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_APPROVE),
     controller.changeClaimRewardsStatus
 );
 
 router.get(
-	'/claim-requests-csv',
+	'/token-payout-csv',
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_CLAIM_REQUESTS),
+    authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_EXPORT_CSV),
 	controller.downloadCSV
 );
 
 router.get(
-	'/payment-types',
+	'/token-payout/payment-type',
     authenticate,
 	controller.getPaymentType
 );
 
 router.get(
-	'/claim-requests/crypto-platform',
+	'/token-payout/crypto-platform',
     authenticate,
 	controller.getCryptoPlatform
 );
-
 module.exports = router;
 
-/** *******************************************************************/
+/** ******************************************************************/
+
 /**
  * @swagger
- * /web/membership/claim-requests:
+ * /web/affiliate/token-payout:
  *   get:
- *     summary: search claim request
+ *     summary: search Token Payout
  *     tags:
- *       - Claim Request
+ *       - Affiliate
  *     description:
  *     parameters:
  *       - name: offset
@@ -159,11 +162,11 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/membership/claim-request/approves:
+ * /web/affiliate/token-payout/approves:
  *   put:
- *     summary: Approve claim requests
+ *     summary: Approve Token Payouts
  *     tags:
- *       - Claim Request
+ *       - Affiliate
  *     description: update user profile
  *     parameters:
  *       - name: data
@@ -173,11 +176,10 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - status
  *            example:
  *                  {
-                        "claimRequestIds":[203,201,205]
- *                  }
+                        "token_payout_ids": [203,123]
+                    }
  *     produces:
  *       - application/json
  *     responses:
@@ -208,11 +210,11 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/membership/claim-requests-csv:
+ * /web/affiliate/token-payout-csv:
  *   get:
- *     summary: export csv claim request
+ *     summary: export csv Token Payout
  *     tags:
- *       - Claim Request
+ *       - Affiliate
  *     description:
  *     parameters:
  *       - name: from_date
@@ -260,14 +262,14 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
-/** *******************************************************************/
+
 /**
  * @swagger
- * /web/membership/payment-types:
+ * /web/affiliate/token-payout/payment-type:
  *   get:
- *     summary: get claim request payment types
+ *     summary: get Token Payout payment types
  *     tags:
- *       - Claim Request
+ *       - Affiliate
  *     description:
  *     produces:
  *       - application/json
@@ -299,14 +301,14 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
-/** *******************************************************************/
+
 /**
  * @swagger
- * /web/membership/claim-requests/crypto-platform:
+ * /web/affiliate/token-payout/crypto-platform:
  *   get:
- *     summary: get claim request crypto platforms
+ *     summary: get Token Payout crypto platforms
  *     tags:
- *       - Claim Request
+ *       - Affiliate
  *     description:
  *     produces:
  *       - application/json
@@ -356,17 +358,17 @@ module.exports = router;
  /* #region Get policy details */
 /**
  * @swagger
- * /web/membership/claim-requests/:claimrequestId:
+ * /web/affiliate/token-payout/detail/{tokenPayoutId}:
  *   get:
- *     summary: Get claim request details
+ *     summary: Get Token Payout details
  *     tags:
- *       - Claim Request
+ *       - Affiliate
  *     description:
  *     parameters:
- *       - in: params
- *         name: claimrequestId
+ *       - in: path
+ *         name: tokenPayoutId
+ *         type: string
  *         required: true
- *         description: claim request Id
  *     produces:
  *       - application/json
  *     responses:
@@ -411,14 +413,14 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/membership/claim-requests/:claimrequestId/txid:
+ * /web/affiliate/token-payout/update/{tokenPayoutId}/txid:
  *   put:
- *     summary: update claim request txid
+ *     summary: update Token Payout txid
  *     tags:
- *       - Claim Request
- *     description: update claim request txid
+ *       - Affiliate
+ *     description: update Token Payout txid
  *     parameters:
- *       - name: claimrequestId
+ *       - name: tokenPayoutId
  *         in: path
  *         type: string
  *         required: true

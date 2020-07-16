@@ -95,6 +95,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: true,
     },
+    bank_account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     receiving_addresses_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -153,6 +157,11 @@ module.exports = (sequelize, DataTypes) => {
     MembershipOrder.belongsTo(models.receiving_addresses, {
       as: 'ReceivingAddress',
       foreignKey: 'receiving_addresses_id',
+    });
+
+    MembershipOrder.belongsTo(models.bank_accounts, {
+      as: 'BankAccount',
+      foreignKey: 'bank_account_id',
     });
   };
 
