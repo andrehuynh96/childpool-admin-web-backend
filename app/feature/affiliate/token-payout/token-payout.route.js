@@ -16,8 +16,8 @@ router.get(
 
 router.get(
     '/token-payout/detail/:tokenPayoutId',
-     authenticate,
-     authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_VIEW_DETAIL),
+    authenticate,
+    authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_VIEW_DETAIL),
     controller.getDetail
 );
 
@@ -38,22 +38,22 @@ router.put(
 );
 
 router.get(
-	'/token-payout-csv',
+    '/token-payout-csv',
     authenticate,
     authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_EXPORT_CSV),
-	controller.downloadCSV
+    controller.downloadCSV
 );
 
 router.get(
-	'/token-payout/payment-type',
+    '/token-payout/payment-type',
     authenticate,
-	controller.getPaymentType
+    controller.getPaymentType
 );
 
 router.get(
-	'/token-payout/crypto-platform',
+    '/token-payout/crypto-platform',
     authenticate,
-	controller.getCryptoPlatform
+    controller.getCryptoPlatform
 );
 module.exports = router;
 
@@ -160,108 +160,108 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/affiliate/token-payout/approves:
- *   put:
- *     summary: Approve Token Payouts
- *     tags:
- *       - Affiliate
- *     description: update user profile
- *     parameters:
- *       - name: data
- *         in: body
- *         required: true
- *         description: submit data JSON to update.
- *         schema:
- *            type: object
- *            required:
- *            example:
- *                  {
-                        "token_payout_ids": [203,123]
-                    }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/affiliate/token-payout/approves:
+*   put:
+*     summary: Approve Token Payouts
+*     tags:
+*       - Affiliate
+*     description: update user profile
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON to update.
+*         schema:
+*            type: object
+*            required:
+*            example:
+*                  {
+                       "token_payout_ids": [203,123]
+                   }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
- /**
- * @swagger
- * /web/affiliate/token-payout-csv:
- *   get:
- *     summary: export csv Token Payout
- *     tags:
- *       - Affiliate
- *     description:
- *     parameters:
- *       - name: from_date
- *         in: query
- *         type: string
- *       - name: to_date
- *         in: query
- *         type: string
- *       - name: email
- *         in: query
- *         type: string
- *       - name: status
- *         in: query
- *         type: string
- *       - name: payment
- *         in: query
- *         type: string
- *       - name: crypto_platform
- *         in: query
- *         type: string
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/affiliate/token-payout-csv:
+*   get:
+*     summary: export csv Token Payout
+*     tags:
+*       - Affiliate
+*     description:
+*     parameters:
+*       - name: from_date
+*         in: query
+*         type: string
+*       - name: to_date
+*         in: query
+*         type: string
+*       - name: email
+*         in: query
+*         type: string
+*       - name: status
+*         in: query
+*         type: string
+*       - name: payment
+*         in: query
+*         type: string
+*       - name: crypto_platform
+*         in: query
+*         type: string
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 /**
  * @swagger
@@ -355,7 +355,7 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /* #region Get policy details */
+/* #region Get policy details */
 /**
  * @swagger
  * /web/affiliate/token-payout/detail/{tokenPayoutId}:
@@ -411,57 +411,57 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/affiliate/token-payout/update/{tokenPayoutId}/txid:
- *   put:
- *     summary: update Token Payout txid
- *     tags:
- *       - Affiliate
- *     description: update Token Payout txid
- *     parameters:
- *       - name: tokenPayoutId
- *         in: path
- *         type: string
- *         required: true
- *       - name: data
- *         in: body
- *         required: true
- *         description: submit data JSON to update.
- *         schema:
- *            type: object
- *            required:
- *            - membershipTypeId
- *            - referrerCode
- *            example:
- *                  {
-                        "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca"
- *                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/affiliate/token-payout/update/{tokenPayoutId}/txid:
+*   put:
+*     summary: update Token Payout txid
+*     tags:
+*       - Affiliate
+*     description: update Token Payout txid
+*     parameters:
+*       - name: tokenPayoutId
+*         in: path
+*         type: string
+*         required: true
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON to update.
+*         schema:
+*            type: object
+*            required:
+*            - membershipTypeId
+*            - referrerCode
+*            example:
+*                  {
+                       "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca"
+*                  }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 /** *******************************************************************/
