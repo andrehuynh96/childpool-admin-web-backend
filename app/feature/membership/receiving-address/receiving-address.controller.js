@@ -2,6 +2,7 @@ const logger = require("app/lib/logger");
 const config = require("app/config");
 const database = require('app/lib/database').db().wallet;
 const ReceivingAddress = require("app/model/wallet").receiving_addresses;
+const Platform = require("app/model/wallet/value-object/platform");
 const Address = require("app/lib/address");
 
 module.exports = {
@@ -9,7 +10,7 @@ module.exports = {
     try {
       let where = {}
       let currency_symbol = req.query.currency_symbol
-      if(currency_symbol)
+      if (currency_symbol)
         where.currency_symbol = currency_symbol.toUpperCase()
       let results = await ReceivingAddress.findAll({
         where,
@@ -66,12 +67,12 @@ module.exports = {
         actived_flg: false,
         updated_by: req.user.id,
       }, {
-          where: {
-            currency_symbol: result.currency_symbol
-          },
-          returning: true,
-          transaction: transaction
-        });
+        where: {
+          currency_symbol: result.currency_symbol
+        },
+        returning: true,
+        transaction: transaction
+      });
       if (!responseAllUpdate) {
         return res.serverInternalError();
       }
@@ -79,12 +80,12 @@ module.exports = {
         actived_flg: true,
         updated_by: req.user.id,
       }, {
-          where: {
-            id: result.id
-          },
-          returning: true,
-          transaction: transaction
-        });
+        where: {
+          id: result.id
+        },
+        returning: true,
+        transaction: transaction
+      });
 
       if (!response) {
         return res.serverInternalError();
@@ -117,11 +118,11 @@ module.exports = {
         actived_flg: false,
         updated_by: req.user.id,
       }, {
-          where: {
-            id: result.id
-          },
-          returning: true,
-        });
+        where: {
+          id: result.id
+        },
+        returning: true,
+      });
 
       if (!response) {
         return res.serverInternalError();
@@ -145,10 +146,13 @@ module.exports = {
         }
       });
 
+      if (req.body.platform !== Platform.ETH.symbol && req.body.platform !== Platform.BTC.symbol && req.body.platform !== Platform.USDT.symbol) {
+        return res.badRequest(res.__("INVALID_CURRENCY_SYMBOL"), "INVALID_CURRENCY_SYMBOL", { fields: ['platform'] });
+      }
+
       if (result) {
         return res.badRequest(res.__("CREATE_ALREADY"), "CREATE_ALREADY", { fields: ['platform', 'address'] });
       }
-
       let validateAddress = Address.validate(req.body.platform, req.body.address);
       if (!validateAddress) {
         return res.badRequest(res.__("INVALID_ADDRESS"), "INVALID_ADDRESS", { fields: ['address'] });
