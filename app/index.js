@@ -32,11 +32,11 @@ router.use(session({
     httpOnly: false
   },
   store: new redisStore({ client: redis }),
-}))
+}));
 
 router.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true);
-  //res.header('Access-Control-Allow-Origin', '*');
+  // res.header('Access-Control-Allow-Origin', '*');
   next();
 });
 
@@ -88,6 +88,11 @@ router.use(
 router.get('/', function (req, res) {
   let result = {
     message: 'Hello',
+    app: config.app.name,
+    version: config.app.version,
+    buildNumber: config.app.buildNumber,
+    description: config.app.description,
+    enableSeed: config.enableSeed,
   };
   res.json(result);
 });

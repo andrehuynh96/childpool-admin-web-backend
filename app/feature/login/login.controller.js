@@ -17,6 +17,8 @@ const uuidV4 = require('uuid/v4');
 const UserRole = require('app/model/wallet').user_roles;
 const Roles = require('app/model/wallet').roles;
 const StakingAPI = require("app/lib/staking-api/partner-api-key")
+const ipCountry = require('app/lib/ip-country');
+
 module.exports = {
   login: async (req, res, next) => {
     try {
@@ -116,7 +118,7 @@ module.exports = {
         });
       }
       else {
-        const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
+        const registerIp = ipCountry.getIpClient(req);
         let roles = await UserRole.findAll({
           attributes: ['role_id'],
           where: {

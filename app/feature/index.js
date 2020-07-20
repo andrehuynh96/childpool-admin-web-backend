@@ -10,7 +10,6 @@ router.use(require('./confirm-2fa/confirm-2fa.route'));
 router.use(require('./account/account.route'));
 router.use(require('./grandchild/grandchild.route'));
 router.use(require('./partner-api-key/partner-api-key.route'));
-router.use(require('./member/member.route'));
 router.use(require('./api-key/api-key.route'));
 router.use(require('./logout/logout.route'));
 router.use(require('./role/role.route'));
@@ -18,11 +17,14 @@ router.use(require('./permission/permission.route'));
 router.use(require('./partner-commission/partner-commission.route'));
 router.use(require('./change-reward-address/change-reward-address.route'));
 router.use(require('./partner-tx-memo/partner-tx-memo.route'));
-router.use(require('./check-token/check-token.route')); 
+router.use(require('./check-token/check-token.route'));
+router.use('/membership', require('./membership'));
+router.use(require('./platform/platform.route'));
+router.use('/affiliate', require('./affiliate'));
 
 module.exports = router;
 
-/**********************************************************************/
+/** ********************************************************************/
 /**
  * @swagger
  * definition:

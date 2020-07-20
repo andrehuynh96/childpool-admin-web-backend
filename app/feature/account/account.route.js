@@ -15,7 +15,7 @@ const router = express.Router();
 router.get(
   '/me',
   authenticate,
-  authority(PermissionKey.VIEW_USER),
+  // authority(PermissionKey.VIEW_USER),
   controller.getMe
 );
 
