@@ -49,12 +49,7 @@ module.exports = {
               transaction: transaction
             });
           }
-          const membershipTypeIds = req.body.items.map(item => item.id);
-          const membershipTypes = await MembershipType.findAll({
-            where: {
-              id: membershipTypeIds
-            }
-          });
+          const membershipTypes = await MembershipType.findAll();
           const result = await affiliateApi.updateMembershipTypeConfig(membershipTypes);
           if (result.httpCode !== 200) {
             await transaction.rollback();
