@@ -57,6 +57,7 @@ module.exports = {
           });
           const result = await affiliateApi.updateMembershipTypeConfig(membershipTypes);
           if (result.httpCode !== 200) {
+            await transaction.rollback();
             return res.status(result.httpCode).send(result.data);
           }
         } else {
