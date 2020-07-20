@@ -255,7 +255,7 @@ module.exports = {
         const result = await membershipApi.registerMembership({
           email: order.Member.email,
           referrerCode: order.referrer_code,
-          membershipOrderId: order.id.toString(),
+          membershipOrder: order,
           membershipType,
         });
 
