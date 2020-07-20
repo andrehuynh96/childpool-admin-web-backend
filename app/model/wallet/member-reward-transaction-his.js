@@ -47,7 +47,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(125),
       allowNull: true,
       defaultValue: SystemType.MEMBERSHIP
-    }
+    },
+    membership_order_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,
