@@ -2,7 +2,6 @@ const logger = require("app/lib/logger");
 const config = require("app/config");
 const database = require('app/lib/database').db().wallet;
 const ReceivingAddress = require("app/model/wallet").receiving_addresses;
-const Platform = require("app/model/wallet/value-object/platform");
 const Address = require("app/lib/address");
 
 module.exports = {
@@ -145,11 +144,6 @@ module.exports = {
           wallet_address: req.body.address,
         }
       });
-
-      if (req.body.platform !== Platform.ETH.symbol && req.body.platform !== Platform.BTC.symbol && req.body.platform !== Platform.USDT.symbol) {
-        return res.badRequest(res.__("INVALID_CURRENCY_SYMBOL"), "INVALID_CURRENCY_SYMBOL", { fields: ['platform'] });
-      }
-
       if (result) {
         return res.badRequest(res.__("CREATE_ALREADY"), "CREATE_ALREADY", { fields: ['platform', 'address'] });
       }
