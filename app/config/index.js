@@ -6,9 +6,10 @@ const logFolder = process.env.LOG_FOLDER || './public/logs';
 
 const config = {
   logger: {
+    level: process.env.LOG_LEVEL || "debug",
     console: {
       enable: true,
-      level: 'debug',
+      level: process.env.LOG_LEVEL || "debug",
     },
     defaultLevel: 'debug',
     file: {
@@ -113,6 +114,50 @@ const config = {
     secretKey: process.env.AFFILIATE_SECRET_KEY,
     affiliateTypeId: process.env.AFFILIATE_AFFILIATE_TYPE_ID,
     membershipTypeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID,
+  },
+  schedule: {
+    updateAffiliate: process.env.SCHEDULE_UPDATE_AFFILIATE_REWARD,
+    checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
+  },
+  sdk: {
+    apiKey: process.env.SDK_API_KEY,
+    secret: process.env.SDK_SECRET_KEY,
+    url: process.env.SDK_URL
+  },
+  txCreator: {
+    host: process.env.TX_CREATOR_HOST,
+    ATOM: {
+      keyId: process.env.TX_CREATOR_ATOM_KEY_ID,
+      serviceId: process.env.TX_CREATOR_ATOM_SERVICE_ID,
+      index: process.env.TX_CREATOR_ATOM_INDEX,
+      testNet: process.env.TX_CREATOR_ATOM_TESTNET,
+      feeDenom: process.env.TX_CREATOR_ATOM_FEEDENOM || 'uatom',
+      gas: process.env.TX_CREATOR_ATOM_GAS_LIMIT ? parseInt(process.env.TX_CREATOR_ATOM_GAS_LIMIT) : 250000,
+      confirmBlock: process.env.ATOM_DEFAULT_CONFIRM_BLOCK || 5,
+
+    },
+    IRIS: {
+      keyId: process.env.TX_CREATOR_IRIS_KEY_ID,
+      serviceId: process.env.TX_CREATOR_IRIS_SERVICE_ID,
+      index: process.env.TX_CREATOR_IRIS_INDEX,
+      testNet: process.env.TX_CREATOR_IRIS_TESTNET,
+      feeDenom: process.env.TX_CREATOR_IRIS_FEEDENOM || 'iris-atto',
+      gas: process.env.TX_CREATOR_IRIS_GAS_LIMIT ? parseInt(process.env.TX_CREATOR_IRIS_GAS_LIMIT) : 50000,
+      rateGasPrice: process.env.TX_CREATOR_IRIS_RATE_GAS_PRICE ? parseInt(process.env.TX_CREATOR_IRIS_RATE_GAS_PRICE) : 1e9,
+      confirmBlock: process.env.IRIS_DEFAULT_CONFIRM_BLOCK || 5,
+    },
+    ONT: {
+      keyId: process.env.TX_CREATOR_ONT_KEY_ID,
+      serviceId: process.env.TX_CREATOR_ONT_SERVICE_ID,
+      index: process.env.TX_CREATOR_ONT_INDEX,
+      testNet: process.env.TX_CREATOR_ONT_TESTNET,
+      gasLimit: process.env.TX_CREATOR_ONT_GAS_LIMIT ? parseInt(process.env.TX_CREATOR_ONT_GAS_LIMIT) : 50000,
+      gasPrice: process.env.TX_CREATOR_ONT_GAS_PRICE ? parseInt(process.env.TX_CREATOR_ONT_GAS_PRICE) : 1e9,
+      confirmBlock: process.env.ONT_DEFAULT_CONFIRM_BLOCK || 5,
+    },
+  },
+  ONT: {
+    restUrl: process.env.ONT_REST_SERVER_URL
   },
   stakingCurrency: process.env.STAKING_CURRENCY
 };

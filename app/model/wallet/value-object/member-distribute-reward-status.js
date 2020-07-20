@@ -1,0 +1,6 @@
+module.exports = {
+  "PENDING": "PENDING",
+  "CANCELED": "CANCELED",
+  "CONFIRMED": "CONFIRMED",
+  "FAILED": "FAILED"
+}
