@@ -2,7 +2,7 @@ const logger = require("app/lib/logger");
 const database = require('app/lib/database').db().wallet;
 const Setting = require("app/model/wallet").settings;
 const MembershipType = require("app/model/wallet").membership_types;
-
+const { affiliateApi } = require('app/lib/affiliate-api');
 module.exports = {
   get: async (req, res, next) => {
     try {
@@ -49,6 +49,12 @@ module.exports = {
               transaction: transaction
             });
           }
+          const membershipTypes = await MembershipType.findAll();
+          const result = await affiliateApi.updateMembershipTypeConfig(membershipTypes);
+          if (result.httpCode !== 200) {
+            await transaction.rollback();
+            return res.status(result.httpCode).send(result.data);
+          }
         } else {
           await Setting.update({
             value: req.body[key],
@@ -64,6 +70,7 @@ module.exports = {
       }
       await transaction.commit();
       return res.ok(true);
+
     }
     catch (err) {
       if (transaction) {

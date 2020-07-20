@@ -277,6 +277,25 @@ class AffiliateApi {
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
+
+  async updateMembershipTypeConfig(data) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.put(`${API_URL}/membership-type-config`,
+        { membershipTypes: data },
+        {
+          headers,
+        });
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("get membership referral structure fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
+
   // Private functions
   async getHeaders() {
     const accessToken = await this.getAccessToken();
