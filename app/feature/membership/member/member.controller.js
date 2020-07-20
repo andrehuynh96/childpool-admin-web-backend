@@ -184,7 +184,7 @@ module.exports = {
       else {
         member.status = MemberFillterStatusText.Active;
       }
-      member.kyc_level = member.kyc_level.replace('LEVEL_', '');
+      member.kyc_level = (member.kyc_level || '').replace('LEVEL_', '');
       if (!member.membership_type_id) {
         member.membership_type = 'Basic';
         return res.ok(memberMapper(member));
