@@ -5,6 +5,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 const database = require('app/lib/database');
 const logger = require('app/lib/logger');
 const redis = require('app/lib/redis');
+const loader = require('app/loader');
 
 database.init(async err => {
   if (err) {
@@ -17,6 +18,7 @@ database.init(async err => {
       logger.error(`Redis start fail:`, err);
       return;
     }
+    loader.init();
     require('app/model').init();
     require('app/worker').start();
     process.on('SIGINT', () => {
