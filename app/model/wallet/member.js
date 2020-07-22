@@ -35,6 +35,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(128),
       allowNull: true
     },
+    first_name_kanji: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+    last_name_kanji: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
     phone: {
       type: DataTypes.STRING(32),
       allowNull: false,
@@ -140,6 +148,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     country_phone_code: {
       type: DataTypes.STRING(64),
+      allowNull: true
+    },
+    current_language: {
+      type: DataTypes.STRING(100),
       allowNull: true
     },
   }, {
