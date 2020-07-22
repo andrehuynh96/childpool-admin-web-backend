@@ -3,23 +3,17 @@ const objectMapper = require('object-mapper');
 const destObject = {
   array: {
     '[].id': '[].id',
-    '[].email': '[].email',
     '[].name': '[].name',
-    '[].user_roles[].role.name': '[].role',
-    '[].twofa_enable_flg': '[].twofa_enable_flg',
-    '[].created_at': '[].created_at',
-    '[].user_sts': '[].user_sts',
-    '[].latest_login_at': '[].latest_login_at'
+    '[].subject': '[].subject',
+    '[].language': '[].language',
+    '[].deleted_flg': '[].deleted_flg',
   },
   single: {
     id: 'id',
-    email: 'email',
     name: 'name',
-    'user_roles[].role.name': 'role',
-    twofa_enable_flg: 'twofa_enable_flg',
-    created_at: 'created_at',
-    user_sts: 'user_sts',
-    latest_login_at: 'latest_login_at'
+    subject: 'subject',
+    language: 'language',
+    deleted_flg: 'deleted_flg'
   }
 };
 module.exports = srcObject => {
