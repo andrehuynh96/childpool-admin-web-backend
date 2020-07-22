@@ -53,34 +53,46 @@ router.put('/email-templates/:id',
                 "data": {
                     "items": [
                         {
-                            "id": "872a4a9d-cabe-4524-a01d-c70f74884d2a",
-                            "name": "MEMBERSHIP_ORDER_APPROVED",
-                            "subject": "Membership payment",
-                            "template":"<!doctype html>\n<html>\n  <head>\ .......dai lam do",
-                            "language": "en",
-                            "deleted_flg": false,
-                            "createdAt": "2020-02-13T03:08:47.449Z",
-                            "updatedAt": "2020-02-13T03:08:47.449Z"
-                        },
-                        {
                             "id": "248d4760-5c58-4e36-87da-a796c39c783d",
                             "name": "CONFIRM_IP",
                             "subject": "Confirm new ip address",
-                            "template":"<!doctype html>\n<html>\n  <head>\ .......dai lam do",
                             "language": "en",
-                            "deleted_flg": false,
-                            "createdAt": "2020-07-22T03:08:47.449Z",
-                            "updatedAt": "2020-07-22T03:08:47.449Z"
+                            "deleted_flg": false
+                        },
+                        {
+                            "id": "872a4a9d-cabe-4524-a01d-c70f74884d2a",
+                            "name": "MEMBERSHIP_ORDER_APPROVED",
+                            "subject": "Membership payment",
+                            "language": "en",
+                            "deleted_flg": false
                         },
                         {
                             "id": "872a4a9d-cabe-4524-a01d-c70f74884d2b",
                             "name": "MEMBERSHIP_ORDER_APPROVED",
                             "subject": "Membership payment jp",
-                            "template":"<!doctype html>\n<html>\n  <head>\ .......dai lam do",
                             "language": "jp",
-                            "deleted_flg": false,
-                            "createdAt": "2020-02-13T03:08:47.449Z",
-                            "updatedAt": "2020-02-13T03:08:47.449Z"
+                            "deleted_flg": false
+                        },
+                        {
+                            "id": "872a4a9d-cabe-4524-a01d-c70f74884d2c",
+                            "name": "MEMBERSHIP_ORDER_REJECTED",
+                            "subject": "Membership payment",
+                            "language": "en",
+                            "deleted_flg": false
+                        },
+                        {
+                            "id": "872a4a9d-cabe-4524-a01d-c70f74884d21",
+                            "name": "TRANSACTION_RECEIVED",
+                            "subject": "Received coin/token alert",
+                            "language": "en",
+                            "deleted_flg": false
+                        },
+                        {
+                            "id": "872a4a9d-cabe-4524-a01d-c70f74884d22",
+                            "name": "TRANSACTION_SENT",
+                            "subject": "Received coin/token alert",
+                            "language": "en",
+                            "deleted_flg": false
                         }
                     ],
                     "offset": 0,

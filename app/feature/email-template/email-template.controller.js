@@ -1,6 +1,6 @@
 const logger = require('app/lib/logger');
 const EmailTemplate = require('app/model/wallet').email_templates;
-
+const mapper = require("app/feature/response-schema/email-template.response-schema");
 module.exports = {
     getAll: async (req, res, next) => {
         try {
@@ -13,7 +13,7 @@ module.exports = {
                 order: [['created_at', 'DESC']]
               });
               return res.ok({
-                items: items && items.length > 0 ? items : [],
+                items: mapper(items) && items.length > 0 ? mapper(items) : [],
                 offset: offset,
                 limit: limit,
                 total: total
