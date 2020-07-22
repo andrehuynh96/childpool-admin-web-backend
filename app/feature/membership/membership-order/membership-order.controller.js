@@ -521,7 +521,7 @@ async function _sendEmail(email, payload, approved) {
   let subject = template.subject;
   let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
   const data = Object.assign({}, payload, config.email);
-  await mailer.sendWithTemplate(subject, from, email, data, template.template);
+  await mailer.sendWithDBTemplate(subject, from, email, data, template.template);
 }
 
 async function _findMemberByEmail(email) {

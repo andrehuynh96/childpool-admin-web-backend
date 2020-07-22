@@ -15,7 +15,7 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-transporter.getMailTemplate = async (template, data) => {
+transporter.getMailDBTemplate = async (template, data) => {
   const email = new EmailTemplate({
     render: (template, locals) => {
       return new Promise(async (resolve, reject) => {
@@ -28,14 +28,14 @@ transporter.getMailTemplate = async (template, data) => {
   return mailContent;
 }
 
-transporter.sendWithTemplate = async function (
+transporter.sendWithDBTemplate = async function (
   subject,
   from,
   to,
   data,
   template
 ) {
-  let mailContent = await transporter.getMailTemplate(template, data);
+  let mailContent = await transporter.getMailDBTemplate(template, data);
   return await transporter.sendMail({
     from: from,
     to: to,
@@ -44,5 +44,31 @@ transporter.sendWithTemplate = async function (
   });
 };
 
+transporter.getMailTemplate = async (data, fileName) => {
+  let root = path.resolve(
+    __dirname + "../../../../public/email-template/"
+  );
+  const email = new EmailTemplate({
+    views: { root, options: { extension: 'ejs' } }
+  });
+  const mailContent = await email.render(fileName, data);
+  return mailContent;
+}
+
+transporter.sendWithTemplate = async function (
+  subject,
+  from,
+  to,
+  data,
+  templateFile
+) {
+  let mailContent = await transporter.getMailTemplate(data, templateFile);
+  return await transporter.sendMail({
+    from: from,
+    to: to,
+    subject: subject,
+    html: mailContent
+  });
+};
 
 module.exports = transporter;
