@@ -13,7 +13,7 @@ module.exports = {
                 order: [['created_at', 'DESC']]
               });
               return res.ok({
-                items: mapper(items) && items.length > 0 ? mapper(items) : [],
+                items: mapper(items),
                 offset: offset,
                 limit: limit,
                 total: total
