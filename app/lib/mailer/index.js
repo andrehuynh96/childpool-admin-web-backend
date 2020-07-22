@@ -15,14 +15,16 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-transporter.getMailTemplate = async (data, fileName) => {
-  let root = path.resolve(
-    __dirname + "../../../../public/email-template/"
-  );
+transporter.getMailTemplate = async (template, data) => {
   const email = new EmailTemplate({
-    views: { root, options: { extension: 'ejs' } }
+    render: (template, locals) => {
+      return new Promise(async (resolve, reject) => {
+        let html = ejs.render(template, locals);
+        email.juiceResources(html).then(html => resolve(html)).catch(e => reject(e))
+      })
+    }
   });
-  const mailContent = await email.render(fileName, data);
+  const mailContent = await email.render(template, data);
   return mailContent;
 }
 
@@ -31,9 +33,9 @@ transporter.sendWithTemplate = async function (
   from,
   to,
   data,
-  templateFile
+  template
 ) {
-  let mailContent = await transporter.getMailTemplate(data, templateFile);
+  let mailContent = await transporter.getMailTemplate(template, data);
   return await transporter.sendMail({
     from: from,
     to: to,
