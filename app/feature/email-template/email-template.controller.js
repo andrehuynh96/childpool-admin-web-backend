@@ -4,8 +4,20 @@ const EmailTemplate = require('app/model/wallet').email_templates;
 module.exports = {
     getAll: async (req, res, next) => {
         try {
-            const emailTemplates = await EmailTemplate.findAll();
-            return res.ok(emailTemplates);
+            const { query } = req;
+            const limit = query.limit ? parseInt(req.query.limit) : 10;
+            const offset = query.offset ? parseInt(req.query.offset) : 0;
+            const { count: total, rows: items } = await EmailTemplate.findAndCountAll({
+                limit,
+                offset,
+                order: [['created_at', 'DESC']]
+              });
+              return res.ok({
+                items: items && items.length > 0 ? items : [],
+                offset: offset,
+                limit: limit,
+                total: total
+              });
         }
         catch (error) {
             logger.error('get email template list fail', error);
