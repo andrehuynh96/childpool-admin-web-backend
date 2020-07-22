@@ -587,7 +587,7 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "UPDATE_EMAIL_TEMPLATE": {
-    "KEY": "VIEW_EMAIL_TEMPLATE",
+    "KEY": "UPDATE_EMAIL_TEMPLATE",
     "DESCRIPTION": "Update email template",
     "GROUP_NAME": "Email Template",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
