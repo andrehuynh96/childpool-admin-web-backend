@@ -37,7 +37,7 @@ module.exports = {
       });
 
       if (!result) {
-        return res.notFound();
+        return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
       }
 
       return res.ok(result);
@@ -59,7 +59,7 @@ module.exports = {
       });
 
       if (!result) {
-        return res.notFound();
+        return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
       }
 
       let responseAllUpdate = await ReceivingAddress.update({
@@ -110,7 +110,7 @@ module.exports = {
       });
 
       if (!result) {
-        return res.notFound();
+        return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
       }
 
       let [_, response] = await ReceivingAddress.update({
@@ -155,9 +155,10 @@ module.exports = {
       await ReceivingAddress.create({
         currency_symbol: req.body.platform,
         wallet_address: req.body.address,
+        description: req.body.description,
         actived_flg: true,
         created_by: req.user.id
-      })
+      });
 
       return res.ok(true);
     }
@@ -166,4 +167,32 @@ module.exports = {
       next(err);
     }
   },
-}
+  update: async (req, res, next) => {
+    try {
+        let result = await ReceivingAddress.findOne({
+          where: {
+            id: req.params.id
+          }
+        });
+  
+        if (!result) {
+          return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
+        }
+  
+        await ReceivingAddress.update({
+          description: req.body.description,
+          updated_by: req.user.id,
+        }, {
+          where: {
+            id: result.id
+          },
+          returning: true,
+        });
+  
+        return res.ok(true);
+    } catch (error) {
+      logger.error("update receiving addresses memo fail", error);
+      next(error);
+    }
+  }
+};

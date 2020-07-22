@@ -35,6 +35,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(128),
       allowNull: true
     },
+    first_name_kanji: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+    last_name_kanji: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
     phone: {
       type: DataTypes.STRING(32),
       allowNull: false,

@@ -34,23 +34,36 @@ module.exports = {
       transaction = await database.transaction();
       for (let key of Object.keys(req.body)) {
         if (key == 'items') {
+          const membershipTypesUpdate = [];
           for (let item of req.body.items) {
             const data = {
               is_enabled: item.is_enabled,
               name: item.name,
               price: item.price,
             };
-
-            await MembershipType.update(data, {
+            const [_num, [response]] = await MembershipType.update(data, {
               where: {
                 id: item.id
               },
+              raw: true,
               returning: true,
               transaction: transaction
             });
+            if (response) {
+              membershipTypesUpdate.push(response);
+            }
           }
-          const membershipTypes = await MembershipType.findAll();
-          const result = await affiliateApi.updateMembershipTypeConfig(membershipTypes);
+          const membershipTypes = await MembershipType.findAll({ raw: true });
+          const membershipTypesAffiliate = membershipTypes.map(item => {
+            const membershipTypeUpdate = membershipTypesUpdate.find(x => x.id === item.id);
+            if (membershipTypeUpdate) {
+              return membershipTypeUpdate;
+            }
+            else {
+              return item;
+            }
+          });
+          const result = await affiliateApi.updateMembershipTypeConfig(membershipTypesAffiliate);
           if (result.httpCode !== 200) {
             await transaction.rollback();
             return res.status(result.httpCode).send(result.data);
