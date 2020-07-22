@@ -45,11 +45,11 @@ router.put(
 );
 
 router.put(
-  '/receiving-address/:id/descriptions',
+  '/receiving-address/:id',
   authenticate,
   authority(PermissionKey.MEMBERSHIP_UPDATE_RECEIVING_ADDRESS),
   validator(update),
-  controller.updateMemo
+  controller.update
 );
 
 module.exports = router;
@@ -166,7 +166,8 @@ module.exports = router;
 *            example:
 *                  {
                       "platform": "ATOM",
-                      "address" : "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u"
+                      "address" : "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
+                      "description":"TEST"
 *                  }
 *     produces:
 *       - application/json
@@ -294,7 +295,7 @@ module.exports = router;
 
 /**
 * @swagger
-* /web/membership/receiving-address/{id}/descriptions:
+* /web/membership/receiving-address/{id}:
 *   put:
 *     summary: update memo
 *     tags:

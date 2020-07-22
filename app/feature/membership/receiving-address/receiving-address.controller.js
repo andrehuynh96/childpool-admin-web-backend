@@ -37,7 +37,7 @@ module.exports = {
       });
 
       if (!result) {
-        return res.notFound();
+        return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
       }
 
       return res.ok(result);
@@ -59,7 +59,7 @@ module.exports = {
       });
 
       if (!result) {
-        return res.notFound();
+        return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
       }
 
       let responseAllUpdate = await ReceivingAddress.update({
@@ -110,7 +110,7 @@ module.exports = {
       });
 
       if (!result) {
-        return res.notFound();
+        return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
       }
 
       let [_, response] = await ReceivingAddress.update({
@@ -155,9 +155,10 @@ module.exports = {
       await ReceivingAddress.create({
         currency_symbol: req.body.platform,
         wallet_address: req.body.address,
+        description: req.body.description,
         actived_flg: true,
         created_by: req.user.id
-      })
+      });
 
       return res.ok(true);
     }
@@ -166,7 +167,7 @@ module.exports = {
       next(err);
     }
   },
-  updateMemo: async (req, res, next) => {
+  update: async (req, res, next) => {
     try {
         let result = await ReceivingAddress.findOne({
           where: {
@@ -175,7 +176,7 @@ module.exports = {
         });
   
         if (!result) {
-          return res.notFound();
+          return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
         }
   
         await ReceivingAddress.update({
