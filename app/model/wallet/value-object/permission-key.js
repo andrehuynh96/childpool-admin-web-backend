@@ -574,5 +574,22 @@ module.exports = {
     "GROUP_NAME": "Member",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-
+  "VIEW_EMAIL_TEMPLATE_LIST": {
+    "KEY": "VIEW_EMAIL_TEMPLATE_LIST",
+    "DESCRIPTION": "View list email template",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_EMAIL_TEMPLATE_DETAIL": {
+    "KEY": "VIEW_EMAIL_TEMPLATE_DETAIL",
+    "DESCRIPTION": "View email template detail",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "UPDATE_EMAIL_TEMPLATE": {
+    "KEY": "VIEW_EMAIL_TEMPLATE",
+    "DESCRIPTION": "Update email template",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 };
