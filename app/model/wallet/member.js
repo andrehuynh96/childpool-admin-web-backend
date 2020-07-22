@@ -159,6 +159,7 @@ module.exports = (sequelize, DataTypes) => {
       as: "LatestMembershipOrder",
       foreignKey: 'id',
       sourceKey: 'latest_membership_order_id',
+      constraints: false,
     });
 
     Member.belongsTo(models.membership_types, {
