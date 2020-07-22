@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false
     },
+    claim_request_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     commission_method: {
       type: DataTypes.STRING(32),
       allowNull: true,
