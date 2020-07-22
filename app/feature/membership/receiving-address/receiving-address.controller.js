@@ -166,4 +166,32 @@ module.exports = {
       next(err);
     }
   },
-}
+  updateMemo: async (req, res, next) => {
+    try {
+        let result = await ReceivingAddress.findOne({
+          where: {
+            id: req.params.id
+          }
+        });
+  
+        if (!result) {
+          return res.notFound();
+        }
+  
+        await ReceivingAddress.update({
+          description: req.body.description,
+          updated_by: req.user.id,
+        }, {
+          where: {
+            id: result.id
+          },
+          returning: true,
+        });
+  
+        return res.ok(true);
+    } catch (error) {
+      logger.error("update receiving addresses memo fail", error);
+      next(error);
+    }
+  }
+};

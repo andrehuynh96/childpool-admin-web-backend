@@ -1,7 +1,7 @@
 const express = require('express');
 const config = require('app/config');
 const validator = require("app/middleware/validator.middleware");
-const create = require("./validator/create");
+const { create, update } = require("./validator");
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./receiving-address.controller');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
@@ -42,6 +42,14 @@ router.put(
   authenticate,
   authority(PermissionKey.MEMBERSHIP_UPDATE_RECEIVING_ADDRESS),
   controller.disable
+);
+
+router.put(
+  '/receiving-address/:id/descriptions',
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_UPDATE_RECEIVING_ADDRESS),
+  validator(update),
+  controller.updateMemo
 );
 
 module.exports = router;
@@ -265,6 +273,55 @@ module.exports = router;
                       "wallet_address" : "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
                       "actived_flg" : true
                     }
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/membership/receiving-address/{id}/descriptions:
+*   put:
+*     summary: update memo
+*     tags:
+*       - Membership Receiving Address
+*     description: active receiving address
+*     parameters:
+*       - name: id
+*         in: path
+*         type: number
+*       - name: data
+*         in: body
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                      "description": "test"
+*                  }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data":true
               }
 *       400:
 *         description: Error
