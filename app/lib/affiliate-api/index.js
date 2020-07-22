@@ -74,7 +74,7 @@ class AffiliateApi {
     }
   }
 
-  async updateClaimRequests(claimRewardIds,status) {
+  async updateClaimRequests(claimRewardIds, status) {
     try {
       const headers = await this.getHeaders();
       const result = await axios.put(`${API_URL}/claim-rewards`,
@@ -347,18 +347,19 @@ class MembershipApi extends AffiliateApi {
   async registerMembership({
     email,
     referrerCode,
-    membershipOrderId,
+    membershipOrder,
     membershipType,
   }) {
     try {
+
+
       const headers = await this.getHeaders();
       const data = {
         ext_client_id: email,
         affiliate_code: referrerCode || "",
-        membership_order_id: membershipOrderId,
+        membership_order_id: membershipOrder.id.toString(),
         membership_type_id: membershipType.id,
-        amount: Number(membershipType.price),
-        // currency_symbol: membershipType.currency_symbol,
+        amount: Number(membershipOrder.amount_usd),
         currency_symbol: "USDT",
       };
       const result = await axios.post(`${API_URL}/membership-clients`,

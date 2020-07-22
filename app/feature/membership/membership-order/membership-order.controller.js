@@ -255,7 +255,7 @@ module.exports = {
         const result = await membershipApi.registerMembership({
           email: order.Member.email,
           referrerCode: order.referrer_code,
-          membershipOrderId: order.id.toString(),
+          membershipOrder: order,
           membershipType,
         });
 
@@ -283,6 +283,7 @@ module.exports = {
             action: MemberRewardAction.REWARD_COMMISSION,
             commission_from: null,
             note: introducedByEmail,
+            membership_order_id: order.id,
           };
         });
         await MemberRewardTransactionHistory.bulkCreate(memberRewardTransactionHistories, { transaction });

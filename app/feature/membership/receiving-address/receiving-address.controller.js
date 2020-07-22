@@ -9,7 +9,7 @@ module.exports = {
     try {
       let where = {}
       let currency_symbol = req.query.currency_symbol
-      if(currency_symbol)
+      if (currency_symbol)
         where.currency_symbol = currency_symbol.toUpperCase()
       let results = await ReceivingAddress.findAll({
         where,
@@ -66,12 +66,12 @@ module.exports = {
         actived_flg: false,
         updated_by: req.user.id,
       }, {
-          where: {
-            currency_symbol: result.currency_symbol
-          },
-          returning: true,
-          transaction: transaction
-        });
+        where: {
+          currency_symbol: result.currency_symbol
+        },
+        returning: true,
+        transaction: transaction
+      });
       if (!responseAllUpdate) {
         return res.serverInternalError();
       }
@@ -79,12 +79,12 @@ module.exports = {
         actived_flg: true,
         updated_by: req.user.id,
       }, {
-          where: {
-            id: result.id
-          },
-          returning: true,
-          transaction: transaction
-        });
+        where: {
+          id: result.id
+        },
+        returning: true,
+        transaction: transaction
+      });
 
       if (!response) {
         return res.serverInternalError();
@@ -117,11 +117,11 @@ module.exports = {
         actived_flg: false,
         updated_by: req.user.id,
       }, {
-          where: {
-            id: result.id
-          },
-          returning: true,
-        });
+        where: {
+          id: result.id
+        },
+        returning: true,
+      });
 
       if (!response) {
         return res.serverInternalError();
@@ -144,11 +144,9 @@ module.exports = {
           wallet_address: req.body.address,
         }
       });
-
       if (result) {
         return res.badRequest(res.__("CREATE_ALREADY"), "CREATE_ALREADY", { fields: ['platform', 'address'] });
       }
-
       let validateAddress = Address.validate(req.body.platform, req.body.address);
       if (!validateAddress) {
         return res.badRequest(res.__("INVALID_ADDRESS"), "INVALID_ADDRESS", { fields: ['address'] });
