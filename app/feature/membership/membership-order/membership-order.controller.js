@@ -21,6 +21,9 @@ const blockchainHelpper = require('app/lib/blockchain-helpper');
 const config = require('app/config');
 const mailer = require('app/lib/mailer');
 const PaymentType = require('app/model/wallet/value-object/claim-request-payment-type');
+const EmailTemplate = require('app/model/wallet').email_templates;
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
+
 
 const Op = Sequelize.Op;
 const MembershipOrderStatusEnum = {
@@ -188,12 +191,11 @@ module.exports = {
   },
   approveOrder: async (req, res, next) => {
     let transaction;
-
     try {
       let order = await MembershipOrder.findOne({
         where: { id: req.params.id },
         include: {
-          attributes: ['email', 'first_name', 'last_name'],
+          attributes: ['email', 'first_name', 'last_name', 'current_language'],
           as: "Member",
           model: Member,
           required: true
@@ -228,6 +230,7 @@ module.exports = {
         imageUrl: config.website.urlImages,
         firstName: order.Member.first_name,
         lastName: order.Member.last_name,
+        language: order.Member.current_language
       };
 
       if (status == MembershipOrderStatus.Approved) {
@@ -331,6 +334,7 @@ module.exports = {
       logger.error('update order fail:', err);
       next(err);
     }
+    
   },
   downloadCSV: async (req, res, next) => {
     try {
@@ -491,15 +495,33 @@ function stringifyAsync(data, columns) {
 }
 
 async function _sendEmail(email, payload, approved) {
-  let subject = `Membership payment`;
+  let templateName = EmailTemplateType.MEMBERSHIP_ORDER_APPROVED 
+  if(!approved)
+    templateName = EmailTemplateType.MEMBERSHIP_ORDER_REJECTED
+
+  let template = await EmailTemplate.findOne({
+    where: {
+      name: templateName,
+      language: payload.language
+    }
+  })
+
+  if(!template){
+    template = await EmailTemplate.findOne({
+      where: {
+        name: templateName,
+        language: 'en'
+      }
+    })
+  }
+
+  if(!template)
+    return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+    
+  let subject = template.subject;
   let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
   const data = Object.assign({}, payload, config.email);
-
-  if (approved) {
-    await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderApproved);
-  } else {
-    await mailer.sendWithTemplate(subject, from, email, data, config.emailTemplate.membershipOrderRejected);
-  }
+  await mailer.sendWithDBTemplate(subject, from, email, data, template.template);
 }
 
 async function _findMemberByEmail(email) {
