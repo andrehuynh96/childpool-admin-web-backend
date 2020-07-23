@@ -9,11 +9,12 @@ const Op = Sequelize.Op;
 module.exports = {
   execute: async () => {
     try {
-      let coins = ["IRIS", "ATOM", "ONT"];//, "IRIS", "ONT"
+      let coins = ["IRIS", "ATOM", "ONT"];//, "ATOM", "ONT"
       for (let element of coins) {
         // call account distribution
-        let offset = 0
-        let limit = 20
+        let offset = 0;
+        let limit = 20;
+        let response = [];
         while (true) {
           let qr = await AccountContributionAPI.get(element, limit, offset);
           qr = qr.data;
@@ -71,6 +72,9 @@ module.exports = {
             let address = contribution.address;
             let amount = contribution.amount;
             let w = wallets.find(x => x.privKeys.filter(t => t.address == address).length > 0);
+            if (!w.member) {
+              continue;
+            }
             let email = w.member.email;
 
             let ix = affiliatePayload.details.findIndex(x => x.ext_client_id == email);
@@ -89,17 +93,26 @@ module.exports = {
           // update affiliate
           const result = await affiliateApi.setRewardRequest(affiliatePayload);
           if (result.httpCode == 200) {
-            // update account contribution
-            await AccountContributionAPI.set(element, {
+            response.push({
               ids: ids,
               affiliate_reward_id: result.data.id
-            })
+            });
+
           }
           if (qr.limit + qr.offset >= qr.total) {
             break;
           }
           else {
             offset = qr.offset + qr.limit;
+          }
+        }
+        if (response && response.length > 0) {
+          for (let e of response) {
+            // update account contribution
+            await AccountContributionAPI.set(element, {
+              ids: e.ids,
+              affiliate_reward_id: e.affiliate_reward_id
+            })
           }
         }
       }
