@@ -60,5 +60,20 @@ module.exports = {
             logger.info('get caculate reward request status list fail', error);
             next(error);
         }
+    },
+    getRewardList: async (req, res, next) => {
+        try {
+            const { params } = req;
+            const { requestId } = params;
+            const result = await affiliateApi.getRewardsByRequestId(requestId);
+            if (result.httpCode !== 200) {
+                return res.status(result.httpCode).send(result.data);
+            }
+            return res.ok(result.data);
+        } 
+        catch (error) {
+            logger.info('get reward list fail', error);
+            next(error);
+        }
     }
 };
