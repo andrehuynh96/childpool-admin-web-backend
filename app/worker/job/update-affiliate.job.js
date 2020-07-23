@@ -9,7 +9,7 @@ const Op = Sequelize.Op;
 module.exports = {
   execute: async () => {
     try {
-      let coins = ["IRIS"];//, "IRIS", "ONT"
+      let coins = ["IRIS", "ATOM", "ONT"];//, "IRIS", "ONT"
       for (let element of coins) {
         // call account distribution
         let offset = 0
