@@ -68,11 +68,11 @@ module.exports = {
               }
             }
           });
-          contributions.forEach(async (contribution) => {
+          for (let contribution of contributions) {
             let address = contribution.address;
             let amount = contribution.amount;
             let w = wallets.find(x => x.privKeys.filter(t => t.address == address).length > 0);
-            if (!w.member) {
+            if (!w || !w.member) {
               continue;
             }
             let email = w.member.email;
@@ -89,7 +89,7 @@ module.exports = {
             }
 
             ids.push(contribution.id);
-          })
+          }
           // update affiliate
           const result = await affiliateApi.setRewardRequest(affiliatePayload);
           if (result.httpCode == 200) {
@@ -97,7 +97,6 @@ module.exports = {
               ids: ids,
               affiliate_reward_id: result.data.id
             });
-
           }
           if (qr.limit + qr.offset >= qr.total) {
             break;
