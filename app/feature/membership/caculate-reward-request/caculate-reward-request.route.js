@@ -32,7 +32,7 @@ router.get(
 );
 
 router.get(
-    '/caculate-reward-request-status/:requestId/details/rewards',
+    '/caculate-reward-request/:requestId/details/rewards',
     authenticate,
     authority(PermissionKey.MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL_LIST),
     controller.getRewardList
@@ -130,11 +130,11 @@ router.get(
 /* #region Get affiliate request details */
 /**
  * @swagger
- * /web/membership/affiliate-requests/:requestId:
+ * /caculate-reward-request/{requestId}/details/rewards:
  *   get:
  *     summary: Get affiliate request details
  *     tags:
- *       - Caculate Reward Request
+ *       - Calculate Reward Request
  *     description:
  *     parameters:
  *       - in: path
