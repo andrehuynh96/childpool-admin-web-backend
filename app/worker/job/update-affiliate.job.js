@@ -13,7 +13,7 @@ module.exports = {
       for (let element of coins) {
         // call account distribution
         let offset = 0;
-        let limit = 20;
+        let limit = 100;
         let response = [];
         while (true) {
           let qr = await AccountContributionAPI.get(element, limit, offset);
