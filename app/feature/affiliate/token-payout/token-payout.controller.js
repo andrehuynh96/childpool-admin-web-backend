@@ -157,15 +157,17 @@ module.exports = {
         }
       );
       await MemberRewardTransactionHis.update(
-        { txid: body.txid },{
+        { tx_id: body.txid },{
           where:{
             claim_request_id: claimRequest.id
           },
           transaction: transaction
       });
+      await transaction.commit();
       return res.ok(true);
     }
     catch (error) {
+      await transaction.rollback();
       logger.info('update claim request tx_id fail', error);
       next(error);
     }
