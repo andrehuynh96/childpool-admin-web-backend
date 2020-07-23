@@ -9,7 +9,7 @@ const Op = Sequelize.Op;
 module.exports = {
   execute: async () => {
     try {
-      let coins = ["ATOM", "IRIS", "ONT"];//, "IRIS", "ONT"
+      let coins = ["IRIS"];//, "IRIS", "ONT"
       for (let element of coins) {
         // call account distribution
         let offset = 0
@@ -70,7 +70,7 @@ module.exports = {
           contributions.forEach(async (contribution) => {
             let address = contribution.address;
             let amount = contribution.amount;
-            let w = wallets.find(x => x.privKeys.filter(t => t.address == address));
+            let w = wallets.find(x => x.privKeys.filter(t => t.address == address).length > 0);
             let email = w.member.email;
 
             let ix = affiliatePayload.details.findIndex(x => x.ext_client_id == email);
