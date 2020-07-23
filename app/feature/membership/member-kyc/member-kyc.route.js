@@ -3,7 +3,8 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./member-kyc.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
-
+const validator = require("app/middleware/validator.middleware");
+const schema = require("./member-kyc.request-schema")
 const router = express.Router();
 
 router.get(
@@ -126,11 +127,65 @@ router.get(
  *           $ref: '#/definitions/500'
  */
 
-router.get(
-    '/members/:memberId/member-kycs/:memberKycId',
+router.put(
+    '/members/member-kyc-properties',
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL),
-    controller.getMemberKycDetail
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES),
+    validator(schema),
+    controller.update
 );
+
+/**
+* @swagger
+* /web/membership/member/member-kyc-properties:
+*   post:
+*     summary: update member kyc properties
+*     tags:
+*       - Member
+*     description: update member kyc properties
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                        "member_kyc_properties":[ {
+                            "id":147,
+                            "value":"MYHN"
+                        },{
+                            "id":1471,
+                            "value":"VIETNAM"
+                        } ]
+                    }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 module.exports = router;

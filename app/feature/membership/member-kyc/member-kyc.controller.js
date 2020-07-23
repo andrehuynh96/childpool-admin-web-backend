@@ -2,8 +2,8 @@ const logger = require('app/lib/logger');
 const MemberKyc = require("app/model/wallet").member_kycs;
 const Kyc = require("app/model/wallet").kycs;
 const MemberKycProperty = require("app/model/wallet").member_kyc_properties;
-const KycStatus = require("app/model/wallet/value-object/kyc-status");
 const Sequelize = require('sequelize');
+const database = require('app/lib/database').db().wallet;
 const Op = Sequelize.Op;
 module.exports = {
   getAllMemberKyc: async (req, res, next) => {
@@ -89,34 +89,39 @@ module.exports = {
       next(error);
     }
   },
-  updateStatus: async (req, res, next) => {
+  update: async (req, res, next) => {
+    let transaction;
     try {
-      const { params, body } = req;
-      const { memberKycId, memberId } = params;
-      const { status } = body;
-      const memberWhere = {
-        member_id: memberId,
-        id: memberKycId,
-        deleted_flg: false
-      };
-      const memberKyc = await MemberKyc.findOne(memberWhere);
-      if (!memberKyc) {
-        return res.notFound(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND", { field: ['memberId', 'memberKycId'] });
+      const { body } = req;
+      const memberKycProperties = body.member_kyc_properties;
+      transaction = await database.transaction();
+      for (let item of memberKycProperties) {
+        const memberKycProperty = await MemberKycProperty.findOne({
+          where: {
+            id: item.id
+          }
+        });
+        if (!memberKycProperty) {
+          return res.notFound(res.__("MEMBER_KYC_PROPERTY_LIST_HAVE_ONE_ID_NOT_FOUND"), "MEMBER_KYC_PROPERTY_LIST_HAVE_ONE_ID_NOT_FOUND", { field: [item.id] });
+        }
+        await MemberKycProperty.update(
+          { value: item.value },
+          {
+            where: {
+              id: memberKycProperty.id
+            },
+            transaction: transaction
+          }
+        );
       }
-
-      if (status !== KycStatus.DECLINED || status !== KycStatus.APPROVED || status !== KycStatus.INSUFFICIENT) {
-        return res.notFound(res.__("KYC_STATUS_NOT_FOUND"), "KYC_STATUS_NOT_FOUND", { field: ['status'] });
-      }
-
-      await MemberKyc.update({
-        status: status
-      }, {
-        where: memberWhere,
-        returning: true
-      });
+      transaction.commit();
+      return res.ok(true);
     }
     catch (error) {
-      logger.info('get update member kyc status fail', error);
+      if (transaction) {
+        transaction.rollback();
+      }
+      logger.info('get update member kyc properties fail', error);
       next(error);
     }
   },

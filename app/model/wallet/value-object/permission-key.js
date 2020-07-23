@@ -524,9 +524,9 @@ module.exports = {
     "GROUP_NAME": "Members",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL": {
-    "KEY": "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL",
-    "DESCRIPTION": "View membership member KYC detail",
+  "MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES": {
+    "KEY": "MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES",
+    "DESCRIPTION": "Membership update member kyc properties",
     "GROUP_NAME": "Members",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
