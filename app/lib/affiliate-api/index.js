@@ -190,7 +190,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get caculate reward request list fail:", err);
+      logger.error("get calculate reward request list fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -207,7 +207,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get caculate reward request detail fail:", err);
+      logger.error("get calculate reward request detail fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -225,6 +225,23 @@ class AffiliateApi {
     }
     catch (err) {
       logger.error("get caculate reward request detail list fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
+  async getRewardsByRequestId(requestId) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.get(`${API_URL}/affiliate-requests/${requestId}/details/rewards`,
+        {
+          headers,
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("get reward list by request id fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
