@@ -204,6 +204,7 @@ router.post('/email-templates',
                                  "template": "<!doctype html>\n<html>\n  <head>\n.......",
                                  "language": "jp"
                             }
+                        ]
 *                  }
 *     produces:
 *       - application/json
