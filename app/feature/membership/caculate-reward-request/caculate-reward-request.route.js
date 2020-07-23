@@ -31,6 +31,13 @@ router.get(
     controller.getStatus
 );
 
+router.get(
+    '/caculate-reward-request/:requestId/details/rewards',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_CACULATOR_REWARD_REQUEST_DETAIL_LIST),
+    controller.getRewardList
+);
+
 /* #region search caculate reward requests */
 /**
  * @swagger
@@ -123,11 +130,11 @@ router.get(
 /* #region Get affiliate request details */
 /**
  * @swagger
- * /web/membership/affiliate-requests/:requestId:
+ * /caculate-reward-request/{requestId}/details/rewards:
  *   get:
  *     summary: Get affiliate request details
  *     tags:
- *       - Caculate Reward Request
+ *       - Calculate Reward Request
  *     description:
  *     parameters:
  *       - in: path
@@ -286,6 +293,62 @@ router.get(
                         {
                             "label": "FAILED",
                             "value": "FAILED"
+                        }
+                    ]
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+/**
+ * @swagger
+ * /web/membership/affiliate-requests/:requestId/details/rewards:
+ *   get:
+ *     summary: get dropdown list caculate reward request
+ *     tags:
+ *       - Caculate Reward Request
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": [
+                        {
+                            "id": "176",
+                            "client_affiliate_id": "363",
+                            "referrer_client_affiliate_id": null,
+                            "affiliate_request_detail_id": "213",
+                            "from_client_affiliate_id": null,
+                            "amount": "4560209298000000000000",
+                            "policy_id": 1,
+                            "currency_symbol": "IRIS",
+                            "commisson_type": "Direct",
+                            "membership_order_id": null,
+                            "level": null,
+                            "status": "Approved",
+                            "createdAt": "2020-07-22T11:26:00.887Z",
+                            "updatedAt": "2020-07-23T03:15:49.932Z",
+                            "clientAffiliateId": "363",
+                            "affiliateRequestDetailId": "213",
+                            "Policy": {
+                                "name": "AffiliateSystem - Membership Policy"
+                            }
                         }
                     ]
                 }

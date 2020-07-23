@@ -13,13 +13,13 @@ router.get('/email-templates',
     controller.getAll
 );
 
-router.get('/email-templates/:id',
+router.get('/email-templates/:name',
     authenticate,
     authority(PermissionKey.VIEW_EMAIL_TEMPLATE_DETAIL),
     controller.getDetail
 );
 
-router.put('/email-templates/:id',
+router.post('/email-templates',
     authenticate,
     authority(PermissionKey.UPDATE_EMAIL_TEMPLATE),
     validator(schema),
@@ -120,14 +120,14 @@ router.put('/email-templates/:id',
 
 /**
 * @swagger
-* /web/email-templates/{id}:
+* /web/email-templates/{name}:
 *   get:
 *     summary: get email template detail
 *     tags:
 *       - Email Template
 *     description: get email template detail
 *     parameters:
-*       - name: id
+*       - name: name
 *         in: path
 *         type: string
 *         required: true
@@ -139,16 +139,18 @@ router.put('/email-templates/:id',
 *         examples:
 *           application/json:
 *             {
-                "data": {
+                "data": [
+                    {
                         "id": "872a4a9d-cabe-4524-a01d-c70f74884d2b",
                         "name": "MEMBERSHIP_ORDER_APPROVED",
                         "subject": "Membership payment jp",
                         "template":"<!doctype html>\n<html>\n  <head>\ .......dai lam do",
-                        "language": "jp",
+                        "language": "en",
                         "deleted_flg": false,
                         "createdAt": "2020-02-13T03:08:47.449Z",
                         "updatedAt": "2020-02-13T03:08:47.449Z"
                     }
+                ]
             }
 *       400:
 *         description: Error
@@ -170,8 +172,8 @@ router.put('/email-templates/:id',
 
 /**
 * @swagger
-* /web/email-templates/{id}:
-*   put:
+* /web/email-templates:
+*   post:
 *     summary: update email template
 *     tags:
 *       - Email Template
@@ -189,8 +191,20 @@ router.put('/email-templates/:id',
 *            type: object
 *            example:
 *                  {
-                      "subject": "Membership payment jp",
-                      "template":"<!doctype html>\n<html>\n  <head>\ .......dai lam do"
+                        "email_templates":[
+                            {
+                                 "name": "CHILDPOOL_CONFIRM_IP",
+                                 "subject": "Confirm new ip address",
+                                 "template": "<!doctype html>\n<html>\n  <head>\n.......",
+                                 "language": "en"
+                            },
+                            {
+                                 "name": "CHILDPOOL_CONFIRM_IP",
+                                 "subject": "新しいIPアドレスを確認",
+                                 "template": "<!doctype html>\n<html>\n  <head>\n.......",
+                                 "language": "jp"
+                            }
+                        ]
 *                  }
 *     produces:
 *       - application/json
