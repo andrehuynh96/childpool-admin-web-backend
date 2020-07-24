@@ -92,14 +92,17 @@ module.exports = {
             ids.push(contribution.id);
           }
 
-          affiliatePayload.to_date = new Date();
-          const result = await affiliateApi.setRewardRequest(affiliatePayload);
-          if (result.httpCode == 200) {
-            response.push({
-              ids: ids,
-              affiliate_reward_id: result.data.id
-            });
+          if (affiliatePayload.details.length > 0) {
+            affiliatePayload.to_date = new Date();
+            const result = await affiliateApi.setRewardRequest(affiliatePayload);
+            if (result.httpCode == 200) {
+              response.push({
+                ids: ids,
+                affiliate_reward_id: result.data.id
+              });
+            }
           }
+
           if (qr.limit + qr.offset >= qr.total) {
             break;
           }
