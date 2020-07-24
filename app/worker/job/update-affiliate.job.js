@@ -16,6 +16,7 @@ module.exports = {
         let limit = 100;
         let response = [];
         while (true) {
+          let fromDate = new Date();
           let qr = await AccountContributionAPI.get(element, limit, offset);
           qr = qr.data;
           let contributions = qr.items
@@ -24,8 +25,7 @@ module.exports = {
           let ids = []
           let affiliatePayload = {
             currency_symbol: element,
-            from_date: contributions[0].created_at,
-            to_date: contributions[contributions.length - 1].created_at,
+            from_date: fromDate,
             details: []
           }
           let addresses = contributions.map(x => x.address);
@@ -65,14 +65,16 @@ module.exports = {
             where: {
               id: {
                 [Op.in]: walletIds
-              }
-            }
+              },
+              deleted_flg: false
+            },
+            order: [['created_at', 'ASC']]
           });
           for (let contribution of contributions) {
             let address = contribution.address;
             let amount = contribution.amount;
             let w = wallets.find(x => x.privKeys.filter(t => t.address == address).length > 0);
-            if (!w || !w.member) {
+            if (!w || !w.member || !w.member.affiliate_id <= 0) {
               continue;
             }
             let email = w.member.email;
@@ -87,17 +89,20 @@ module.exports = {
             else {
               affiliatePayload.details[ix].amount += amount;
             }
-
             ids.push(contribution.id);
           }
-          // update affiliate
-          const result = await affiliateApi.setRewardRequest(affiliatePayload);
-          if (result.httpCode == 200) {
-            response.push({
-              ids: ids,
-              affiliate_reward_id: result.data.id
-            });
+
+          if (affiliatePayload.details.length > 0) {
+            affiliatePayload.to_date = new Date();
+            const result = await affiliateApi.setRewardRequest(affiliatePayload);
+            if (result.httpCode == 200) {
+              response.push({
+                ids: ids,
+                affiliate_reward_id: result.data.id
+              });
+            }
           }
+
           if (qr.limit + qr.offset >= qr.total) {
             break;
           }
