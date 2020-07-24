@@ -179,10 +179,6 @@ router.post('/email-templates',
 *       - Email Template
 *     description: update email template
 *     parameters:
-*       - name: id
-*         in: path
-*         type: string
-*         required: true
 *       - name: data
 *         in: body
 *         required: true
