@@ -518,7 +518,7 @@ async function _sendEmail(email, payload, approved) {
   if(!template)
     return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
     
-  let subject = template.subject;
+  let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
   let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
   const data = Object.assign({}, payload, config.email);
   await mailer.sendWithDBTemplate(subject, from, email, data, template.template);
