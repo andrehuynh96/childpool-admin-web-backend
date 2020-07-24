@@ -179,7 +179,7 @@ class AffiliateApi {
       if (query.to_date) data.to_date = query.to_date;
       if (query.currency) data.currency = query.currency;
       if (query.status) data.status = query.status;
-
+      if (query.email) data.email = query.email;
       const queryData = queryString.stringify(data);
       const headers = await this.getHeaders();
       const result = await axios.get(`${API_URL}/affiliate-requests?${queryData}`,
