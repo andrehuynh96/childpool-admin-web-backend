@@ -63,12 +63,12 @@ module.exports = {
                         language: item.language
                     }
                 });
-
+                console.log(emailTemplate.name,emailTemplate.language);
                 if (emailTemplate) {
                     await EmailTemplate.update(
                         {
-                            subject: body.subject,
-                            template: body.template
+                            subject: item.subject,
+                            template: item.template
                         },
                         {
                             where: {
