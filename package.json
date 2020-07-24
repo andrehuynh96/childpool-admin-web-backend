@@ -36,6 +36,7 @@
     "express-recaptcha": "^5.0.1",
     "express-session": "^1.17.0",
     "formidable": "^1.2.1",
+    "fs": "0.0.1-security",
     "hashids": "^2.2.1",
     "helmet": "^3.21.2",
     "i18n": "^0.8.5",
