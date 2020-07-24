@@ -11,8 +11,7 @@ module.exports = {
             const limit = query.limit ? parseInt(req.query.limit) : 10;
             const offset = query.offset ? parseInt(req.query.offset) : 0;
             const cond = {
-                language: 'en',
-                name: { [Op.iLike]: 'CHILDPOOL%' }
+                language: 'en'
             };
             const { count: total, rows: items } = await EmailTemplate.findAndCountAll({
                 limit,
