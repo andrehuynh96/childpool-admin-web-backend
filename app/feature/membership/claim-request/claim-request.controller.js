@@ -185,11 +185,10 @@ module.exports = {
         }
       });
 
-      claimRequests.forEach(item => {
-        if (item.status !== ClaimRequestStatus.Pending) {
-          return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['claimRequestIds'] });
-        }
-      });
+      const hasNotPendingRequest = claimRequests.some(item => item.status !== ClaimRequestStatus.Pending);
+      if (hasNotPendingRequest) {
+        return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['tokenPayoutIds'] });
+      }
 
       const transaction = await database.transaction();
       try {
