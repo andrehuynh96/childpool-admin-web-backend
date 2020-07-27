@@ -393,13 +393,14 @@ class MembershipApi extends AffiliateApi {
     }
   }
 
-  async updateMembershipType(email, membershipType) {
+  async updateMembershipType(member, membershipType) {
     try {
       const headers = await this.getHeaders();
       const result = await axios.put(`${API_URL}/clients/membership-type`,
         {
-          ext_client_id: email,
+          ext_client_id: member.email,
           membership_type_id: membershipType.id,
+          affiliate_code: member.referrer_code,
         },
         {
           headers,
