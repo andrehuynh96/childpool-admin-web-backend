@@ -20,6 +20,7 @@ const blockchainHelpper = require('app/lib/blockchain-helpper');
 const SystemType = require("app/model/wallet/value-object/system-type");
 const path = require('path');
 const { readFileCSV } = require('app/lib/stream');
+const { forEach } = require('p-iteration');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -149,36 +150,49 @@ module.exports = {
           { fields: ["txid"] }
         );
       }
-      const txidList = await readFileCSV(body.body.claimRequestTxid.data);
-     
-      // if (!claimRequest) {
-      //   return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
-      // }
-      // transaction = await database.transaction();
-      // await ClaimRequest.update(
-      //   { txid: body.txid },
-      //   {
-      //     where: {
-      //       id: claimRequest.id
-      //     },
-      //     transaction: transaction
-      //   }
-      // );
+      const txidList = await readFileCSV(body.claimRequestTxid.data);
 
-      // await MemberRewardTransactionHis.update(
-      //   { tx_id: body.txid },
-      //   {
-      //     where: {
-      //       claim_request_id: claimRequest.id
-      //     },
-      //     transaction: transaction
-      //   }
-      // );
-      // transaction.commit();
-      return res.ok(txidList);
+      transaction = await database.transaction();
+      await forEach(txidList,async (item) => {
+        const claimRequest = await ClaimRequest.findOne({
+          where: {
+            id: item.Id
+          }
+        });
+        if (!claimRequest) {
+          return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: [item.Id] });
+        }
+        const memberRewardTransactionHis = await MemberRewardTransactionHis.findOne({
+          where: {
+            claim_request_id: item.Id
+          }
+        });
+        if (!memberRewardTransactionHis) {
+          return res.badRequest(res.__("MEMBER_REWARD_TRANSACTION_HIS_NOT_FOUND"), "MEMBER_REWARD_TRANSACTION_HIS_NOT_FOUND", { field: [item.Id] });
+        }
+        await ClaimRequest.update(
+          { txid: item.txid },{
+            where: {
+              id: item.Id
+            },
+            returning: true,
+            transaction: transaction
+          });
+          await MemberRewardTransactionHis.update(
+            { tx_id: item.txid },{
+              where: {
+                claim_request_id: item.Id
+              },
+              returning: true,
+              transaction: transaction
+            });
+      });
+
+      transaction.commit();
+      return res.ok(true);
     }
     catch (error) {
-      // transaction.rollback();
+      transaction.rollback();
       logger.info('update claim request tx_id fail', error);
       next(error);
     }
