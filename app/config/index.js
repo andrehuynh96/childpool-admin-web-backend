@@ -28,8 +28,8 @@ const config = {
   app: {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
-    buildNumber: process.env.BUILD_NUMBER || '',
     description: pkg.description,
+    buildNumber: process.env.BUILD_NUMBER || '',
     port: parseInt(process.env.PORT || process.env.APP_PORT),
   },
   db: {
@@ -41,7 +41,7 @@ const config = {
         host: process.env.WALLET_DB_HOST,
         port: process.env.WALLET_DB_PORT,
         dialect: 'postgres',
-        logging: false
+        logging: process.env.POSTPRES_DEBUG === 'true',
       }
     }
   },
