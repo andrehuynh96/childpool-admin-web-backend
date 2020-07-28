@@ -413,7 +413,7 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/membership/claim-requests/:claimrequestId/txid:
+ * /web/membership/claim-requests/txid:
  *   put:
  *     summary: update claim request txid
  *     tags:
@@ -429,13 +429,12 @@ module.exports = router;
  *         required: true
  *         description: submit data JSON to update.
  *         schema:
- *            type: object
+ *            type: file
  *            required:
- *            - membershipTypeId
- *            - referrerCode
+ *            - claimRequestTxid
  *            example:
  *                  {
-                        "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca"
+                        "claimRequestTxid": "txid.csv"
  *                  }
  *     produces:
  *       - application/json
