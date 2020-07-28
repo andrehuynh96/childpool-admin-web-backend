@@ -138,7 +138,10 @@ module.exports = {
       next(error);
     }
   },
-  updateTxid: async (req, res, next) => {
+  updateTxId: async (req, res, next) => {
+    
+  },
+  updateTxidCSV: async (req, res, next) => {
     let transaction;
     try {
       const { body } = req;
@@ -151,7 +154,6 @@ module.exports = {
         );
       }
       const txidList = await readFileCSV(body.claimRequestTxid.data);
-
       transaction = await database.transaction();
       await forEach(txidList,async (item) => {
         const claimRequest = await ClaimRequest.findOne({
@@ -192,7 +194,7 @@ module.exports = {
       return res.ok(true);
     }
     catch (error) {
-      transaction.rollback();
+      // transaction.rollback();
       logger.info('update claim request tx_id fail', error);
       next(error);
     }

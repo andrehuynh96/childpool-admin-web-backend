@@ -69,7 +69,7 @@ const config = {
     folderPlatform: process.env.CDN_FOLDER_PLATFORM,
     exts: process.env.CDN_FILE_EXT ? process.env.CDN_FILE_EXT.split(',')
       : [],
-    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 5242880
+    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 2097152
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,

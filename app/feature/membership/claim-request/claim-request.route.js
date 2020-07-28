@@ -26,7 +26,7 @@ router.put(
     validator(updateTxid),
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID),
-    controller.updateTxid
+    controller.updateTxidCSV
 );
 router.put(
     '/claim-requests/approves',

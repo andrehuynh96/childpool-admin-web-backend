@@ -12,7 +12,7 @@ module.exports = {
       return Buffer.concat(buffers);
     });
 
-    const records = parse(buffers.toString(), {
+    const records = parse(buffers, {
       columns: true,
       skip_empty_lines: true
     });
