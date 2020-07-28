@@ -93,6 +93,7 @@ module.exports = {
           }
 
           if (affiliatePayload.details.length > 0) {
+            affiliatePayload.details = affiliatePayload.details.filter(x => x.amount > 0);
             affiliatePayload.to_date = new Date();
             const result = await affiliateApi.setRewardRequest(affiliatePayload);
             if (result.httpCode == 200) {
