@@ -138,8 +138,47 @@ module.exports = {
       next(error);
     }
   },
-  updateTxId: async (req, res, next) => {
-    
+  updateTxid: async (req, res, next) => {
+    let transaction;
+    try {
+      const { body, params } = req;
+      const claimRequest = await ClaimRequest.findOne({
+        where: {
+          id: params.claimRequestId,
+          system_type: SystemType.MEMBERSHIP
+        }
+      });
+      if (!claimRequest) {
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+      }
+      transaction = await database.transaction();
+      await ClaimRequest.update(
+        { txid: body.txid },
+        {
+          where: {
+            id: claimRequest.id
+          },
+          transaction: transaction
+        }
+      );
+
+      await MemberRewardTransactionHis.update(
+        { tx_id: body.txid },
+        {
+          where: {
+            claim_request_id: claimRequest.id
+          },
+          transaction: transaction
+        }
+      );
+      transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      transaction.rollback();
+      logger.info('update claim request tx_id fail', error);
+      next(error);
+    }
   },
   updateTxidCSV: async (req, res, next) => {
     let transaction;
