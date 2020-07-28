@@ -102,8 +102,6 @@ const config = {
     confirmNewIp: process.env.PARTNER_NAME.toLowerCase() + "/confirm-ip.ejs",
     confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
-    membershipOrderApproved: process.env.PARTNER_NAME.toLowerCase() + "/membership-order-approved.ejs",
-    membershipOrderRejected: process.env.PARTNER_NAME.toLowerCase() + "/membership-order-rejected.ejs",
   },
   masterWebsite: {
     urlViewRequest: process.env.MASTER_WEBSITE_URL + '/admin/childpool/detail'
