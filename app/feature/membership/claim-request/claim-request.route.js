@@ -2,6 +2,7 @@ const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./claim-request.controller');
 const authority = require('app/middleware/authority.middleware');
+const parseFormData = require('app/middleware/parse-formdata.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require("app/middleware/validator.middleware");
 const { updateStatus, updateTxid } = require('./validator');
@@ -20,7 +21,8 @@ router.get(
     controller.getDetail
 );
 router.put(
-    '/claim-requests/:claimRequestId/txid',
+    '/claim-requests/txid',
+    parseFormData,
     validator(updateTxid),
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID),
