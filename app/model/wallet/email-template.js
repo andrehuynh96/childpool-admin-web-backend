@@ -8,29 +8,29 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: {
       type: DataTypes.STRING(256),
-      allowNull: true
+      allowNull: false
     },
-    subject:{
+    subject: {
       type: DataTypes.STRING(1000),
-      allowNull: true,
+      allowNull: false,
     },
     template: {
       type: DataTypes.TEXT('long'),
-      allowNull: true,
+      allowNull: false,
     },
     language: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false,
     },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      allowNull: true,
       defaultValue: false
     }
   }, {
     underscored: true,
     timestamps: true,
   });
- 
+
   return Model;
-}   
+};
