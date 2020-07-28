@@ -194,23 +194,49 @@ module.exports = {
       }
       const txidList = await readFileCSV(body.claimRequestTxid.data);
       transaction = await database.transaction();
+
+      const claimRequestIds = txidList.map(item => item.Id);
+
+      // Check claim request
+      const claimRequests = await ClaimRequest.findAll({
+        where: {
+          id: claimRequestIds,
+          system_type: SystemType.MEMBERSHIP
+        }
+      });
+      const checkValidClaimRequestList = claimRequestIds.map(item => {
+        const valid = claimRequests.find(x => x.id == item);
+        if (!valid){
+          return false;
+        }
+        else {
+          return true;
+        }
+      });
+      if (checkValidClaimRequestList.includes(false)) {
+            return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['Id'] });
+      }
+      
+      // Check member_reward_transaction_his
+      const memberRewardTransactionHis = await MemberRewardTransactionHis.findAll({
+        where: {
+          claim_request_id: claimRequestIds
+        }
+      });
+      const checkValidHistoryList = claimRequestIds.map(item => {
+        const valid = memberRewardTransactionHis.find(x => x.claim_request_id == item);
+        if (!valid){
+          return false;
+        }
+        else {
+          return true;
+        }
+      });
+      if (checkValidHistoryList.includes(false)) {
+        return res.badRequest(res.__("MEMBER_REWARD_TRANSACTION_HIS_NOT_FOUND"), "MEMBER_REWARD_TRANSACTION_HIS_NOT_FOUND",{ field: ['Id'] });
+      }
+
       await forEach(txidList,async (item) => {
-        const claimRequest = await ClaimRequest.findOne({
-          where: {
-            id: item.Id
-          }
-        });
-        if (!claimRequest) {
-          return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: [item.Id] });
-        }
-        const memberRewardTransactionHis = await MemberRewardTransactionHis.findOne({
-          where: {
-            claim_request_id: item.Id
-          }
-        });
-        if (!memberRewardTransactionHis) {
-          return res.badRequest(res.__("MEMBER_REWARD_TRANSACTION_HIS_NOT_FOUND"), "MEMBER_REWARD_TRANSACTION_HIS_NOT_FOUND", { field: [item.Id] });
-        }
         await ClaimRequest.update(
           { txid: item.txid },{
             where: {
