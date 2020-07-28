@@ -69,6 +69,7 @@ module.exports = {
         account_number: req.body.account_number,
         currency_symbol: req.body.currency_symbol,
         account_type: req.body.account_type,
+        memo: req.body.memo
       }, { transaction });
 
       if (!result) {
