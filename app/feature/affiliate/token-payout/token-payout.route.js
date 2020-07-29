@@ -3,8 +3,9 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./token-payout.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
+const parseFormData = require('app/middleware/parse-formdata.middleware');
 const validator = require("app/middleware/validator.middleware");
-const { updateStatus, updateTxid } = require('./validator');
+const { updateStatus, updateTxid, updateTxidCSV } = require('./validator');
 const router = express.Router();
 
 router.get(
@@ -27,6 +28,15 @@ router.put(
     authenticate,
     authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_UPDATE_TX_ID),
     controller.updateTxid
+);
+
+router.put(
+    '/token-payout/update/txid/csv',
+    parseFormData,
+    validator(updateTxidCSV),
+    authenticate,
+    authority(PermissionKey.AFFILIATE_TOKEN_PAYOUT_UPDATE_TX_ID),
+    controller.updateTxidCSV
 );
 
 router.put(
@@ -464,4 +474,53 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+ /**
+ * @swagger
+ * /web/affiliate/token-payout/txid/csv:
+ *   put:
+ *     summary: update token payout txid by csv file
+ *     tags:
+ *       - Affiliate
+ *     description: update token payout txid by csv file
+ *     parameters:
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit file
+ *         schema:
+ *            type: file
+ *            required:
+ *            - tokenPayoutTxid
+ *            example:
+ *                  {
+                        "tokenPayoutTxid": "txid.csv"
+ *                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
 /** *******************************************************************/
