@@ -54,6 +54,9 @@ router.get(
  *       - name: to_date
  *         in: query
  *         type: string
+ *       - name: email
+ *         in: query
+ *         type: string
  *       - name: status
  *         in: query
  *         type: string

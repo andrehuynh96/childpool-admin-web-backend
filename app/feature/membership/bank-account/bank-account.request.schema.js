@@ -7,6 +7,7 @@ const schema = Joi.object().keys({
   account_number: Joi.string().required(),
   currency_symbol: Joi.string().required(),
   account_type: Joi.string().required(),
+  memo: Joi.string().max(1000).allow('').allow(null).optional(),
 });
 
 module.exports = schema;
