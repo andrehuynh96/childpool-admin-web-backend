@@ -179,7 +179,7 @@ class AffiliateApi {
       if (query.to_date) data.to_date = query.to_date;
       if (query.currency) data.currency = query.currency;
       if (query.status) data.status = query.status;
-      if (query.email) data.email = query.email;
+
       const queryData = queryString.stringify(data);
       const headers = await this.getHeaders();
       const result = await axios.get(`${API_URL}/affiliate-requests?${queryData}`,
@@ -393,14 +393,13 @@ class MembershipApi extends AffiliateApi {
     }
   }
 
-  async updateMembershipType(member, membershipType) {
+  async updateMembershipType(email, membershipType) {
     try {
       const headers = await this.getHeaders();
       const result = await axios.put(`${API_URL}/clients/membership-type`,
         {
-          ext_client_id: member.email,
+          ext_client_id: email,
           membership_type_id: membershipType.id,
-          affiliate_code: member.referrer_code,
         },
         {
           headers,

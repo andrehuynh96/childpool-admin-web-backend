@@ -1,21 +1,14 @@
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const path = require('path');
-const config = require('app/config');
 
 module.exports = function (app, prefix) {
-  if (!config.enableDocsLink) {
-    return;
-  }
-
   prefix = prefix || '';
   var options = {
     swaggerDefinition: {
       info: {
         title: 'Staking Admin Childpool Backend',
-        version: config.app.version,
-        buildNumber: config.app.buildNumber,
-        description: config.app.description,
+        version: '1.0.0',
       },
       servers: [
         {
