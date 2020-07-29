@@ -411,12 +411,6 @@ module.exports = {
               model: Member,
               where: memberWhere,
               required: true
-            },
-            {
-              attributes: ['name', 'price', 'currency_symbol', 'type'],
-              as: "MembershipType",
-              model: MembershipType,
-              required: true
             }
           ],
           where: where,
@@ -428,24 +422,20 @@ module.exports = {
         element.email = element.Member.email;
         element.first_name = element.Member.first_name;
         element.last_name = element.Member.last_name;
-        element.membership_type_name = element.MembershipType.name;
-        element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        element.time_requested = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        element.time_approved_at = element.approved_at ? moment(element.approved_at).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm') : '';
         element.status_string = MembershipOrderStatusEnum[element.status]
-        element.payment = element.payment_type == ClaimRequestPaymentType.Bank ? 'Bank' : element.wallet_id ? element.currency_symbol : `*${element.currency_symbol}`
+        element.amount_string = `${element.amount} ${element.currency_symbol}`
       });
       let data = await stringifyAsync(items, [
-        { key: 'order_no', header: 'Order' },
-        { key: 'time', header: 'Date/Time' },
+        { key: 'id', header: 'No.' },
+        { key: 'time_requested', header: 'Requested' },
         { key: 'first_name', header: 'First Name' },
         { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
-        { key: 'membership_type_name', header: 'Membership' },
-        { key: 'payment', header: 'Payment' },
-        // { key: 'account_number', header: 'Bank Acc No' },
-        { key: 'wallet_address', header: 'Receive address' },
+        { key: 'amount_string', header: 'Amount' },
         { key: 'status_string', header: 'Status' },
-        // { key: 'wallet_id', header: 'Walllet Id' },
-        // { key: 'currency_symbol', header: 'Currency symbol' },
+        { key: 'time_approved_at', header: 'Payout Transfered' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
