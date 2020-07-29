@@ -4,6 +4,7 @@ const Kyc = require("app/model/wallet").kycs;
 const MemberKycProperty = require("app/model/wallet").member_kyc_properties;
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
+const Mapper = require('app/feature/response-schema/member-kyc-property.response-schema');
 const Op = Sequelize.Op;
 module.exports = {
   getAllMemberKyc: async (req, res, next) => {
@@ -12,13 +13,13 @@ module.exports = {
         member_id: req.params.memberId
       };
       const memberKycPropertyCond = {
-          field_name: { [Op.notILike]: 'Password',[Op.notILike]: 'Document%' },
-          field_key: { [Op.notILike]: 'password',[Op.notILike]: 'document%' }
+          field_name: { [Op.notILike]: 'Password' },
+          field_key: { [Op.notILike]: 'password' }
       };
       const memberKycs = await MemberKyc.findAll({
         include: [
           {
-            attributes: ['id', 'member_kyc_id', 'property_id', 'field_name', 'field_key', 'value', 'createdAt', 'updatedAt'],
+            attributes: ['id', 'member_kyc_id', 'property_id', 'field_name', 'field_key', 'value','note', 'createdAt', 'updatedAt'],
             as: "MemberKycProperties",
             model: MemberKycProperty,
             where: memberKycPropertyCond,
@@ -42,6 +43,8 @@ module.exports = {
         const kyc = kycs.find(x => x.id === item.kyc_id);
         if (kyc) {
           item.kyc_id = kyc.key.replace('LEVEL_','');
+          item.memberKycProperties = Mapper(item.MemberKycProperties);
+          // console.log(item.MemberKycProperties);
           memberKycsResponse.push(item);
         }
       });
