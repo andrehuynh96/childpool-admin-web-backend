@@ -234,7 +234,7 @@ module.exports = {
           });
 
         const updateMemberRewardTransactionHis = MemberRewardTransactionHis.update(
-          { txid: item[txidColumnName] },
+          { tx_id: item[txidColumnName] },
           {
             where: {
               claim_request_id: item.Id
