@@ -220,7 +220,7 @@ module.exports = {
       }
 
       transaction = await database.transaction();
-      const txidColumnName = 'txid';
+      const txidColumnName = 'TX ID';
 
       await forEach(records, async (item) => {
         const updateClaimRequest = ClaimRequest.update(
