@@ -39,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       default: false,
     },
+    memo: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+    },
     created_by: {
       type: DataTypes.INTEGER,
       allowNull: false,

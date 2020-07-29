@@ -159,11 +159,11 @@ module.exports = {
         }
       );
       await MemberRewardTransactionHis.update(
-        { tx_id: body.txid },{
-          where:{
-            claim_request_id: claimRequest.id
-          },
-          transaction: transaction
+        { tx_id: body.txid }, {
+        where: {
+          claim_request_id: claimRequest.id
+        },
+        transaction: transaction
       });
       await transaction.commit();
       return res.ok(true);
@@ -259,11 +259,10 @@ module.exports = {
         }
       });
 
-      claimRequests.forEach(item => {
-        if (item.status !== ClaimRequestStatus.Pending) {
-          return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['tokenPayoutIds'] });
-        }
-      });
+      const hasNotPendingRequest = claimRequests.some(item => item.status !== ClaimRequestStatus.Pending);
+      if (hasNotPendingRequest) {
+        return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['tokenPayoutIds'] });
+      }
 
       const transaction = await database.transaction();
       try {
@@ -424,7 +423,6 @@ module.exports = {
   },
   getPaymentType: async (req, res, next) => {
     try {
-      console.log('getPaymentType', 'r')
       return res.ok(PaymentType);
     }
     catch (error) {

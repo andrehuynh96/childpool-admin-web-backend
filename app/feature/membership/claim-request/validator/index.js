@@ -1,4 +1,5 @@
 module.exports = {
    updateStatus :  require('./update-status'),
-    updateTxid :  require('./udpate-txid')
+    updateTxid :  require('./update-txid'),
+    updateTxidCSV :  require('./update-txid-csv')
 };

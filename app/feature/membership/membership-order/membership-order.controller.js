@@ -12,7 +12,7 @@ const MemberRewardCommissionMethod = require("app/model/wallet/value-object/memb
 const MemberRewardAction = require("app/model/wallet/value-object/member-reward-transaction-action");
 const SystemType = require('app/model/wallet/value-object/system-type');
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
-const ClaimRequestPaymentType = require("app/model/wallet/value-object/claim-request-payment-type")
+const ClaimRequestPaymentType = require("app/model/wallet/value-object/claim-request-payment-type");
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
 const Sequelize = require('sequelize');
 const stringify = require('csv-stringify');
@@ -22,7 +22,7 @@ const config = require('app/config');
 const mailer = require('app/lib/mailer');
 const PaymentType = require('app/model/wallet/value-object/claim-request-payment-type');
 const EmailTemplate = require('app/model/wallet').email_templates;
-const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
 
 
 const Op = Sequelize.Op;
@@ -181,7 +181,6 @@ module.exports = {
       }
 
       membershipOrder.explorer_link = blockchainHelpper.getUrlTxid(membershipOrder.txid, membershipOrder.currency_symbol);
-      console.log(membershipOrder);
       return res.ok(membershipOrderMapper(membershipOrder));
     }
     catch (error) {
@@ -230,7 +229,7 @@ module.exports = {
         imageUrl: config.website.urlImages,
         firstName: order.Member.first_name,
         lastName: order.Member.last_name,
-        language: order.Member.current_language
+        language: order.Member.current_language || 'en',
       };
 
       if (status == MembershipOrderStatus.Approved) {
@@ -334,7 +333,7 @@ module.exports = {
       logger.error('update order fail:', err);
       next(err);
     }
-    
+
   },
   downloadCSV: async (req, res, next) => {
     try {
@@ -411,6 +410,12 @@ module.exports = {
               model: Member,
               where: memberWhere,
               required: true
+            },
+            {
+              attributes: ['name', 'price', 'currency_symbol', 'type'],
+              as: "MembershipType",
+              model: MembershipType,
+              required: true
             }
           ],
           where: where,
@@ -422,20 +427,24 @@ module.exports = {
         element.email = element.Member.email;
         element.first_name = element.Member.first_name;
         element.last_name = element.Member.last_name;
-        element.time_requested = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
-        element.time_approved_at = element.approved_at ? moment(element.approved_at).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm') : '';
-        element.status_string = MembershipOrderStatusEnum[element.status]
-        element.amount_string = `${element.amount} ${element.currency_symbol}`
+        element.membership_type_name = element.MembershipType.name;
+        element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        element.status_string = MembershipOrderStatusEnum[element.status];
+        element.payment = element.payment_type == ClaimRequestPaymentType.Bank ? 'Bank' : element.wallet_id ? element.currency_symbol : `*${element.currency_symbol}`;
       });
       let data = await stringifyAsync(items, [
-        { key: 'id', header: 'No.' },
-        { key: 'time_requested', header: 'Requested' },
+        { key: 'order_no', header: 'Order' },
+        { key: 'time', header: 'Date/Time' },
         { key: 'first_name', header: 'First Name' },
         { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
-        { key: 'amount_string', header: 'Amount' },
+        { key: 'membership_type_name', header: 'Membership' },
+        { key: 'payment', header: 'Payment' },
+        // { key: 'account_number', header: 'Bank Acc No' },
+        { key: 'wallet_address', header: 'Receive address' },
         { key: 'status_string', header: 'Status' },
-        { key: 'time_approved_at', header: 'Payout Transfered' },
+        // { key: 'wallet_id', header: 'Walllet Id' },
+        // { key: 'currency_symbol', header: 'Currency symbol' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
@@ -485,31 +494,30 @@ function stringifyAsync(data, columns) {
 }
 
 async function _sendEmail(email, payload, approved) {
-  let templateName = EmailTemplateType.MEMBERSHIP_ORDER_APPROVED 
-  if(!approved)
-    templateName = EmailTemplateType.MEMBERSHIP_ORDER_REJECTED
-
+  const templateName = approved ? EmailTemplateType.MEMBERSHIP_ORDER_APPROVED : EmailTemplateType.MEMBERSHIP_ORDER_REJECTED;
   let template = await EmailTemplate.findOne({
     where: {
       name: templateName,
       language: payload.language
     }
-  })
+  });
 
-  if(!template){
+  if (!template) {
     template = await EmailTemplate.findOne({
       where: {
         name: templateName,
         language: 'en'
       }
-    })
+    });
   }
 
-  if(!template)
-    return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
-    
-  let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
-  let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+  if (!template) {
+    logger.error(`Not found email template ${templateName}`);
+    return;
+  }
+
+  const subject = template.subject;
+  const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
   const data = Object.assign({}, payload, config.email);
   await mailer.sendWithDBTemplate(subject, from, email, data, template.template);
 }
