@@ -1,4 +1,6 @@
+/* eslint-disable no-cond-assign */
 const logger = require('app/lib/logger');
+const config = require('app/config');
 const ClaimRequest = require("app/model/wallet").claim_requests;
 const MemberRewardTransactionHis = require("app/model/wallet").member_reward_transaction_his;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
@@ -16,6 +18,9 @@ const PaymentType = require("app/model/wallet/value-object/claim-request-payment
 const Platform = require("app/model/wallet/value-object/platform");
 const blockchainHelpper = require('app/lib/blockchain-helpper');
 const SystemType = require("app/model/wallet/value-object/system-type");
+const path = require('path');
+const { readFileCSV } = require('app/lib/stream');
+const { forEach } = require('p-iteration');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -171,6 +176,84 @@ module.exports = {
     }
     catch (error) {
       transaction.rollback();
+      logger.info('update claim request tx_id fail', error);
+      next(error);
+    }
+  },
+  updateTxidCSV: async (req, res, next) => {
+    let transaction;
+
+    try {
+      const { body } = req;
+      let file = path.parse(body.claimRequestTxid.file.name);
+      if ((file.ext || '').toLowerCase() !== '.csv') {
+        return res.badRequest(res.__("UNSUPPORTED_FILE_EXTENSION"), "UNSUPPORTED_FILE_EXTENSION", { fields: ["txid"] });
+      }
+
+      const records = await readFileCSV(body.claimRequestTxid.data);
+      const claimRequestIds = records.filter(x => x.Id).map(item => item.Id);
+      // Check claim request
+      const claimRequests = await ClaimRequest.findAll({
+        where: {
+          id: claimRequestIds,
+          system_type: SystemType.MEMBERSHIP
+        }
+      });
+      const cache = claimRequests.reduce((result, value) => {
+        result[value.id] = value;
+        
+        return result;
+      }, {});
+
+      const notFoundIdList = [];
+      claimRequestIds.forEach(id => {
+        if (!cache[id]) {
+          notFoundIdList.push(id);
+        }
+      });
+
+      if (notFoundIdList.length > 0) {
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", {
+          field: ['Id'],
+          notFoundIdList,
+        });
+      }
+
+      transaction = await database.transaction();
+      const txidColumnName = 'txid';
+
+      await forEach(records, async (item) => {
+        const updateClaimRequest = ClaimRequest.update(
+          { txid: item[txidColumnName] },
+          {
+            where: {
+              id: item.Id
+            },
+            returning: true,
+            transaction: transaction
+          });
+
+        const updateMemberRewardTransactionHis = MemberRewardTransactionHis.update(
+          { txid: item[txidColumnName] },
+          {
+            where: {
+              claim_request_id: item.Id
+            },
+            returning: true,
+            transaction: transaction
+          });
+
+        await Promise.all([updateClaimRequest, updateMemberRewardTransactionHis]);
+      });
+
+      transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        transaction.rollback();
+      }
+
       logger.info('update claim request tx_id fail', error);
       next(error);
     }
