@@ -27,7 +27,7 @@ router.put(
     authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID),
     controller.updateTxid
 );
-router.put(
+router.post(
     '/claim-requests/txid/csv',
     parseFormData,
     validator(updateTxidCSV),
@@ -475,7 +475,7 @@ module.exports = router;
  /**
  * @swagger
  * /web/membership/claim-requests/txid/csv:
- *   put:
+ *   post:
  *     summary: update claim request txid by csv file
  *     tags:
  *       - Claim Request

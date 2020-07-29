@@ -30,7 +30,7 @@ router.put(
     controller.updateTxid
 );
 
-router.put(
+router.post(
     '/token-payout/update/txid/csv',
     parseFormData,
     validator(updateTxidCSV),
@@ -478,7 +478,7 @@ module.exports = router;
  /**
  * @swagger
  * /web/affiliate/token-payout/txid/csv:
- *   put:
+ *   post:
  *     summary: update token payout txid by csv file
  *     tags:
  *       - Affiliate
