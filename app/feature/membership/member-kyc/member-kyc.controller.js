@@ -12,8 +12,8 @@ module.exports = {
         member_id: req.params.memberId
       };
       const memberKycPropertyCond = {
-          field_name: { [Op.notILike]: 'Password',[Op.notILike]: 'Document%' },
-          field_key: { [Op.notILike]: 'password',[Op.notILike]: 'document%' }
+          field_name: { [Op.notILike]: 'Password' },
+          field_key: { [Op.notILike]: 'password' }
       };
       const memberKycs = await MemberKyc.findAll({
         include: [
