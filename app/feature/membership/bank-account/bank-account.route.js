@@ -87,12 +87,9 @@ module.exports = router;
 *            example:
 *               {
                   "bank_name": "Vietcombank",
-                  "branch_name": "Bank account",
-                  "account_name": "NGUYEN VAN B",
-                  "account_number": "12345",
-                  "currency_symbol": "USD",
-                  "account_type": "AASS",
-                  "memo": "test",
+                  "swift": "1111One",
+                  "account_name": "NGUYEN VAN A",
+                  "account_number": "34268909879"
                 }
 *     produces:
 *       - application/json

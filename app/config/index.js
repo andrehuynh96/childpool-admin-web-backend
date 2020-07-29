@@ -28,8 +28,8 @@ const config = {
   app: {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
-    description: pkg.description,
     buildNumber: process.env.BUILD_NUMBER || '',
+    description: pkg.description,
     port: parseInt(process.env.PORT || process.env.APP_PORT),
   },
   db: {
@@ -41,7 +41,7 @@ const config = {
         host: process.env.WALLET_DB_HOST,
         port: process.env.WALLET_DB_PORT,
         dialect: 'postgres',
-        logging: process.env.POSTPRES_DEBUG === 'true',
+        logging: false
       }
     }
   },
@@ -69,7 +69,7 @@ const config = {
     folderPlatform: process.env.CDN_FOLDER_PLATFORM,
     exts: process.env.CDN_FILE_EXT ? process.env.CDN_FILE_EXT.split(',')
       : [],
-    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 2097152
+    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 5242880
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
@@ -102,6 +102,8 @@ const config = {
     confirmNewIp: process.env.PARTNER_NAME.toLowerCase() + "/confirm-ip.ejs",
     confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
+    membershipOrderApproved: process.env.PARTNER_NAME.toLowerCase() + "/membership-order-approved.ejs",
+    membershipOrderRejected: process.env.PARTNER_NAME.toLowerCase() + "/membership-order-rejected.ejs",
   },
   masterWebsite: {
     urlViewRequest: process.env.MASTER_WEBSITE_URL + '/admin/childpool/detail'
