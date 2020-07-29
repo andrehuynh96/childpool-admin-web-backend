@@ -192,7 +192,6 @@ module.exports = {
 
       const records = await readFileCSV(body.claimRequestTxid.data);
       const claimRequestIds = records.filter(x => x.Id).map(item => item.Id);
-
       // Check claim request
       const claimRequests = await ClaimRequest.findAll({
         where: {
@@ -201,7 +200,9 @@ module.exports = {
         }
       });
       const cache = claimRequests.reduce((result, value) => {
-        cache[value.id] = value;
+        result[value.id] = value;
+        
+        return result;
       }, {});
 
       const notFoundIdList = [];
@@ -219,11 +220,11 @@ module.exports = {
       }
 
       transaction = await database.transaction();
-      const txtdColumnName = 'txid';
+      const txidColumnName = 'txid';
 
       await forEach(records, async (item) => {
         const updateClaimRequest = ClaimRequest.update(
-          { txid: item[txtdColumnName] },
+          { txid: item[txidColumnName] },
           {
             where: {
               id: item.Id
@@ -233,7 +234,7 @@ module.exports = {
           });
 
         const updateMemberRewardTransactionHis = MemberRewardTransactionHis.update(
-          { txid: item[txtdColumnName] },
+          { txid: item[txidColumnName] },
           {
             where: {
               claim_request_id: item.Id
