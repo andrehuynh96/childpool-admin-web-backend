@@ -182,20 +182,16 @@ module.exports = {
   },
   updateTxidCSV: async (req, res, next) => {
     let transaction;
+
     try {
       const { body } = req;
       let file = path.parse(body.claimRequestTxid.file.name);
-      if (config.CDN.exts.indexOf(file.ext.toLowerCase()) == -1) {
-        return res.badRequest(
-          res.__("UNSUPPORTED_FILE_EXTENSION"),
-          "UNSUPPORTED_FILE_EXTENSION",
-          { fields: ["txid"] }
-        );
+      if ((file.ext || '').toLowerCase() !== '.csv') {
+        return res.badRequest(res.__("UNSUPPORTED_FILE_EXTENSION"), "UNSUPPORTED_FILE_EXTENSION", { fields: ["txid"] });
       }
-      const txidList = await readFileCSV(body.claimRequestTxid.data);
-      transaction = await database.transaction();
 
-      const claimRequestIds = txidList.map(item => item.Id);
+      const records = await readFileCSV(body.claimRequestTxid.data);
+      const claimRequestIds = records.filter(x => x.Id).map(item => item.Id);
 
       // Check claim request
       const claimRequests = await ClaimRequest.findAll({
@@ -204,62 +200,59 @@ module.exports = {
           system_type: SystemType.MEMBERSHIP
         }
       });
-      const checkValidClaimRequestList = claimRequestIds.map(item => {
-        const valid = claimRequests.find(x => x.id == item);
-        if (!valid){
-          return false;
-        }
-        else {
-          return true;
-        }
-      });
-      if (checkValidClaimRequestList.includes(false)) {
-            return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['Id'] });
-      }
-      
-      // Check member_reward_transaction_his
-      const memberRewardTransactionHis = await MemberRewardTransactionHis.findAll({
-        where: {
-          claim_request_id: claimRequestIds
+      const cache = claimRequests.reduce((result, value) => {
+        cache[value.id] = value;
+      }, {});
+
+      const notFoundIdList = [];
+      claimRequestIds.forEach(id => {
+        if (!cache[id]) {
+          notFoundIdList.push(id);
         }
       });
-      const checkValidHistoryList = claimRequestIds.map(item => {
-        const valid = memberRewardTransactionHis.find(x => x.claim_request_id == item);
-        if (!valid){
-          return false;
-        }
-        else {
-          return true;
-        }
-      });
-      if (checkValidHistoryList.includes(false)) {
-        return res.badRequest(res.__("MEMBER_REWARD_TRANSACTION_HIS_NOT_FOUND"), "MEMBER_REWARD_TRANSACTION_HIS_NOT_FOUND",{ field: ['Id'] });
+
+      if (notFoundIdList.length > 0) {
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", {
+          field: ['Id'],
+          notFoundIdList,
+        });
       }
 
-      await forEach(txidList,async (item) => {
-        await ClaimRequest.update(
-          { txid: item.txid },{
+      transaction = await database.transaction();
+      const txtdColumnName = 'txid';
+
+      await forEach(records, async (item) => {
+        const updateClaimRequest = ClaimRequest.update(
+          { txid: item[txtdColumnName] },
+          {
             where: {
               id: item.Id
             },
             returning: true,
             transaction: transaction
           });
-          await MemberRewardTransactionHis.update(
-            { tx_id: item.txid },{
-              where: {
-                claim_request_id: item.Id
-              },
-              returning: true,
-              transaction: transaction
-            });
+
+        const updateMemberRewardTransactionHis = MemberRewardTransactionHis.update(
+          { txid: item[txtdColumnName] },
+          {
+            where: {
+              claim_request_id: item.Id
+            },
+            returning: true,
+            transaction: transaction
+          });
+
+        await Promise.all([updateClaimRequest, updateMemberRewardTransactionHis]);
       });
 
       transaction.commit();
       return res.ok(true);
     }
     catch (error) {
-      // transaction.rollback();
+      if (transaction) {
+        transaction.rollback();
+      }
+
       logger.info('update claim request tx_id fail', error);
       next(error);
     }
