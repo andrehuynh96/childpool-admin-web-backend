@@ -95,19 +95,28 @@ module.exports = {
             next(error);
         }
     },
-    getReason: async (req, res, next) => {
+    getEmailTemplatesByGroupName: async (req, res, next) => {
         try {
             const emailTemplates = await EmailTemplate.findAll({
                 where: {
-                    group_name:EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
+                    group_name: req.params.groupName,
                     display_order: 1
                 }
             });
             return res.ok(emailTemplates);
         } 
         catch (error) {
-            logger.error('get email template reasons list fail', error);
+            logger.error('get email template by group name fail', error);
             next(error);
         }
-    }
+    },
+    getGroupName: async (req, res, next) => {
+        try {
+            return res.ok(EmailTemplateGroupNames);
+        } 
+        catch (error) {
+            logger.error('get group name list fail', error);
+            next(error);
+        }
+    },
 };

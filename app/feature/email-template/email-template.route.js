@@ -26,10 +26,16 @@ router.post('/email-templates',
     controller.update
 );
 
-router.get('/email-templates-rejecteds',
+router.get('/email-templates/reason/group-names',
     authenticate,
     authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
-    controller.getReason
+    controller.getGroupName
+);
+
+router.get('/email-templates/reasons/group-names/:groupName',
+    authenticate,
+    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
+    controller.getEmailTemplatesByGroupName
 );
 
 /**
@@ -238,14 +244,14 @@ router.get('/email-templates-rejecteds',
 
 /**
 * @swagger
-* /web/email-templates-rejecteds:
+* /web/email-templates/reason/{groupName}:
 *   get:
 *     summary: get email template reason list rejected order
 *     tags:
 *       - Email Template
 *     description: get email template reason list rejected order
 *     parameters:
-*       - name: name
+*       - name: groupName
 *         in: path
 *         type: string
 *         required: true
