@@ -238,7 +238,7 @@ router.get('/email-templates-rejecteds',
 
 /**
 * @swagger
-* /web/email-templates/reasons:
+* /web/email-templates-rejecteds:
 *   get:
 *     summary: get email template reason list rejected order
 *     tags:
