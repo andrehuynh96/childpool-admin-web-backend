@@ -99,7 +99,8 @@ module.exports = {
         try {
             const emailTemplates = await EmailTemplate.findAll({
                 where: {
-                    group_name:EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON 
+                    group_name:EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
+                    display_order: 1
                 }
             });
             return res.ok(emailTemplates);

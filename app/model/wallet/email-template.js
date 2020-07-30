@@ -26,6 +26,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(100),
       allowNull: false,
     },
+    display_order: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      default: 0
+    },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: true,

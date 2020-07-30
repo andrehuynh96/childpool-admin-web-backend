@@ -16,27 +16,39 @@ module.exports = async () => {
             locale: 'en',
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-approved-en/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-approved-en/html.ejs'), 'utf-8'),
+            display_order: 0
         },
         {
             name: EmailTemplateTypes.MEMBERSHIP_ORDER_REJECTED,
             locale: 'en',
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-en/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-en/html.ejs'), 'utf-8'),
-            group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON
+            group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
+            display_order: 0
+        },
+        {
+            name: EmailTemplateTypes.MEMBERSHIP_ORDER_REJECTED_REASON_TIMED_OUT,
+            locale: 'en',
+            subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/timed-out/subject.ejs'), 'utf-8'),
+            template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/timed-out/html.ejs'), 'utf-8'),
+            group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
+            display_order: 1
         },
         {
             name: EmailTemplateTypes.MEMBERSHIP_ORDER_REJECTED_REASON_OPTION_1,
             locale: 'en',
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-1/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-1/html.ejs'), 'utf-8'),
-            group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON
+            group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
+            display_order: 1
         },
         {
             name: EmailTemplateTypes.MEMBERSHIP_ORDER_REJECTED_REASON_OPTION_2,
             locale: 'en',
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-2/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-2/html.ejs'), 'utf-8'),
-            group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON
+            group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
+            display_order: 1
         }
     ];
 
