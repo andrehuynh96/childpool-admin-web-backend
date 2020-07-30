@@ -83,6 +83,13 @@ const config = {
     urlConfirmRequest: process.env.WEBSITE_URL + '/confirm-request?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL,
   },
+  aws: {
+    endpoint: process.env.AWS_END_POINT,
+    accessKey: process.env.AWS_ACCESS_KEY,
+    secretKey: process.env.AWS_SECRET_KEY,
+    bucket: process.env.AWS_BUCKET,
+    bucketUrls: process.env.AWS_BUCKET_URLS ? process.env.AWS_BUCKET_URLS.split(",") : []
+  },
   stakingApi: {
     url: process.env.STAKING_API_URL,
     key: process.env.STAKING_API_KEY,
