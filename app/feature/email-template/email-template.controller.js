@@ -5,6 +5,7 @@ const mapper = require("app/feature/response-schema/email-template.response-sche
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const Op = Sequelize.Op;
+
 module.exports = {
     getAll: async (req, res, next) => {
         try {
@@ -100,11 +101,11 @@ module.exports = {
             const emailTemplates = await EmailTemplate.findAll({
                 where: {
                     group_name: req.params.groupName,
-                    display_order: 1
                 }
             });
+
             return res.ok(emailTemplates);
-        } 
+        }
         catch (error) {
             logger.error('get email template by group name fail', error);
             next(error);
@@ -113,7 +114,7 @@ module.exports = {
     getGroupName: async (req, res, next) => {
         try {
             return res.ok(EmailTemplateGroupNames);
-        } 
+        }
         catch (error) {
             logger.error('get group name list fail', error);
             next(error);
