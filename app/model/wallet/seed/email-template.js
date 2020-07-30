@@ -24,7 +24,7 @@ module.exports = async () => {
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-en/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-en/html.ejs'), 'utf-8'),
             group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
-            display_order: 0
+            display_order: 0,
         },
         {
             name: EmailTemplateTypes.MEMBERSHIP_ORDER_REJECTED_REASON_TIMED_OUT,
@@ -32,7 +32,7 @@ module.exports = async () => {
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/timed-out/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/timed-out/html.ejs'), 'utf-8'),
             group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
-            display_order: 1
+            display_order: 1,
         },
         {
             name: EmailTemplateTypes.MEMBERSHIP_ORDER_REJECTED_REASON_OPTION_1,
@@ -40,7 +40,7 @@ module.exports = async () => {
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-1/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-1/html.ejs'), 'utf-8'),
             group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
-            display_order: 1
+            display_order: 2,
         },
         {
             name: EmailTemplateTypes.MEMBERSHIP_ORDER_REJECTED_REASON_OPTION_2,
@@ -48,7 +48,7 @@ module.exports = async () => {
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-2/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-2/html.ejs'), 'utf-8'),
             group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
-            display_order: 1
+            display_order: 3,
         }
     ];
 
