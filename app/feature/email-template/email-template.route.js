@@ -26,7 +26,7 @@ router.post('/email-templates',
     controller.update
 );
 
-router.get('/email-templates/reason/group-names',
+router.get('/email-templates/reasons/group-names',
     authenticate,
     authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
     controller.getGroupName
@@ -241,10 +241,48 @@ router.get('/email-templates/reasons/group-names/:groupName',
 *         schema:
 *           $ref: '#/definitions/500'
 */
+/**
+* @swagger
+* /web/email-templates/reasons/group-names:
+*   get:
+*     summary: get group name list
+*     tags:
+*       - Email Template
+*     description: get group name list
+*     parameters:
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                    "data": {
+                        "MEMBERSHIP_ORDER_REJECTED_REASON": "MEMBERSHIP_ORDER_REJECTED_REASON"
+                    }
+                }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 /**
 * @swagger
-* /web/email-templates/reason/{groupName}:
+* /web/email-templates/reasons/group-names/{groupName}:
 *   get:
 *     summary: get email template reason list rejected order
 *     tags:
