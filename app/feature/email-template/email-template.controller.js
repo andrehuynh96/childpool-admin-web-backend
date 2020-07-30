@@ -1,5 +1,6 @@
 const logger = require('app/lib/logger');
 const EmailTemplate = require('app/model/wallet').email_templates;
+const EmailTemplateGroupNames = require('app/model/wallet/value-object/email-template-groupname');
 const mapper = require("app/feature/response-schema/email-template.response-schema");
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
@@ -91,6 +92,20 @@ module.exports = {
                 await transaction.rollback();
             }
             logger.error('update email template fail', error);
+            next(error);
+        }
+    },
+    getReason: async (req, res, next) => {
+        try {
+            const emailTemplates = await EmailTemplate.findAll({
+                where: {
+                    group_name:EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON 
+                }
+            });
+            return res.ok(emailTemplates);
+        } 
+        catch (error) {
+            logger.error('get email template reasons list fail', error);
             next(error);
         }
     }

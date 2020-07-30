@@ -26,6 +26,12 @@ router.post('/email-templates',
     controller.update
 );
 
+router.get('/email-templates-rejecteds',
+    authenticate,
+    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
+    controller.getReason
+);
+
 /**
 * @swagger
 * /web/email-templates:
@@ -230,4 +236,55 @@ router.post('/email-templates',
 *           $ref: '#/definitions/500'
 */
 
+/**
+* @swagger
+* /web/email-templates/reasons:
+*   get:
+*     summary: get email template reason list rejected order
+*     tags:
+*       - Email Template
+*     description: get email template reason list rejected order
+*     parameters:
+*       - name: name
+*         in: path
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": [
+                    {
+                        "id": "872a4a9d-cabe-4524-a01d-c70f74884d2b",
+                        "name": "MEMBERSHIP_ORDER_APPROVED",
+                        "subject": "Membership payment jp",
+                        "template":"<!doctype html>\n<html>\n  <head>\ .......dai lam do",
+                        "language": "en",
+                        "deleted_flg": false,
+                        "createdAt": "2020-02-13T03:08:47.449Z",
+                        "updatedAt": "2020-02-13T03:08:47.449Z"
+                    }
+                ]
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 module.exports = router;
