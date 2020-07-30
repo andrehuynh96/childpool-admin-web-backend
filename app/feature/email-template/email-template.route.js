@@ -26,6 +26,18 @@ router.post('/email-templates',
     controller.update
 );
 
+router.get('/email-templates/reasons/group-names',
+    authenticate,
+    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
+    controller.getGroupName
+);
+
+router.get('/email-templates/reasons/group-names/:groupName',
+    authenticate,
+    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
+    controller.getEmailTemplatesByGroupName
+);
+
 /**
 * @swagger
 * /web/email-templates:
@@ -229,5 +241,94 @@ router.post('/email-templates',
 *         schema:
 *           $ref: '#/definitions/500'
 */
+/**
+* @swagger
+* /web/email-templates/reasons/group-names:
+*   get:
+*     summary: get group name list
+*     tags:
+*       - Email Template
+*     description: get group name list
+*     parameters:
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                    "data": {
+                        "MEMBERSHIP_ORDER_REJECTED_REASON": "MEMBERSHIP_ORDER_REJECTED_REASON"
+                    }
+                }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
+/**
+* @swagger
+* /web/email-templates/reasons/group-names/{groupName}:
+*   get:
+*     summary: get email template reason list rejected order
+*     tags:
+*       - Email Template
+*     description: get email template reason list rejected order
+*     parameters:
+*       - name: groupName
+*         in: path
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": [
+                    {
+                        "id": "872a4a9d-cabe-4524-a01d-c70f74884d2b",
+                        "name": "MEMBERSHIP_ORDER_APPROVED",
+                        "subject": "Membership payment jp",
+                        "template":"<!doctype html>\n<html>\n  <head>\ .......dai lam do",
+                        "language": "en",
+                        "deleted_flg": false,
+                        "createdAt": "2020-02-13T03:08:47.449Z",
+                        "updatedAt": "2020-02-13T03:08:47.449Z"
+                    }
+                ]
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 module.exports = router;
