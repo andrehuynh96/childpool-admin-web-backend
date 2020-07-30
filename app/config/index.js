@@ -25,6 +25,7 @@ const config = {
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
+  sessionSecretKey: process.env.SESSION_SECRET_KEY || 'CHILDPOOL-6672b85fc8d14d26a221253b23f91234',
   app: {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
@@ -69,7 +70,7 @@ const config = {
     folderPlatform: process.env.CDN_FOLDER_PLATFORM,
     exts: process.env.CDN_FILE_EXT ? process.env.CDN_FILE_EXT.split(',')
       : [],
-    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 5242880
+    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 2097152
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,

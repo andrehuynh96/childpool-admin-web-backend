@@ -3,6 +3,28 @@ const database = require('app/lib/database').db().wallet;
 const BankAccount = require("app/model/wallet").bank_accounts;
 
 module.exports = {
+  getAll: async (req, res, next) => {
+    try {
+      const { query } = req;
+      const limit = query.limit ? parseInt(req.query.limit) : 10;
+      const offset = query.offset ? parseInt(req.query.offset) : 0;
+      const { count: total, rows: items } = await BankAccount.findAndCountAll({
+        limit,
+        offset,
+        order: [['created_at', 'DESC']]
+    });
+    return res.ok({
+        items: items,
+        offset: offset,
+        limit: limit,
+        total: total
+    });
+    }
+    catch (err) {
+      logger.error("get all bank account fail", err);
+      next(err);
+    }
+  },
   get: async (req, res, next) => {
     try {
       let current = await BankAccount.findOne({
@@ -36,6 +58,7 @@ module.exports = {
           account_number: req.body.account_number,
           currency_symbol: req.body.currency_symbol,
           account_type: req.body.account_type,
+          memo: req.body.memo
         }
       });
       if (current) {
@@ -69,6 +92,7 @@ module.exports = {
         account_number: req.body.account_number,
         currency_symbol: req.body.currency_symbol,
         account_type: req.body.account_type,
+        memo: req.body.memo
       }, { transaction });
 
       if (!result) {
