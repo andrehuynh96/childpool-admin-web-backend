@@ -208,8 +208,17 @@ module.exports = {
         return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
       }
 
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: order.membership_type_id
+        }
+      });
+
+      if (!membershipType) {
+        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
+      }
+
       transaction = await database.transaction();
-      // let status = req.body.action == 1 ? MembershipOrderStatus.Approved : MembershipOrderStatus.Rejected;
       await MembershipOrder.update({
         notes: req.body.note,
         approved_by_id: req.user.id,
@@ -241,16 +250,7 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
-
-      const membershipType = await MembershipType.findOne({
-        where: {
-          id: order.membership_type_id
-        }
-      });
-
-      if (!membershipType) {
-        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
-      }
+      
 
       const result = await membershipApi.registerMembership({
         email: order.Member.email,
@@ -315,7 +315,7 @@ module.exports = {
         transaction: transaction
       });
 
-      await _sendEmail(order.Member.email, emailPayload);
+      await _sendEmail(order.Member.email, emailPayload,EmailTemplateType.MEMBERSHIP_ORDER_APPROVED);
       await transaction.commit();
 
       return res.ok(true);
@@ -332,6 +332,9 @@ module.exports = {
   },
   rejectOrder: async (req, res, next) => {
       try {
+        if ((!req.body.template && !req.body.note) || (req.body.template && req.body.note)) {
+          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS');
+        }
         let order = await MembershipOrder.findOne({
           where: { id: req.params.id },
           include: {
@@ -361,13 +364,23 @@ module.exports = {
         });
         let emailPayload = {
           id: order.id,
-          note: req.body.note,
           imageUrl: config.website.urlImages,
           firstName: order.Member.first_name,
           lastName: order.Member.last_name,
           language: order.Member.current_language || 'en',
         };
-        await _sendEmail(order.Member.email, emailPayload, req.body.template);
+        if (req.body.template && !req.body.note) {
+          const template = await _findEmailTemplate(req.body.template, emailPayload.language);
+
+          if (!template) {
+              return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND");
+          }
+            emailPayload.note = template.template;
+        }
+        else {
+          emailPayload.note = req.body.note;
+        }
+        await _sendEmail(order.Member.email, emailPayload, EmailTemplateType.MEMBERSHIP_ORDER_REJECTED);
         return res.ok(true);
     } 
     catch (error) {
@@ -529,28 +542,8 @@ function stringifyAsync(data, columns) {
   });
 }
 
-async function _sendEmail(email, payload, emailTemplateName) {
-  const templateName = emailTemplateName ? EmailTemplateType[emailTemplateName] : EmailTemplateType.MEMBERSHIP_ORDER_APPROVED; 
-  let template = await EmailTemplate.findOne({
-    where: {
-      name: templateName,
-      language: payload.language
-    }
-  });
-
-  if (!template) {
-    template = await EmailTemplate.findOne({
-      where: {
-        name: templateName,
-        language: 'en'
-      }
-    });
-  }
-
-  if (!template) {
-    logger.error(`Not found email template ${templateName}`);
-    return;
-  }
+async function _sendEmail(email, payload, templateName) {
+  let template = await _findEmailTemplate(templateName,payload.language);
 
   const subject = template.subject;
   const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
@@ -576,4 +569,24 @@ async function _findMemberByEmail(email) {
   }
 
   return member;
+}
+
+async function _findEmailTemplate(templateName, language) {
+  let template = await EmailTemplate.findOne({
+    where: {
+      name: templateName,
+      language: language
+    }
+  });
+
+  if (!template && template.language !== 'en') {
+    template = await EmailTemplate.findOne({
+      where: {
+        name: templateName,
+        language: 'en'
+      }
+    });
+  }
+
+  return template;
 }
