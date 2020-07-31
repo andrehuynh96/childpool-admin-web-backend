@@ -5,11 +5,12 @@ const WalletPrivateKey = require('../../model/wallet').wallet_priv_keys
 const { affiliateApi } = require('app/lib/affiliate-api');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const config = require("app/config");
 
 module.exports = {
   execute: async () => {
     try {
-      let coins = ["IRIS", "ATOM", "ONT"];//, "ATOM", "ONT"
+      let coins = config.stakingCurrency.split(',');
       for (let element of coins) {
         // call account distribution
         let offset = 0;
