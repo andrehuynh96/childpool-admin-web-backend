@@ -372,9 +372,10 @@ module.exports = {
         if (req.body.template && !req.body.note) {
           const template = await _findEmailTemplate(req.body.template, emailPayload.language);
 
-          if (template) {
-            emailPayload.note = template.template;
+          if (!template) {
+              return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND");
           }
+            emailPayload.note = template.template;
         }
         else {
           emailPayload.note = req.body.note;
