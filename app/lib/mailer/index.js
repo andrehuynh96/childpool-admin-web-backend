@@ -40,7 +40,6 @@ transporter.sendWithDBTemplate = async function (
   template
 ) {
   let mailContent = await transporter.getMailDBTemplate(template, data);
-console.log(mailContent);
   return await transporter.sendMail({
     from: from,
     to: to,
