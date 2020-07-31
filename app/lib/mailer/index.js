@@ -39,8 +39,9 @@ transporter.sendWithDBTemplate = async function (
   data,
   template
 ) {
+  console.log(data.note)
   let mailContent = await transporter.getMailDBTemplate(template, data);
-
+console.log(mailContent);
   return await transporter.sendMail({
     from: from,
     to: to,
