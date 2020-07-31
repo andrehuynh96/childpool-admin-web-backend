@@ -316,8 +316,7 @@ module.exports = {
       });
 
       await _sendEmail(order.Member.email, emailPayload);
-      await transaction.rollback();
-      // await transaction.commit();
+      await transaction.commit();
 
       return res.ok(true);
     }
@@ -351,15 +350,15 @@ module.exports = {
           return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
         }
 
-        // await MembershipOrder.update({
-        //   notes: req.body.note,
-        //   status: MembershipOrderStatus.Rejected
-        // }, {
-        //   where: {
-        //     id: req.params.id
-        //   },
-        //   returning: true
-        // });
+        await MembershipOrder.update({
+          notes: req.body.note,
+          status: MembershipOrderStatus.Rejected
+        }, {
+          where: {
+            id: req.params.id
+          },
+          returning: true
+        });
         let emailPayload = {
           id: order.id,
           note: req.body.note,
@@ -531,7 +530,7 @@ function stringifyAsync(data, columns) {
 }
 
 async function _sendEmail(email, payload, emailTemplateName) {
-  const templateName = emailTemplateName ? emailTemplateName : EmailTemplateType.MEMBERSHIP_ORDER_APPROVED; 
+  const templateName = emailTemplateName ? EmailTemplateType[emailTemplateName] : EmailTemplateType.MEMBERSHIP_ORDER_APPROVED; 
   let template = await EmailTemplate.findOne({
     where: {
       name: templateName,
