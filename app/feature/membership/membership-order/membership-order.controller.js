@@ -259,7 +259,7 @@ module.exports = {
       });
 
       if (result.httpCode != 200) {
-        await transaction.commit();
+        await transaction.rollback();
 
         return res.status(result.httpCode).send(result.data);
       }
