@@ -208,6 +208,16 @@ module.exports = {
         return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
       }
 
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: order.membership_type_id
+        }
+      });
+
+      if (!membershipType) {
+        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
+      }
+
       transaction = await database.transaction();
       await MembershipOrder.update({
         notes: req.body.note,
@@ -240,16 +250,7 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
-
-      const membershipType = await MembershipType.findOne({
-        where: {
-          id: order.membership_type_id
-        }
-      });
-
-      if (!membershipType) {
-        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
-      }
+      
 
       const result = await membershipApi.registerMembership({
         email: order.Member.email,
