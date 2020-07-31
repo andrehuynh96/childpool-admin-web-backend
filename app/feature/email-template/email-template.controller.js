@@ -1,9 +1,11 @@
 const logger = require('app/lib/logger');
 const EmailTemplate = require('app/model/wallet').email_templates;
+const EmailTemplateGroupNames = require('app/model/wallet/value-object/email-template-groupname');
 const mapper = require("app/feature/response-schema/email-template.response-schema");
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const Op = Sequelize.Op;
+
 module.exports = {
     getAll: async (req, res, next) => {
         try {
@@ -93,5 +95,29 @@ module.exports = {
             logger.error('update email template fail', error);
             next(error);
         }
-    }
+    },
+    getEmailTemplatesByGroupName: async (req, res, next) => {
+        try {
+            const emailTemplates = await EmailTemplate.findAll({
+                where: {
+                    group_name: req.params.groupName,
+                }
+            });
+
+            return res.ok(emailTemplates);
+        }
+        catch (error) {
+            logger.error('get email template by group name fail', error);
+            next(error);
+        }
+    },
+    getGroupName: async (req, res, next) => {
+        try {
+            return res.ok(EmailTemplateGroupNames);
+        }
+        catch (error) {
+            logger.error('get group name list fail', error);
+            next(error);
+        }
+    },
 };

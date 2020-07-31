@@ -6,6 +6,6 @@ let client = new Minio.Client({
   accessKey: config.CDN.accessKey,
   secretKey: config.CDN.secretKey,
   useSSL: true,
-})
+});
 
 module.exports = client;
