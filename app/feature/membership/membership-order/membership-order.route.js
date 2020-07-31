@@ -364,7 +364,7 @@ module.exports = router;
  *            - password
  *            example:
  *              {       
-                        "template": "MEMBERSHIP_ORDER_REJECTED_REASON_TIMED_OUT"
+                        "template": "MEMBERSHIP_ORDER_REJECTED_REASON_TIMED_OUT",
                         "note":"note"
                 }
  *     produces:
