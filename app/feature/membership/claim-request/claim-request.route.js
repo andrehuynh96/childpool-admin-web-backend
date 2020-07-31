@@ -2,9 +2,10 @@ const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./claim-request.controller');
 const authority = require('app/middleware/authority.middleware');
+const parseFormData = require('app/middleware/parse-formdata.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require("app/middleware/validator.middleware");
-const { updateStatus, updateTxid } = require('./validator');
+const { updateStatus, updateTxid, updateTxidCSV } = require('./validator');
 const router = express.Router();
 
 router.get(
@@ -26,6 +27,14 @@ router.put(
     authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID),
     controller.updateTxid
 );
+router.post(
+    '/claim-requests/txid/csv',
+    parseFormData,
+    validator(updateTxidCSV),
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_CLAIM_REQUEST_TX_ID),
+    controller.updateTxidCSV
+);
 router.put(
     '/claim-requests/approves',
     validator(updateStatus),
@@ -42,7 +51,7 @@ router.get(
 );
 
 router.get(
-	'/claim-requests/payment-type',
+	'/payment-types',
     authenticate,
 	controller.getPaymentType
 );
@@ -263,7 +272,7 @@ module.exports = router;
 /** *******************************************************************/
 /**
  * @swagger
- * /web/membership/claim-requests/payment-type:
+ * /web/membership/payment-types:
  *   get:
  *     summary: get claim request payment types
  *     tags:
@@ -409,31 +418,80 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
+/**
+* @swagger
+* /web/membership/claim-requests/{claimRequestId}/txid:
+*   put:
+*     summary: update claim request txid
+*     tags:
+*       - Claim Request
+*     description: update claim request txid
+*     parameters:
+*       - name: claimRequestId
+*         in: path
+*         type: string
+*         required: true
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON to update.
+*         schema:
+*            type: object
+*            required:
+*            - txid
+*            example:
+*                  {
+                       "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca"
+*                  }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+/** *******************************************************************/
+
  /**
  * @swagger
- * /web/membership/claim-requests/:claimrequestId/txid:
- *   put:
- *     summary: update claim request txid
+ * /web/membership/claim-requests/txid/csv:
+ *   post:
+ *     summary: update claim request txid by csv file
  *     tags:
  *       - Claim Request
- *     description: update claim request txid
+ *     description: update claim request txid by csv file
  *     parameters:
- *       - name: claimrequestId
- *         in: path
- *         type: string
- *         required: true
  *       - name: data
  *         in: body
  *         required: true
- *         description: submit data JSON to update.
+ *         description: submit file
  *         schema:
- *            type: object
+ *            type: file
  *            required:
- *            - membershipTypeId
- *            - referrerCode
+ *            - claimRequestTxid
  *            example:
  *                  {
-                        "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca"
+                        "claimRequestTxid": "txid.csv"
  *                  }
  *     produces:
  *       - application/json

@@ -184,6 +184,7 @@ module.exports = {
       else {
         member.status = MemberFillterStatusText.Active;
       }
+      member.kyc_level = (member.kyc_level || '').replace('LEVEL_', '');
       if (!member.membership_type_id) {
         member.membership_type = 'Basic';
         return res.ok(memberMapper(member));
@@ -199,8 +200,6 @@ module.exports = {
         return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND");
       }
       member.membership_type = membershipType.name;
-      member.kyc_level = member.kyc_level.replace('LEVEL_', '');
-
       return res.ok(memberMapper(member));
     }
     catch (error) {
@@ -248,6 +247,9 @@ module.exports = {
       }
 
       const hasChangedMembershipType = member.membership_type_id != membershipTypeId;
+      if (!hasChangedMembershipType) {
+        return res.badRequest(res.__("MEMBERSHIP_TYPE_EXIST_ALREADY"), "MEMBERSHIP_TYPE_EXIST_ALREADY", { fields: ["membershipTypeId"] });
+      }
 
       const data = {
         membership_type_id: membershipTypeId
@@ -268,16 +270,13 @@ module.exports = {
 
         let result;
         if (hasChangedMembershipType) {
-          result = await membershipApi.updateMembershipType(member.email, membershipType);
+          result = await membershipApi.updateMembershipType(member, membershipType);
 
           if (result.httpCode !== 200) {
             await transaction.rollback();
 
             return res.status(result.httpCode).send(result.data);
           }
-        }
-        else {
-          return res.badRequest(res.__("MEMBERSHIP_TYPE_EXIST_ALREADY"), "MEMBERSHIP_TYPE_EXIST_ALREADY", { fields: ["membershipTypeId"] });
         }
 
         await transaction.commit();

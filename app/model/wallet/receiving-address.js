@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       default: true,
     },
+    description: {
+      type: DataTypes.STRING(1000),
+      allowNull: true
+    },
     created_by: {
       type: DataTypes.INTEGER,
       allowNull: false,

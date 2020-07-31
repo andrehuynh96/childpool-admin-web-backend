@@ -6,9 +6,10 @@ const logFolder = process.env.LOG_FOLDER || './public/logs';
 
 const config = {
   logger: {
+    level: process.env.LOG_LEVEL || "debug",
     console: {
       enable: true,
-      level: 'debug',
+      level: process.env.LOG_LEVEL || "debug",
     },
     defaultLevel: 'debug',
     file: {
@@ -24,11 +25,12 @@ const config = {
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
+  sessionSecretKey: process.env.SESSION_SECRET_KEY || 'CHILDPOOL-6672b85fc8d14d26a221253b23f91234',
   app: {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
-    buildNumber: process.env.BUILD_NUMBER || '',
     description: pkg.description,
+    buildNumber: process.env.BUILD_NUMBER || '',
     port: parseInt(process.env.PORT || process.env.APP_PORT),
   },
   db: {
@@ -40,7 +42,7 @@ const config = {
         host: process.env.WALLET_DB_HOST,
         port: process.env.WALLET_DB_PORT,
         dialect: 'postgres',
-        logging: false
+        logging: process.env.POSTPRES_DEBUG === 'true',
       }
     }
   },
@@ -68,7 +70,7 @@ const config = {
     folderPlatform: process.env.CDN_FOLDER_PLATFORM,
     exts: process.env.CDN_FILE_EXT ? process.env.CDN_FILE_EXT.split(',')
       : [],
-    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 5242880
+    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 2097152
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
@@ -101,8 +103,6 @@ const config = {
     confirmNewIp: process.env.PARTNER_NAME.toLowerCase() + "/confirm-ip.ejs",
     confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
-    membershipOrderApproved: process.env.PARTNER_NAME.toLowerCase() + "/membership-order-approved.ejs",
-    membershipOrderRejected: process.env.PARTNER_NAME.toLowerCase() + "/membership-order-rejected.ejs",
   },
   masterWebsite: {
     urlViewRequest: process.env.MASTER_WEBSITE_URL + '/admin/childpool/detail'
@@ -114,6 +114,51 @@ const config = {
     affiliateTypeId: process.env.AFFILIATE_AFFILIATE_TYPE_ID,
     membershipTypeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID,
   },
+  schedule: {
+    updateAffiliate: process.env.SCHEDULE_UPDATE_AFFILIATE_REWARD,
+    checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
+  },
+  sdk: {
+    apiKey: process.env.SDK_API_KEY,
+    secret: process.env.SDK_SECRET_KEY,
+    url: process.env.SDK_URL
+  },
+  txCreator: {
+    host: process.env.TX_CREATOR_HOST,
+    ATOM: {
+      keyId: process.env.TX_CREATOR_ATOM_KEY_ID,
+      serviceId: process.env.TX_CREATOR_ATOM_SERVICE_ID,
+      index: process.env.TX_CREATOR_ATOM_INDEX,
+      testNet: process.env.TX_CREATOR_ATOM_TESTNET,
+      feeDenom: process.env.TX_CREATOR_ATOM_FEEDENOM || 'uatom',
+      gas: process.env.TX_CREATOR_ATOM_GAS_LIMIT ? parseInt(process.env.TX_CREATOR_ATOM_GAS_LIMIT) : 250000,
+      confirmBlock: process.env.ATOM_DEFAULT_CONFIRM_BLOCK || 5,
+
+    },
+    IRIS: {
+      keyId: process.env.TX_CREATOR_IRIS_KEY_ID,
+      serviceId: process.env.TX_CREATOR_IRIS_SERVICE_ID,
+      index: process.env.TX_CREATOR_IRIS_INDEX,
+      testNet: process.env.TX_CREATOR_IRIS_TESTNET,
+      feeDenom: process.env.TX_CREATOR_IRIS_FEEDENOM || 'iris-atto',
+      gas: process.env.TX_CREATOR_IRIS_GAS_LIMIT ? parseInt(process.env.TX_CREATOR_IRIS_GAS_LIMIT) : 50000,
+      rateGasPrice: process.env.TX_CREATOR_IRIS_RATE_GAS_PRICE ? parseInt(process.env.TX_CREATOR_IRIS_RATE_GAS_PRICE) : 1e9,
+      confirmBlock: process.env.IRIS_DEFAULT_CONFIRM_BLOCK || 5,
+    },
+    ONT: {
+      keyId: process.env.TX_CREATOR_ONT_KEY_ID,
+      serviceId: process.env.TX_CREATOR_ONT_SERVICE_ID,
+      index: process.env.TX_CREATOR_ONT_INDEX,
+      testNet: process.env.TX_CREATOR_ONT_TESTNET,
+      gasLimit: process.env.TX_CREATOR_ONT_GAS_LIMIT ? parseInt(process.env.TX_CREATOR_ONT_GAS_LIMIT) : 50000,
+      gasPrice: process.env.TX_CREATOR_ONT_GAS_PRICE ? parseInt(process.env.TX_CREATOR_ONT_GAS_PRICE) : 1e9,
+      confirmBlock: process.env.ONT_DEFAULT_CONFIRM_BLOCK || 5,
+    },
+  },
+  ONT: {
+    restUrl: process.env.ONT_REST_SERVER_URL
+  },
+  stakingCurrency: process.env.STAKING_CURRENCY
 };
 
 module.exports = config;

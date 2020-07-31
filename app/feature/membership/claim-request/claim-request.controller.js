@@ -1,4 +1,6 @@
+/* eslint-disable no-cond-assign */
 const logger = require('app/lib/logger');
+const config = require('app/config');
 const ClaimRequest = require("app/model/wallet").claim_requests;
 const MemberRewardTransactionHis = require("app/model/wallet").member_reward_transaction_his;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
@@ -16,6 +18,9 @@ const PaymentType = require("app/model/wallet/value-object/claim-request-payment
 const Platform = require("app/model/wallet/value-object/platform");
 const blockchainHelpper = require('app/lib/blockchain-helpper');
 const SystemType = require("app/model/wallet/value-object/system-type");
+const path = require('path');
+const { readFileCSV } = require('app/lib/stream');
+const { forEach } = require('p-iteration');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -79,7 +84,7 @@ module.exports = {
         offset,
         include: [
           {
-            attributes: ['id','email', 'fullname', 'first_name', 'last_name'],
+            attributes: ['id', 'email', 'fullname', 'first_name', 'last_name'],
             as: "Member",
             model: Member,
             where: memberCond,
@@ -134,6 +139,7 @@ module.exports = {
     }
   },
   updateTxid: async (req, res, next) => {
+    let transaction;
     try {
       const { body, params } = req;
       const claimRequest = await ClaimRequest.findOne({
@@ -145,17 +151,109 @@ module.exports = {
       if (!claimRequest) {
         return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
       }
+      transaction = await database.transaction();
       await ClaimRequest.update(
         { txid: body.txid },
         {
           where: {
             id: claimRequest.id
-          }
+          },
+          transaction: transaction
         }
       );
+
+      await MemberRewardTransactionHis.update(
+        { tx_id: body.txid },
+        {
+          where: {
+            claim_request_id: claimRequest.id
+          },
+          transaction: transaction
+        }
+      );
+      transaction.commit();
       return res.ok(true);
     }
     catch (error) {
+      transaction.rollback();
+      logger.info('update claim request tx_id fail', error);
+      next(error);
+    }
+  },
+  updateTxidCSV: async (req, res, next) => {
+    let transaction;
+
+    try {
+      const { body } = req;
+      let file = path.parse(body.claimRequestTxid.file.name);
+      if ((file.ext || '').toLowerCase() !== '.csv') {
+        return res.badRequest(res.__("UNSUPPORTED_FILE_EXTENSION"), "UNSUPPORTED_FILE_EXTENSION", { fields: ["txid"] });
+      }
+
+      const records = await readFileCSV(body.claimRequestTxid.data);
+      const claimRequestIds = records.filter(x => x.Id).map(item => item.Id);
+      // Check claim request
+      const claimRequests = await ClaimRequest.findAll({
+        where: {
+          id: claimRequestIds,
+          system_type: SystemType.MEMBERSHIP
+        }
+      });
+      const cache = claimRequests.reduce((result, value) => {
+        result[value.id] = value;
+        
+        return result;
+      }, {});
+
+      const notFoundIdList = [];
+      claimRequestIds.forEach(id => {
+        if (!cache[id]) {
+          notFoundIdList.push(id);
+        }
+      });
+
+      if (notFoundIdList.length > 0) {
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", {
+          field: ['Id'],
+          notFoundIdList,
+        });
+      }
+
+      transaction = await database.transaction();
+      const txidColumnName = 'TX ID';
+
+      await forEach(records, async (item) => {
+        const updateClaimRequest = ClaimRequest.update(
+          { txid: item[txidColumnName] },
+          {
+            where: {
+              id: item.Id
+            },
+            returning: true,
+            transaction: transaction
+          });
+
+        const updateMemberRewardTransactionHis = MemberRewardTransactionHis.update(
+          { tx_id: item[txidColumnName] },
+          {
+            where: {
+              claim_request_id: item.Id
+            },
+            returning: true,
+            transaction: transaction
+          });
+
+        await Promise.all([updateClaimRequest, updateMemberRewardTransactionHis]);
+      });
+
+      transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        transaction.rollback();
+      }
+
       logger.info('update claim request tx_id fail', error);
       next(error);
     }
@@ -170,18 +268,18 @@ module.exports = {
         }
       });
 
-      claimRequests.forEach(item => {
-        if (item.status !== ClaimRequestStatus.Pending) {
-          return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['claimRequestIds'] });
-        }
-      });
+      const hasNotPendingRequest = claimRequests.some(item => item.status !== ClaimRequestStatus.Pending);
+      if (hasNotPendingRequest) {
+        return res.badRequest(res.__("CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE"), "CLAIM_REQUEST_LIST_HAVE_ONE_ID_CAN_NOT_APPROVE", { field: ['tokenPayoutIds'] });
+      }
 
       const transaction = await database.transaction();
       try {
         await ClaimRequest.update(
-          { status: ClaimRequestStatus.Approved,
+          {
+            status: ClaimRequestStatus.Approved,
             payout_transferred: Sequelize.fn('NOW')
-           },
+          },
           {
             where: {
               id: body.claimRequestIds
@@ -189,23 +287,24 @@ module.exports = {
             transaction: transaction,
             returning: true
           });
-          const dataRewardTracking = claimRequests.map(item => {
-            return ({
-              member_id: item.member_id,
-              currency_symbol: item.currency_symbol,
-              amount: item.amount,
-              action: MemberRewardTransactionAction.SENT,
-              tx_id: item.tx_id,
-              system_type: item.system_type
-            });
+        const dataRewardTracking = claimRequests.map(item => {
+          return ({
+            member_id: item.member_id,
+            claim_request_id: item.id,
+            currency_symbol: item.currency_symbol,
+            amount: item.amount,
+            action: MemberRewardTransactionAction.SENT,
+            tx_id: item.tx_id,
+            system_type: item.system_type
           });
-          const idList = claimRequests.map(item => item.affiliate_claim_reward_id);
-          await MemberRewardTransactionHis.bulkCreate(
-            dataRewardTracking,
-            {
-             transaction: transaction,
-             returning: true,
-            });
+        });
+        const idList = claimRequests.map(item => item.affiliate_claim_reward_id);
+        await MemberRewardTransactionHis.bulkCreate(
+          dataRewardTracking,
+          {
+            transaction: transaction,
+            returning: true,
+          });
 
         const result = await membershipApi.updateClaimRequests(idList, ClaimRequestStatus.Approved);
 
@@ -348,7 +447,7 @@ module.exports = {
       logger.info('get crypto platform fail', error);
       next(error);
     }
-  }
+  },
 };
 
 function stringifyAsync(data, columns) {

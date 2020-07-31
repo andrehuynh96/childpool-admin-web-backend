@@ -74,7 +74,7 @@ class AffiliateApi {
     }
   }
 
-  async updateClaimRequests(claimRewardIds,status) {
+  async updateClaimRequests(claimRewardIds, status) {
     try {
       const headers = await this.getHeaders();
       const result = await axios.put(`${API_URL}/claim-rewards`,
@@ -179,7 +179,7 @@ class AffiliateApi {
       if (query.to_date) data.to_date = query.to_date;
       if (query.currency) data.currency = query.currency;
       if (query.status) data.status = query.status;
-
+      if (query.email) data.email = query.email;
       const queryData = queryString.stringify(data);
       const headers = await this.getHeaders();
       const result = await axios.get(`${API_URL}/affiliate-requests?${queryData}`,
@@ -190,7 +190,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get caculate reward request list fail:", err);
+      logger.error("get calculate reward request list fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -207,7 +207,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get caculate reward request detail fail:", err);
+      logger.error("get calculate reward request detail fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -225,6 +225,23 @@ class AffiliateApi {
     }
     catch (err) {
       logger.error("get caculate reward request detail list fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
+  async getRewardsByRequestId(requestId) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.get(`${API_URL}/affiliate-requests/${requestId}/details/rewards`,
+        {
+          headers,
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("get reward list by request id fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -251,6 +268,38 @@ class AffiliateApi {
       const headers = await this.getHeaders();
       const queryData = queryString.stringify({ ext_client_id: ext_client_id });
       const result = await axios.get(`${API_URL}/clients/referral-structure?${queryData}`,
+        {
+          headers,
+        });
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("get membership referral structure fail:", err);
+    }
+  }
+  async setRewardRequest(payload) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.post(`${API_URL}/rewards`,
+        payload,
+        {
+          headers,
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("setRewardRequest:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
+  async updateMembershipTypeConfig(data) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.put(`${API_URL}/membership-type-config`,
+        { membershipTypes: data },
         {
           headers,
         });
@@ -315,18 +364,19 @@ class MembershipApi extends AffiliateApi {
   async registerMembership({
     email,
     referrerCode,
-    membershipOrderId,
+    membershipOrder,
     membershipType,
   }) {
     try {
+
+
       const headers = await this.getHeaders();
       const data = {
         ext_client_id: email,
         affiliate_code: referrerCode || "",
-        membership_order_id: membershipOrderId,
+        membership_order_id: membershipOrder.id.toString(),
         membership_type_id: membershipType.id,
-        amount: Number(membershipType.price),
-        // currency_symbol: membershipType.currency_symbol,
+        amount: Number(membershipOrder.amount_usd),
         currency_symbol: "USDT",
       };
       const result = await axios.post(`${API_URL}/membership-clients`,
@@ -343,13 +393,14 @@ class MembershipApi extends AffiliateApi {
     }
   }
 
-  async updateMembershipType(email, membershipType) {
+  async updateMembershipType(member, membershipType) {
     try {
       const headers = await this.getHeaders();
       const result = await axios.put(`${API_URL}/clients/membership-type`,
         {
-          ext_client_id: email,
+          ext_client_id: member.email,
           membership_type_id: membershipType.id,
+          affiliate_code: member.referrer_code,
         },
         {
           headers,

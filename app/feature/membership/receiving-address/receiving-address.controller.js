@@ -9,7 +9,7 @@ module.exports = {
     try {
       let where = {}
       let currency_symbol = req.query.currency_symbol
-      if(currency_symbol)
+      if (currency_symbol)
         where.currency_symbol = currency_symbol.toUpperCase()
       let results = await ReceivingAddress.findAll({
         where,
@@ -37,7 +37,7 @@ module.exports = {
       });
 
       if (!result) {
-        return res.notFound();
+        return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
       }
 
       return res.ok(result);
@@ -59,19 +59,19 @@ module.exports = {
       });
 
       if (!result) {
-        return res.notFound();
+        return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
       }
 
       let responseAllUpdate = await ReceivingAddress.update({
         actived_flg: false,
         updated_by: req.user.id,
       }, {
-          where: {
-            currency_symbol: result.currency_symbol
-          },
-          returning: true,
-          transaction: transaction
-        });
+        where: {
+          currency_symbol: result.currency_symbol
+        },
+        returning: true,
+        transaction: transaction
+      });
       if (!responseAllUpdate) {
         return res.serverInternalError();
       }
@@ -79,12 +79,12 @@ module.exports = {
         actived_flg: true,
         updated_by: req.user.id,
       }, {
-          where: {
-            id: result.id
-          },
-          returning: true,
-          transaction: transaction
-        });
+        where: {
+          id: result.id
+        },
+        returning: true,
+        transaction: transaction
+      });
 
       if (!response) {
         return res.serverInternalError();
@@ -110,18 +110,18 @@ module.exports = {
       });
 
       if (!result) {
-        return res.notFound();
+        return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
       }
 
       let [_, response] = await ReceivingAddress.update({
         actived_flg: false,
         updated_by: req.user.id,
       }, {
-          where: {
-            id: result.id
-          },
-          returning: true,
-        });
+        where: {
+          id: result.id
+        },
+        returning: true,
+      });
 
       if (!response) {
         return res.serverInternalError();
@@ -144,11 +144,9 @@ module.exports = {
           wallet_address: req.body.address,
         }
       });
-
       if (result) {
         return res.badRequest(res.__("CREATE_ALREADY"), "CREATE_ALREADY", { fields: ['platform', 'address'] });
       }
-
       let validateAddress = Address.validate(req.body.platform, req.body.address);
       if (!validateAddress) {
         return res.badRequest(res.__("INVALID_ADDRESS"), "INVALID_ADDRESS", { fields: ['address'] });
@@ -157,9 +155,10 @@ module.exports = {
       await ReceivingAddress.create({
         currency_symbol: req.body.platform,
         wallet_address: req.body.address,
+        description: req.body.description,
         actived_flg: true,
         created_by: req.user.id
-      })
+      });
 
       return res.ok(true);
     }
@@ -168,4 +167,32 @@ module.exports = {
       next(err);
     }
   },
-}
+  update: async (req, res, next) => {
+    try {
+        let result = await ReceivingAddress.findOne({
+          where: {
+            id: req.params.id
+          }
+        });
+  
+        if (!result) {
+          return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
+        }
+  
+        await ReceivingAddress.update({
+          description: req.body.description,
+          updated_by: req.user.id,
+        }, {
+          where: {
+            id: result.id
+          },
+          returning: true,
+        });
+  
+        return res.ok(true);
+    } catch (error) {
+      logger.error("update receiving addresses memo fail", error);
+      next(error);
+    }
+  }
+};

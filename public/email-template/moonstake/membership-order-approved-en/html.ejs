@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Membership order succeeded</title>
+    <style>
+      img {
+        border: none;
+        -ms-interpolation-mode: bicubic;
+        max-width: 100%;
+      }
+      a{
+        text-decoration: none !important;
+      }
+      body{
+        font-family: sans-serif;
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+        line-height: 1.4;
+        margin: 0;
+        padding: 0;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+        background: #fff;
+        color: #3C4B64;
+      }
+
+      table {
+        border-collapse: separate;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        width: 100%;
+      }
+      table tr{
+        clear: both;
+      }
+      table td {
+        font-family: sans-serif;
+        font-size: 14px;
+        vertical-align: top;
+      }
+
+      /* -------------------------------------
+          BODY & CONTAINER
+      ------------------------------------- */
+
+      /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+      .container {
+        display: block;
+        margin: 0 auto !important;
+        /* makes it centered */
+        max-width: 580px;
+        width: 580px;
+        border: 1px solid #D7DBE0;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        text-align: left;
+        padding: 50px;
+      }
+
+      /* -------------------------------------
+          HEADER, FOOTER, MAIN
+      ------------------------------------- */
+      .main {
+        width: 100%;
+      }
+
+      p, ul, ol {
+        font-family: sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding-left: 0;
+        margin: 0;
+        line-height: 21px;
+      }
+      ul li,
+      ol li {
+        list-style-position: inside;
+        margin-left: 5px;
+      }
+      a {
+        color: #3498db;
+        text-decoration: underline;
+      }
+      /* -------------------------------------
+          RESPONSIVE AND MOBILE FRIENDLY STYLES
+      ------------------------------------- */
+      @media only screen and (max-width: 620px) {
+        .container{
+          width: 100%;
+          max-width: 100%;
+          padding: 0;
+        }
+        .content{
+          padding: 30px;
+        }
+
+      }
+    </style>
+  </head>
+  <body>
+    <table border="0" cellpadding="0" cellspacing="0" class="body">
+      <tr>
+        <td class="container">
+          <div class="content">
+            <table class="main">
+              <tr>
+                <td>
+                  <img src="<%=imageUrl%>/logo.png" alt="">
+                  <!-- <span style="width: 100%;height: 1px; background: #CACACC; margin: 30px 0; display: block;"></span> -->
+                </td>
+              </tr>
+              <tr>
+                <td><p style="font-weight: 500;margin-bottom: 20px; line-height: 8px">Hi! <%=firstName%> <%=lastName%></p></td>
+              </tr>
+              <tr>
+                <td>
+                  <p style="margin-bottom: 8px"> Congratulate, your Membership payment has been approved.</p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p style="margin-bottom: 8px; margin-top: 25px">Moonstake</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+
+    </table>
+  </body>
+</html>

@@ -359,7 +359,37 @@ module.exports = {
     "GROUP_NAME": "Claim request",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "AFFILIATE_TOKEN_PAYOUT_VIEW_LIST": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_VIEW_LIST",
+    "DESCRIPTION": "View token payout list",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 
+  "AFFILIATE_TOKEN_PAYOUT_APPROVE": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_APPROVE",
+    "DESCRIPTION": "Approvet membership token payout",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "AFFILIATE_TOKEN_PAYOUT_EXPORT_CSV": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_EXPORT_CSV",
+    "DESCRIPTION": "Export token payout to CSV file",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "AFFILIATE_TOKEN_PAYOUT_VIEW_DETAIL": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_VIEW_DETAIL",
+    "DESCRIPTION": "View token payout details",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "AFFILIATE_TOKEN_PAYOUT_UPDATE_TX_ID": {
+    "KEY": "AFFILIATE_TOKEN_PAYOUT_UPDATE_TX_ID",
+    "DESCRIPTION": "Update transaction id of a token payout",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
   "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE": {
     "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE",
     "DESCRIPTION": "View membership type",
@@ -494,9 +524,9 @@ module.exports = {
     "GROUP_NAME": "Members",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL": {
-    "KEY": "MEMBERSHIP_VIEW_MEMBER_KYC_DETAIL",
-    "DESCRIPTION": "View membership member KYC detail",
+  "MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES": {
+    "KEY": "MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES",
+    "DESCRIPTION": "Membership update member kyc properties",
     "GROUP_NAME": "Members",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
@@ -544,5 +574,22 @@ module.exports = {
     "GROUP_NAME": "Member",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-
+  "VIEW_EMAIL_TEMPLATE_LIST": {
+    "KEY": "VIEW_EMAIL_TEMPLATE_LIST",
+    "DESCRIPTION": "View list email template",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_EMAIL_TEMPLATE_DETAIL": {
+    "KEY": "VIEW_EMAIL_TEMPLATE_DETAIL",
+    "DESCRIPTION": "View email template detail",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "UPDATE_EMAIL_TEMPLATE": {
+    "KEY": "UPDATE_EMAIL_TEMPLATE",
+    "DESCRIPTION": "Update email template",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 };

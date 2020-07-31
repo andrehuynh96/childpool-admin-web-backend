@@ -33,9 +33,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     }
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
   Temporalize({
     model: WalletPrivKey,
     sequelize,
@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   WalletPrivKey.associate = (models) => {
-    WalletPrivKey.belongsTo(models.wallets, { foreignKey: 'wallet_id', targetKey: 'id' })
+    WalletPrivKey.belongsTo(models.wallets, { foreignKey: 'wallet_id', targetKey: 'id', as: 'Wallet', })
   };
   return WalletPrivKey;
 } 
