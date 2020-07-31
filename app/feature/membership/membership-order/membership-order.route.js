@@ -288,7 +288,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership/orders/{orderId}:
+ * /web/membership/orders/approves/{orderId}:
  *   put:
  *     summary: approve order
  *     tags:
@@ -310,7 +310,61 @@ module.exports = router;
  *            - password
  *            example:
  *              {
-                        "action":1,
+                        "note":"note"
+                }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/membership/orders/rejects/{orderId}:
+ *   put:
+ *     summary: reject order
+ *     tags:
+ *       - Membership Order
+ *     description:
+ *     parameters:
+ *       - name: orderId
+ *         in: path
+ *         type: string
+ *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for login.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - action
+ *            - node
+ *            - password
+ *            example:
+ *              {       
+                        "template": "MEMBERSHIP_ORDER_REJECTED_REASON_TIMED_OUT"
                         "note":"note"
                 }
  *     produces:
