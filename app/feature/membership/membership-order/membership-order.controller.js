@@ -578,7 +578,7 @@ async function _findEmailTemplate(templateName, language) {
     }
   });
 
-  if (!template) {
+  if (!template && template.language !== 'en') {
     template = await EmailTemplate.findOne({
       where: {
         name: templateName,
