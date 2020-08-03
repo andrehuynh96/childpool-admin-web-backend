@@ -135,7 +135,52 @@ router.put(
     controller.updateStatus
 );
 
-// TODO:
+/**
+* @swagger
+* /web/membership/member/member-kyc-properties:
+*   post:
+*     summary: update member kyc properties
+*     tags:
+*       - Member
+*     description: update member kyc properties
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                        "status":"APPROVED| INSUFFICIENT | DECLINED"
+                    }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             { 
+                    "data": true
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 router.put(
     '/members/member-kyc-properties',
