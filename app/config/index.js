@@ -49,7 +49,7 @@ const config = {
   redis: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-    prefix: process.env.REDIS_PREFIX || 'staking:wallet:cache',
+    prefix: process.env.REDIS_PREFIX || 'staking-childpool-backend',
     usingPass: process.env.REDIS_USING_PASS || 0,
     pass: process.env.REDIS_PASS,
   },
