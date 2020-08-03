@@ -192,7 +192,7 @@ module.exports = {
 
       const records = await readFileCSV(body.claimRequestTxid.data);
       if (records.length == 0) {
-        return res.badRequest(res.__("CSV_FILE_IS_EMPTY"),"CSV_FILE_is_EMPTY",{ field: [body.claimRequestTxid.file.name] });
+        return res.badRequest(res.__("CSV_FILE_IS_EMPTY"),"CSV_FILE_IS_EMPTY",{ field: [body.claimRequestTxid.file.name] });
       }
       const txidColumnName = 'TX ID';
       const emptyItem = records.find(x => !x.Id || !x[txidColumnName]);
