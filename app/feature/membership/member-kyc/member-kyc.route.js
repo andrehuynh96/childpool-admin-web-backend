@@ -4,7 +4,7 @@ const controller = require('./member-kyc.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require("app/middleware/validator.middleware");
-const schema = require("./member-kyc.request-schema")
+const { memberKycProperty, updateStatus } = require("./validator");
 const router = express.Router();
 
 router.get(
@@ -128,11 +128,21 @@ router.get(
  */
 
 router.put(
+    '/members/:memberId/member-kycs',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS),
+    validator(updateStatus),
+    controller.updateStatus
+);
+
+// TODO:
+
+router.put(
     '/members/member-kyc-properties',
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES),
-    validator(schema),
-    controller.update
+    validator(memberKycProperty),
+    controller.updateProperties
 );
 
 /**

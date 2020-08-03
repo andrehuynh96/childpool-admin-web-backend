@@ -1,4 +1,5 @@
 const logger = require('app/lib/logger');
+const Member = require("app/model/wallet").members;
 const MemberKyc = require("app/model/wallet").member_kycs;
 const Kyc = require("app/model/wallet").kycs;
 const MemberKycProperty = require("app/model/wallet").member_kyc_properties;
@@ -6,8 +7,13 @@ const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const config = require('app/config');
 const KycStatus = require("app/model/wallet/value-object/kyc-status");
-
+const { membershipApi } = require('app/lib/affiliate-api');
 const Op = Sequelize.Op;
+const kycStatusKey = {
+  APPROVED: 'APPROVED',
+  INSUFFICIENT: 'INSUFFICIENT',
+  DECLINED: 'DECLINED'
+};
 
 module.exports = {
   getAllMemberKyc: async (req, res, next) => {
@@ -94,7 +100,7 @@ module.exports = {
       next(error);
     }
   },
-  update: async (req, res, next) => {
+  updateProperties: async (req, res, next) => {
     let transaction;
     try {
       const { body } = req;
@@ -145,6 +151,87 @@ module.exports = {
       next(error);
     }
   },
+  updateStatus: async (req, res, next) => {
+    let transaction;
+    try {
+      const { body, params } = req;
+      const member = await Member.findOne({
+        where: {
+          id: params.memberId
+        }
+      });
+
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+      const kyc = await Kyc.findOne({
+        where: {
+          id: 3,
+          name: { [Op.iLike]: 'Level 2' },
+          key: { [Op.iLike]: 'LEVEL_2' }
+        }
+      });
+
+      const memberKyc = await MemberKyc.findOne({
+        where: {
+          member_id: member.id,
+          kyc_id: kyc.id,
+          status: KycStatus.IN_REVIEW
+        }
+      });
+      if (!memberKyc) {
+        return res.notFound(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
+      }
+
+      transaction = await database.transaction();
+      await Member.update({
+        kyc_status: KycStatus[body.status]
+      }, {
+        where: {
+          id: member.id
+        },
+        returning: true,
+        transaction: transaction
+      });
+      await MemberKyc.update({
+        status: KycStatus[body.status]
+      }, {
+        where: {
+          id: memberKyc.id
+        },
+        returning: true,
+        transaction: transaction
+      });
+
+      if (body.status === kycStatusKey.APPROVED && kyc.approve_membership_type_id !== member.membership_type_id) {
+        await Member.update({
+          membership_type_id: kyc.approve_membership_type_id
+        }, {
+          where: {
+            id: member.id
+          },
+          returning: true,
+          transaction: transaction
+        });
+
+        const result = await membershipApi.updateMembershipType(member, { membership_type_id: kyc.approve_membership_type_id });
+
+        if (result.httpCode !== 200) {
+          transaction.rollback();
+          return res.status(result.httpCode).send(result.data);
+        }
+      }
+      transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        transaction.rollback;
+      }
+      logger.error('update member kyc status fail', error);
+      next(error);
+    }
+  }
 
 };
 

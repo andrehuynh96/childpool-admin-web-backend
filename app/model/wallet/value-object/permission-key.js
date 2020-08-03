@@ -530,6 +530,12 @@ module.exports = {
     "GROUP_NAME": "Members",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS": {
+    "KEY": "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS",
+    "DESCRIPTION": "Membership update member kyc status",
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 
   "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING": {
     "KEY": "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING",
