@@ -165,7 +165,7 @@ const config = {
   ONT: {
     restUrl: process.env.ONT_REST_SERVER_URL
   },
-  stakingCurrency: process.env.STAKING_CURRENCY
+  stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
 };
 
 module.exports = config;
