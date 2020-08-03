@@ -5,7 +5,10 @@ const MemberKycProperty = require("app/model/wallet").member_kyc_properties;
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const config = require('app/config');
+const KycStatus = require("app/model/wallet/value-object/kyc-status");
+
 const Op = Sequelize.Op;
+
 module.exports = {
   getAllMemberKyc: async (req, res, next) => {
     try {
@@ -13,13 +16,13 @@ module.exports = {
         member_id: req.params.memberId
       };
       const memberKycPropertyCond = {
-          field_name: { [Op.notILike]: 'Password' },
-          field_key: { [Op.notILike]: 'password' }
+        field_name: { [Op.notILike]: 'Password' },
+        field_key: { [Op.notILike]: 'password' }
       };
       const memberKycs = await MemberKyc.findAll({
         include: [
           {
-            attributes: ['id', 'member_kyc_id', 'property_id', 'field_name', 'field_key', 'value','note', 'createdAt', 'updatedAt'],
+            attributes: ['id', 'member_kyc_id', 'property_id', 'field_name', 'field_key', 'value', 'note', 'createdAt', 'updatedAt'],
             as: "MemberKycProperties",
             model: MemberKycProperty,
             where: memberKycPropertyCond,
@@ -42,7 +45,7 @@ module.exports = {
       memberKycs.forEach(item => {
         const kyc = kycs.find(x => x.id === item.kyc_id);
         if (kyc) {
-          item.kyc_id = kyc.key.replace('LEVEL_','');
+          item.kyc_id = kyc.key.replace('LEVEL_', '');
           item.MemberKycProperties = _replaceImageUrl(item.MemberKycProperties);
           memberKycsResponse.push(item);
         }
@@ -66,7 +69,7 @@ module.exports = {
         member_kyc_id: memberKycId,
         field_name: { [Op.notILike]: 'Password' },
         field_key: { [Op.notILike]: 'password' }
-    };
+      };
       const memberKyc = await MemberKyc.findAll({
         include: [
           {
@@ -127,10 +130,25 @@ module.exports = {
       next(error);
     }
   },
+  getKycStatuses: async (req, res, next) => {
+    try {
+      const memberOrderStatusDropdown = Object.keys(KycStatus).map(key => {
+        return {
+          value: key,
+          label: KycStatus[key]
+        };
+      });
+
+      return res.ok(memberOrderStatusDropdown);
+    } catch (error) {
+      logger.error('getKycStatuses:', error);
+      next(error);
+    }
+  },
 
 };
 
-function _replaceImageUrl ( memberKycProperties) {
+function _replaceImageUrl(memberKycProperties) {
   memberKycProperties.forEach(e => {
     if (e.value && e.value.startsWith("http")) {
       for (let i of config.aws.bucketUrls) {

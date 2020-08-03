@@ -3,5 +3,5 @@ module.exports = {
   "APPROVED": "Approved",
   "INSUFFICIENT": "Insufficient",
   "DECLINED": "Declined",
-  "EXPIRED": "Expired"
-}
+  "EXPIRED": "Expired",
+};

@@ -167,9 +167,7 @@ router.put(
 *         description: Ok
 *         examples:
 *           application/json:
-*             {
-                "data": true
-              }
+*             { "data": true }
 *       400:
 *         description: Error
 *         schema:
@@ -187,5 +185,74 @@ router.put(
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+
+router.get(
+    '/member/kyc-statuses',
+    controller.getKycStatuses
+);
+
+/**
+* @swagger
+* /web/membership/member/kyc-statuses:
+*   post:
+*     summary: update member kyc properties
+*     tags:
+*       - Member
+*     description: update member kyc properties
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": [
+                    {
+                        "value": "IN_REVIEW",
+                        "label": "In Review"
+                    },
+                    {
+                        "value": "APPROVED",
+                        "label": "Approved"
+                    },
+                    {
+                        "value": "INSUFFICIENT",
+                        "label": "Insufficient"
+                    },
+                    {
+                        "value": "DECLINED",
+                        "label": "Declined"
+                    },
+                    {
+                        "value": "EXPIRED",
+                        "label": "Expired"
+                    }
+                ]
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
 
 module.exports = router;
