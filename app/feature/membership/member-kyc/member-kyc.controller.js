@@ -196,7 +196,7 @@ module.exports = {
         transaction: transaction
       });
 
-      if (KycStatus[body.status] === KycStatus.APPROVED && kyc.approve_membership_type_id !== member.membership_type_id) {
+      if (KycStatus[body.status] === KycStatus.APPROVED && kyc.approve_membership_type_id != null && !member.membership_type_id) {
         await Member.update({
           membership_type_id: kyc.approve_membership_type_id
         }, {
