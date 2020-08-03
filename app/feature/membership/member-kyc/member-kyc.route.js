@@ -128,7 +128,7 @@ router.get(
  */
 
 router.put(
-    '/members/:memberId/member-kycs',
+    '/members/:memberId/member-kycs/:kycId',
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS),
     validator(updateStatus),
@@ -137,13 +137,19 @@ router.put(
 
 /**
 * @swagger
-* /web/membership/members/{memberId}/member-kycs:
+* /web/membership/members/{memberId}/member-kycs/{kycId}:
 *   post:
 *     summary: update member kyc properties
 *     tags:
 *       - Member
 *     description: update member kyc properties
 *     parameters:
+*       - name: memberId
+*         in: path
+*         required: true
+*       - name: kycId
+*         in: path
+*         required: true
 *       - name: data
 *         in: body
 *         required: true

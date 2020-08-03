@@ -31,7 +31,7 @@ module.exports = {
           }
         ],
         where: memberWhere,
-        order: [['id', 'ASC']]
+        order: [['id', 'ASC']],
       });
 
       const kycIds = memberKycs.map(item => item.kyc_id);
@@ -46,7 +46,7 @@ module.exports = {
       memberKycs.forEach(item => {
         const kyc = kycs.find(x => x.id === item.kyc_id);
         if (kyc) {
-          item.kyc_id = kyc.key.replace('LEVEL_', '');
+          item.dataValues.kyc_level = kyc.key.replace('LEVEL_', '');
           item.MemberKycProperties = _replaceImageUrl(item.MemberKycProperties);
           memberKycsResponse.push(item);
         }
@@ -161,7 +161,7 @@ module.exports = {
       }
       const kyc = await Kyc.findOne({
         where: {
-          key: { [Op.iLike]: 'LEVEL_2' }
+          id: params.kycId
         }
       });
 
