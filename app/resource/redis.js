@@ -20,4 +20,4 @@ String.prototype.withParams = function (...params) {
   return str;
 };
 
-module.exports = Object.assign({}, keys); 
+module.exports = Object.assign({}, keys);
