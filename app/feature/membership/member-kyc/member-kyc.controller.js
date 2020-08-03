@@ -9,11 +9,6 @@ const config = require('app/config');
 const KycStatus = require("app/model/wallet/value-object/kyc-status");
 const { membershipApi } = require('app/lib/affiliate-api');
 const Op = Sequelize.Op;
-const kycStatusKey = {
-  APPROVED: 'APPROVED',
-  INSUFFICIENT: 'INSUFFICIENT',
-  DECLINED: 'DECLINED'
-};
 
 module.exports = {
   getAllMemberKyc: async (req, res, next) => {
@@ -203,7 +198,7 @@ module.exports = {
         transaction: transaction
       });
 
-      if (body.status === kycStatusKey.APPROVED && kyc.approve_membership_type_id !== member.membership_type_id) {
+      if (KycStatus[body.status] === KycStatus.APPROVED && kyc.approve_membership_type_id !== member.membership_type_id) {
         await Member.update({
           membership_type_id: kyc.approve_membership_type_id
         }, {
