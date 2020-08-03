@@ -1,8 +1,7 @@
 const Joi = require('joi');
-const KycStatus = require('app/model/wallet/value-object/kyc-status');
-const kycStatusValue = Object.keys(KycStatus);
+
 const schema = Joi.object().keys({
-  status: Joi.string().valid(kycStatusValue).required()
+  status: Joi.string().valid(['APPROVED','DECLINED','INSUFFICIENT']).required()
 });
 
 module.exports = schema;
