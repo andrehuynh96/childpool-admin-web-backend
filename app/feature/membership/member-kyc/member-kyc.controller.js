@@ -161,8 +161,6 @@ module.exports = {
       }
       const kyc = await Kyc.findOne({
         where: {
-          id: 3,
-          name: { [Op.iLike]: 'Level 2' },
           key: { [Op.iLike]: 'LEVEL_2' }
         }
       });
