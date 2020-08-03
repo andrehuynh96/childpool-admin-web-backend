@@ -169,7 +169,7 @@ module.exports = {
         where: {
           member_id: member.id,
           kyc_id: kyc.id,
-          status: KycStatus.IN_REVIEW
+          status: [ KycStatus.IN_REVIEW, KycStatus.INSUFFICIENT ]
         }
       });
       if (!memberKyc) {
