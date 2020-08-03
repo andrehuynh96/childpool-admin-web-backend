@@ -6,6 +6,7 @@ const MemberStatus = require("app/model/wallet/value-object/member-status");
 const MemberOrderStatusFillter = require("app/model/wallet/value-object/member-order-status-fillter");
 const MemberFillterStatusText = require("app/model/wallet/value-object/member-fillter-status-text");
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
+const KycStatus = require("app/model/wallet/value-object/kyc-status");
 const Kyc = require("app/model/wallet").kycs;
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
@@ -13,6 +14,7 @@ const { affiliateApi, membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
 const stringify = require('csv-stringify');
 const moment = require('moment');
+
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -645,6 +647,10 @@ async function _createMemberCond(query) {
     memberCond.kyc_level = query.kycLevel;
   }
 
+  if (query.kycStatus) {
+    memberCond.kyc_status = KycStatus[query.kycStatus];
+  }
+
   if (query.referralCode) {
     memberCond.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
   }
@@ -662,6 +668,7 @@ async function _createMemberCond(query) {
   if (query.email) {
     memberCond.email = { [Op.iLike]: `%${query.email}%` };
   }
+
   return memberCond;
 }
 
