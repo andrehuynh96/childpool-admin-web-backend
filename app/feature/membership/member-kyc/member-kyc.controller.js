@@ -1,4 +1,5 @@
 const logger = require('app/lib/logger');
+const Member = require("app/model/wallet").members;
 const MemberKyc = require("app/model/wallet").member_kycs;
 const Kyc = require("app/model/wallet").kycs;
 const MemberKycProperty = require("app/model/wallet").member_kyc_properties;
@@ -6,7 +7,7 @@ const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const config = require('app/config');
 const KycStatus = require("app/model/wallet/value-object/kyc-status");
-
+const { membershipApi } = require('app/lib/affiliate-api');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -30,7 +31,7 @@ module.exports = {
           }
         ],
         where: memberWhere,
-        order: [['id', 'ASC']]
+        order: [['id', 'ASC']],
       });
 
       const kycIds = memberKycs.map(item => item.kyc_id);
@@ -45,7 +46,7 @@ module.exports = {
       memberKycs.forEach(item => {
         const kyc = kycs.find(x => x.id === item.kyc_id);
         if (kyc) {
-          item.kyc_id = kyc.key.replace('LEVEL_', '');
+          item.dataValues.kyc_level = kyc.key.replace('LEVEL_', '');
           item.MemberKycProperties = _replaceImageUrl(item.MemberKycProperties);
           memberKycsResponse.push(item);
         }
@@ -94,7 +95,7 @@ module.exports = {
       next(error);
     }
   },
-  update: async (req, res, next) => {
+  updateProperties: async (req, res, next) => {
     let transaction;
     try {
       const { body } = req;
@@ -145,6 +146,85 @@ module.exports = {
       next(error);
     }
   },
+  updateStatus: async (req, res, next) => {
+    let transaction;
+    try {
+      const { body, params } = req;
+      const member = await Member.findOne({
+        where: {
+          id: params.memberId
+        }
+      });
+
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+      const kyc = await Kyc.findOne({
+        where: {
+          id: params.kycId
+        }
+      });
+
+      const memberKyc = await MemberKyc.findOne({
+        where: {
+          member_id: member.id,
+          kyc_id: kyc.id,
+          status: [ KycStatus.IN_REVIEW, KycStatus.INSUFFICIENT ]
+        }
+      });
+      if (!memberKyc) {
+        return res.notFound(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
+      }
+
+      transaction = await database.transaction();
+      await Member.update({
+        kyc_status: KycStatus[body.status]
+      }, {
+        where: {
+          id: member.id
+        },
+        returning: true,
+        transaction: transaction
+      });
+      await MemberKyc.update({
+        status: KycStatus[body.status]
+      }, {
+        where: {
+          id: memberKyc.id
+        },
+        returning: true,
+        transaction: transaction
+      });
+
+      if (KycStatus[body.status] === KycStatus.APPROVED && kyc.approve_membership_type_id != null && !member.membership_type_id) {
+        await Member.update({
+          membership_type_id: kyc.approve_membership_type_id
+        }, {
+          where: {
+            id: member.id
+          },
+          returning: true,
+          transaction: transaction
+        });
+
+        const result = await membershipApi.updateMembershipType(member, { membership_type_id: kyc.approve_membership_type_id });
+
+        if (result.httpCode !== 200) {
+          transaction.rollback();
+          return res.status(result.httpCode).send(result.data);
+        }
+      }
+      transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        transaction.rollback;
+      }
+      logger.error('update member kyc status fail', error);
+      next(error);
+    }
+  }
 
 };
 

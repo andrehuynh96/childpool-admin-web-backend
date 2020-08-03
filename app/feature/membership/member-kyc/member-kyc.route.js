@@ -4,7 +4,7 @@ const controller = require('./member-kyc.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require("app/middleware/validator.middleware");
-const schema = require("./member-kyc.request-schema")
+const { memberKycProperty, updateStatus } = require("./validator");
 const router = express.Router();
 
 router.get(
@@ -128,11 +128,72 @@ router.get(
  */
 
 router.put(
+    '/members/:memberId/member-kycs/:kycId',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS),
+    validator(updateStatus),
+    controller.updateStatus
+);
+
+/**
+* @swagger
+* /web/membership/members/{memberId}/member-kycs/{kycId}:
+*   post:
+*     summary: update member kyc properties
+*     tags:
+*       - Member
+*     description: update member kyc properties
+*     parameters:
+*       - name: memberId
+*         in: path
+*         required: true
+*       - name: kycId
+*         in: path
+*         required: true
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                        "status":"APPROVED| INSUFFICIENT | DECLINED"
+                    }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             { 
+                    "data": true
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+router.put(
     '/members/member-kyc-properties',
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES),
-    validator(schema),
-    controller.update
+    validator(memberKycProperty),
+    controller.updateProperties
 );
 
 /**
