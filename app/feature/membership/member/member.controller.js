@@ -303,7 +303,7 @@ module.exports = {
     try {
       const { body, params } = req;
       const { memberId } = params;
-      const referralCode = body.referrerCode;
+      const referrerCode = body.referrerCode;
 
       const member = await Member.findOne({
         where: {
@@ -324,15 +324,10 @@ module.exports = {
         return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
       }
 
-      if (member.referrer_code && body.referrerCode) {
-        return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
-      }
-
-      const hasUpdatedReferrerCode = !member.referrer_code && body.referrerCode;
-      const data = {};
-      if (hasUpdatedReferrerCode) {
-        data.referrer_code = referralCode;
-      }
+      const hasUpdatedReferrerCode = member.referrer_code !== referrerCode;
+      const data = {
+        referrer_code: referrerCode,
+      };
 
       transaction = await database.transaction();
       try {
@@ -350,7 +345,7 @@ module.exports = {
         let result;
 
         if (hasUpdatedReferrerCode) {
-          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: referralCode });
+          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: referrerCode });
 
           if (result.httpCode !== 200) {
             await transaction.rollback();
