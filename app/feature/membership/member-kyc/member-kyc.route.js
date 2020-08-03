@@ -137,7 +137,7 @@ router.put(
 
 /**
 * @swagger
-* /web/membership/member/member-kyc-properties:
+* /web/membership/members/{memberId}/member-kycs:
 *   post:
 *     summary: update member kyc properties
 *     tags:
