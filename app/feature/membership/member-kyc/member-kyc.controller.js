@@ -233,7 +233,7 @@ function _replaceImageUrl(memberKycProperties) {
     if (e.value && e.value.startsWith("http")) {
       for (let i of config.aws.bucketUrls) {
         if (e.value.indexOf(i) > -1) {
-          e.value = e.value.replace(i, config.website.url + "/web/static/images");
+          e.value = e.value.replace(i, config.apiUrl + "/web/static/images");
           break;
         }
       }
