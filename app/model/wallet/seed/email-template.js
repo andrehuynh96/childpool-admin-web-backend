@@ -64,6 +64,13 @@ module.exports = async () => {
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-en/html.ejs'), 'utf-8'),
             display_order: 1,
         },
+        {
+            name: EmailTemplateTypes.CHILDPOOL_ADMIN_KYC_APPROVED,
+            locale: 'en',
+            subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-approved-en/subject.ejs'), 'utf-8'),
+            template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-approved-en/html.ejs'), 'utf-8'),
+            display_order: 1,
+        },
     ];
 
     for (let item of emailTemplates) {

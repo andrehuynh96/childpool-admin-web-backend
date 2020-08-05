@@ -157,12 +157,13 @@ module.exports = {
           );
         }
       }
-      transaction.commit();
+
+      await transaction.commit();
       return res.ok(true);
     }
     catch (error) {
       if (transaction) {
-        transaction.rollback();
+        await transaction.rollback();
       }
       logger.info('get update member kyc properties fail', error);
       next(error);
@@ -187,10 +188,12 @@ module.exports = {
     let transaction;
     try {
       const { body, params } = req;
-      const { note } = body;
+      const { note, template } = body;
       const kycStatus = KycStatus[body.status];
-      if (!note && (kycStatus === KycStatus.INSUFFICIENT || kycStatus === KycStatus.DECLINED)) {
-        return res.badRequest(res.__("NOTE_IS_EMPTY"), "NOTE_IS_EMPTY", { field: ['note'] });
+      if (kycStatus === KycStatus.INSUFFICIENT || kycStatus === KycStatus.DECLINED) {
+        if ((!template && !note) || (template && note)) {
+          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS');
+        }
       }
 
       const member = await Member.findOne({
@@ -218,6 +221,25 @@ module.exports = {
         return res.notFound(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
       }
 
+      const emailPayload = {
+        note,
+        imageUrl: config.website.urlImages,
+        firstName: member.first_name,
+        lastName: member.last_name,
+        language: member.current_language || 'en',
+      };
+      let emailTemplateOption = null;
+
+      if (template) {
+        emailTemplateOption = await _findEmailTemplate(template, emailPayload.language);
+
+        if (!emailTemplateOption) {
+          return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND");
+        }
+
+        emailPayload.note = emailTemplateOption.template;
+      }
+
       transaction = await database.transaction();
       await Member.update({
         kyc_status: kycStatus
@@ -238,7 +260,7 @@ module.exports = {
         transaction: transaction
       });
 
-      if (kycStatus === KycStatus.APPROVED && kyc.approve_membership_type_id != null && !member.membership_type_id) {
+      if (kycStatus === KycStatus.APPROVED && kyc.approve_membership_type_id && !member.membership_type_id) {
         await Member.update({
           membership_type_id: kyc.approve_membership_type_id
         }, {
@@ -252,33 +274,38 @@ module.exports = {
         const result = await membershipApi.updateMembershipType(member, { membership_type_id: kyc.approve_membership_type_id });
 
         if (result.httpCode !== 200) {
-          transaction.rollback();
+          await transaction.rollback();
           return res.status(result.httpCode).send(result.data);
         }
       }
 
       // Send email to user
-      if (kycStatus === KycStatus.INSUFFICIENT || kycStatus === KycStatus.DECLINED) {
-        const emailPayload = {
-          note,
-          imageUrl: config.website.urlImages,
-          firstName: member.first_name,
-          lastName: member.last_name,
-          language: member.current_language || 'en',
-        };
-        const templateName = kycStatus === KycStatus.INSUFFICIENT ? EmailTemplateType.CHILDPOOL_ADMIN_KYC_INSUFFICIENT
-          : EmailTemplateType.CHILDPOOL_ADMIN_KYC_DECLINED;
+      let templateName = null;
+      switch (kycStatus) {
+        case KycStatus.INSUFFICIENT:
+          templateName = EmailTemplateType.CHILDPOOL_ADMIN_KYC_INSUFFICIENT;
+          break;
 
-        await _sendEmail(member.email, emailPayload, templateName);
+        case KycStatus.DECLINED:
+          templateName = EmailTemplateType.CHILDPOOL_ADMIN_KYC_DECLINED;
+          break;
+
+        case KycStatus.APPROVED:
+          templateName = EmailTemplateType.CHILDPOOL_ADMIN_KYC_APPROVED;
+          break;
       }
+      await _sendEmail(member.email, emailPayload, templateName);
 
-      transaction.commit();
+      // await transaction.rollback();
+      await transaction.commit();
+
       return res.ok(true);
     }
     catch (error) {
       if (transaction) {
-        transaction.rollback;
+        await transaction.rollback();
       }
+
       logger.error('update member kyc status fail', error);
       next(error);
     }
