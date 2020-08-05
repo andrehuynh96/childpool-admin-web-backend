@@ -4,6 +4,7 @@ const EmailTemplateGroupNames = require('app/model/wallet/value-object/email-tem
 const mapper = require("app/feature/response-schema/email-template.response-schema");
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
+const uuidV4 = require('uuid/v4');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -113,10 +114,51 @@ module.exports = {
     },
     getGroupName: async (req, res, next) => {
         try {
-            return res.ok(EmailTemplateGroupNames);
+            const data = []
+            for (let [label, value] of Object.entries(EmailTemplateGroupNames)) {
+                data.push({
+                    label: label,
+                    value: value
+                });
+            }
+            return res.ok(data);
         }
         catch (error) {
             logger.error('get group name list fail', error);
+            next(error);
+        }
+    },
+    createOption: async (req, res, next) => {
+        try {
+            const data = req.body;
+            data.name = uuidV4();
+            data.language = 'en';
+            await EmailTemplate.create(data);
+            return res.ok(true);
+        }  
+        catch (error) {
+            logger.error('create option fail', error);
+            next(error);
+        }
+    },
+    duplicateEmailTemplate: async (req, res, next) => {
+        try {
+            const emailTemplate = await EmailTemplate.findOne({
+                where: {
+                    name: req.params.name,
+                    language:'en'
+                }
+            });
+            if (!emailTemplate) {
+                return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ['id'] });
+            }
+            const data = emailTemplate;
+            data.subject = `${emailTemplate.subject} - Duplicate`;
+            await EmailTemplate.create(data);
+            return res.ok(true);
+        }  
+        catch (error) {
+            logger.error('create option fail', error);
             next(error);
         }
     },
