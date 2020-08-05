@@ -93,8 +93,6 @@ router.get('/', function (req, res) {
     buildNumber: config.app.buildNumber,
     description: config.app.description,
     enableSeed: config.enableSeed,
-    apiUrl: config.apiUrl,
-    API_URL: process.env.API_URL,
   };
   res.json(result);
 });
