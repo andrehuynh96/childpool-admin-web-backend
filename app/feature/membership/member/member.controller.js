@@ -575,7 +575,10 @@ module.exports = {
         });
       }
 
-      items.forEach(item => {
+      items.forEach((item, index) => {
+        item.no = index + 1;
+        item.last_name = item.last_name ||  '-';
+        item.first_name = item.first_name ||  '-';
         const latestMembershipOrder = item.LatestMembershipOrder;
 
         if (item.deleted_flg) {
@@ -606,11 +609,12 @@ module.exports = {
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       const data = await stringifyAsync(items, [
-        { key: 'id', header: 'Id' },
-        { key: 'first_name', header: 'First Name' },
+        { key: 'no', header: '#' },
         { key: 'last_name', header: 'Last Name' },
+        { key: 'first_name', header: 'First Name' },
         { key: 'email', header: 'Email' },
         { key: 'kyc_level', header: 'KYC' },
+        { key: 'kyc_status', header: 'KYC Status' },
         { key: 'membership_type', header: 'Membership' },
         { key: 'status', header: 'Status' },
         { key: 'referral_code', header: 'Referral' },
