@@ -49,7 +49,21 @@ module.exports = async () => {
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-2/html.ejs'), 'utf-8'),
             group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
             display_order: 3,
-        }
+        },
+        {
+            name: EmailTemplateTypes.CHILDPOOL_ADMIN_KYC_INSUFFICIENT,
+            locale: 'en',
+            subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-insufficient-en/subject.ejs'), 'utf-8'),
+            template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-insufficient-en/html.ejs'), 'utf-8'),
+            display_order: 1,
+        },
+        {
+            name: EmailTemplateTypes.CHILDPOOL_ADMIN_KYC_DECLINED,
+            locale: 'en',
+            subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-en/subject.ejs'), 'utf-8'),
+            template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-en/html.ejs'), 'utf-8'),
+            display_order: 1,
+        },
     ];
 
     for (let item of emailTemplates) {

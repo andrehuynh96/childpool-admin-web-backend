@@ -10,7 +10,11 @@ const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const config = require('app/config');
 const KycStatus = require("app/model/wallet/value-object/kyc-status");
+const EmailTemplate = require('app/model/wallet').email_templates;
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
 const { membershipApi } = require('app/lib/affiliate-api');
+const mailer = require('app/lib/mailer');
+
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -183,21 +187,26 @@ module.exports = {
     let transaction;
     try {
       const { body, params } = req;
+      const { note } = body;
+      const kycStatus = KycStatus[body.status];
+      if (!note && (kycStatus === KycStatus.INSUFFICIENT || kycStatus === KycStatus.DECLINED)) {
+        return res.badRequest(res.__("NOTE_IS_EMPTY"), "NOTE_IS_EMPTY", { field: ['note'] });
+      }
+
       const member = await Member.findOne({
         where: {
           id: params.memberId
         }
       });
-
       if (!member) {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
+
       const kyc = await Kyc.findOne({
         where: {
           id: params.kycId
         }
       });
-
       const memberKyc = await MemberKyc.findOne({
         where: {
           member_id: member.id,
@@ -211,7 +220,7 @@ module.exports = {
 
       transaction = await database.transaction();
       await Member.update({
-        kyc_status: KycStatus[body.status]
+        kyc_status: kycStatus
       }, {
         where: {
           id: member.id
@@ -220,7 +229,7 @@ module.exports = {
         transaction: transaction
       });
       await MemberKyc.update({
-        status: KycStatus[body.status]
+        status: kycStatus
       }, {
         where: {
           id: memberKyc.id
@@ -229,7 +238,7 @@ module.exports = {
         transaction: transaction
       });
 
-      if (KycStatus[body.status] === KycStatus.APPROVED && kyc.approve_membership_type_id != null && !member.membership_type_id) {
+      if (kycStatus === KycStatus.APPROVED && kyc.approve_membership_type_id != null && !member.membership_type_id) {
         await Member.update({
           membership_type_id: kyc.approve_membership_type_id
         }, {
@@ -247,6 +256,22 @@ module.exports = {
           return res.status(result.httpCode).send(result.data);
         }
       }
+
+      // Send email to user
+      if (kycStatus === KycStatus.INSUFFICIENT || kycStatus === KycStatus.DECLINED) {
+        const emailPayload = {
+          note,
+          imageUrl: config.website.urlImages,
+          firstName: member.first_name,
+          lastName: member.last_name,
+          language: member.current_language || 'en',
+        };
+        const templateName = kycStatus === KycStatus.INSUFFICIENT ? EmailTemplateType.CHILDPOOL_ADMIN_KYC_INSUFFICIENT
+          : EmailTemplateType.CHILDPOOL_ADMIN_KYC_DECLINED;
+
+        await _sendEmail(member.email, emailPayload, templateName);
+      }
+
       transaction.commit();
       return res.ok(true);
     }
@@ -326,4 +351,33 @@ function _replaceImageUrl(memberKycProperties) {
       }
     }
   });
+}
+
+async function _sendEmail(email, payload, templateName) {
+  let template = await _findEmailTemplate(templateName, payload.language);
+
+  const subject = template.subject;
+  const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+  const data = Object.assign({}, payload, config.email);
+  await mailer.sendWithDBTemplate(subject, from, email, data, template.template);
+}
+
+async function _findEmailTemplate(templateName, language) {
+  let template = await EmailTemplate.findOne({
+    where: {
+      name: templateName,
+      language: language
+    }
+  });
+
+  if (!template && template.language !== 'en') {
+    template = await EmailTemplate.findOne({
+      where: {
+        name: templateName,
+        language: 'en'
+      }
+    });
+  }
+
+  return template;
 }

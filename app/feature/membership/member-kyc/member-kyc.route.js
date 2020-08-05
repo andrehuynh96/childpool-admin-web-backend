@@ -138,7 +138,7 @@ router.put(
 /**
 * @swagger
 * /web/membership/members/{memberId}/member-kycs/{kycId}:
-*   post:
+*   put:
 *     summary: update member kyc properties
 *     tags:
 *       - Member
@@ -158,7 +158,8 @@ router.put(
 *            type: object
 *            example:
 *                  {
-                        "status":"APPROVED| INSUFFICIENT | DECLINED"
+                        "status":"APPROVED| INSUFFICIENT | DECLINED",
+                        "note": ""
                     }
 *     produces:
 *       - application/json
@@ -167,7 +168,7 @@ router.put(
 *         description: Ok
 *         examples:
 *           application/json:
-*             { 
+*             {
                     "data": true
               }
 *       400:
