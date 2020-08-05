@@ -192,7 +192,7 @@ router.put(
     '/members/member-kyc-properties',
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES),
-    validator(memberKycProperty),
+    // validator(memberKycProperty), // isTODO:
     controller.updateProperties
 );
 

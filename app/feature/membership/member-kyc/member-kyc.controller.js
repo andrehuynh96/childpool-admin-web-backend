@@ -2,7 +2,10 @@ const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const MemberKyc = require("app/model/wallet").member_kycs;
 const Kyc = require("app/model/wallet").kycs;
+const KycProperty = require("app/model/wallet").kyc_properties;
 const MemberKycProperty = require("app/model/wallet").member_kyc_properties;
+const KycDataType = require('app/model/wallet/value-object/kyc-data-type');
+const Joi = require("joi");
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const config = require('app/config');
@@ -99,9 +102,29 @@ module.exports = {
     let transaction;
     try {
       const { body } = req;
-      const memberKycProperties = body.member_kyc_properties;
+      const memberKycPropertiesData = body.member_kyc_properties;
+      const memberKycIdList = memberKycPropertiesData.map(item => item.id);
+      const memberKycProperties = await MemberKycProperty.findAll({
+        id: memberKycIdList
+      });
+      const kycPropertyIdList = memberKycProperties.map(item => item.property_id);
+      const kycProperties = await KycProperty.findAll({
+        id: kycPropertyIdList
+      });
+      memberKycProperties.forEach(item => {
+        const property = kycProperties.find(x => x.id === item.property_id);
+        if (property) {
+          item.require_flg = property.require_flg;
+          item.data_type = property.data_type;
+        }
+      });
+
+      let verify = _validateKYCProperties(memberKycProperties);
+      if (verify.error) {
+        return res.badRequest("Missing parameters", verify.error);
+      }
       transaction = await database.transaction();
-      for (let item of memberKycProperties) {
+      for (let item of memberKycPropertiesData) {
         const memberKycProperty = await MemberKycProperty.findOne({
           where: {
             id: item.id
@@ -169,7 +192,7 @@ module.exports = {
         where: {
           member_id: member.id,
           kyc_id: kyc.id,
-          status: [ KycStatus.IN_REVIEW, KycStatus.INSUFFICIENT ]
+          status: [KycStatus.IN_REVIEW, KycStatus.INSUFFICIENT]
         }
       });
       if (!memberKyc) {
@@ -228,12 +251,72 @@ module.exports = {
 
 };
 
+function _validateKYCProperties(memberKycProperties) {
+  let obj = {};
+  for (let p of properties) {
+    obj[p.field_key] = _buildJoiFieldValidate(p);
+  }
+
+  let schema = Joi.object().keys(
+    {
+      member_kyc_properties: Joi.array().items(
+        Joi.object().keys(obj)
+      )
+    });
+  return Joi.validate(data, schema);
+}
+
+function _buildJoiFieldValidate(p) {
+  let result;
+  switch (p.data_type) {
+    case KycDataType.TEXT:
+    case KycDataType.PASSWORD: {
+      result = Joi.string();
+      if (!p.require_flg) {
+        result = result.allow("").allow(null);
+      }
+      break;
+    }
+    case KycDataType.EMAIL: {
+      result = Joi.string().email({
+        minDomainAtoms: 2
+      });
+      break;
+    }
+    case KycDataType.UPLOAD: {
+      result = Joi.any();
+      break;
+    }
+    case KycDataType.DATETIME: {
+      result = Joi.date();
+      break;
+    }
+    default:
+      {
+        result = Joi.string();
+        if (!p.require_flg) {
+          result = result.allow("").allow(null);
+        }
+        break;
+      }
+  }
+
+  if (p.require_flg) {
+    result = result.required();
+  }
+  else {
+    result = result.optional();
+  }
+
+  return result;
+}
+
 function _replaceImageUrl(memberKycProperties) {
   memberKycProperties.forEach(e => {
     if (e.value && e.value.startsWith("http")) {
       for (let i of config.aws.bucketUrls) {
         if (e.value.indexOf(i) > -1) {
-          e.value = e.value.replace(i, config.website.url + "/web/static/images");
+          e.value = e.value.replace(i, config.apiUrl + "/web/static/images");
           break;
         }
       }

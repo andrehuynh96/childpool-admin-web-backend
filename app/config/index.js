@@ -166,6 +166,7 @@ const config = {
     restUrl: process.env.ONT_REST_SERVER_URL
   },
   stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
+  apiUrl: process.env.API_URL ? process.env.API_URL : process.env.WEBSITE_URL
 };
 
 module.exports = config;
