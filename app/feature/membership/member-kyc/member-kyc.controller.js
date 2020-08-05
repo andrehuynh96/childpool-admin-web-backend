@@ -101,47 +101,58 @@ module.exports = {
   updateProperties: async (req, res, next) => {
     let transaction;
     try {
-      const { body } = req;
-      const memberKycPropertiesData = body.member_kyc_properties;
-      const memberKycIdList = memberKycPropertiesData.map(item => item.id);
-      const memberKycProperties = await MemberKycProperty.findAll({
-        id: memberKycIdList
-      });
-      const kycPropertyIdList = memberKycProperties.map(item => item.property_id);
-      const kycProperties = await KycProperty.findAll({
-        id: kycPropertyIdList
-      });
-      memberKycProperties.forEach(item => {
-        const property = kycProperties.find(x => x.id === item.property_id);
-        if (property) {
-          item.require_flg = property.require_flg;
-          item.data_type = property.data_type;
+      const { body, params } = req;
+      const memberKycs = await MemberKyc.findAll({
+        where: {
+          member_id: params.memberId,
+          kyc_id: { [Op.gt]: 1 }
         }
       });
-
-      let verify = _validateKYCProperties(memberKycProperties);
+      const memberKycIds = memberKycs.map(item => item.id);
+      const memberKycProperties = await MemberKycProperty.findAll({
+        where: {
+          member_kyc_id: memberKycIds,
+          field_name: { [Op.notILike]: 'Document%' },
+          field_key: { [Op.notILike]: 'document%' }
+        }
+      });
+      const fieldKeyList = memberKycProperties.map(item => item.field_key);
+      const kycProperties = await KycProperty.findAll({
+        where: {
+          field_key: fieldKeyList
+        }
+      });
+      let verify = _validateKYCProperties(kycProperties, body);
       if (verify.error) {
         return res.badRequest("Missing parameters", verify.error);
       }
+
       transaction = await database.transaction();
-      for (let item of memberKycPropertiesData) {
-        const memberKycProperty = await MemberKycProperty.findOne({
-          where: {
-            id: item.id
-          }
-        });
-        if (!memberKycProperty) {
-          return res.notFound(res.__("MEMBER_KYC_PROPERTY_LIST_HAVE_ONE_ID_NOT_FOUND"), "MEMBER_KYC_PROPERTY_LIST_HAVE_ONE_ID_NOT_FOUND", { field: [item.id] });
-        }
-        await MemberKycProperty.update(
-          { value: item.value },
-          {
+      for (let [field_key, value] in Object.entries(body)) {
+        const property = memberKycProperties.find(x => x.field_key === field_key);
+        if (property) {
+          const memberKycProperty = await MemberKycProperty.findOne({
             where: {
-              id: memberKycProperty.id
-            },
-            transaction: transaction
+              member_kyc_id: property.member_kyc_id,
+              field_key: property.field_key
+            }
+          });
+          
+          if (!memberKycProperty) {
+            return res.notFound(res.__("MEMBER_KYC_PROPERTY_LIST_HAVE_ONE_ID_NOT_FOUND"), "MEMBER_KYC_PROPERTY_LIST_HAVE_ONE_ID_NOT_FOUND", { field: [field_key] });
           }
-        );
+          await MemberKycProperty.update(
+            { value: value },
+            {
+              where: {
+                id: memberKycProperty.id,
+                field_name: { [Op.notILike]: 'Document%' },
+                field_key: { [Op.notILike]: 'document%' }
+              },
+              transaction: transaction
+            }
+          );
+        }
       }
       transaction.commit();
       return res.ok(true);
@@ -251,18 +262,12 @@ module.exports = {
 
 };
 
-function _validateKYCProperties(memberKycProperties) {
+function _validateKYCProperties(properties, data) {
   let obj = {};
   for (let p of properties) {
     obj[p.field_key] = _buildJoiFieldValidate(p);
   }
-
-  let schema = Joi.object().keys(
-    {
-      member_kyc_properties: Joi.array().items(
-        Joi.object().keys(obj)
-      )
-    });
+  let schema = Joi.object().keys(obj);
   return Joi.validate(data, schema);
 }
 

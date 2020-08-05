@@ -4,7 +4,7 @@ const controller = require('./member-kyc.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require("app/middleware/validator.middleware");
-const { memberKycProperty, updateStatus } = require("./validator");
+const { updateStatus } = require("./validator");
 const router = express.Router();
 
 router.get(
@@ -189,7 +189,7 @@ router.put(
 */
 
 router.put(
-    '/members/member-kyc-properties',
+    '/members/:memberId/member-kyc-properties',
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES),
     // validator(memberKycProperty), // isTODO:
@@ -198,7 +198,7 @@ router.put(
 
 /**
 * @swagger
-* /web/membership/member/member-kyc-properties:
+* /web/membership/member/:memberId/member-kyc-properties:
 *   post:
 *     summary: update member kyc properties
 *     tags:
@@ -213,13 +213,11 @@ router.put(
 *            type: object
 *            example:
 *                  {
-                        "member_kyc_properties":[ {
-                            "id":147,
-                            "value":"MYHN"
-                        },{
-                            "id":1471,
-                            "value":"VIETNAM"
-                        } ]
+                        "first_name":"Binh",
+                        "last_name":"nguyen tri",
+                        "country":"TPHCM",
+                        "city":"HCM",
+                        "date_of_birth": "2020-07-07T04:28:26.390Z"
                     }
 *     produces:
 *       - application/json
