@@ -4,6 +4,8 @@ const EmailTemplateGroupNames = require('app/model/wallet/value-object/email-tem
 const mapper = require("app/feature/response-schema/email-template.response-schema");
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
+const uuidV4 = require('uuid/v4');
+const { forEach } = require('p-iteration');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -113,10 +115,55 @@ module.exports = {
     },
     getGroupName: async (req, res, next) => {
         try {
-            return res.ok(EmailTemplateGroupNames);
+            const data = []
+            for (let [label, value] of Object.entries(EmailTemplateGroupNames)) {
+                data.push({
+                    label: label,
+                    value: value
+                });
+            }
+            return res.ok(data);
         }
         catch (error) {
             logger.error('get group name list fail', error);
+            next(error);
+        }
+    },
+    createOption: async (req, res, next) => {
+        try {
+            const data = req.body;
+            data.name = uuidV4();
+            data.language = 'en';
+            await EmailTemplate.create(data);
+            return res.ok(true);
+        }  
+        catch (error) {
+            logger.error('create option fail', error);
+            next(error);
+        }
+    },
+    duplicateEmailTemplate: async (req, res, next) => {
+        try {
+            const emailTemplates = await EmailTemplate.findAll({
+                where: {
+                    name: req.params.name
+                },
+                raw: true
+            });
+            if(emailTemplates.length == 0) {
+                return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
+            }
+            const data = [];
+            emailTemplates.forEach(item => {
+                delete item.id;
+                item.subject = `${item.subject} - Duplicate`;
+                data.push(item);
+            });
+            await EmailTemplate.bulkCreate(data);
+            return res.ok(true);
+        }  
+        catch (error) {
+            logger.error('create option fail', error);
             next(error);
         }
     },

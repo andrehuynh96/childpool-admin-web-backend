@@ -6,6 +6,7 @@ const destObject = {
     '[].name': '[].name',
     '[].subject': '[].subject',
     '[].language': '[].language',
+    '[].group_name': '[].group_name',
     '[].deleted_flg': '[].deleted_flg',
   },
   single: {
@@ -13,6 +14,7 @@ const destObject = {
     name: 'name',
     subject: 'subject',
     language: 'language',
+    group_name: 'group_name',
     deleted_flg: 'deleted_flg'
   }
 };
