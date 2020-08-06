@@ -15,7 +15,8 @@ module.exports = {
             const limit = query.limit ? parseInt(req.query.limit) : 10;
             const offset = query.offset ? parseInt(req.query.offset) : 0;
             const cond = {
-                language: 'en'
+                language: 'en',
+                deleted_flg: false
             };
             const { count: total, rows: items } = await EmailTemplate.findAndCountAll({
                 limit,
@@ -39,7 +40,8 @@ module.exports = {
         try {
             const emailTemplate = await EmailTemplate.findAll({
                 where: {
-                    name: req.params.name
+                    name: req.params.name,
+                    deleted_flg: false
                 }
             });
 
@@ -167,4 +169,32 @@ module.exports = {
             next(error);
         }
     },
+    deleteEmailTemplate: async (req, res, next) => {
+        try {
+            const name = req.params.name;
+            const emailTemplate = await EmailTemplate.findAll({
+                where: {
+                    name: name,
+                    group_name: { [Op.not]: null }
+                }
+            });
+
+            if (!emailTemplate) {
+                return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ['id'] });
+            }
+
+            await EmailTemplate.update({
+                deleted_flg: true
+            },{
+                where: {
+                    name: name
+                }
+            });
+            return res.ok(true);
+        } 
+        catch (error) {
+            logger.error('delete email template fail', error);
+            next(error);
+        }
+    }
 };
