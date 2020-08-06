@@ -6,6 +6,7 @@ const MemberStatus = require("app/model/wallet/value-object/member-status");
 const MemberOrderStatusFillter = require("app/model/wallet/value-object/member-order-status-fillter");
 const MemberFillterStatusText = require("app/model/wallet/value-object/member-fillter-status-text");
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
+const KycStatus = require("app/model/wallet/value-object/kyc-status");
 const Kyc = require("app/model/wallet").kycs;
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
@@ -13,6 +14,7 @@ const { affiliateApi, membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
 const stringify = require('csv-stringify');
 const moment = require('moment');
+
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -301,7 +303,7 @@ module.exports = {
     try {
       const { body, params } = req;
       const { memberId } = params;
-      const referralCode = body.referrerCode;
+      const referrerCode = body.referrerCode;
 
       const member = await Member.findOne({
         where: {
@@ -322,15 +324,10 @@ module.exports = {
         return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
       }
 
-      if (member.referrer_code && body.referrerCode) {
-        return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
-      }
-
-      const hasUpdatedReferrerCode = !member.referrer_code && body.referrerCode;
-      const data = {};
-      if (hasUpdatedReferrerCode) {
-        data.referrer_code = referralCode;
-      }
+      const hasUpdatedReferrerCode = member.referrer_code !== referrerCode;
+      const data = {
+        referrer_code: referrerCode,
+      };
 
       transaction = await database.transaction();
       try {
@@ -348,7 +345,7 @@ module.exports = {
         let result;
 
         if (hasUpdatedReferrerCode) {
-          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: referralCode });
+          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: referrerCode });
 
           if (result.httpCode !== 200) {
             await transaction.rollback();
@@ -578,7 +575,10 @@ module.exports = {
         });
       }
 
-      items.forEach(item => {
+      items.forEach((item, index) => {
+        item.no = index + 1;
+        item.last_name = item.last_name ||  '-';
+        item.first_name = item.first_name ||  '-';
         const latestMembershipOrder = item.LatestMembershipOrder;
 
         if (item.deleted_flg) {
@@ -609,11 +609,12 @@ module.exports = {
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       const data = await stringifyAsync(items, [
-        { key: 'id', header: 'Id' },
-        { key: 'first_name', header: 'First Name' },
+        { key: 'no', header: '#' },
         { key: 'last_name', header: 'Last Name' },
+        { key: 'first_name', header: 'First Name' },
         { key: 'email', header: 'Email' },
         { key: 'kyc_level', header: 'KYC' },
+        { key: 'kyc_status', header: 'KYC Status' },
         { key: 'membership_type', header: 'Membership' },
         { key: 'status', header: 'Status' },
         { key: 'referral_code', header: 'Referral' },
@@ -645,6 +646,10 @@ async function _createMemberCond(query) {
     memberCond.kyc_level = query.kycLevel;
   }
 
+  if (query.kycStatus) {
+    memberCond.kyc_status = KycStatus[query.kycStatus];
+  }
+
   if (query.referralCode) {
     memberCond.referral_code = { [Op.iLike]: `%${query.referralCode}%` };
   }
@@ -662,6 +667,7 @@ async function _createMemberCond(query) {
   if (query.email) {
     memberCond.email = { [Op.iLike]: `%${query.email}%` };
   }
+
   return memberCond;
 }
 

@@ -530,6 +530,12 @@ module.exports = {
     "GROUP_NAME": "Members",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS": {
+    "KEY": "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS",
+    "DESCRIPTION": "Membership update member kyc status",
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 
   "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING": {
     "KEY": "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING",
@@ -589,6 +595,12 @@ module.exports = {
   "UPDATE_EMAIL_TEMPLATE": {
     "KEY": "UPDATE_EMAIL_TEMPLATE",
     "DESCRIPTION": "Update email template",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "CREATE_EMAIL_TEMPLATE": {
+    "KEY": "CREATE_EMAIL_TEMPLATE",
+    "DESCRIPTION": "create email template",
     "GROUP_NAME": "Email Template",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },

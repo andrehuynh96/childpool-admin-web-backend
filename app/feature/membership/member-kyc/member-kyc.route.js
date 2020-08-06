@@ -4,7 +4,7 @@ const controller = require('./member-kyc.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require("app/middleware/validator.middleware");
-const schema = require("./member-kyc.request-schema")
+const { updateStatus } = require("./validator");
 const router = express.Router();
 
 router.get(
@@ -128,22 +128,28 @@ router.get(
  */
 
 router.put(
-    '/members/member-kyc-properties',
+    '/members/:memberId/member-kycs/:kycId',
     authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES),
-    validator(schema),
-    controller.update
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS),
+    validator(updateStatus),
+    controller.updateStatus
 );
 
 /**
 * @swagger
-* /web/membership/member/member-kyc-properties:
-*   post:
+* /web/membership/members/{memberId}/member-kycs/{kycId}:
+*   put:
 *     summary: update member kyc properties
 *     tags:
 *       - Member
 *     description: update member kyc properties
 *     parameters:
+*       - name: memberId
+*         in: path
+*         required: true
+*       - name: kycId
+*         in: path
+*         required: true
 *       - name: data
 *         in: body
 *         required: true
@@ -152,13 +158,8 @@ router.put(
 *            type: object
 *            example:
 *                  {
-                        "member_kyc_properties":[ {
-                            "id":147,
-                            "value":"MYHN"
-                        },{
-                            "id":1471,
-                            "value":"VIETNAM"
-                        } ]
+                        "status":"APPROVED| INSUFFICIENT | DECLINED",
+                        "note": ""
                     }
 *     produces:
 *       - application/json
@@ -168,7 +169,7 @@ router.put(
 *         examples:
 *           application/json:
 *             {
-                "data": true
+                    "data": true
               }
 *       400:
 *         description: Error
@@ -187,5 +188,130 @@ router.put(
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+router.put(
+    '/members/:memberId/member-kyc-properties',
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER_KYC_PROPERTIES),
+    controller.updateProperties
+);
+
+/**
+* @swagger
+* /web/membership/member/:memberId/member-kyc-properties:
+*   post:
+*     summary: update member kyc properties
+*     tags:
+*       - Member
+*     description: update member kyc properties
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                        "first_name":"Binh",
+                        "last_name":"nguyen tri",
+                        "country":"TPHCM",
+                        "city":"HCM",
+                        "date_of_birth": "2020-07-07T04:28:26.390Z"
+                    }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             { "data": true }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+
+router.get(
+    '/member/kyc-statuses',
+    controller.getKycStatuses
+);
+
+/**
+* @swagger
+* /web/membership/member/kyc-statuses:
+*   post:
+*     summary: update member kyc properties
+*     tags:
+*       - Member
+*     description: update member kyc properties
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": [
+                    {
+                        "value": "IN_REVIEW",
+                        "label": "In Review"
+                    },
+                    {
+                        "value": "APPROVED",
+                        "label": "Approved"
+                    },
+                    {
+                        "value": "INSUFFICIENT",
+                        "label": "Insufficient"
+                    },
+                    {
+                        "value": "DECLINED",
+                        "label": "Declined"
+                    },
+                    {
+                        "value": "EXPIRED",
+                        "label": "Expired"
+                    }
+                ]
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
 
 module.exports = router;

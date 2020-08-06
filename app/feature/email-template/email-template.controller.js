@@ -1,9 +1,13 @@
 const logger = require('app/lib/logger');
 const EmailTemplate = require('app/model/wallet').email_templates;
+const EmailTemplateGroupNames = require('app/model/wallet/value-object/email-template-groupname');
 const mapper = require("app/feature/response-schema/email-template.response-schema");
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
+const uuidV4 = require('uuid/v4');
+const { forEach } = require('p-iteration');
 const Op = Sequelize.Op;
+
 module.exports = {
     getAll: async (req, res, next) => {
         try {
@@ -62,7 +66,6 @@ module.exports = {
                         language: item.language
                     }
                 });
-                console.log(emailTemplate.name,emailTemplate.language);
                 if (emailTemplate) {
                     await EmailTemplate.update(
                         {
@@ -94,5 +97,74 @@ module.exports = {
             logger.error('update email template fail', error);
             next(error);
         }
-    }
+    },
+    getEmailTemplatesByGroupName: async (req, res, next) => {
+        try {
+            const emailTemplates = await EmailTemplate.findAll({
+                where: {
+                    group_name: req.params.groupName,
+                }
+            });
+
+            return res.ok(emailTemplates);
+        }
+        catch (error) {
+            logger.error('get email template by group name fail', error);
+            next(error);
+        }
+    },
+    getGroupName: async (req, res, next) => {
+        try {
+            const data = []
+            for (let [label, value] of Object.entries(EmailTemplateGroupNames)) {
+                data.push({
+                    label: label,
+                    value: value
+                });
+            }
+            return res.ok(data);
+        }
+        catch (error) {
+            logger.error('get group name list fail', error);
+            next(error);
+        }
+    },
+    createOption: async (req, res, next) => {
+        try {
+            const data = req.body;
+            data.name = uuidV4();
+            data.language = 'en';
+            await EmailTemplate.create(data);
+            return res.ok(true);
+        }  
+        catch (error) {
+            logger.error('create option fail', error);
+            next(error);
+        }
+    },
+    duplicateEmailTemplate: async (req, res, next) => {
+        try {
+            const emailTemplates = await EmailTemplate.findAll({
+                where: {
+                    name: req.params.name
+                },
+                raw: true
+            });
+            if(emailTemplates.length == 0) {
+                return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
+            }
+            const data = [];
+            emailTemplates.forEach(item => {
+                delete item.id;
+                item.subject = `${item.subject} - Duplicate`;
+                data.push(item);
+            });
+            await EmailTemplate.bulkCreate(data);
+            return res.ok(true);
+        }  
+        catch (error) {
+            logger.error('create option fail', error);
+            next(error);
+        }
+    },
 };

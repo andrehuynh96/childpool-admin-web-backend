@@ -25,6 +25,7 @@ const config = {
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
+  sessionSecretKey: process.env.SESSION_SECRET_KEY || 'CHILDPOOL-6672b85fc8d14d26a221253b23f91234',
   app: {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
@@ -48,7 +49,7 @@ const config = {
   redis: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-    prefix: process.env.REDIS_PREFIX || 'staking:wallet:cache',
+    prefix: process.env.REDIS_PREFIX || 'staking-childpool-backend',
     usingPass: process.env.REDIS_USING_PASS || 0,
     pass: process.env.REDIS_PASS,
   },
@@ -69,7 +70,7 @@ const config = {
     folderPlatform: process.env.CDN_FOLDER_PLATFORM,
     exts: process.env.CDN_FILE_EXT ? process.env.CDN_FILE_EXT.split(',')
       : [],
-    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 5242880
+    fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 2097152
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
@@ -81,6 +82,13 @@ const config = {
     urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-ip?token=',
     urlConfirmRequest: process.env.WEBSITE_URL + '/confirm-request?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL,
+  },
+  aws: {
+    endpoint: process.env.AWS_END_POINT,
+    accessKey: process.env.AWS_ACCESS_KEY,
+    secretKey: process.env.AWS_SECRET_KEY,
+    bucket: process.env.AWS_BUCKET,
+    bucketUrls: process.env.AWS_BUCKET_URLS ? process.env.AWS_BUCKET_URLS.split(",") : []
   },
   stakingApi: {
     url: process.env.STAKING_API_URL,
@@ -157,7 +165,8 @@ const config = {
   ONT: {
     restUrl: process.env.ONT_REST_SERVER_URL
   },
-  stakingCurrency: process.env.STAKING_CURRENCY
+  stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
+  apiUrl: process.env.API_URL || process.env.WEBSITE_URL,
 };
 
 module.exports = config;

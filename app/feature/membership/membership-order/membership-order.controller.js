@@ -12,7 +12,6 @@ const MemberRewardCommissionMethod = require("app/model/wallet/value-object/memb
 const MemberRewardAction = require("app/model/wallet/value-object/member-reward-transaction-action");
 const SystemType = require('app/model/wallet/value-object/system-type');
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
-const ClaimRequestPaymentType = require("app/model/wallet/value-object/claim-request-payment-type");
 const membershipOrderMapper = require("app/feature/response-schema/membership-order.response-schema");
 const Sequelize = require('sequelize');
 const stringify = require('csv-stringify');
@@ -209,12 +208,21 @@ module.exports = {
         return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
       }
 
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: order.membership_type_id
+        }
+      });
+
+      if (!membershipType) {
+        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
+      }
+
       transaction = await database.transaction();
-      let status = req.body.action == 1 ? MembershipOrderStatus.Approved : MembershipOrderStatus.Rejected;
       await MembershipOrder.update({
         notes: req.body.note,
         approved_by_id: req.user.id,
-        status: status,
+        status: MembershipOrderStatus.Approved,
         approved_at: Sequelize.fn('NOW')
       }, {
         where: {
@@ -232,95 +240,82 @@ module.exports = {
         language: order.Member.current_language || 'en',
       };
 
-      if (status == MembershipOrderStatus.Approved) {
-        await Member.update({
-          membership_type_id: order.membership_type_id,
-          latest_membership_order_id: order.id,
-        }, {
-          where: {
-            id: order.member_id
-          },
-          returning: true,
-          transaction: transaction
-        });
+      await Member.update({
+        membership_type_id: order.membership_type_id,
+        latest_membership_order_id: order.id,
+      }, {
+        where: {
+          id: order.member_id
+        },
+        returning: true,
+        transaction: transaction
+      });
+      
 
-        const membershipType = await MembershipType.findOne({
-          where: {
-            id: order.membership_type_id
-          }
-        });
+      const result = await membershipApi.registerMembership({
+        email: order.Member.email,
+        referrerCode: order.referrer_code,
+        membershipOrder: order,
+        membershipType,
+      });
 
-        if (!membershipType) {
-          return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
-        }
+      if (result.httpCode != 200) {
+        await transaction.rollback();
 
-        const result = await membershipApi.registerMembership({
-          email: order.Member.email,
-          referrerCode: order.referrer_code,
-          membershipOrder: order,
-          membershipType,
-        });
-
-        if (result.httpCode != 200) {
-          await transaction.rollback();
-
-          return res.status(result.httpCode).send(result.data);
-        }
-
-        // Save reward transaction histories
-        const memberRewardTransactionHistories = await map(result.data.rewards || [], async (item) => {
-          const member = await _findMemberByEmail(item.ext_client_id);
-          if (!member) {
-            return;
-          }
-
-          const introducedByEmail = item.introduced_by_ext_client_id;
-
-          return {
-            member_id: member.id,
-            currency_symbol: item.currency_symbol,
-            amount: item.amount,
-            commission_method: item.commisson_type.toUpperCase() === 'DIRECT' ? MemberRewardCommissionMethod.DIRECT : MemberRewardCommissionMethod.INDIRECT,
-            system_type: SystemType.MEMBERSHIP,
-            action: MemberRewardAction.REWARD_COMMISSION,
-            commission_from: null,
-            note: introducedByEmail,
-            membership_order_id: order.id,
-          };
-        });
-        await MemberRewardTransactionHistory.bulkCreate(memberRewardTransactionHistories, { transaction });
-
-        await MembershipOrder.update({
-          referral_code: result.data.affiliate_code.code
-        }, {
-          where: {
-            id: order.id
-          },
-          returning: true,
-          transaction: transaction
-        });
-
-        // reject all pending orders
-        await MembershipOrder.update({
-          status: MembershipOrderStatus.Rejected,
-          approved_by_id: req.user.id,
-          notes: 'The other is approved'
-        }, {
-          where: {
-            status: MembershipOrderStatus.Pending,
-            member_id: order.member_id,
-            [Op.not]: [
-              { id: [order.id] }
-            ]
-          },
-          returning: true,
-          transaction: transaction
-        });
-
-        await _sendEmail(order.Member.email, emailPayload, true);
-      } else {
-        await _sendEmail(order.Member.email, emailPayload, false);
+        return res.status(result.httpCode).send(result.data);
       }
+
+      // Save reward transaction histories
+      const memberRewardTransactionHistories = await map(result.data.rewards || [], async (item) => {
+        const member = await _findMemberByEmail(item.ext_client_id);
+        if (!member) {
+          return;
+        }
+
+        const introducedByEmail = item.introduced_by_ext_client_id;
+
+        return {
+          member_id: member.id,
+          currency_symbol: item.currency_symbol,
+          amount: item.amount,
+          commission_method: item.commisson_type.toUpperCase() === 'DIRECT' ? MemberRewardCommissionMethod.DIRECT : MemberRewardCommissionMethod.INDIRECT,
+          system_type: SystemType.MEMBERSHIP,
+          action: MemberRewardAction.REWARD_COMMISSION,
+          commission_from: null,
+          note: introducedByEmail,
+          membership_order_id: order.id,
+        };
+      });
+      await MemberRewardTransactionHistory.bulkCreate(memberRewardTransactionHistories, { transaction });
+
+      await MembershipOrder.update({
+        referral_code: result.data.affiliate_code.code
+      }, {
+        where: {
+          id: order.id
+        },
+        returning: true,
+        transaction: transaction
+      });
+
+      // reject all pending orders
+      await MembershipOrder.update({
+        status: MembershipOrderStatus.Rejected,
+        approved_by_id: req.user.id,
+        notes: 'The other is approved'
+      }, {
+        where: {
+          status: MembershipOrderStatus.Pending,
+          member_id: order.member_id,
+          [Op.not]: [
+            { id: [order.id] }
+          ]
+        },
+        returning: true,
+        transaction: transaction
+      });
+
+      await _sendEmail(order.Member.email, emailPayload,EmailTemplateType.MEMBERSHIP_ORDER_APPROVED);
       await transaction.commit();
 
       return res.ok(true);
@@ -334,6 +329,64 @@ module.exports = {
       next(err);
     }
 
+  },
+  rejectOrder: async (req, res, next) => {
+      try {
+        if ((!req.body.template && !req.body.note) || (req.body.template && req.body.note)) {
+          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS');
+        }
+        let order = await MembershipOrder.findOne({
+          where: { id: req.params.id },
+          include: {
+            attributes: ['email', 'first_name', 'last_name', 'current_language'],
+            as: "Member",
+            model: Member,
+            required: true
+          }
+        });
+  
+        if (!order) {
+          return res.notFound(res.__("MEMBERSHIP_ORDER_NOT_FOUND"), "MEMBERSHIP_ORDER_NOT_FOUND");
+        }
+  
+        if (order.status !== MembershipOrderStatus.Pending) {
+          return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
+        }
+
+        await MembershipOrder.update({
+          notes: req.body.note,
+          status: MembershipOrderStatus.Rejected
+        }, {
+          where: {
+            id: req.params.id
+          },
+          returning: true
+        });
+        let emailPayload = {
+          id: order.id,
+          imageUrl: config.website.urlImages,
+          firstName: order.Member.first_name,
+          lastName: order.Member.last_name,
+          language: order.Member.current_language || 'en',
+        };
+        if (req.body.template && !req.body.note) {
+          const template = await _findEmailTemplate(req.body.template, emailPayload.language);
+
+          if (!template) {
+              return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND");
+          }
+            emailPayload.note = template.template;
+        }
+        else {
+          emailPayload.note = req.body.note;
+        }
+        await _sendEmail(order.Member.email, emailPayload, EmailTemplateType.MEMBERSHIP_ORDER_REJECTED);
+        return res.ok(true);
+    } 
+    catch (error) {
+      logger.error('update order fail:', error);
+      next(error);
+    }
   },
   downloadCSV: async (req, res, next) => {
     try {
@@ -427,24 +480,20 @@ module.exports = {
         element.email = element.Member.email;
         element.first_name = element.Member.first_name;
         element.last_name = element.Member.last_name;
-        element.membership_type_name = element.MembershipType.name;
-        element.time = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        element.time_requested = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        element.time_approved_at = element.approved_at ? moment(element.approved_at).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm') : '';
         element.status_string = MembershipOrderStatusEnum[element.status];
-        element.payment = element.payment_type == ClaimRequestPaymentType.Bank ? 'Bank' : element.wallet_id ? element.currency_symbol : `*${element.currency_symbol}`;
+        element.amount_string = `${element.amount} ${element.currency_symbol}`;
       });
       let data = await stringifyAsync(items, [
-        { key: 'order_no', header: 'Order' },
-        { key: 'time', header: 'Date/Time' },
+        { key: 'id', header: 'No.' },
+        { key: 'time_requested', header: 'Requested' },
         { key: 'first_name', header: 'First Name' },
         { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
-        { key: 'membership_type_name', header: 'Membership' },
-        { key: 'payment', header: 'Payment' },
-        // { key: 'account_number', header: 'Bank Acc No' },
-        { key: 'wallet_address', header: 'Receive address' },
+        { key: 'amount_string', header: 'Amount' },
         { key: 'status_string', header: 'Status' },
-        // { key: 'wallet_id', header: 'Walllet Id' },
-        // { key: 'currency_symbol', header: 'Currency symbol' },
+        { key: 'time_approved_at', header: 'Payout Transfered' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');
@@ -455,7 +504,7 @@ module.exports = {
       next(err);
     }
   },
-  updateDesciption: async (req, res, next) => {
+  updateDescription: async (req, res, next) => {
     try {
       let id = req.params.id;
       let des = req.body.description;
@@ -493,28 +542,8 @@ function stringifyAsync(data, columns) {
   });
 }
 
-async function _sendEmail(email, payload, approved) {
-  const templateName = approved ? EmailTemplateType.MEMBERSHIP_ORDER_APPROVED : EmailTemplateType.MEMBERSHIP_ORDER_REJECTED;
-  let template = await EmailTemplate.findOne({
-    where: {
-      name: templateName,
-      language: payload.language
-    }
-  });
-
-  if (!template) {
-    template = await EmailTemplate.findOne({
-      where: {
-        name: templateName,
-        language: 'en'
-      }
-    });
-  }
-
-  if (!template) {
-    logger.error(`Not found email template ${templateName}`);
-    return;
-  }
+async function _sendEmail(email, payload, templateName) {
+  let template = await _findEmailTemplate(templateName,payload.language);
 
   const subject = template.subject;
   const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
@@ -540,4 +569,24 @@ async function _findMemberByEmail(email) {
   }
 
   return member;
+}
+
+async function _findEmailTemplate(templateName, language) {
+  let template = await EmailTemplate.findOne({
+    where: {
+      name: templateName,
+      language: language
+    }
+  });
+
+  if (!template && template.language !== 'en') {
+    template = await EmailTemplate.findOne({
+      where: {
+        name: templateName,
+        language: 'en'
+      }
+    });
+  }
+
+  return template;
 }
