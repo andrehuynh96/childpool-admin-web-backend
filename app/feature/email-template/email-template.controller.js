@@ -143,20 +143,19 @@ module.exports = {
     },
     duplicateEmailTemplate: async (req, res, next) => {
         try {
-            const emailTemplate = await EmailTemplate.findOne({
+            const emailTemplate = await EmailTemplate.findAll({
                 where: {
-                    name: req.params.name,
-                    language:'en'
+                    name: req.params.name
                 },
                 raw: true
             });
-            if (!emailTemplate) {
-                return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ['id'] });
+            const data = [];
+            for (let option of emailTemplate) {
+                delete option.id;
+                option.subject = `${option.subject} - Duplicate`;
+                data.push(option);
             }
-            const data = emailTemplate;
-            delete data.id;
-            data.subject = `${emailTemplate.subject} - Duplicate`;
-            await EmailTemplate.create(data);
+            await EmailTemplate.bulkCreate(data);
             return res.ok(true);
         }  
         catch (error) {
