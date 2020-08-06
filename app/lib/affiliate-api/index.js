@@ -312,6 +312,22 @@ class AffiliateApi {
     }
   }
 
+  async updateAffiliateCode(code, data) {
+    try {
+      const headers = await this.getHeaders();
+      const result = await axios.put(`${API_URL}/affiliate-codes/${code}`,
+        data,
+        {
+          headers,
+        });
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("Update affiliate code fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
 
   // Private functions
   async getHeaders() {
@@ -368,8 +384,6 @@ class MembershipApi extends AffiliateApi {
     membershipType,
   }) {
     try {
-
-
       const headers = await this.getHeaders();
       const data = {
         ext_client_id: email,
