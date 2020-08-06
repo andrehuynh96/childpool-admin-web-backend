@@ -5,6 +5,7 @@ const mapper = require("app/feature/response-schema/email-template.response-sche
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const uuidV4 = require('uuid/v4');
+const { forEach } = require('p-iteration');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -143,21 +144,21 @@ module.exports = {
     },
     duplicateEmailTemplate: async (req, res, next) => {
         try {
-            const emailTemplate = await EmailTemplate.findAll({
+            const emailTemplates = await EmailTemplate.findAll({
                 where: {
                     name: req.params.name
                 },
                 raw: true
             });
-            if(emailTemplate.length == 0) {
+            if(emailTemplates.length == 0) {
                 return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
             }
             const data = [];
-            for (let option of emailTemplate) {
-                delete option.id;
-                option.subject = `${option.subject} - Duplicate`;
-                data.push(option);
-            }
+            emailTemplates.forEach(item => {
+                delete item.id;
+                item.subject = `${item.subject} - Duplicate`;
+                data.push(item);
+            });
             await EmailTemplate.bulkCreate(data);
             return res.ok(true);
         }  
