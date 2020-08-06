@@ -51,6 +51,12 @@ router.put('/email-templates/options/:name/duplicates',
     controller.duplicateEmailTemplate
 );
 
+router.delete('/email-templates/options/:name',
+    authenticate,
+    authority(PermissionKey.DELETE_EMAIL_TEMPLATE),
+    controller.deleteEmailTemplate
+);
+
 /**
 * @swagger
 * /web/email-templates:
@@ -404,6 +410,46 @@ router.put('/email-templates/options/:name/duplicates',
 *     tags:
 *       - Email Template
 *     description: duplicate email template option
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/email-templates/options/{name}:
+*   delete:
+*     summary: delete email template option
+*     tags:
+*       - Email Template
+*     description: delete email template option
 *     parameters:
 *       - name: data
 *         in: body

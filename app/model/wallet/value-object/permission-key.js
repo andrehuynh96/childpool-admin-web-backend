@@ -600,7 +600,13 @@ module.exports = {
   },
   "CREATE_EMAIL_TEMPLATE": {
     "KEY": "CREATE_EMAIL_TEMPLATE",
-    "DESCRIPTION": "create email template",
+    "DESCRIPTION": "Create email template",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "DELETE_EMAIL_TEMPLATE": {
+    "KEY": "DELETE_EMAIL_TEMPLATE",
+    "DESCRIPTION": "Delete email template",
     "GROUP_NAME": "Email Template",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
