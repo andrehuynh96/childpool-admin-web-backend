@@ -5,7 +5,6 @@ const mapper = require("app/feature/response-schema/email-template.response-sche
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const uuidV4 = require('uuid/v4');
-const { forEach } = require('p-iteration');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -65,7 +64,8 @@ module.exports = {
                 const emailTemplate = await EmailTemplate.findOne({
                     where: {
                         name: item.name,
-                        language: item.language
+                        language: item.language,
+                        deleted_flg: false
                     }
                 });
                 if (emailTemplate) {
@@ -105,6 +105,7 @@ module.exports = {
             const emailTemplates = await EmailTemplate.findAll({
                 where: {
                     group_name: req.params.groupName,
+                    deleted_flg: false
                 }
             });
 
@@ -117,7 +118,7 @@ module.exports = {
     },
     getGroupName: async (req, res, next) => {
         try {
-            const data = []
+            const data = [];
             for (let [label, value] of Object.entries(EmailTemplateGroupNames)) {
                 data.push({
                     label: label,
@@ -152,7 +153,7 @@ module.exports = {
                 },
                 raw: true
             });
-            if(emailTemplates.length == 0) {
+            if (emailTemplates.length == 0) {
                 return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
             }
             const data = [];
