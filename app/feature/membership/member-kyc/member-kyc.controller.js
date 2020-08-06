@@ -295,7 +295,7 @@ module.exports = {
           break;
       }
       await _sendEmail(member.email, emailPayload, templateName);
-      await transaction.rollback();
+      await transaction.commit();
 
       return res.ok(true);
     }
