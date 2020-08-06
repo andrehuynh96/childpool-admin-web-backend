@@ -254,6 +254,7 @@ router.put('/email-templates/options/:name/duplicates',
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
 /**
 * @swagger
 * /web/email-templates/reasons/group-names:
@@ -327,6 +328,96 @@ router.put('/email-templates/options/:name/duplicates',
                     }
                 ]
             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/email-templates/options:
+*   post:
+*     summary: create email template option
+*     tags:
+*       - Email Template
+*     description: create email template option
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                        "subject": "Time out",
+                        "template": "<p>Time out</p>",
+                        "group_name": "CHILDPOOL_ADMIN_MEMBER_KYC_DECLINED",
+                        "display_order": 1
+                    }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/email-templates/options/{name}/option:
+*   put:
+*     summary: duplicate email template option
+*     tags:
+*       - Email Template
+*     description: duplicate email template option
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+              }
 *       400:
 *         description: Error
 *         schema:

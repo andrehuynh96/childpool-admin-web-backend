@@ -147,12 +147,14 @@ module.exports = {
                 where: {
                     name: req.params.name,
                     language:'en'
-                }
+                },
+                raw: true
             });
             if (!emailTemplate) {
                 return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ['id'] });
             }
             const data = emailTemplate;
+            delete data.id;
             data.subject = `${emailTemplate.subject} - Duplicate`;
             await EmailTemplate.create(data);
             return res.ok(true);
