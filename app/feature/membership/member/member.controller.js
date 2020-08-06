@@ -178,14 +178,13 @@ module.exports = {
 
       if (membershipOrder && membershipOrder.status == 'Approved') {
         member.status = MemberFillterStatusText.FeeAccepted;
-      }
-      else if (membershipOrder && membershipOrder.status == 'Pending') {
+      } else if (membershipOrder && membershipOrder.status == 'Pending') {
         member.status = MemberFillterStatusText.VerifyPayment;
         member.latest_membership_order_id = membershipOrder.id;
-      }
-      else {
+      } else {
         member.status = MemberFillterStatusText.Active;
       }
+
       member.kyc_level = (member.kyc_level || '').replace('LEVEL_', '');
       if (!member.membership_type_id) {
         member.membership_type = 'Basic';
@@ -202,7 +201,38 @@ module.exports = {
         return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND");
       }
       member.membership_type = membershipType.name;
+
       return res.ok(memberMapper(member));
+    }
+    catch (error) {
+      logger.error('get member detail fail:', error);
+      next(error);
+    }
+  },
+  getMaxReferences: async (req, res, next) => {
+    try {
+      const { params } = req;
+      const member = await Member.findOne({
+        where: {
+          id: params.memberId,
+        },
+      });
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      let max_references = null;
+
+      if (member.referral_code) {
+        const affiliateCodeDetailsResult = await affiliateApi.getAffiliateCodeDetails(member.referral_code);
+        if (affiliateCodeDetailsResult.httpCode !== 200) {
+          return res.status(affiliateCodeDetailsResult.httpCode).send(affiliateCodeDetailsResult.data);
+        }
+
+        max_references = affiliateCodeDetailsResult.data.max_references;
+      }
+
+      return res.ok({ max_references });
     }
     catch (error) {
       logger.error('get member detail fail:', error);
@@ -297,7 +327,6 @@ module.exports = {
       next(error);
     }
   },
-
   updaterReferrerCode: async (req, res, next) => {
     let transaction;
     try {
@@ -370,7 +399,44 @@ module.exports = {
       next(error);
     }
   },
+  setMaxReferences: async (req, res, next) => {
+    try {
+      const { body, params } = req;
+      const { memberId } = params;
+      const max_references = body.max_references;
 
+      const member = await Member.findOne({
+        where: {
+          id: memberId,
+          deleted_flg: false
+        }
+      });
+
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      if (member.member_sts == MemberStatus.LOCKED) {
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+      }
+
+      if (member.member_sts == MemberStatus.UNACTIVATED) {
+        return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
+      }
+
+      const result = await affiliateApi.updateAffiliateCode(member.referral_code, { max_references });
+      if (result.httpCode !== 200) {
+        return res.status(result.httpCode).send(result.data);
+      }
+
+      return res.ok(result.data);
+
+    }
+    catch (error) {
+      logger.error('update member fail:', error);
+      next(error);
+    }
+  },
   getMembershipTypeList: async (req, res, next) => {
     try {
       const membershipType = await MembershipType.findAll();
@@ -577,8 +643,8 @@ module.exports = {
 
       items.forEach((item, index) => {
         item.no = index + 1;
-        item.last_name = item.last_name ||  '-';
-        item.first_name = item.first_name ||  '-';
+        item.last_name = item.last_name || '-';
+        item.first_name = item.first_name || '-';
         const latestMembershipOrder = item.LatestMembershipOrder;
 
         if (item.deleted_flg) {

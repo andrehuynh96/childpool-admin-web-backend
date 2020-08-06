@@ -5,7 +5,6 @@ const mapper = require("app/feature/response-schema/email-template.response-sche
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const uuidV4 = require('uuid/v4');
-const { forEach } = require('p-iteration');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -15,7 +14,8 @@ module.exports = {
             const limit = query.limit ? parseInt(req.query.limit) : 10;
             const offset = query.offset ? parseInt(req.query.offset) : 0;
             const cond = {
-                language: 'en'
+                language: 'en',
+                deleted_flg: false
             };
             const { count: total, rows: items } = await EmailTemplate.findAndCountAll({
                 limit,
@@ -39,7 +39,8 @@ module.exports = {
         try {
             const emailTemplate = await EmailTemplate.findAll({
                 where: {
-                    name: req.params.name
+                    name: req.params.name,
+                    deleted_flg: false
                 }
             });
 
@@ -63,7 +64,8 @@ module.exports = {
                 const emailTemplate = await EmailTemplate.findOne({
                     where: {
                         name: item.name,
-                        language: item.language
+                        language: item.language,
+                        deleted_flg: false
                     }
                 });
                 if (emailTemplate) {
@@ -103,6 +105,7 @@ module.exports = {
             const emailTemplates = await EmailTemplate.findAll({
                 where: {
                     group_name: req.params.groupName,
+                    deleted_flg: false
                 }
             });
 
@@ -115,7 +118,7 @@ module.exports = {
     },
     getGroupName: async (req, res, next) => {
         try {
-            const data = []
+            const data = [];
             for (let [label, value] of Object.entries(EmailTemplateGroupNames)) {
                 data.push({
                     label: label,
@@ -150,7 +153,7 @@ module.exports = {
                 },
                 raw: true
             });
-            if(emailTemplates.length == 0) {
+            if (emailTemplates.length == 0) {
                 return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
             }
             const data = [];
@@ -167,4 +170,32 @@ module.exports = {
             next(error);
         }
     },
+    deleteEmailTemplate: async (req, res, next) => {
+        try {
+            const name = req.params.name;
+            const emailTemplate = await EmailTemplate.findAll({
+                where: {
+                    name: name,
+                    group_name: { [Op.not]: null }
+                }
+            });
+
+            if (!emailTemplate) {
+                return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ['id'] });
+            }
+
+            await EmailTemplate.update({
+                deleted_flg: true
+            },{
+                where: {
+                    name: name
+                }
+            });
+            return res.ok(true);
+        } 
+        catch (error) {
+            logger.error('delete email template fail', error);
+            next(error);
+        }
+    }
 };
