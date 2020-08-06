@@ -71,6 +71,41 @@ module.exports = async () => {
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-approved-en/html.ejs'), 'utf-8'),
             display_order: 1,
         },
+
+        {
+            name: 'CHILDPOOL_ADMIN_MEMBER_KYC_DECLINED_OPTION_1',
+            locale: 'en',
+            subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/subject.ejs'), 'utf-8'),
+            template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/html.ejs'), 'utf-8'),
+            group_name: EmailTemplateGroupNames.MEMBER_KYC_DECLINED_OPTION,
+            display_order: 1,
+        },
+        {
+            name: 'CHILDPOOL_ADMIN_MEMBER_KYC_DECLINED_OPTION_2',
+            locale: 'en',
+            subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-2/subject.ejs'), 'utf-8'),
+            template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-2/html.ejs'), 'utf-8'),
+            group_name: EmailTemplateGroupNames.MEMBER_KYC_DECLINED_OPTION,
+            display_order: 2,
+        },
+
+        {
+            name: 'CHILDPOOL_ADMIN_MEMBER_KYC_INSUFFICIENT_OPTION_1',
+            locale: 'en',
+            subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/subject.ejs'), 'utf-8'),
+            template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/html.ejs'), 'utf-8'),
+            group_name: EmailTemplateGroupNames.MEMBER_KYC_INSUFFICIENT_OPTION,
+            display_order: 1,
+        },
+        {
+            name: 'CHILDPOOL_ADMIN_MEMBER_KYC_INSUFFICIENT_OPTION_2',
+            locale: 'en',
+            subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-insufficient-option/option-2/subject.ejs'), 'utf-8'),
+            template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-insufficient-option/option-2/html.ejs'), 'utf-8'),
+            group_name: EmailTemplateGroupNames.MEMBER_KYC_INSUFFICIENT_OPTION,
+            display_order: 2,
+        },
+
     ];
 
     for (let item of emailTemplates) {
