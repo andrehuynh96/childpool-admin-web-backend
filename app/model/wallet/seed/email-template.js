@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require("path");
 const _ = require("lodash");
-const uuidV4 = require('uuid/v4');
 const logger = require('app/lib/logger');
 const EmailTemplate = require('app/model/wallet').email_templates;
 const EmailTemplateTypes = require('app/model/wallet/value-object/email-template-type');
@@ -74,7 +73,7 @@ module.exports = async () => {
         },
 
         {
-            name: uuidV4(),
+            name: 'CHILDPOOL_ADMIN_MEMBER_KYC_DECLINED_OPTION_1',
             locale: 'en',
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/html.ejs'), 'utf-8'),
@@ -82,7 +81,7 @@ module.exports = async () => {
             display_order: 1,
         },
         {
-            name: uuidV4(),
+            name: 'CHILDPOOL_ADMIN_MEMBER_KYC_DECLINED_OPTION_2',
             locale: 'en',
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-2/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-2/html.ejs'), 'utf-8'),
@@ -91,7 +90,7 @@ module.exports = async () => {
         },
 
         {
-            name: uuidV4(),
+            name: 'CHILDPOOL_ADMIN_MEMBER_KYC_INSUFFICIENT_OPTION_1',
             locale: 'en',
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/html.ejs'), 'utf-8'),
@@ -99,7 +98,7 @@ module.exports = async () => {
             display_order: 1,
         },
         {
-            name: uuidV4(),
+            name: 'CHILDPOOL_ADMIN_MEMBER_KYC_INSUFFICIENT_OPTION_2',
             locale: 'en',
             subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-insufficient-option/option-2/subject.ejs'), 'utf-8'),
             template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-insufficient-option/option-2/html.ejs'), 'utf-8'),
