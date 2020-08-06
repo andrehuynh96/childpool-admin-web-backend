@@ -149,6 +149,9 @@ module.exports = {
                 },
                 raw: true
             });
+            if(emailTemplate.length == 0) {
+                return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
+            }
             const data = [];
             for (let option of emailTemplate) {
                 delete option.id;
