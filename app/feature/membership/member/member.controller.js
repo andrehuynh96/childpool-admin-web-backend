@@ -169,6 +169,15 @@ module.exports = {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
 
+      if (member.referral_code) {
+        const affiliateCodeDetailsResult = await affiliateApi.getAffiliateCodeDetails(member.referral_code);
+        if (affiliateCodeDetailsResult.httpCode !== 200) {
+          return res.status(affiliateCodeDetailsResult.httpCode).send(affiliateCodeDetailsResult.data);
+        }
+
+        member.max_references = affiliateCodeDetailsResult.data.max_references;
+      }
+
       const membershipOrder = await MembershipOrder.findOne({
         where: {
           member_id: member.id
@@ -178,14 +187,13 @@ module.exports = {
 
       if (membershipOrder && membershipOrder.status == 'Approved') {
         member.status = MemberFillterStatusText.FeeAccepted;
-      }
-      else if (membershipOrder && membershipOrder.status == 'Pending') {
+      } else if (membershipOrder && membershipOrder.status == 'Pending') {
         member.status = MemberFillterStatusText.VerifyPayment;
         member.latest_membership_order_id = membershipOrder.id;
-      }
-      else {
+      } else {
         member.status = MemberFillterStatusText.Active;
       }
+
       member.kyc_level = (member.kyc_level || '').replace('LEVEL_', '');
       if (!member.membership_type_id) {
         member.membership_type = 'Basic';
@@ -202,6 +210,7 @@ module.exports = {
         return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND");
       }
       member.membership_type = membershipType.name;
+
       return res.ok(memberMapper(member));
     }
     catch (error) {
@@ -297,7 +306,6 @@ module.exports = {
       next(error);
     }
   },
-
   updaterReferrerCode: async (req, res, next) => {
     let transaction;
     try {
@@ -370,7 +378,6 @@ module.exports = {
       next(error);
     }
   },
-
   setMaxReferences: async (req, res, next) => {
     try {
       const { body, params } = req;
@@ -409,7 +416,6 @@ module.exports = {
       next(error);
     }
   },
-
   getMembershipTypeList: async (req, res, next) => {
     try {
       const membershipType = await MembershipType.findAll();
