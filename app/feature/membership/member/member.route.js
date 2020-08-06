@@ -25,6 +25,12 @@ router.get("/members/:memberId",
     controller.getMemberDetail
 );
 
+router.get("/members/:memberId/max-references",
+    authenticate,
+    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
+    controller.getMaxReferences
+);
+
 router.put("/members/:memberId/membership-types",
     validator(membershipType),
     authenticate,
@@ -208,6 +214,49 @@ module.exports = router;
                        "plutx_userid_id": "6df1391b-96a7-4207-8640-d331b4e26768"
                    }
                }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/membership/members/{memberId}/max-references:
+*   get:
+*     summary: Get max references of member
+*     tags:
+*       - Members
+*     description:
+*     parameters:
+*       - name: memberId
+*         in: path
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": {
+                    "max_references": 0
+                }
+            }
 *       400:
 *         description: Error
 *         schema:

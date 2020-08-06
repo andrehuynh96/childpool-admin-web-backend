@@ -169,15 +169,6 @@ module.exports = {
         return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
       }
 
-      if (member.referral_code) {
-        const affiliateCodeDetailsResult = await affiliateApi.getAffiliateCodeDetails(member.referral_code);
-        if (affiliateCodeDetailsResult.httpCode !== 200) {
-          return res.status(affiliateCodeDetailsResult.httpCode).send(affiliateCodeDetailsResult.data);
-        }
-
-        member.max_references = affiliateCodeDetailsResult.data.max_references;
-      }
-
       const membershipOrder = await MembershipOrder.findOne({
         where: {
           member_id: member.id
@@ -212,6 +203,36 @@ module.exports = {
       member.membership_type = membershipType.name;
 
       return res.ok(memberMapper(member));
+    }
+    catch (error) {
+      logger.error('get member detail fail:', error);
+      next(error);
+    }
+  },
+  getMaxReferences: async (req, res, next) => {
+    try {
+      const { params } = req;
+      const member = await Member.findOne({
+        where: {
+          id: params.memberId,
+        },
+      });
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      let max_references = null;
+
+      if (member.referral_code) {
+        const affiliateCodeDetailsResult = await affiliateApi.getAffiliateCodeDetails(member.referral_code);
+        if (affiliateCodeDetailsResult.httpCode !== 200) {
+          return res.status(affiliateCodeDetailsResult.httpCode).send(affiliateCodeDetailsResult.data);
+        }
+
+        max_references = affiliateCodeDetailsResult.data.max_references;
+      }
+
+      return res.ok({ max_references });
     }
     catch (error) {
       logger.error('get member detail fail:', error);
