@@ -70,5 +70,9 @@ module.exports = {
   NEO: {
     "symbol": "NEO",
     "name": "NEO"
+  },
+  ONE: {
+    "symbol": "ONE",
+    "name": "Harmony"
   }
 }
