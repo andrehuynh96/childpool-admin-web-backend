@@ -14,6 +14,7 @@ const EmailTemplate = require('app/model/wallet').email_templates;
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
 const { membershipApi } = require('app/lib/affiliate-api');
 const mailer = require('app/lib/mailer');
+const stringHelper = require('app/lib/string-helper');
 
 const Op = Sequelize.Op;
 
@@ -238,6 +239,8 @@ module.exports = {
         }
 
         emailPayload.note = emailTemplateOption.template;
+      } else {
+        emailPayload.note = stringHelper.createMarkupWithNewLine(note);
       }
 
       transaction = await database.transaction();
@@ -395,7 +398,7 @@ async function _findEmailTemplate(templateName, language) {
     }
   });
 
-  if (!template && template.language !== 'en') {
+  if (!template && language !== 'en') {
     template = await EmailTemplate.findOne({
       where: {
         name: templateName,
