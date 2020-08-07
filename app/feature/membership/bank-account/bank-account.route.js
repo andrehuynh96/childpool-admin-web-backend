@@ -175,7 +175,7 @@ module.exports = router;
 *   put:
 *     summary: Update membership
 *     tags:
-*       -Bank Account
+*       - Bank Account
 *     description: Update membership
 *     parameters:
 *       - in: body
