@@ -300,7 +300,7 @@ module.exports = {
       await _sendEmail(member.email, emailPayload, templateName);
       await transaction.commit();
 
-      return res.ok(memberKycResponse);
+      return res.ok(memberKycResponse[0]);
     }
     catch (error) {
       if (transaction) {
