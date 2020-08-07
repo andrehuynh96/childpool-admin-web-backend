@@ -577,7 +577,7 @@ module.exports = {
   "MEMBERSHIP_EXPORT_CSV_MEMBERS": {
     "KEY": "MEMBERSHIP_EXPORT_CSV_MEMBERS",
     "DESCRIPTION": "Export members to CSV file",
-    "GROUP_NAME": "Member",
+    "GROUP_NAME": "Members",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "VIEW_EMAIL_TEMPLATE_LIST": {
