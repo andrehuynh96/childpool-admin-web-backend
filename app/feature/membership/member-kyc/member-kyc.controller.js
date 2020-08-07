@@ -253,7 +253,7 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
-      await MemberKyc.update({
+      const [ num, memberKycResponse] = await MemberKyc.update({
         status: kycStatus
       }, {
         where: {
@@ -300,7 +300,7 @@ module.exports = {
       await _sendEmail(member.email, emailPayload, templateName);
       await transaction.commit();
 
-      return res.ok(true);
+      return res.ok(memberKycResponse);
     }
     catch (error) {
       if (transaction) {
