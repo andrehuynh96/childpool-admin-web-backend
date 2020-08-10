@@ -4,7 +4,12 @@ const controller = require('./membership-order.controller');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const authority = require('app/middleware/authority.middleware');
 const validator = require('app/middleware/validator.middleware');
-const { approveOrder, rejectOrder } = require('./validator');
+const {
+    approveOrder,
+    rejectOrder,
+    updateDescription
+} = require('./validator');
+
 const router = express.Router();
 
 router.get(
@@ -42,6 +47,7 @@ router.put("/orders/rejects/:id",
 );
 
 router.put("/orders/:id/description",
+    validator(updateDescription),
     authenticate,
     authority(PermissionKey.MEMBERSHIP_UPDATE_ORDER),
     controller.updateDescription
@@ -340,60 +346,60 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/membership/orders/rejects/{orderId}:
- *   put:
- *     summary: reject order
- *     tags:
- *       - Membership Order
- *     description:
- *     parameters:
- *       - name: orderId
- *         in: path
- *         type: string
- *         required: true
- *       - in: body
- *         name: data
- *         description: Data for login.
- *         schema:
- *            type: object
- *            required:
- *            - action
- *            - node
- *            - password
- *            example:
- *              {
-                    "template": "MEMBERSHIP_ORDER_REJECTED_REASON_TIMED_OUT",
-                    "note":""
-                }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/membership/orders/rejects/{orderId}:
+*   put:
+*     summary: reject order
+*     tags:
+*       - Membership Order
+*     description:
+*     parameters:
+*       - name: orderId
+*         in: path
+*         type: string
+*         required: true
+*       - in: body
+*         name: data
+*         description: Data for login.
+*         schema:
+*            type: object
+*            required:
+*            - action
+*            - node
+*            - password
+*            example:
+*              {
+                   "template": "MEMBERSHIP_ORDER_REJECTED_REASON_TIMED_OUT",
+                   "note":""
+               }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 /**
  * @swagger

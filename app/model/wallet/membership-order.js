@@ -131,11 +131,15 @@ module.exports = (sequelize, DataTypes) => {
     approved_at: {
       type: DataTypes.DATE,
       allowNull: true,
-    }
+    },
+    updated_description_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   MembershipOrder.associate = (models) => {
     MembershipOrder.belongsTo(models.members, {

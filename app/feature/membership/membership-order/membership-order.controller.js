@@ -250,7 +250,7 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
-      
+
 
       const result = await membershipApi.registerMembership({
         email: order.Member.email,
@@ -315,7 +315,7 @@ module.exports = {
         transaction: transaction
       });
 
-      await _sendEmail(order.Member.email, emailPayload,EmailTemplateType.MEMBERSHIP_ORDER_APPROVED);
+      await _sendEmail(order.Member.email, emailPayload, EmailTemplateType.MEMBERSHIP_ORDER_APPROVED);
       await transaction.commit();
 
       return res.ok(true);
@@ -331,58 +331,58 @@ module.exports = {
 
   },
   rejectOrder: async (req, res, next) => {
-      try {
-        if ((!req.body.template && !req.body.note) || (req.body.template && req.body.note)) {
-          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS');
+    try {
+      if ((!req.body.template && !req.body.note) || (req.body.template && req.body.note)) {
+        return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS');
+      }
+      let order = await MembershipOrder.findOne({
+        where: { id: req.params.id },
+        include: {
+          attributes: ['email', 'first_name', 'last_name', 'current_language'],
+          as: "Member",
+          model: Member,
+          required: true
         }
-        let order = await MembershipOrder.findOne({
-          where: { id: req.params.id },
-          include: {
-            attributes: ['email', 'first_name', 'last_name', 'current_language'],
-            as: "Member",
-            model: Member,
-            required: true
-          }
-        });
-  
-        if (!order) {
-          return res.notFound(res.__("MEMBERSHIP_ORDER_NOT_FOUND"), "MEMBERSHIP_ORDER_NOT_FOUND");
-        }
-  
-        if (order.status !== MembershipOrderStatus.Pending) {
-          return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
-        }
+      });
 
-        await MembershipOrder.update({
-          notes: req.body.note,
-          status: MembershipOrderStatus.Rejected
-        }, {
-          where: {
-            id: req.params.id
-          },
-          returning: true
-        });
-        let emailPayload = {
-          id: order.id,
-          imageUrl: config.website.urlImages,
-          firstName: order.Member.first_name,
-          lastName: order.Member.last_name,
-          language: order.Member.current_language || 'en',
-        };
-        if (req.body.template && !req.body.note) {
-          const template = await _findEmailTemplate(req.body.template, emailPayload.language);
+      if (!order) {
+        return res.notFound(res.__("MEMBERSHIP_ORDER_NOT_FOUND"), "MEMBERSHIP_ORDER_NOT_FOUND");
+      }
 
-          if (!template) {
-              return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND");
-          }
-            emailPayload.note = template.template;
+      if (order.status !== MembershipOrderStatus.Pending) {
+        return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
+      }
+
+      await MembershipOrder.update({
+        notes: req.body.note,
+        status: MembershipOrderStatus.Rejected
+      }, {
+        where: {
+          id: req.params.id
+        },
+        returning: true
+      });
+      let emailPayload = {
+        id: order.id,
+        imageUrl: config.website.urlImages,
+        firstName: order.Member.first_name,
+        lastName: order.Member.last_name,
+        language: order.Member.current_language || 'en',
+      };
+      if (req.body.template && !req.body.note) {
+        const template = await _findEmailTemplate(req.body.template, emailPayload.language);
+
+        if (!template) {
+          return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND");
         }
-        else {
-          emailPayload.note = req.body.note;
-        }
-        await _sendEmail(order.Member.email, emailPayload, EmailTemplateType.MEMBERSHIP_ORDER_REJECTED);
-        return res.ok(true);
-    } 
+        emailPayload.note = template.template;
+      }
+      else {
+        emailPayload.note = req.body.note;
+      }
+      await _sendEmail(order.Member.email, emailPayload, EmailTemplateType.MEMBERSHIP_ORDER_REJECTED);
+      return res.ok(true);
+    }
     catch (error) {
       logger.error('update order fail:', error);
       next(error);
@@ -508,16 +508,20 @@ module.exports = {
     try {
       let id = req.params.id;
       let des = req.body.description;
-      if (!id)
+      if (!id) {
         return res.ok(false);
+      }
+
       await MembershipOrder.update({
-        description: des
+        description: des,
+        updated_description_at: Sequelize.fn('NOW'),
       }, {
         where: {
           id: id
         },
         returning: true
       });
+
       return res.ok(true);
     }
     catch (err) {
@@ -543,7 +547,7 @@ function stringifyAsync(data, columns) {
 }
 
 async function _sendEmail(email, payload, templateName) {
-  let template = await _findEmailTemplate(templateName,payload.language);
+  let template = await _findEmailTemplate(templateName, payload.language);
 
   const subject = template.subject;
   const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
