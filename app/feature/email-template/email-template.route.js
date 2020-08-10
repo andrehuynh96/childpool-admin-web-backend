@@ -33,7 +33,6 @@ router.get('/email-templates/reasons/group-names',
 
 router.get('/email-templates/reasons/group-names/:groupName',
     authenticate,
-    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
     controller.getEmailTemplatesByGroupName
 );
 
