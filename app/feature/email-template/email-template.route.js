@@ -28,13 +28,11 @@ router.post('/email-templates',
 
 router.get('/email-templates/reasons/group-names',
     authenticate,
-    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
     controller.getGroupName
 );
 
 router.get('/email-templates/reasons/group-names/:groupName',
     authenticate,
-    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
     controller.getEmailTemplatesByGroupName
 );
 

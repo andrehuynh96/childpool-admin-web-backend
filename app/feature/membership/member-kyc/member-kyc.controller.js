@@ -131,7 +131,7 @@ module.exports = {
       if (verify.error) {
         return res.badRequest("Missing parameters", verify.error);
       }
-      console.log(Object.entries(body));
+
       transaction = await database.transaction();
       for (let [field_key, value] of Object.entries(body)) {
         const property = memberKycProperties.find(x => x.field_key === field_key);

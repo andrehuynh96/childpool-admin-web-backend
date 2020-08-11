@@ -258,7 +258,7 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: memberId,
-          deleted_flg: false
+          // deleted_flg: false
         }
       });
 
@@ -337,7 +337,6 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: memberId,
-          deleted_flg: false
         }
       });
 
@@ -408,7 +407,6 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: memberId,
-          deleted_flg: false
         }
       });
 
@@ -485,7 +483,6 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: req.params.memberId,
-          deleted_flg: false
         }
       });
 
@@ -517,7 +514,6 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: req.params.memberId,
-          deleted_flg: false
         }
       });
 
@@ -697,6 +693,7 @@ module.exports = {
     }
   }
 };
+
 async function _createMemberCond(query) {
   const memberCond = {};
   if (query.membershipTypeId) {

@@ -42,7 +42,7 @@ const config = {
         host: process.env.WALLET_DB_HOST,
         port: process.env.WALLET_DB_PORT,
         dialect: 'postgres',
-        logging: process.env.POSTPRES_DEBUG === 'true',
+        logging: process.env.POSTPRES_DEBUG === 'true' ? console.log : false,
       }
     }
   },
