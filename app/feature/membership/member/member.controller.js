@@ -176,7 +176,10 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
-      if (membershipOrder && membershipOrder.status == 'Approved') {
+      if (member.deleted_flg) {
+        member.status = MemberOrderStatusFillter.Deactivated;
+      }
+      else if (membershipOrder && membershipOrder.status == 'Approved') {
         member.status = MemberFillterStatusText.FeeAccepted;
       } else if (membershipOrder && membershipOrder.status == 'Pending') {
         member.status = MemberFillterStatusText.VerifyPayment;
