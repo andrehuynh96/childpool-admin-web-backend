@@ -266,7 +266,7 @@ module.exports = {
       }
 
       // Save reward transaction histories
-      const memberRewardTransactionHistories = await map(result.data.rewards || [], async (item) => {
+      let memberRewardTransactionHistories = await map(result.data.rewards || [], async (item) => {
         const member = await _findMemberByEmail(item.ext_client_id);
         if (!member) {
           return;
@@ -286,6 +286,7 @@ module.exports = {
           membership_order_id: order.id,
         };
       });
+      memberRewardTransactionHistories = memberRewardTransactionHistories.filter(item => item && item.member_id);
       await MemberRewardTransactionHistory.bulkCreate(memberRewardTransactionHistories, { transaction });
 
       await MembershipOrder.update({
@@ -302,7 +303,7 @@ module.exports = {
       await MembershipOrder.update({
         status: MembershipOrderStatus.Rejected,
         approved_by_id: req.user.id,
-        notes: 'The other is approved',
+        description: 'The other is approved',
         approved_at: Sequelize.fn('NOW'),
         updated_description_at: Sequelize.fn('NOW'),
       }, {
@@ -587,18 +588,8 @@ async function _findMemberByEmail(email) {
   let member = await Member.findOne({
     where: {
       email: email.toLowerCase(),
-      deleted_flg: false,
     },
   });
-
-  // Try to get member which was deleted
-  if (!member) {
-    member = await Member.findOne({
-      where: {
-        email: email.toLowerCase(),
-      },
-    });
-  }
 
   return member;
 }
