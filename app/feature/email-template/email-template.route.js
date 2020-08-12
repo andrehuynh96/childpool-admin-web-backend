@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/email-templates',
     authenticate,
     authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
-    controller.getAll
+    controller.search
 );
 
 router.get('/email-templates/:name',

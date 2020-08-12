@@ -35,7 +35,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: true,
       defaultValue: false
-    }
+    },
+    key: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+    },
+    option_name: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,
