@@ -183,6 +183,17 @@ module.exports = {
         return res.badRequest(res.__("UNSUPPORTED_FILE_EXTENSION"), "UNSUPPORTED_FILE_EXTENSION", { fields: ["txid"] });
       }
       const records = await readFileCSV(body.tokenPayoutTxid.data);
+
+      if (records.length == 0) {
+        return res.badRequest(res.__("CSV_FILE_IS_EMPTY"),"CSV_FILE_IS_EMPTY",{ field: [body.tokenPayoutTxid.file.name] });
+      }
+      const txidColumnName = 'TX ID';
+
+      const emptyItem = records.find(x => !x.Id || !x[txidColumnName]);
+
+      if (emptyItem) {
+        return res.badRequest(res.__("CSV_FILE_HAS_EMPTY_ID_OR_TXID"),"CSV_FILE_HAS_EMPTY_ID_OR_TXID",{ field: [body.tokenPayoutTxid.file.name] });
+      }
       const claimRequestIds = records.filter(x => x.Id).map(item => item.Id);
       // Check claim request
       const claimRequests = await ClaimRequest.findAll({
@@ -211,7 +222,6 @@ module.exports = {
       }
 
       transaction = await database.transaction();
-      const txidColumnName = 'txid';
 
       await forEach(records, async (item) => {
         const updateClaimRequest = ClaimRequest.update(

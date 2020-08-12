@@ -1,6 +1,6 @@
 {
   "name": "staking-childpool-admin-web-backend",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "staking pool child",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,7 @@
   "dependencies": {
     "@cityofzion/neon-core": "^4.8.0",
     "address-rfc2822": "^2.0.5",
+    "aws-sdk": "^2.722.0",
     "axios": "^0.19.2",
     "bcrypt": "^3.0.8",
     "bech32": "^1.1.4",
@@ -62,6 +63,7 @@
     "sequelize-cli": "^5.5.1",
     "sequelize-temporal": "^1.0.8",
     "sequelize-temporalize": "^4.1.0",
+    "sleep": "^6.3.0",
     "speakeasy": "^2.0.0",
     "stream-to-array": "^2.3.0",
     "swagger-jsdoc": "^3.5.0",

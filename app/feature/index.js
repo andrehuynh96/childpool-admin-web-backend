@@ -19,6 +19,7 @@ router.use(require('./change-reward-address/change-reward-address.route'));
 router.use(require('./partner-tx-memo/partner-tx-memo.route'));
 router.use(require('./check-token/check-token.route'));
 router.use(require('./email-template/email-template.route'));
+router.use(require('./static/static.route'));
 router.use('/membership', require('./membership'));
 router.use(require('./platform/platform.route'));
 router.use('/affiliate', require('./affiliate'));

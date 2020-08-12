@@ -22,14 +22,14 @@ router.use(i18n.init);
 router.use(cookieParser());
 router.use(session({
   key: 'sid',
-  secret: 'secret-session',
+  secret: config.sessionSecretKey,
   resave: false,
   saveUninitialized: true,
   cookie: {
     maxAge: 3600000, // 1 hour
     path: '/',
     secure: false,
-    httpOnly: false
+    httpOnly: true,
   },
   store: new redisStore({ client: redis }),
 }));
