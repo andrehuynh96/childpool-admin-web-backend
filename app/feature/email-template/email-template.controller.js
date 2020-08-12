@@ -37,13 +37,13 @@ module.exports = {
       const result = [];
 
       items.forEach((item, index) => {
-        item.no = index + 1;
+        item.no = index + 1 + offset;
         result.push(mapper(item));
 
         if (item.group_name) {
-          const emailTemplateOptions2 = emailTemplateOptions.filter(emailTemplateOption => emailTemplateOption.group_name === item.group_name);
+          const emailTemplateOptionsList = emailTemplateOptions.filter(emailTemplateOption => emailTemplateOption.group_name === item.group_name);
 
-          emailTemplateOptions2.forEach(emailTemplateOption => {
+          emailTemplateOptionsList.forEach(emailTemplateOption => {
             result.push(mapper(emailTemplateOption));
           });
 

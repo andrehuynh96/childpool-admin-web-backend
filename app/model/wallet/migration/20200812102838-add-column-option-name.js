@@ -13,8 +13,8 @@ module.exports = {
               });
             }
 
-            if (!tableDefinition['key']) {
-              await queryInterface.addColumn('email_templates', 'key', {
+            if (!tableDefinition['display_name']) {
+              await queryInterface.addColumn('email_templates', 'display_name', {
                 type: Sequelize.DataTypes.STRING(256),
                 allowNull: true,
               });
@@ -31,7 +31,7 @@ module.exports = {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
         queryInterface.removeColumn('email_templates', 'option_name', { transaction: t }),
-        queryInterface.removeColumn('email_templates', 'key', { transaction: t }),
+        queryInterface.removeColumn('email_templates', 'display_name', { transaction: t }),
       ]);
     });
   }

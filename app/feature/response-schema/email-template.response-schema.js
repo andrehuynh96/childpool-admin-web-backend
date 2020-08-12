@@ -9,8 +9,8 @@ const destObject = {
     '[].language': '[].language',
     '[].group_name': '[].group_name',
     '[].option_name': '[].option_name?',
-    '[].key': '[].key?',
-    '[].deleted_flg': '[].deleted_flg',
+    '[].display_name': '[].display_name?',
+    // '[].deleted_flg': '[].deleted_flg',
   },
   single: {
     id: 'id',
@@ -20,13 +20,13 @@ const destObject = {
     language: 'language',
     group_name: 'group_name',
     option_name: 'option_name?',
-    key: 'key?',
-    deleted_flg: 'deleted_flg'
+    display_name: 'display_name?',
+    // deleted_flg: 'deleted_flg'
   }
 };
 module.exports = srcObject => {
   if (Array.isArray(srcObject)) {
-    if (srcObject === undefined || srcObject.length == 0) {
+    if (!srcObject || srcObject.length == 0) {
       return [];
     } else {
       return objectMapper(srcObject, destObject.array);
