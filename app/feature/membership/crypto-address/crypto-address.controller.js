@@ -1,8 +1,5 @@
 const _ = require('lodash');
 const logger = require("app/lib/logger");
-// const Wallet = require("app/model/wallet").wallets;
-// const WalletPrivateKey = require("app/model/wallet").wallet_priv_keys;
-// const Member = require("app/model/wallet").members;
 const MembershipType = require("app/model/wallet").membership_types;
 const MemberAccount = require("app/model/wallet").member_accounts;
 const Sequelize = require('sequelize');
@@ -37,17 +34,17 @@ module.exports = {
 
         rewardWallets = memberAccounts.filter(item => item.wallet_id).map(item => {
           return {
+            member_id: item.member_id,
             currency_symbol: item.currency_symbol,
+            wallet_address: item.wallet_address,
             wallet_id: item.wallet_id,
           };
         });
       }
 
-      // console.log(rewardWallets);
       if (rewardWallets && rewardWallets.length) {
         const walletIdList = _.uniq(rewardWallets.map(item => `'${item.wallet_id}'`));
         filters.push(`wpk.wallet_id IN ( ${walletIdList.join(',')} )`);
-        // filterData.platform = platform;
       }
 
       if (platform) {
@@ -86,8 +83,7 @@ module.exports = {
       where
         (${filters.join(' and ')})
       `;
-
-      console.log(countSQL);
+      // console.log(countSQL);
       const [countResult] = await db.query(countSQL,
         {
           replacements: {
@@ -97,7 +93,6 @@ module.exports = {
         {
           type: db.QueryTypes.SELECT,
         });
-
       total = Number(countResult[0].count);
 
       if (!total) {
@@ -112,6 +107,7 @@ module.exports = {
       const querySQL = `
     select
       w.name as wallet_name,
+      w.member_id,
       wpk.platform as platform,
       wpk.address as wallet_address,
       wpk.created_at,
@@ -152,13 +148,59 @@ module.exports = {
         });
 
       items = result[0];
-      const membershipTypes = await MembershipType.findAll();
+      const membershipTypeIdlist = _.uniq(items.filter(item => item.membership_type_id).map(item => item.membership_type_id));
+      const tasks = [];
+      const getMembershipTypesTask = await MembershipType.findAll({
+        where: {
+          id: {
+            [Op.in]: membershipTypeIdlist,
+          }
+        }
+      });
+      tasks.push(getMembershipTypesTask);
+
+      if (!hasFilerRewardAddress) {
+        const memberIdList = _.uniq(items.map(item => item.member_id));
+        const cond = {
+          type: 'Crypto',
+          deleted_flg: false,
+          member_id: {
+            [Op.in]: memberIdList,
+          }
+        };
+        const getMemberAccountsTask = await MemberAccount.findAll({
+          where: cond,
+        });
+
+        tasks.push(getMemberAccountsTask);
+      }
+
+      // eslint-disable-next-line no-unused-vars
+      let [membershipTypes, memberAccounts] = await Promise.all(tasks);
+      memberAccounts = memberAccounts || [];
+      // eslint-disable-next-line no-unused-vars
+      const generateKey = (member_id, currency_symbol, wallet_address, wallet_id) => {
+        return [member_id, currency_symbol, wallet_address].join('_');
+      };
+      const rewardAddressCache = memberAccounts.reduce((result, memberAccount) => {
+        const key = generateKey(memberAccount.member_id, memberAccount.currency_symbol, memberAccount.wallet_address, memberAccount.wallet_id);
+        result[key] = true;
+
+        return result;
+      }, {});
 
       items.forEach(item => {
         const membershipType = membershipTypes.find(x => x.id === item.membership_type_id);
         item.membership_type = membershipType ? membershipType.name : 'Basic';
 
-        item.is_reward_address = hasFilerRewardAddress;
+        // Fill reward address flag
+        if (hasFilerRewardAddress) {
+          item.is_reward_address = true;
+        } else {
+          const key = generateKey(item.member_id, item.platform, item.wallet_address, item.wallet_id);
+          item.is_reward_address = !!rewardAddressCache[key];
+        }
+
         item.kyc_level = (item.kyc_level || '').replace('LEVEL_', '');
       });
 
