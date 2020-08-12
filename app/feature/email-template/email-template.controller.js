@@ -5,17 +5,19 @@ const mapper = require("app/feature/response-schema/email-template.response-sche
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const uuidV4 = require('uuid/v4');
+const _ = require('lodash');
 const Op = Sequelize.Op;
 
 module.exports = {
-  getAll: async (req, res, next) => {
+  search: async (req, res, next) => {
     try {
       const { query } = req;
-      const limit = query.limit ? parseInt(req.query.limit) : 10;
-      const offset = query.offset ? parseInt(req.query.offset) : 0;
+      const limit = query.limit ? parseInt(query.limit) : 10;
+      const offset = query.offset ? parseInt(query.offset) : 0;
       const cond = {
         language: 'en',
-        deleted_flg: false
+        deleted_flg: false,
+        option_name: null,
       };
       const { count: total, rows: items } = await EmailTemplate.findAndCountAll({
         limit,
@@ -23,8 +25,34 @@ module.exports = {
         where: cond,
         order: [['created_at', 'DESC']]
       });
+
+      const groupNames = _.uniq(items.filter(item => item.group_name).map(item => item.group_name));
+      const emailTemplateOptions = await EmailTemplate.findAll({
+        where: {
+          deleted_flg: false,
+          group_name: { [Op.in]: groupNames },
+          option_name: { [Op.not]: null }
+        },
+      });
+      const result = [];
+
+      items.forEach((item, index) => {
+        item.no = index + 1 + offset;
+        result.push(mapper(item));
+
+        if (item.group_name) {
+          const emailTemplateOptionsList = emailTemplateOptions.filter(emailTemplateOption => emailTemplateOption.group_name === item.group_name);
+
+          emailTemplateOptionsList.forEach(emailTemplateOption => {
+            result.push(mapper(emailTemplateOption));
+          });
+
+          result.push({ is_add_button: true, group_name: item.group_name });
+        }
+      });
+
       return res.ok({
-        items: mapper(items),
+        items: result,
         offset: offset,
         limit: limit,
         total: total
