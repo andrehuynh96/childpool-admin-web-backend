@@ -132,7 +132,7 @@ module.exports = {
       next(error);
     }
   },
-  createOption: async (req, res, next) => {
+  createEmailTemplateOption: async (req, res, next) => {
     try {
       const { body, user } = req;
       const { group_name, display_order, email_templates } = body;
@@ -157,7 +157,7 @@ module.exports = {
       next(error);
     }
   },
-  duplicateEmailTemplate: async (req, res, next) => {
+  duplicateEmailTemplateOption: async (req, res, next) => {
     try {
       const emailTemplates = await EmailTemplate.findAll({
         where: {
@@ -182,7 +182,7 @@ module.exports = {
       next(error);
     }
   },
-  deleteEmailTemplate: async (req, res, next) => {
+  deleteEmailTemplateOption: async (req, res, next) => {
     try {
       const name = req.params.name;
       const emailTemplate = await EmailTemplate.findAll({

@@ -40,19 +40,19 @@ router.post('/email-templates/options',
     authenticate,
     authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
     validator(createOption),
-    controller.createOption
+    controller.createEmailTemplateOption
 );
 
 router.put('/email-templates/options/:name/duplicates',
     authenticate,
     authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
-    controller.duplicateEmailTemplate
+    controller.duplicateEmailTemplateOption
 );
 
 router.delete('/email-templates/options/:name',
     authenticate,
     authority(PermissionKey.DELETE_EMAIL_TEMPLATE),
-    controller.deleteEmailTemplate
+    controller.deleteEmailTemplateOption
 );
 
 /**
