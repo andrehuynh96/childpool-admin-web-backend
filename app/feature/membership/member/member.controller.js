@@ -235,7 +235,7 @@ module.exports = {
         max_references = affiliateCodeDetailsResult.data.max_references;
       }
 
-      return res.ok({ max_references });
+      return res.ok({ max_references, deleted_flg: member.deleted_flg });
     }
     catch (error) {
       logger.error('get member detail fail:', error);
