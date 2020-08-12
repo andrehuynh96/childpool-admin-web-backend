@@ -610,4 +610,10 @@ module.exports = {
     "GROUP_NAME": "Email Template",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "VIEW_LIST_CRYPTO_ADDRESS": {
+    "KEY": "VIEW_LIST_CRYPTO_ADDRESS",
+    "DESCRIPTION": "View list crypto address",
+    "GROUP_NAME": "Crypto address",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 };
