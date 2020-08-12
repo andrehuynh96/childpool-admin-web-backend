@@ -113,7 +113,7 @@ module.exports = {
           else {
             offset = qr.offset + qr.limit;
           }
-          sleep.sleep(2);
+          sleep.sleep(1);
         }
         if (response && response.length > 0) {
           for (let e of response) {
