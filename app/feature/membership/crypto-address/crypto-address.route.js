@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/crypto-addresses',
     authenticate,
-    // authority(PermissionKey.VIEW_LIST_CRYPTO_ADDRESS),
+    authority(PermissionKey.VIEW_LIST_CRYPTO_ADDRESS),
     controller.search
 );
 
