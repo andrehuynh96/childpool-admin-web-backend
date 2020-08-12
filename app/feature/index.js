@@ -22,6 +22,7 @@ router.use(require('./email-template/email-template.route'));
 router.use('/membership', require('./membership'));
 router.use(require('./platform/platform.route'));
 router.use('/affiliate', require('./affiliate'));
+router.use(require('./currency/currency.route'));
 
 module.exports = router;
 
