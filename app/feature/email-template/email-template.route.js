@@ -18,12 +18,6 @@ router.get('/email-templates',
   controller.search
 );
 
-router.get('/email-templates/:name',
-  authenticate,
-  authority(PermissionKey.VIEW_EMAIL_TEMPLATE_DETAIL),
-  controller.getDetail
-);
-
 router.put('/email-templates',
   authenticate,
   authority(PermissionKey.UPDATE_EMAIL_TEMPLATE),
@@ -31,41 +25,49 @@ router.put('/email-templates',
   controller.update
 );
 
+router.get('/email-templates/:name',
+  authenticate,
+  authority(PermissionKey.VIEW_EMAIL_TEMPLATE_DETAIL),
+  controller.getDetail
+);
+
 router.get('/email-templates/reasons/group-names',
   authenticate,
   controller.getGroupName
 );
 
-router.get('/email-templates/options',
+router.get('/email-template-options',
   authenticate,
   controller.getEmailTemplatesOptionsByGroupName
 );
 
-router.post('/email-templates/options',
+router.post('/email-template-options',
   validator(createOption),
   authenticate,
   authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
   controller.createEmailTemplateOption
 );
 
-router.post('/email-templates/options/:name/duplicate',
+router.post('/email-template-options/:name/duplicate',
   authenticate,
   authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
   controller.duplicateEmailTemplateOption
 );
 
-router.put('/email-templates/options/:name',
+router.put('/email-template-options/:name',
   validator(updateOption),
   authenticate,
   authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
   controller.updateEmailTemplateOption
 );
 
-router.delete('/email-templates/options/:name',
+router.delete('/email-template-options/:name',
   authenticate,
   authority(PermissionKey.DELETE_EMAIL_TEMPLATE),
   controller.deleteEmailTemplateOption
 );
+
+
 
 /**
 * @swagger
@@ -312,7 +314,7 @@ router.delete('/email-templates/options/:name',
 
 /**
 * @swagger
-* /web/email-templates/options:
+* /web/email-template-options:
 *   get:
 *     summary: get email template reason list rejected order
 *     tags:
@@ -364,7 +366,7 @@ router.delete('/email-templates/options/:name',
 
 /**
 * @swagger
-* /web/email-templates/options:
+* /web/email-template-options:
 *   post:
 *     summary: create email template option
 *     tags:
@@ -425,7 +427,7 @@ router.delete('/email-templates/options/:name',
 
 /**
 * @swagger
-* /web/email-templates/options/{name}:
+* /web/email-template-options/{name}:
 *   put:
 *     summary: Update email template option
 *     tags:
@@ -485,7 +487,7 @@ router.delete('/email-templates/options/:name',
 
 /**
 * @swagger
-* /web/email-templates/options/{name}/duplicate:
+* /web/email-template-options/{name}/duplicate:
 *   put:
 *     summary: duplicate email template option
 *     tags:
@@ -525,7 +527,7 @@ router.delete('/email-templates/options/:name',
 
 /**
 * @swagger
-* /web/email-templates/options/{name}:
+* /web/email-template-options/{name}:
 *   delete:
 *     summary: delete email template option
 *     tags:
