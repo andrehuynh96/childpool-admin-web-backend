@@ -6,6 +6,8 @@ const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const uuidV4 = require('uuid/v4');
 const _ = require('lodash');
+const { forEach } = require('p-iteration');
+
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -96,6 +98,7 @@ module.exports = {
             deleted_flg: false
           }
         });
+
         if (emailTemplate) {
           await EmailTemplate.update(
             {
@@ -110,14 +113,14 @@ module.exports = {
               returning: true,
               transaction: transaction
             });
-        }
-        else {
+        } else {
           await EmailTemplate.create(
             item,
             { transaction: transaction });
         }
       }
-      transaction.commit();
+      await transaction.commit();
+
       return res.ok(true);
     }
     catch (error) {
@@ -128,12 +131,13 @@ module.exports = {
       next(error);
     }
   },
-  getEmailTemplatesByGroupName: async (req, res, next) => {
+  getEmailTemplatesOptionsByGroupName: async (req, res, next) => {
     try {
       const emailTemplates = await EmailTemplate.findAll({
         where: {
-          group_name: req.params.groupName,
-          deleted_flg: false
+          group_name: req.query.group_name,
+          option_name: { [Op.not]: null },
+          deleted_flg: false,
         }
       });
 
@@ -163,11 +167,12 @@ module.exports = {
   createEmailTemplateOption: async (req, res, next) => {
     try {
       const { body, user } = req;
-      const { group_name, display_order, email_templates } = body;
+      const { group_name, option_name, display_order, email_templates } = body;
       const name = uuidV4();
       const emailTemplateOptions = email_templates.map(item => {
         return {
           name,
+          option_name,
           group_name,
           display_order,
           subject: item.subject,
@@ -185,24 +190,98 @@ module.exports = {
       next(error);
     }
   },
+  updateEmailTemplateOption: async (req, res, next) => {
+    let transaction;
+
+    try {
+      const { params, body, user } = req;
+      const { name } = params;
+      const { option_name, display_order, email_templates } = body;
+
+      // const emailTemplates = await EmailTemplate.findAll({
+      //   where: {
+      //     name: params.name,
+      //     option_name: { [Op.not]: null },
+      //     deleted_flg: false,
+      //   },
+      // });
+      // if (!emailTemplates.length) {
+      //   return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
+      // }
+
+      transaction = await database.transaction();
+      await forEach(email_templates, async item => {
+        const emailTemplate = await EmailTemplate.findOne({
+          where: {
+            name: name,
+            language: item.language,
+            deleted_flg: false,
+          }
+        });
+
+        if (!emailTemplate) {
+          await EmailTemplate.create(item, { transaction: transaction });
+          return;
+        }
+
+        const data = {
+          option_name,
+          display_order,
+          subject: item.subject,
+          template: item.template,
+          updated_by: user.id,
+        };
+
+        await EmailTemplate.update(data, {
+          where: {
+            id: emailTemplate.id,
+          },
+          returning: true,
+          transaction: transaction
+        });
+      });
+      await transaction.commit();
+
+      return res.ok(true);
+    }
+    catch (error) {
+      logger.error('create option fail', error);
+      if (transaction) {
+        await transaction.rollback();
+      }
+
+      next(error);
+    }
+  },
   duplicateEmailTemplateOption: async (req, res, next) => {
     try {
+      const { params, user } = req;
       const emailTemplates = await EmailTemplate.findAll({
         where: {
-          name: req.params.name
+          name: params.name,
+          option_name: { [Op.not]: null },
+          deleted_flg: false,
         },
-        raw: true
       });
-      if (emailTemplates.length == 0) {
+      if (!emailTemplates.length) {
         return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
       }
-      const data = [];
-      emailTemplates.forEach(item => {
-        delete item.id;
-        item.subject = `${item.subject} - Duplicate`;
-        data.push(item);
+
+      const name = uuidV4();
+      const emailTemplateOptions = emailTemplates.map(item => {
+        return {
+          name,
+          option_name: `${item.option_name} - Duplicate`,
+          group_name: item.option_name,
+          display_order: item.display_order,
+          subject: item.subject,
+          template: item.template,
+          language: item.language,
+          created_by: user.id,
+        };
       });
-      await EmailTemplate.bulkCreate(data);
+
+      await EmailTemplate.bulkCreate(emailTemplateOptions);
       return res.ok(true);
     }
     catch (error) {
@@ -216,11 +295,12 @@ module.exports = {
       const emailTemplate = await EmailTemplate.findAll({
         where: {
           name: name,
-          group_name: { [Op.not]: null }
+          option_name: { [Op.not]: null },
+          group_name: { [Op.not]: null },
         }
       });
 
-      if (!emailTemplate) {
+      if (!emailTemplate.length) {
         return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ['id'] });
       }
 
@@ -228,7 +308,9 @@ module.exports = {
         deleted_flg: true
       }, {
         where: {
-          name: name
+          id: {
+            [Op.in]: emailTemplate.map(x => x.id)
+          }
         }
       });
       return res.ok(true);

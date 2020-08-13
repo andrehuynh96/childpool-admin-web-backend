@@ -3,6 +3,7 @@ const Model = require("app/model/wallet").permissions;
 const RolePermission = require("app/model/wallet").role_permissions;
 const PermissionKey = require("app/model/wallet/value-object/permission-key");
 const Sequelize = require('sequelize');
+const { forEach } = require('p-iteration');
 const Op = Sequelize.Op;
 
 module.exports = async () => {
@@ -12,7 +13,7 @@ module.exports = async () => {
   });
   const updateModelTasks = [];
 
-  for (let key of Object.keys(PermissionKey)) {
+  await forEach(Object.keys(PermissionKey), async key => {
     const value = PermissionKey[key];
     let { KEY: permissionKey, GROUP_NAME: groupName, DESCRIPTION: description } = value;
 
@@ -43,7 +44,7 @@ module.exports = async () => {
 
       updateModelTasks.push(m.save());
     }
-  }
+  });
 
   await Promise.all(updateModelTasks);
 
