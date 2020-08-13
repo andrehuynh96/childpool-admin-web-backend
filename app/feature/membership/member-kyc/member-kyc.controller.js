@@ -223,24 +223,21 @@ module.exports = {
       }
 
       const emailPayload = {
-        note,
         imageUrl: config.website.urlImages,
         firstName: member.first_name,
         lastName: member.last_name,
         language: member.current_language || 'en',
+        note: stringHelper.createMarkupWithNewLine(note),
       };
-      let emailTemplateOption = null;
 
       if (template) {
-        emailTemplateOption = await _findEmailTemplate(template, emailPayload.language);
+        const emailTemplate = await _findEmailTemplate(template, emailPayload.language);
 
-        if (!emailTemplateOption) {
+        if (!emailTemplate) {
           return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND");
         }
 
-        emailPayload.note = emailTemplateOption.template;
-      } else {
-        emailPayload.note = stringHelper.createMarkupWithNewLine(note);
+        emailPayload.emailTemplate = emailTemplate;
       }
 
       transaction = await database.transaction();
@@ -382,12 +379,27 @@ function _replaceImageUrl(memberKycProperties) {
 }
 
 async function _sendEmail(email, payload, templateName) {
-  let template = await _findEmailTemplate(templateName, payload.language);
+  let subject, body;
 
-  const subject = template.subject;
+  if (payload.emailTemplate) {
+    subject = payload.emailTemplate.subject;
+    body = payload.emailTemplate.template;
+
+    delete payload.emailTemplate;
+  } else {
+    const emailTemplate = await _findEmailTemplate(templateName, payload.language);
+    if (!emailTemplate) {
+      logger.error(`Can not find email template: ${templateName}.`);
+      return;
+    }
+
+    subject = emailTemplate.subject;
+    body = emailTemplate.template;
+  }
+
   const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
   const data = Object.assign({}, payload, config.email);
-  await mailer.sendWithDBTemplate(subject, from, email, data, template.template);
+  await mailer.sendWithDBTemplate(subject, from, email, data, body);
 }
 
 async function _findEmailTemplate(templateName, language) {
