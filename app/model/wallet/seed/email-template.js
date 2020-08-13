@@ -41,7 +41,7 @@ module.exports = async () => {
       group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
     },
     {
-      name: 'CP_MEMBERSHIP_ORDER_REJECTED_TIMEOUT_2',
+      name: 'V2_CP_MEMBERSHIP_ORDER_REJECTED_TIMEOUT_2',
       display_name: null,
       locale: DEFAULT_LOCALE,
       subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/timed-out/subject.ejs'), 'utf-8'),
@@ -49,6 +49,16 @@ module.exports = async () => {
       group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
       option_name: 'Time out',
       display_order: 1,
+    },
+    {
+      name: 'V2_CP_MEMBERSHIP_ORDER_REJECTED_OPTION_1_2',
+      display_name: null,
+      locale: DEFAULT_LOCALE,
+      subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-1/subject.ejs'), 'utf-8'),
+      template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './membership-order-rejected-reason-en/option-1/html.ejs'), 'utf-8'),
+      group_name: EmailTemplateGroupNames.MEMBERSHIP_ORDER_REJECTED_REASON,
+      option_name: 'Insufficient Funds',
+      display_order: 2,
     },
     // KYC approved
     {
@@ -68,7 +78,7 @@ module.exports = async () => {
       group_name: EmailTemplateGroupNames.MEMBER_KYC_INSUFFICIENT_OPTION,
     },
     {
-      name: 'CP_KYC_INSUFFICIENT_OPTION_1_2',
+      name: 'V2_CP_KYC_INSUFFICIENT_OPTION_1_2',
       display_name: null,
       locale: DEFAULT_LOCALE,
       subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/subject.ejs'), 'utf-8'),
@@ -78,7 +88,7 @@ module.exports = async () => {
       display_order: 1,
     },
     {
-      name: 'CP_KYC_INSUFFICIENT_OPTION_2_2',
+      name: 'V2_CP_KYC_INSUFFICIENT_OPTION_2_2',
       display_name: null,
       locale: DEFAULT_LOCALE,
       subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-insufficient-option/option-2/subject.ejs'), 'utf-8'),
@@ -97,23 +107,23 @@ module.exports = async () => {
       group_name: EmailTemplateGroupNames.MEMBER_KYC_DECLINED_OPTION,
     },
     {
-      name: 'CP_KYC_DECLINED_OPTION_1_2',
+      name: 'V2_CP_KYC_DECLINED_OPTION_1_2',
       display_name: null,
       locale: DEFAULT_LOCALE,
       subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/subject.ejs'), 'utf-8'),
       template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-1/html.ejs'), 'utf-8'),
       group_name: EmailTemplateGroupNames.MEMBER_KYC_DECLINED_OPTION,
-      option_name: 'Option 1',
+      option_name: 'Files not accepted',
       display_order: 1,
     },
     {
-      name: 'CP_KYC_DECLINED_OPTION_2_2',
+      name: 'V2_CP_KYC_DECLINED_OPTION_2_2',
       display_name: null,
       locale: DEFAULT_LOCALE,
       subject: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-2/subject.ejs'), 'utf-8'),
       template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './kyc-declined-option/option-2/html.ejs'), 'utf-8'),
       group_name: EmailTemplateGroupNames.MEMBER_KYC_DECLINED_OPTION,
-      option_name: 'Option 2',
+      option_name: 'Poor image quality',
       display_order: 2,
     },
   ];
