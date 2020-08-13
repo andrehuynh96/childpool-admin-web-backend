@@ -3,56 +3,68 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const authority = require('app/middleware/authority.middleware');
 const controller = require('./email-template.controller');
 const validator = require('app/middleware/validator.middleware');
-const { update, createOption } = require('./validator');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
+const {
+  update,
+  createOption,
+  updateOption,
+} = require('./validator');
+
 const router = express.Router();
 
 router.get('/email-templates',
-    authenticate,
-    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
-    controller.search
+  authenticate,
+  authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
+  controller.search
 );
 
 router.get('/email-templates/:name',
-    authenticate,
-    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_DETAIL),
-    controller.getDetail
+  authenticate,
+  authority(PermissionKey.VIEW_EMAIL_TEMPLATE_DETAIL),
+  controller.getDetail
 );
 
-router.post('/email-templates',
-    authenticate,
-    authority(PermissionKey.UPDATE_EMAIL_TEMPLATE),
-    validator(update),
-    controller.update
+router.put('/email-templates',
+  authenticate,
+  authority(PermissionKey.UPDATE_EMAIL_TEMPLATE),
+  validator(update),
+  controller.update
 );
 
 router.get('/email-templates/reasons/group-names',
-    authenticate,
-    controller.getGroupName
+  authenticate,
+  controller.getGroupName
 );
 
-router.get('/email-templates/reasons/group-names/:groupName',
-    authenticate,
-    controller.getEmailTemplatesByGroupName
+router.get('/email-templates/options',
+  authenticate,
+  controller.getEmailTemplatesOptionsByGroupName
 );
 
 router.post('/email-templates/options',
-    authenticate,
-    authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
-    validator(createOption),
-    controller.createEmailTemplateOption
+  validator(createOption),
+  authenticate,
+  authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
+  controller.createEmailTemplateOption
 );
 
-router.put('/email-templates/options/:name/duplicates',
-    authenticate,
-    authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
-    controller.duplicateEmailTemplateOption
+router.post('/email-templates/options/:name/duplicate',
+  authenticate,
+  authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
+  controller.duplicateEmailTemplateOption
+);
+
+router.put('/email-templates/options/:name',
+  validator(updateOption),
+  authenticate,
+  authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
+  controller.updateEmailTemplateOption
 );
 
 router.delete('/email-templates/options/:name',
-    authenticate,
-    authority(PermissionKey.DELETE_EMAIL_TEMPLATE),
-    controller.deleteEmailTemplateOption
+  authenticate,
+  authority(PermissionKey.DELETE_EMAIL_TEMPLATE),
+  controller.deleteEmailTemplateOption
 );
 
 /**
@@ -202,7 +214,7 @@ router.delete('/email-templates/options/:name',
 /**
 * @swagger
 * /web/email-templates:
-*   post:
+*   put:
 *     summary: update email template
 *     tags:
 *       - Email Template
@@ -300,7 +312,7 @@ router.delete('/email-templates/options/:name',
 
 /**
 * @swagger
-* /web/email-templates/reasons/group-names/{groupName}:
+* /web/email-templates/options:
 *   get:
 *     summary: get email template reason list rejected order
 *     tags:
@@ -366,12 +378,23 @@ router.delete('/email-templates/options/:name',
 *         schema:
 *            type: object
 *            example:
-*                  {
-                        "subject": "Time out",
-                        "template": "<p>Time out</p>",
-                        "group_name": "CHILDPOOL_ADMIN_MEMBER_KYC_DECLINED",
-                        "display_order": 1
-                    }
+*              {
+                    "option_name": "KYC_INSUFFICIENT Option 3",
+                    "group_name": "CHILDPOOL_KYC_INSUFFICIENT",
+                    "display_order": null,
+                    "email_templates": [
+                        {
+                            "subject": "Confirm new ip address",
+                            "template": "<!doctype html>\n<html>\n  <head>\n.......",
+                            "language": "en"
+                        },
+                        {
+                            "subject": "新しいIPアドレスを確認",
+                            "template": "<!doctype html>\n<html>\n  <head>\n.......",
+                            "language": "ja"
+                        }
+                    ]
+                }
 *     produces:
 *       - application/json
 *     responses:
@@ -402,7 +425,67 @@ router.delete('/email-templates/options/:name',
 
 /**
 * @swagger
-* /web/email-templates/options/{name}/option:
+* /web/email-templates/options/{name}:
+*   put:
+*     summary: Update email template option
+*     tags:
+*       - Email Template
+*     description:
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*              {
+                  "option_name" : "KYC_INSUFFICIENT Option 3 Update",
+                  "display_order": 1,
+                  "email_templates": [
+                      {
+                          "subject": "Confirm new ip address",
+                          "template": "<!doctype html>\n<html>\n  <head>\n.......",
+                          "language": "en"
+                      },
+                      {
+                          "subject": "新しいIPアドレスを確認",
+                          "template": "aaaaaa",
+                          "language": "ja"
+                      }
+                  ]
+                }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/email-templates/options/{name}/duplicate:
 *   put:
 *     summary: duplicate email template option
 *     tags:
