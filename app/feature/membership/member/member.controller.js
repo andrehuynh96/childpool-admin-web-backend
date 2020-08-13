@@ -535,7 +535,7 @@ module.exports = {
         let referrer = await Member.findOne({
           where: {
             referral_code: member.referrer_code,
-            deleted_flg: false
+            // deleted_flg: false
           }
         });
 
