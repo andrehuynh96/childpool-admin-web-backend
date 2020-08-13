@@ -367,7 +367,9 @@ module.exports = {
         firstName: order.Member.first_name,
         lastName: order.Member.last_name,
         language: order.Member.current_language || 'en',
+        note: stringHelper.createMarkupWithNewLine(note),
       };
+
       if (template && !note) {
         const emailTemplate = await _findEmailTemplate(template, emailPayload.language);
 
@@ -375,9 +377,7 @@ module.exports = {
           return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { data: { template } });
         }
 
-        emailPayload.note = emailTemplate.template;
-      } else {
-        emailPayload.note = stringHelper.createMarkupWithNewLine(note);
+        emailPayload.emailTemplate = emailTemplate;
       }
 
       transaction = await database.transaction();
@@ -576,12 +576,28 @@ function stringifyAsync(data, columns) {
 }
 
 async function _sendEmail(email, payload, templateName) {
-  let template = await _findEmailTemplate(templateName, payload.language);
+  let subject, body;
 
-  const subject = template.subject;
+  if (payload.emailTemplate) {
+    subject = payload.emailTemplate.subject;
+    body = payload.emailTemplate.template;
+
+    delete payload.emailTemplate;
+  } else {
+    const emailTemplate = await _findEmailTemplate(templateName, payload.language);
+    if (!emailTemplate) {
+      logger.error(`Can not find email template: ${templateName}.`);
+      return;
+    }
+
+    subject = emailTemplate.subject;
+    body = emailTemplate.template;
+  }
+
   const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
   const data = Object.assign({}, payload, config.email);
-  await mailer.sendWithDBTemplate(subject, from, email, data, template.template);
+
+  await mailer.sendWithDBTemplate(subject, from, email, data, body);
 }
 
 async function _findMemberByEmail(email) {
