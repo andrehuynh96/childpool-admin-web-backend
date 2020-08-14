@@ -43,10 +43,10 @@ module.exports = {
         result.push(mapper(item));
 
         if (item.group_name) {
-          const emailTemplateOptionsList = emailTemplateOptions.filter(emailTemplateOption => emailTemplateOption.group_name === item.group_name);
-
-          emailTemplateOptionsList.forEach(emailTemplateOption => {
-            result.push(mapper(emailTemplateOption));
+          let emailTemplateOptionsList = emailTemplateOptions.filter(x => x.group_name === item.group_name && x.language === 'en');
+          emailTemplateOptionsList = _.sortBy(emailTemplateOptionsList, x => x.display_order || Number.MAX_SAFE_INTEGER);
+          emailTemplateOptionsList.forEach(x => {
+            result.push(mapper(x));
           });
 
           result.push({ is_add_button: true, group_name: item.group_name });
