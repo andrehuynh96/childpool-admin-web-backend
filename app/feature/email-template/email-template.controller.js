@@ -199,7 +199,7 @@ module.exports = {
       const { option_name, display_order, email_templates } = body;
       const emailTemplate = await EmailTemplate.findOne({
         where: {
-          name: params.name,
+          name,
           language: 'en',
           option_name: { [Op.not]: null },
           deleted_flg: false,
@@ -220,7 +220,18 @@ module.exports = {
         });
 
         if (!emailTemplate) {
-          await EmailTemplate.create(item, { transaction: transaction });
+          const data = {
+            ...item,
+            name,
+            option_name,
+            display_order,
+            subject: item.subject,
+            template: item.template,
+            language: item.language,
+            created_by: user.id,
+          };
+
+          await EmailTemplate.create(data, { transaction: transaction });
           return;
         }
 
