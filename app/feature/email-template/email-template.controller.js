@@ -197,17 +197,17 @@ module.exports = {
       const { params, body, user } = req;
       const { name } = params;
       const { option_name, display_order, email_templates } = body;
-
-      // const emailTemplates = await EmailTemplate.findAll({
-      //   where: {
-      //     name: params.name,
-      //     option_name: { [Op.not]: null },
-      //     deleted_flg: false,
-      //   },
-      // });
-      // if (!emailTemplates.length) {
-      //   return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
-      // }
+      const emailTemplate = await EmailTemplate.findOne({
+        where: {
+          name: params.name,
+          language: 'en',
+          option_name: { [Op.not]: null },
+          deleted_flg: false,
+        },
+      });
+      if (!emailTemplate) {
+        return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
+      }
 
       transaction = await database.transaction();
       await forEach(email_templates, async item => {
@@ -272,7 +272,7 @@ module.exports = {
         return {
           name,
           option_name: `${item.option_name} - Duplicate`,
-          group_name: item.option_name,
+          group_name: item.group_name,
           display_order: item.display_order,
           subject: item.subject,
           template: item.template,
