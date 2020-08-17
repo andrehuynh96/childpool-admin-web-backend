@@ -85,7 +85,7 @@ router.get(
 router.post(
   '/members/:memberId/resend-active-email',
   authenticate,
-  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
+  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
   controller.resendActiveEmail
 );
 
