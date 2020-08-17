@@ -5,81 +5,88 @@ const validator = require("app/middleware/validator.middleware");
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const {
-    membershipType,
-    referrer,
-    setMaxReferences,
+  membershipType,
+  referrer,
+  setMaxReferences,
 } = require('./validator');
 
 const router = express.Router();
 
 router.get(
-    '/members',
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
-    controller.search
+  '/members',
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
+  controller.search
 );
 
 router.get("/members/:memberId",
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
-    controller.getMemberDetail
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
+  controller.getMemberDetail
 );
 
 router.get("/members/:memberId/max-references",
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
-    controller.getMaxReferences
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
+  controller.getMaxReferences
 );
 
 router.put("/members/:memberId/membership-types",
-    validator(membershipType),
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
-    controller.updateMembershipType
+  validator(membershipType),
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+  controller.updateMembershipType
 );
 
 router.put("/members/:memberId/referrer-codes",
-    validator(referrer),
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
-    controller.updaterReferrerCode
+  validator(referrer),
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+  controller.updaterReferrerCode
 );
 
 router.put("/members/:memberId/max-references",
-    validator(setMaxReferences),
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
-    controller.setMaxReferences
+  validator(setMaxReferences),
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+  controller.setMaxReferences
 );
 
 router.get("/membership-types",
-    controller.getMembershipTypeList,
+  controller.getMembershipTypeList,
 );
 
 router.get("/member-order-status",
-    controller.getMemberOrderStatusFillter,
+  controller.getMemberOrderStatusFillter,
 );
 
 router.get("/kycs",
-    controller.getAllKyc,
+  controller.getAllKyc,
 );
 
 router.get("/members/:memberId/tree-chart",
-    authenticate,
-    controller.getTreeChart
+  authenticate,
+  controller.getTreeChart
 );
 
 router.get("/members/:memberId/referral-structure",
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_REFERRAL_STRUCTURE),
-    controller.getMemberReferralStructure
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_REFERRAL_STRUCTURE),
+  controller.getMemberReferralStructure
 );
 
 router.get(
-    '/members-csv',
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_MEMBERS),
-    controller.downloadCSV
+  '/members-csv',
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_MEMBERS),
+  controller.downloadCSV
+);
+
+router.post(
+  '/members/:memberId/resend-active-email',
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
+  controller.resendActiveEmail
 );
 
 module.exports = router;
@@ -438,10 +445,10 @@ module.exports = router;
 */
 
 router.put("/members/:memberId/max-references",
-    validator(setMaxReferences),
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
-    controller.setMaxReferences
+  validator(setMaxReferences),
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+  controller.setMaxReferences
 );
 
 /**

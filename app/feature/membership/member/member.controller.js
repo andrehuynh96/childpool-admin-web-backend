@@ -2,10 +2,12 @@ const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const MembershipType = require("app/model/wallet").membership_types;
 const MembershipOrder = require("app/model/wallet").membership_orders;
+const EmailTemplate = require('app/model/wallet').email_templates;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const MemberOrderStatusFillter = require("app/model/wallet/value-object/member-order-status-fillter");
 const MemberFillterStatusText = require("app/model/wallet/value-object/member-fillter-status-text");
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
 const KycStatus = require("app/model/wallet/value-object/kyc-status");
 const Kyc = require("app/model/wallet").kycs;
 const memberMapper = require("app/feature/response-schema/member.response-schema");
@@ -14,6 +16,11 @@ const { affiliateApi, membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
 const stringify = require('csv-stringify');
 const moment = require('moment');
+const OTP = require("app/model/wallet").otps;
+const OtpType = require("app/model/wallet/value-object/otp-type");
+const mailer = require('app/lib/mailer');
+const config = require('app/config');
+const uuidV4 = require('uuid/v4');
 
 const Op = Sequelize.Op;
 
@@ -694,7 +701,49 @@ module.exports = {
       logger.error('download member CSV fail:', error);
       next(error);
     }
-  }
+  },
+  resendActiveEmail: async (req, res, next) => {
+    try {
+      const { params } = req;
+      const member = await Member.findOne({
+        where: {
+          id: params.memberId,
+        },
+      });
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      const verifyToken = Buffer.from(uuidV4()).toString('base64');
+      const expiredDate = moment().add(config.expiredVefiryToken, 'hours');
+      await OTP.update({
+        expired: true
+      }, {
+        where: {
+          member_id: member.id,
+          action_type: OtpType.REGISTER,
+        },
+        returning: true
+      });
+
+      const otp = await OTP.create({
+        code: verifyToken,
+        used: false,
+        expired: false,
+        expired_at: expiredDate,
+        member_id: member.id,
+        action_type: OtpType.REGISTER,
+      });
+
+      await _sendEmail[OtpType.REGISTER](member, otp, res);
+
+      return res.ok(true);
+    }
+    catch (err) {
+      logger.error('resend email fail:', err);
+      next(err);
+    }
+  },
 };
 
 async function _createMemberCond(query) {
@@ -751,3 +800,44 @@ function stringifyAsync(data, columns) {
     );
   });
 }
+
+const _sendEmail = {
+  [OtpType.REGISTER]: async (member, otp, res) => {
+    try {
+      let templateName = EmailTemplateType.VERIFY_EMAIL;
+      let template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: member.current_language
+        }
+      });
+
+      if (!template) {
+        template = await EmailTemplate.findOne({
+          where: {
+            name: templateName,
+            language: 'en'
+          }
+        });
+      }
+
+      if (!template) {
+        return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+      }
+
+      let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
+      let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+      let data = {
+        imageUrl: config.website.urlImages,
+        link: `${config.website.urlActive}${otp.code}`,
+        hours: config.expiredVefiryToken
+      };
+
+      data = Object.assign({}, data, config.email);
+      await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
+    } catch (err) {
+      logger.error("resend email create account fail", err);
+    }
+  },
+
+};
