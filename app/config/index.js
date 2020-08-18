@@ -165,7 +165,10 @@ const config = {
   ONT: {
     restUrl: process.env.ONT_REST_SERVER_URL
   },
-  stakingCurrency: process.env.STAKING_CURRENCY
+  stakingCurrency: process.env.STAKING_CURRENCY,
+  patchData: {
+    isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
+  },
 };
 
 module.exports = config;

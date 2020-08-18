@@ -39,7 +39,9 @@ database.init(async err => {
         console.log('error', error);
         console.log('stdout ', stdout);
         console.log('stderr ', stderr);
-      })
+
+        require('app/model/wallet/patch')();
+      });
     });
 
     process.on('SIGINT', () => {

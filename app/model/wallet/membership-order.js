@@ -131,11 +131,16 @@ module.exports = (sequelize, DataTypes) => {
     approved_at: {
       type: DataTypes.DATE,
       allowNull: true,
-    }
+    },
+    recalculate_reward: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      default: false,
+    },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   MembershipOrder.associate = (models) => {
     MembershipOrder.belongsTo(models.members, {
