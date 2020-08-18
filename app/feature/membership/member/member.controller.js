@@ -844,7 +844,7 @@ const _sendEmail = {
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
-        link: `${config.website.urlActive}${otp.code}`,
+        link: `${config.website.urlActiveMember}${otp.code}`,
         hours: config.expiredVefiryToken
       };
 

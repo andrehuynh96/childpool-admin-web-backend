@@ -82,6 +82,7 @@ const config = {
     urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-ip?token=',
     urlConfirmRequest: process.env.WEBSITE_URL + '/confirm-request?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL,
+    urlActiveMember: process.env.WALLET_URL + '/email-verification?token=',
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,
