@@ -131,12 +131,13 @@ module.exports = {
 
       items.forEach(item => {
         const latestMembershipOrder = item.LatestMembershipOrder;
-        if (item.member_sts === MemberStatus.UNACTIVATED) {
+        if (item.deleted_flg) {
+          item.status = MemberOrderStatusFillter.Deactivated;
+        }
+        else if (item.member_sts === MemberStatus.UNACTIVATED) {
           item.status = MemberOrderStatusFillter.Unactivated;
         }
-        else if (item.deleted_flg) {
-          item.status = MemberOrderStatusFillter.Deactivated;
-        } else if (latestMembershipOrder) {
+        else if (latestMembershipOrder) {
           switch (latestMembershipOrder.status) {
             case MembershipOrderStatus.Pending:
               item.status = MemberOrderStatusFillter.VerifyPayment;
@@ -188,11 +189,11 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
-      if ( member.member_sts === MemberStatus.UNACTIVATED) {
-        member.status = MemberOrderStatusFillter.Unactivated;
-      }
-      else if (member.deleted_flg) {
+      if (member.deleted_flg){
         member.status = MemberOrderStatusFillter.Deactivated;
+      }
+      else if ( member.member_sts === MemberStatus.UNACTIVATED) {
+        member.status = MemberOrderStatusFillter.Unactivated;
       }
       else if (membershipOrder && membershipOrder.status == 'Approved') {
         member.status = MemberFillterStatusText.FeeAccepted;
