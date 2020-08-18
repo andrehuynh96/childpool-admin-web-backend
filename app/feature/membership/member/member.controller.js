@@ -39,7 +39,10 @@ module.exports = {
       let includeLatestMembershipOrder = true;
 
       if (filterStatus) {
-        if (filterStatus === MemberOrderStatusFillter.Deactivated) {
+        if (filterStatus === MemberOrderStatusFillter.Unactivated) {
+          memberCond.member_sts = MemberStatus.UNACTIVATED;
+        }
+        else if (filterStatus === MemberOrderStatusFillter.Deactivated) {
           memberCond.deleted_flg = true;
         } else if (filterStatus === MemberOrderStatusFillter.FeeAccepted) {
           requiredMembershipOrder = true;
@@ -50,7 +53,7 @@ module.exports = {
         } else if (filterStatus === MemberOrderStatusFillter.Active) {
           includeLatestMembershipOrder = false;
 
-          const membersWhichHasRejectdOrder = await Member.findAll({
+          const membersWhichHasRejectedOrder = await Member.findAll({
             where: memberCond,
             include: [
               {
@@ -65,7 +68,7 @@ module.exports = {
             ],
           });
 
-          memberIdList = membersWhichHasRejectdOrder.map(x => x.id);
+          memberIdList = membersWhichHasRejectedOrder.map(x => x.id);
           memberCond.deleted_flg = false;
           const orCond = [
             {
@@ -128,8 +131,10 @@ module.exports = {
 
       items.forEach(item => {
         const latestMembershipOrder = item.LatestMembershipOrder;
-
-        if (item.deleted_flg) {
+        if (item.member_sts === MemberStatus.UNACTIVATED) {
+          item.status = MemberOrderStatusFillter.Unactivated;
+        }
+        else if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
         } else if (latestMembershipOrder) {
           switch (latestMembershipOrder.status) {
@@ -183,7 +188,10 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
-      if (member.deleted_flg) {
+      if ( member.member_sts === MemberStatus.UNACTIVATED) {
+        member.status = MemberOrderStatusFillter.Unactivated;
+      }
+      else if (member.deleted_flg) {
         member.status = MemberOrderStatusFillter.Deactivated;
       }
       else if (membershipOrder && membershipOrder.status == 'Approved') {
