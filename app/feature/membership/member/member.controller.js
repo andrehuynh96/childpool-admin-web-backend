@@ -578,7 +578,9 @@ module.exports = {
       let includeLatestMembershipOrder = true;
 
       if (filterStatus) {
-        if (filterStatus === MemberOrderStatusFillter.Deactivated) {
+        if (filterStatus === MemberOrderStatusFillter.Unactivated) {
+          memberCond.member_sts = MemberStatus.UNACTIVATED;
+        } else if (filterStatus === MemberOrderStatusFillter.Deactivated) {
           memberCond.deleted_flg = true;
         } else if (filterStatus === MemberOrderStatusFillter.FeeAccepted) {
           requiredMembershipOrder = true;
@@ -664,7 +666,11 @@ module.exports = {
 
         if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
-        } else if (latestMembershipOrder) {
+        }
+        else if (item.member_sts === MemberStatus.UNACTIVATED) {
+          item.status = MemberOrderStatusFillter.Unactivated;
+        }
+        else if (latestMembershipOrder) {
           switch (latestMembershipOrder.status) {
             case MembershipOrderStatus.Pending:
               item.status = MemberOrderStatusFillter.VerifyPayment;
