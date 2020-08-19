@@ -126,6 +126,7 @@ const config = {
   schedule: {
     updateAffiliate: process.env.SCHEDULE_UPDATE_AFFILIATE_REWARD,
     checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
+    checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
