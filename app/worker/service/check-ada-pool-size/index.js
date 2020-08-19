@@ -11,19 +11,22 @@ class CheckAdaPoolNotifyCfg {
     async check() {
       let pools = await AdaPool.findAll();
       let cfg = await AdaPoolNotifyCfg.findOne();
-      let warningPools =[]
-      if (pools && pools.length > 0) {
+      let warningPools = []
+      if (pools && pools.length > 0 && cfg) {
         for (let e of pools) {
           let result = await axios.get(`https://js.adapools.org/pools/${e.address}/summary.json`)
           let poolInfo = result.data.data
           if(parseFloat(poolInfo.total_stake)/1e6 > cfg.size){
+            poolInfo.link = `https://adapools.org/pool/${poolInfo.pool_id}`
             warningPools.push(poolInfo)
           }
         }
       }
-      if(warningPools.length > 0)
-        return await this.sendMail(cfg.emails, warningPools)
-      return true
+      if(warningPools.length > 0){
+        await this.sendMail(cfg.emails, warningPools)
+        return true
+      }
+      return false
     }
 
     async sendMail(listEmail, poolInfos){

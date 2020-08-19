@@ -119,7 +119,7 @@
               </tr>
               <tr>
                 <td style="text-align: center">
-                  <p style="font-size: 24px;text-align: center;font-weight: 500;margin-bottom: 15px; line-height: 30px">New IP Address Detected</p>
+                  <p style="font-size: 24px;text-align: center;font-weight: 500;margin-bottom: 15px; line-height: 30px">ADA pools are detected </p>
                 </td>
               </tr>
               <tr>
@@ -127,7 +127,7 @@
                   <p>You are getting this message, because some ADA pools have been exceeded limit capacity.</p>
                   <ul>
                     <% pools.forEach(function(pool) { %>
-                        <li><%= pool.pool_id %> - <%= pool.db_name %> - <%= pool.total_stake/1e6 %> ADA</li>
+                        <li> <a href="<%= pool.link%>"><%= pool.db_name %></a></li>
                     <% }); %>
                 </ul>
                 </td>
