@@ -36,7 +36,6 @@ module.exports = async () => {
     },
     order: [['created_at', 'ASC']]
   });
-  // id: 142
 
   await forEachSeries(orders, async order => {
     const numOfRewards = await MemberRewardTransactionHistory.count({
@@ -78,7 +77,6 @@ module.exports = async () => {
         membershipType,
       });
       if (result.httpCode != 200) {
-        console.log(result.data);
         await transaction.rollback();
         return;
       }
@@ -117,11 +115,10 @@ module.exports = async () => {
           transaction: transaction
         });
 
-      // await transaction.commit();
-      await transaction.rollback();
+      await transaction.commit();
 
     } catch (error) {
-      logger.log(error);
+      logger.error(error);
       if (transaction) {
         await transaction.rollback();
       }
