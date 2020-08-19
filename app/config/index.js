@@ -111,6 +111,7 @@ const config = {
     confirmNewIp: process.env.PARTNER_NAME.toLowerCase() + "/confirm-ip.ejs",
     confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
+    adaPoolNotification: process.env.PARTNER_NAME.toLowerCase() + "/ada-pool-check.ejs",
   },
   masterWebsite: {
     urlViewRequest: process.env.MASTER_WEBSITE_URL + '/admin/childpool/detail'
@@ -125,6 +126,7 @@ const config = {
   schedule: {
     updateAffiliate: process.env.SCHEDULE_UPDATE_AFFILIATE_REWARD,
     checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
+    checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
