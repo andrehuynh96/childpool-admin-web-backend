@@ -57,7 +57,7 @@ router.post('/email-template-options/:name/duplicate',
 router.put('/email-template-options/:name',
   validator(updateOption),
   authenticate,
-  authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
+  authority(PermissionKey.UPDATE_EMAIL_TEMPLATE),
   controller.updateEmailTemplateOption
 );
 
