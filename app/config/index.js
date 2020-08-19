@@ -170,6 +170,9 @@ const config = {
   },
   stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
   apiUrl: process.env.API_URL || process.env.WEBSITE_URL,
+  patchData: {
+    isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
+  },
 };
 
 module.exports = config;
