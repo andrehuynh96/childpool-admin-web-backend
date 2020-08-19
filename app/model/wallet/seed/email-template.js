@@ -150,12 +150,18 @@ module.exports = async () => {
     });
 
     if (!emailTemplate) {
-      const data = {
-        ...item,
-        language: item.locale,
-      };
+      const data = [
+        {
+          ...item,
+          language: item.locale,
+        },
+        {
+          ...item,
+          language: 'ja',
+        },
+      ];
 
-      await EmailTemplate.create(data);
+      await EmailTemplate.bulkCreate(data);
     }
   });
 
