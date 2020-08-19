@@ -2,10 +2,13 @@ const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const MembershipType = require("app/model/wallet").membership_types;
 const MembershipOrder = require("app/model/wallet").membership_orders;
+const EmailTemplate = require('app/model/wallet').email_templates;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const MemberOrderStatusFillter = require("app/model/wallet/value-object/member-order-status-fillter");
 const MemberFillterStatusText = require("app/model/wallet/value-object/member-fillter-status-text");
 const MembershipOrderStatus = require("app/model/wallet/value-object/membership-order-status");
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
+const KycStatus = require("app/model/wallet/value-object/kyc-status");
 const Kyc = require("app/model/wallet").kycs;
 const memberMapper = require("app/feature/response-schema/member.response-schema");
 const Sequelize = require('sequelize');
@@ -13,6 +16,12 @@ const { affiliateApi, membershipApi } = require('app/lib/affiliate-api');
 const database = require('app/lib/database').db().wallet;
 const stringify = require('csv-stringify');
 const moment = require('moment');
+const OTP = require("app/model/wallet").otps;
+const OtpType = require("app/model/wallet/value-object/otp-type");
+const mailer = require('app/lib/mailer');
+const config = require('app/config');
+const uuidV4 = require('uuid/v4');
+
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -30,7 +39,10 @@ module.exports = {
       let includeLatestMembershipOrder = true;
 
       if (filterStatus) {
-        if (filterStatus === MemberOrderStatusFillter.Deactivated) {
+        if (filterStatus === MemberOrderStatusFillter.Unactivated) {
+          memberCond.member_sts = MemberStatus.UNACTIVATED;
+        }
+        else if (filterStatus === MemberOrderStatusFillter.Deactivated) {
           memberCond.deleted_flg = true;
         } else if (filterStatus === MemberOrderStatusFillter.FeeAccepted) {
           requiredMembershipOrder = true;
@@ -41,7 +53,7 @@ module.exports = {
         } else if (filterStatus === MemberOrderStatusFillter.Active) {
           includeLatestMembershipOrder = false;
 
-          const membersWhichHasRejectdOrder = await Member.findAll({
+          const membersWhichHasRejectedOrder = await Member.findAll({
             where: memberCond,
             include: [
               {
@@ -56,7 +68,7 @@ module.exports = {
             ],
           });
 
-          memberIdList = membersWhichHasRejectdOrder.map(x => x.id);
+          memberIdList = membersWhichHasRejectedOrder.map(x => x.id);
           memberCond.deleted_flg = false;
           const orCond = [
             {
@@ -119,10 +131,13 @@ module.exports = {
 
       items.forEach(item => {
         const latestMembershipOrder = item.LatestMembershipOrder;
-
         if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
-        } else if (latestMembershipOrder) {
+        }
+        else if (item.member_sts === MemberStatus.UNACTIVATED) {
+          item.status = MemberOrderStatusFillter.Unactivated;
+        }
+        else if (latestMembershipOrder) {
           switch (latestMembershipOrder.status) {
             case MembershipOrderStatus.Pending:
               item.status = MemberOrderStatusFillter.VerifyPayment;
@@ -174,16 +189,21 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
-      if (membershipOrder && membershipOrder.status == 'Approved') {
-        member.status = MemberFillterStatusText.FeeAccepted;
+      if (member.deleted_flg){
+        member.status = MemberOrderStatusFillter.Deactivated;
       }
-      else if (membershipOrder && membershipOrder.status == 'Pending') {
+      else if ( member.member_sts === MemberStatus.UNACTIVATED) {
+        member.status = MemberOrderStatusFillter.Unactivated;
+      }
+      else if (membershipOrder && membershipOrder.status == 'Approved') {
+        member.status = MemberFillterStatusText.FeeAccepted;
+      } else if (membershipOrder && membershipOrder.status == 'Pending') {
         member.status = MemberFillterStatusText.VerifyPayment;
         member.latest_membership_order_id = membershipOrder.id;
-      }
-      else {
+      } else {
         member.status = MemberFillterStatusText.Active;
       }
+
       member.kyc_level = (member.kyc_level || '').replace('LEVEL_', '');
       if (!member.membership_type_id) {
         member.membership_type = 'Basic';
@@ -200,7 +220,38 @@ module.exports = {
         return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND");
       }
       member.membership_type = membershipType.name;
+
       return res.ok(memberMapper(member));
+    }
+    catch (error) {
+      logger.error('get member detail fail:', error);
+      next(error);
+    }
+  },
+  getMaxReferences: async (req, res, next) => {
+    try {
+      const { params } = req;
+      const member = await Member.findOne({
+        where: {
+          id: params.memberId,
+        },
+      });
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      let max_references = null;
+
+      if (member.referral_code) {
+        const affiliateCodeDetailsResult = await affiliateApi.getAffiliateCodeDetails(member.referral_code);
+        if (affiliateCodeDetailsResult.httpCode !== 200) {
+          return res.status(affiliateCodeDetailsResult.httpCode).send(affiliateCodeDetailsResult.data);
+        }
+
+        max_references = affiliateCodeDetailsResult.data.max_references;
+      }
+
+      return res.ok({ max_references, deleted_flg: member.deleted_flg });
     }
     catch (error) {
       logger.error('get member detail fail:', error);
@@ -226,7 +277,7 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: memberId,
-          deleted_flg: false
+          // deleted_flg: false
         }
       });
 
@@ -295,18 +346,16 @@ module.exports = {
       next(error);
     }
   },
-
   updaterReferrerCode: async (req, res, next) => {
     let transaction;
     try {
       const { body, params } = req;
       const { memberId } = params;
-      const referralCode = body.referrerCode;
+      const referrerCode = body.referrerCode;
 
       const member = await Member.findOne({
         where: {
           id: memberId,
-          deleted_flg: false
         }
       });
 
@@ -322,15 +371,10 @@ module.exports = {
         return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
       }
 
-      if (member.referrer_code && body.referrerCode) {
-        return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
-      }
-
-      const hasUpdatedReferrerCode = !member.referrer_code && body.referrerCode;
-      const data = {};
-      if (hasUpdatedReferrerCode) {
-        data.referrer_code = referralCode;
-      }
+      const hasUpdatedReferrerCode = member.referrer_code !== referrerCode;
+      const data = {
+        referrer_code: referrerCode,
+      };
 
       transaction = await database.transaction();
       try {
@@ -348,7 +392,7 @@ module.exports = {
         let result;
 
         if (hasUpdatedReferrerCode) {
-          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: referralCode });
+          result = await affiliateApi.updateReferrer({ email: member.email, referrerCode: referrerCode });
 
           if (result.httpCode !== 200) {
             await transaction.rollback();
@@ -373,7 +417,43 @@ module.exports = {
       next(error);
     }
   },
+  setMaxReferences: async (req, res, next) => {
+    try {
+      const { body, params } = req;
+      const { memberId } = params;
+      const max_references = body.max_references;
 
+      const member = await Member.findOne({
+        where: {
+          id: memberId,
+        }
+      });
+
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      if (member.member_sts == MemberStatus.LOCKED) {
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+      }
+
+      if (member.member_sts == MemberStatus.UNACTIVATED) {
+        return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
+      }
+
+      const result = await affiliateApi.updateAffiliateCode(member.referral_code, { max_references });
+      if (result.httpCode !== 200) {
+        return res.status(result.httpCode).send(result.data);
+      }
+
+      return res.ok(result.data);
+
+    }
+    catch (error) {
+      logger.error('update member fail:', error);
+      next(error);
+    }
+  },
   getMembershipTypeList: async (req, res, next) => {
     try {
       const membershipType = await MembershipType.findAll();
@@ -422,7 +502,6 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: req.params.memberId,
-          deleted_flg: false
         }
       });
 
@@ -454,7 +533,6 @@ module.exports = {
       const member = await Member.findOne({
         where: {
           id: req.params.memberId,
-          deleted_flg: false
         }
       });
 
@@ -473,7 +551,7 @@ module.exports = {
         let referrer = await Member.findOne({
           where: {
             referral_code: member.referrer_code,
-            deleted_flg: false
+            // deleted_flg: false
           }
         });
 
@@ -500,7 +578,9 @@ module.exports = {
       let includeLatestMembershipOrder = true;
 
       if (filterStatus) {
-        if (filterStatus === MemberOrderStatusFillter.Deactivated) {
+        if (filterStatus === MemberOrderStatusFillter.Unactivated) {
+          memberCond.member_sts = MemberStatus.UNACTIVATED;
+        } else if (filterStatus === MemberOrderStatusFillter.Deactivated) {
           memberCond.deleted_flg = true;
         } else if (filterStatus === MemberOrderStatusFillter.FeeAccepted) {
           requiredMembershipOrder = true;
@@ -578,12 +658,19 @@ module.exports = {
         });
       }
 
-      items.forEach(item => {
+      items.forEach((item, index) => {
+        item.no = index + 1;
+        item.last_name = item.last_name || '-';
+        item.first_name = item.first_name || '-';
         const latestMembershipOrder = item.LatestMembershipOrder;
 
         if (item.deleted_flg) {
           item.status = MemberOrderStatusFillter.Deactivated;
-        } else if (latestMembershipOrder) {
+        }
+        else if (item.member_sts === MemberStatus.UNACTIVATED) {
+          item.status = MemberOrderStatusFillter.Unactivated;
+        }
+        else if (latestMembershipOrder) {
           switch (latestMembershipOrder.status) {
             case MembershipOrderStatus.Pending:
               item.status = MemberOrderStatusFillter.VerifyPayment;
@@ -609,11 +696,12 @@ module.exports = {
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
       const data = await stringifyAsync(items, [
-        { key: 'id', header: 'Id' },
-        { key: 'first_name', header: 'First Name' },
+        { key: 'no', header: '#' },
         { key: 'last_name', header: 'Last Name' },
+        { key: 'first_name', header: 'First Name' },
         { key: 'email', header: 'Email' },
         { key: 'kyc_level', header: 'KYC' },
+        { key: 'kyc_status', header: 'KYC Status' },
         { key: 'membership_type', header: 'Membership' },
         { key: 'status', header: 'Status' },
         { key: 'referral_code', header: 'Referral' },
@@ -628,8 +716,51 @@ module.exports = {
       logger.error('download member CSV fail:', error);
       next(error);
     }
-  }
+  },
+  resendActiveEmail: async (req, res, next) => {
+    try {
+      const { params } = req;
+      const member = await Member.findOne({
+        where: {
+          id: params.memberId,
+        },
+      });
+      if (!member) {
+        return res.notFound(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND", { fields: ["memberId"] });
+      }
+
+      const verifyToken = Buffer.from(uuidV4()).toString('base64');
+      const expiredDate = moment().add(config.expiredVefiryToken, 'hours');
+      await OTP.update({
+        expired: true
+      }, {
+        where: {
+          member_id: member.id,
+          action_type: OtpType.REGISTER,
+        },
+        returning: true
+      });
+
+      const otp = await OTP.create({
+        code: verifyToken,
+        used: false,
+        expired: false,
+        expired_at: expiredDate,
+        member_id: member.id,
+        action_type: OtpType.REGISTER,
+      });
+
+      await _sendEmail[OtpType.REGISTER](member, otp, res);
+
+      return res.ok(true);
+    }
+    catch (err) {
+      logger.error('resend email fail:', err);
+      next(err);
+    }
+  },
 };
+
 async function _createMemberCond(query) {
   const memberCond = {};
   if (query.membershipTypeId) {
@@ -643,6 +774,10 @@ async function _createMemberCond(query) {
 
   if (query.kycLevel) {
     memberCond.kyc_level = query.kycLevel;
+  }
+
+  if (query.kycStatus) {
+    memberCond.kyc_status = KycStatus[query.kycStatus];
   }
 
   if (query.referralCode) {
@@ -662,6 +797,7 @@ async function _createMemberCond(query) {
   if (query.email) {
     memberCond.email = { [Op.iLike]: `%${query.email}%` };
   }
+
   return memberCond;
 }
 
@@ -679,3 +815,44 @@ function stringifyAsync(data, columns) {
     );
   });
 }
+
+const _sendEmail = {
+  [OtpType.REGISTER]: async (member, otp, res) => {
+    try {
+      let templateName = EmailTemplateType.VERIFY_EMAIL;
+      let template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: member.current_language
+        }
+      });
+
+      if (!template) {
+        template = await EmailTemplate.findOne({
+          where: {
+            name: templateName,
+            language: 'en'
+          }
+        });
+      }
+
+      if (!template) {
+        return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+      }
+
+      let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
+      let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+      let data = {
+        imageUrl: config.website.urlImages,
+        link: `${config.website.urlActiveMember}${otp.code}`,
+        hours: config.expiredVefiryToken
+      };
+
+      data = Object.assign({}, data, config.email);
+      await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
+    } catch (err) {
+      logger.error("resend email create account fail", err);
+    }
+  },
+
+};

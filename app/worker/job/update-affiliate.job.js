@@ -6,6 +6,8 @@ const { affiliateApi } = require('app/lib/affiliate-api');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const config = require("app/config");
+const logger = require("app/lib/logger");
+var sleep = require('sleep');
 
 module.exports = {
   execute: async () => {
@@ -21,7 +23,7 @@ module.exports = {
           let qr = await AccountContributionAPI.get(element, limit, offset);
           qr = qr.data;
           let contributions = qr.items
-          if (qr.items.length <= 0)
+          if (!qr.items || qr.items.length <= 0)
             break;
           let ids = []
           let affiliatePayload = {
@@ -111,6 +113,7 @@ module.exports = {
           else {
             offset = qr.offset + qr.limit;
           }
+          sleep.sleep(1);
         }
         if (response && response.length > 0) {
           for (let e of response) {
@@ -124,7 +127,7 @@ module.exports = {
       }
     }
     catch (err) {
-      console.log(err);
+      logger.error(err);
     }
   }
 }

@@ -62,7 +62,8 @@ const destObject = {
     'createdAt': 'created_at',
     'updatedAt': 'updated_at',
     'description': 'description',
-    'approved_at': 'approved_at'
+    'approved_at': 'approved_at',
+    'updated_description_at': 'updated_description_at?',
   }
 };
 module.exports = srcObject => {

@@ -3,40 +3,71 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const authority = require('app/middleware/authority.middleware');
 const controller = require('./email-template.controller');
 const validator = require('app/middleware/validator.middleware');
-const schema = require('./email-template.request-schema');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
+const {
+  update,
+  createOption,
+  updateOption,
+} = require('./validator');
+
 const router = express.Router();
 
 router.get('/email-templates',
-    authenticate,
-    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
-    controller.getAll
+  authenticate,
+  authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
+  controller.search
+);
+
+router.put('/email-templates',
+  authenticate,
+  authority(PermissionKey.UPDATE_EMAIL_TEMPLATE),
+  validator(update),
+  controller.update
 );
 
 router.get('/email-templates/:name',
-    authenticate,
-    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_DETAIL),
-    controller.getDetail
-);
-
-router.post('/email-templates',
-    authenticate,
-    authority(PermissionKey.UPDATE_EMAIL_TEMPLATE),
-    validator(schema),
-    controller.update
+  authenticate,
+  authority(PermissionKey.VIEW_EMAIL_TEMPLATE_DETAIL),
+  controller.getDetail
 );
 
 router.get('/email-templates/reasons/group-names',
-    authenticate,
-    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
-    controller.getGroupName
+  authenticate,
+  controller.getGroupName
 );
 
-router.get('/email-templates/reasons/group-names/:groupName',
-    authenticate,
-    authority(PermissionKey.VIEW_EMAIL_TEMPLATE_LIST),
-    controller.getEmailTemplatesByGroupName
+router.get('/email-template-options',
+  authenticate,
+  controller.getEmailTemplatesOptionsByGroupName
 );
+
+router.post('/email-template-options',
+  validator(createOption),
+  authenticate,
+  authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
+  controller.createEmailTemplateOption
+);
+
+router.post('/email-template-options/:name/duplicate',
+  authenticate,
+  authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
+  controller.duplicateEmailTemplateOption
+);
+
+router.put('/email-template-options/:name',
+  validator(updateOption),
+  authenticate,
+  authority(PermissionKey.CREATE_EMAIL_TEMPLATE),
+  controller.updateEmailTemplateOption
+);
+
+router.delete('/email-template-options/:name',
+  authenticate,
+  authority(PermissionKey.DELETE_EMAIL_TEMPLATE),
+  controller.deleteEmailTemplateOption
+);
+
+
 
 /**
 * @swagger
@@ -185,7 +216,7 @@ router.get('/email-templates/reasons/group-names/:groupName',
 /**
 * @swagger
 * /web/email-templates:
-*   post:
+*   put:
 *     summary: update email template
 *     tags:
 *       - Email Template
@@ -241,6 +272,7 @@ router.get('/email-templates/reasons/group-names/:groupName',
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
 /**
 * @swagger
 * /web/email-templates/reasons/group-names:
@@ -282,7 +314,7 @@ router.get('/email-templates/reasons/group-names/:groupName',
 
 /**
 * @swagger
-* /web/email-templates/reasons/group-names/{groupName}:
+* /web/email-template-options:
 *   get:
 *     summary: get email template reason list rejected order
 *     tags:
@@ -314,6 +346,207 @@ router.get('/email-templates/reasons/group-names/:groupName',
                     }
                 ]
             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/email-template-options:
+*   post:
+*     summary: create email template option
+*     tags:
+*       - Email Template
+*     description: create email template option
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*              {
+                    "option_name": "KYC_INSUFFICIENT Option 3",
+                    "group_name": "CHILDPOOL_KYC_INSUFFICIENT",
+                    "display_order": null,
+                    "email_templates": [
+                        {
+                            "subject": "Confirm new ip address",
+                            "template": "<!doctype html>\n<html>\n  <head>\n.......",
+                            "language": "en"
+                        },
+                        {
+                            "subject": "新しいIPアドレスを確認",
+                            "template": "<!doctype html>\n<html>\n  <head>\n.......",
+                            "language": "ja"
+                        }
+                    ]
+                }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/email-template-options/{name}:
+*   put:
+*     summary: Update email template option
+*     tags:
+*       - Email Template
+*     description:
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*              {
+                  "option_name" : "KYC_INSUFFICIENT Option 3 Update",
+                  "display_order": 1,
+                  "email_templates": [
+                      {
+                          "subject": "Confirm new ip address",
+                          "template": "<!doctype html>\n<html>\n  <head>\n.......",
+                          "language": "en"
+                      },
+                      {
+                          "subject": "新しいIPアドレスを確認",
+                          "template": "aaaaaa",
+                          "language": "ja"
+                      }
+                  ]
+                }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/email-template-options/{name}/duplicate:
+*   put:
+*     summary: duplicate email template option
+*     tags:
+*       - Email Template
+*     description: duplicate email template option
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/email-template-options/{name}:
+*   delete:
+*     summary: delete email template option
+*     tags:
+*       - Email Template
+*     description: delete email template option
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+              }
 *       400:
 *         description: Error
 *         schema:

@@ -42,14 +42,14 @@ const config = {
         host: process.env.WALLET_DB_HOST,
         port: process.env.WALLET_DB_PORT,
         dialect: 'postgres',
-        logging: process.env.POSTPRES_DEBUG === 'true',
+        logging: process.env.POSTPRES_DEBUG === 'true' ? console.log : false,
       }
     }
   },
   redis: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-    prefix: process.env.REDIS_PREFIX || 'staking:wallet:cache',
+    prefix: process.env.REDIS_PREFIX || 'staking-childpool-backend',
     usingPass: process.env.REDIS_USING_PASS || 0,
     pass: process.env.REDIS_PASS,
   },
@@ -73,7 +73,7 @@ const config = {
     fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 2097152
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
-  expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
+  expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 24,
   expiredConfirmIpToken: process.env.EXPIRED_CONFIRM_IP_TOKEN ? parseInt(process.env.EXPIRED_CONFIRM_IP_TOKEN) : 2,
   website: {
     url: process.env.WEBSITE_URL,
@@ -82,6 +82,7 @@ const config = {
     urlConfirmNewIp: process.env.WEBSITE_URL + '/confirm-ip?token=',
     urlConfirmRequest: process.env.WEBSITE_URL + '/confirm-request?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL,
+    urlActiveMember: process.env.WALLET_URL + '/email-verification?token=',
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,
@@ -165,7 +166,8 @@ const config = {
   ONT: {
     restUrl: process.env.ONT_REST_SERVER_URL
   },
-  stakingCurrency: process.env.STAKING_CURRENCY,
+  stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
+  apiUrl: process.env.API_URL || process.env.WEBSITE_URL,
   patchData: {
     isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
   },

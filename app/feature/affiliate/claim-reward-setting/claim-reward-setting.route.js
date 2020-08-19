@@ -14,7 +14,7 @@ router.get(
   controller.get
 );
 
-router.post(
+router.put(
   '/claim-reward-setting',
   authenticate,
   authority(PermissionKey.AFFILIATE_UPDATE_CLAIM_REWARD_SETTING),
@@ -45,7 +45,9 @@ module.exports = router;
                 "data": {
                       "claim_affiliate_reward_atom" : 0.5,
                       "claim_affiliate_reward_iris" : 0.5,
-                      "claim_affiliate_reward_ong" : 0.5
+                      "claim_affiliate_reward_ong": 0.01,
+                      "claim_affiliate_reward_one": 0.1,
+                      "claim_affiliate_reward_xtz": 0.01
                     }
               }
 *       400:
@@ -69,7 +71,7 @@ module.exports = router;
 /**
 * @swagger
 * /web/affiliate/claim-reward-setting:
-*   post:
+*   put:
 *     summary: update claim reward setting
 *     tags:
 *       - Affiliate

@@ -2,5 +2,6 @@ module.exports = {
     Active: "Active",
     FeeAccepted: "FeeAccepted",
     VerifyPayment: "VerifyPayment",
-    Deactivated: "Deactivated"
+    Deactivated: "Deactivated",
+    Unactivated:"Unactivated"
 };

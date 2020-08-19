@@ -137,6 +137,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       default: false,
     },
+    updated_description_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,

@@ -2,20 +2,18 @@ const toArray = require('stream-to-array');
 const parse = require('csv-parse/lib/sync');
 module.exports = {
    readFileCSV : async(fileData) => {
-    const buffers = await toArray(fileData)
-    .then(function (parts) {
-      var buffers = [];
-      for (var i = 0, l = parts.length; i < l; ++i) {
-        var part = parts[i];
-        buffers.push((part instanceof Buffer) ? part : new Buffer(part));
-      }
-      return Buffer.concat(buffers);
+    const arrBuffers = await toArray(fileData);
+    const buf = [];
+    arrBuffers.forEach(item => {
+      buf.push((item instanceof Buffer) ? item : new Buffer(item));
     });
-
+    const buffers = Buffer.concat(buf);
     const records = parse(buffers, {
       columns: true,
-      skip_empty_lines: true
+      skip_empty_lines: true,
+      bom: true,
+      trim: true
     });
     return records;
-   } 
+   }
 };
