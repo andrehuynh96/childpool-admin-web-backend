@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
+    wallet_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: true,

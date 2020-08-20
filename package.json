@@ -1,7 +1,7 @@
 {
   "name": "staking-childpool-admin-web-backend",
-  "version": "1.1.0",
-  "description": "staking pool child",
+  "version": "1.2.2",
+  "description": "v1.8.7-ms-rc",
   "main": "index.js",
   "scripts": {
     "test": "mocha test"
@@ -63,6 +63,7 @@
     "sequelize-cli": "^5.5.1",
     "sequelize-temporal": "^1.0.8",
     "sequelize-temporalize": "^4.1.0",
+    "sleep": "^6.3.0",
     "speakeasy": "^2.0.0",
     "stream-to-array": "^2.3.0",
     "swagger-jsdoc": "^3.5.0",

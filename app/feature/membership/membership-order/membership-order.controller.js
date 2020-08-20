@@ -22,7 +22,7 @@ const mailer = require('app/lib/mailer');
 const PaymentType = require('app/model/wallet/value-object/claim-request-payment-type');
 const EmailTemplate = require('app/model/wallet').email_templates;
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
-
+const stringHelper = require('app/lib/string-helper');
 
 const Op = Sequelize.Op;
 const MembershipOrderStatusEnum = {
@@ -190,7 +190,7 @@ module.exports = {
   approveOrder: async (req, res, next) => {
     let transaction;
     try {
-      let order = await MembershipOrder.findOne({
+      const order = await MembershipOrder.findOne({
         where: { id: req.params.id },
         include: {
           attributes: ['email', 'first_name', 'last_name', 'current_language'],
@@ -208,13 +208,22 @@ module.exports = {
         return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
       }
 
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: order.membership_type_id
+        }
+      });
+
+      if (!membershipType) {
+        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
+      }
+
       transaction = await database.transaction();
-      // let status = req.body.action == 1 ? MembershipOrderStatus.Approved : MembershipOrderStatus.Rejected;
       await MembershipOrder.update({
         notes: req.body.note,
         approved_by_id: req.user.id,
         status: MembershipOrderStatus.Approved,
-        approved_at: Sequelize.fn('NOW')
+        approved_at: Sequelize.fn('NOW'),
       }, {
         where: {
           id: req.params.id
@@ -222,7 +231,8 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
-      let emailPayload = {
+
+      const emailPayload = {
         id: order.id,
         note: req.body.note,
         imageUrl: config.website.urlImages,
@@ -242,16 +252,6 @@ module.exports = {
         transaction: transaction
       });
 
-      const membershipType = await MembershipType.findOne({
-        where: {
-          id: order.membership_type_id
-        }
-      });
-
-      if (!membershipType) {
-        return res.notFound(res.__("MEMBERSHIP_TYPE_NOT_FOUND"), "MEMBERSHIP_TYPE_NOT_FOUND", { fields: ["memberTypeId"] });
-      }
-
       const result = await membershipApi.registerMembership({
         email: order.Member.email,
         referrerCode: order.referrer_code,
@@ -266,7 +266,7 @@ module.exports = {
       }
 
       // Save reward transaction histories
-      const memberRewardTransactionHistories = await map(result.data.rewards || [], async (item) => {
+      let memberRewardTransactionHistories = await map(result.data.rewards || [], async (item) => {
         const member = await _findMemberByEmail(item.ext_client_id);
         if (!member) {
           return;
@@ -286,6 +286,7 @@ module.exports = {
           membership_order_id: order.id,
         };
       });
+      memberRewardTransactionHistories = memberRewardTransactionHistories.filter(item => item && item.member_id);
       await MemberRewardTransactionHistory.bulkCreate(memberRewardTransactionHistories, { transaction });
 
       await MembershipOrder.update({
@@ -302,7 +303,9 @@ module.exports = {
       await MembershipOrder.update({
         status: MembershipOrderStatus.Rejected,
         approved_by_id: req.user.id,
-        notes: 'The other is approved'
+        description: 'The other is approved',
+        approved_at: Sequelize.fn('NOW'),
+        updated_description_at: Sequelize.fn('NOW'),
       }, {
         where: {
           status: MembershipOrderStatus.Pending,
@@ -315,7 +318,7 @@ module.exports = {
         transaction: transaction
       });
 
-      await _sendEmail(order.Member.email, emailPayload);
+      await _sendEmail(order.Member.email, emailPayload, EmailTemplateType.MEMBERSHIP_ORDER_APPROVED);
       await transaction.commit();
 
       return res.ok(true);
@@ -331,47 +334,86 @@ module.exports = {
 
   },
   rejectOrder: async (req, res, next) => {
-      try {
-        let order = await MembershipOrder.findOne({
-          where: { id: req.params.id },
-          include: {
-            attributes: ['email', 'first_name', 'last_name', 'current_language'],
-            as: "Member",
-            model: Member,
-            required: true
-          }
-        });
-  
-        if (!order) {
-          return res.notFound(res.__("MEMBERSHIP_ORDER_NOT_FOUND"), "MEMBERSHIP_ORDER_NOT_FOUND");
+    let transaction;
+
+    try {
+      const { body } = req;
+      const { note, template } = body;
+      if ((!template && !note) || (template && note)) {
+        return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS');
+      }
+
+      const order = await MembershipOrder.findOne({
+        where: { id: req.params.id },
+        include: {
+          attributes: ['email', 'first_name', 'last_name', 'current_language'],
+          as: "Member",
+          model: Member,
+          required: true
         }
-  
-        if (order.status !== MembershipOrderStatus.Pending) {
-          return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
+      });
+
+      if (!order) {
+        return res.notFound(res.__("MEMBERSHIP_ORDER_NOT_FOUND"), "MEMBERSHIP_ORDER_NOT_FOUND");
+      }
+
+      if (order.status !== MembershipOrderStatus.Pending) {
+        return res.forbidden(res.__("CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS"), "CAN_NOT_UPDATE_MEMBERSHIP_ORDER_STATUS");
+      }
+
+      const emailPayload = {
+        id: order.id,
+        imageUrl: config.website.urlImages,
+        firstName: order.Member.first_name,
+        lastName: order.Member.last_name,
+        language: order.Member.current_language || 'en',
+        note: stringHelper.createMarkupWithNewLine(note),
+      };
+
+      if (template && !note) {
+        const emailTemplate = await _findEmailTemplate(template, emailPayload.language);
+
+        if (!emailTemplate) {
+          return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { data: { template } });
         }
 
-        await MembershipOrder.update({
-          notes: req.body.note,
-          status: MembershipOrderStatus.Rejected
-        }, {
-          where: {
-            id: req.params.id
-          },
-          returning: true
-        });
-        let emailPayload = {
-          id: order.id,
-          note: req.body.note,
-          imageUrl: config.website.urlImages,
-          firstName: order.Member.first_name,
-          lastName: order.Member.last_name,
-          language: order.Member.current_language || 'en',
-        };
-        await _sendEmail(order.Member.email, emailPayload, req.body.template);
-        return res.ok(true);
-    } 
+        emailPayload.emailTemplate = emailTemplate;
+      }
+
+      transaction = await database.transaction();
+      const updateMemberTask = Member.update({
+        latest_membership_order_id: order.id,
+      }, {
+        where: {
+          id: order.member_id
+        },
+        returning: true,
+        transaction: transaction
+      });
+      const updateMembershipOrderTask = MembershipOrder.update({
+        notes: note,
+        status: MembershipOrderStatus.Rejected,
+        approved_at: Sequelize.fn('NOW'),
+      }, {
+        where: {
+          id: order.id
+        },
+        returning: true,
+        transaction: transaction,
+      });
+
+      await Promise.all([updateMemberTask, updateMembershipOrderTask]);
+      await _sendEmail(order.Member.email, emailPayload, EmailTemplateType.MEMBERSHIP_ORDER_REJECTED);
+      await transaction.commit();
+
+      return res.ok(true);
+    }
     catch (error) {
-      logger.error('update order fail:', error);
+      logger.error('rejectOrder fail:', error);
+      if (transaction) {
+        await transaction.rollback();
+      }
+
       next(error);
     }
   },
@@ -495,16 +537,20 @@ module.exports = {
     try {
       let id = req.params.id;
       let des = req.body.description;
-      if (!id)
+      if (!id) {
         return res.ok(false);
+      }
+
       await MembershipOrder.update({
-        description: des
+        description: des,
+        updated_description_at: Sequelize.fn('NOW'),
       }, {
         where: {
           id: id
         },
         returning: true
       });
+
       return res.ok(true);
     }
     catch (err) {
@@ -529,16 +575,50 @@ function stringifyAsync(data, columns) {
   });
 }
 
-async function _sendEmail(email, payload, emailTemplateName) {
-  const templateName = emailTemplateName ? EmailTemplateType[emailTemplateName] : EmailTemplateType.MEMBERSHIP_ORDER_APPROVED; 
+async function _sendEmail(email, payload, templateName) {
+  let subject, body;
+
+  if (payload.emailTemplate) {
+    subject = payload.emailTemplate.subject;
+    body = payload.emailTemplate.template;
+
+    delete payload.emailTemplate;
+  } else {
+    const emailTemplate = await _findEmailTemplate(templateName, payload.language);
+    if (!emailTemplate) {
+      logger.error(`Can not find email template: ${templateName}.`);
+      return;
+    }
+
+    subject = emailTemplate.subject;
+    body = emailTemplate.template;
+  }
+
+  const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+  const data = Object.assign({}, payload, config.email);
+
+  await mailer.sendWithDBTemplate(subject, from, email, data, body);
+}
+
+async function _findMemberByEmail(email) {
+  let member = await Member.findOne({
+    where: {
+      email: email.toLowerCase(),
+    },
+  });
+
+  return member;
+}
+
+async function _findEmailTemplate(templateName, language) {
   let template = await EmailTemplate.findOne({
     where: {
       name: templateName,
-      language: payload.language
+      language: language
     }
   });
 
-  if (!template) {
+  if (!template && language !== 'en') {
     template = await EmailTemplate.findOne({
       where: {
         name: templateName,
@@ -547,33 +627,5 @@ async function _sendEmail(email, payload, emailTemplateName) {
     });
   }
 
-  if (!template) {
-    logger.error(`Not found email template ${templateName}`);
-    return;
-  }
-
-  const subject = template.subject;
-  const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
-  const data = Object.assign({}, payload, config.email);
-  await mailer.sendWithDBTemplate(subject, from, email, data, template.template);
-}
-
-async function _findMemberByEmail(email) {
-  let member = await Member.findOne({
-    where: {
-      email: email.toLowerCase(),
-      deleted_flg: false,
-    },
-  });
-
-  // Try to get member which was deleted
-  if (!member) {
-    member = await Member.findOne({
-      where: {
-        email: email.toLowerCase(),
-      },
-    });
-  }
-
-  return member;
+  return template;
 }

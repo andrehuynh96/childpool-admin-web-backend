@@ -21,9 +21,13 @@ transporter.getMailDBTemplate = async (template, data) => {
   const email = new EmailTemplate({
     render: (template, locals) => {
       return new Promise((resolve, reject) => {
-        let html = ejs.render(template, locals);
-
-        email.juiceResources(html).then(html => resolve(html)).catch(e => reject(e));
+        try {
+          const options = { delimiter: '_', openDelimiter: '$', closeDelimiter: '$' };
+          let html = ejs.render(template, locals, options);
+          resolve(html);
+        } catch (error) {
+          reject(error);
+        }
       });
     }
   });
@@ -40,7 +44,6 @@ transporter.sendWithDBTemplate = async function (
   template
 ) {
   let mailContent = await transporter.getMailDBTemplate(template, data);
-
   return await transporter.sendMail({
     from: from,
     to: to,

@@ -2,8 +2,8 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Membership order succeeded</title>
+    <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> -->
+    <title>ADA POOLS CAPACITY NOTIFICATION</title>
     <style>
       img {
         border: none;
@@ -56,7 +56,7 @@
         border-radius: 4px;
         -webkit-border-radius: 4px;
         -moz-border-radius: 4px;
-        text-align: left;
+        text-align: center;
         padding: 50px;
       }
 
@@ -84,6 +84,9 @@
         color: #3498db;
         text-decoration: underline;
       }
+      .span{
+        width: 100px;
+      }
       /* -------------------------------------
           RESPONSIVE AND MOBILE FRIENDLY STYLES
       ------------------------------------- */
@@ -96,7 +99,9 @@
         .content{
           padding: 30px;
         }
-
+        .span{
+          width: auto;
+        }
       }
     </style>
   </head>
@@ -107,22 +112,24 @@
           <div class="content">
             <table class="main">
               <tr>
-                <td>
+                <td style="text-align: center">
                   <img src="<%=imageUrl%>/logo.png" alt="">
-                  <!-- <span style="width: 100%;height: 1px; background: #CACACC; margin: 30px 0; display: block;"></span> -->
+                  <span style="width: 100%;height: 1px; background: #CACACC; margin: 30px 0; display: block;"></span>
                 </td>
               </tr>
               <tr>
-                <td><p style="font-weight: 500;margin-bottom: 20px; line-height: 8px">Hi! <%=firstName%> <%=lastName%></p></td>
-              </tr>
-              <tr>
-                <td>
-                  <p style="margin-bottom: 8px"> Congratulate, your Membership payment has been approved.</p>
+                <td style="text-align: center">
+                  <p style="font-size: 24px;text-align: center;font-weight: 500;margin-bottom: 15px; line-height: 30px">ADA pools are detected </p>
                 </td>
               </tr>
               <tr>
-                <td>
-                  <p style="margin-bottom: 8px; margin-top: 25px">Moonstake</p>
+                <td style="text-align: center">
+                  <p>You are getting this message, because some ADA pools have been exceeded limit capacity.</p>
+                  <ul>
+                    <% pools.forEach(function(pool) { %>
+                        <li> <a href="<%= pool.link%>"><%= pool.db_name %></a></li>
+                    <% }); %>
+                </ul>
                 </td>
               </tr>
             </table>
