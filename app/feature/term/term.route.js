@@ -36,3 +36,245 @@ router.put('/terms/:term_no',
 
 
 module.exports = router;
+
+/** *******************************************************************/
+
+
+/**
+ * @swagger
+ * /web/terms:
+ *   get:
+ *     summary: get list term
+ *     tags:
+ *       - Terms
+ *     description:
+ *     parameters:
+ *       - name: offset
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data": {
+                      "items": [
+                          {
+                              "id": 1,
+                              "content": "ABC123",
+                              "applied_date": "2020-08-20T08:01:03.569Z",
+                              "term_no": "GKU1I3T0",
+                              "is_published": true,
+                              "created_by": 32,
+                              "updated_by": 32,
+                              "createdAt": "2020-08-20T08:01:03.569Z",
+                              "updatedAt": "2020-08-20T08:32:24.958Z"
+                          }
+                      ],
+                      "limit": 10,
+                      "offset": 0,
+                      "total": 1
+                  }
+              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/** *******************************************************************/
+
+ /**
+ * @swagger
+ * /web/terms/{term_no}:
+ *   get:
+ *     summary: get term by term_no
+ *     tags:
+ *       - Terms
+ *     description:
+ *     parameters:
+ *       - name: term_no
+ *         in: path
+ *         type: string
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data": {
+                      "id": 1,
+                      "content": "ABC123",
+                      "applied_date": null,
+                      "term_no": "GKU1I3T0",
+                      "is_published": true,
+                      "created_by": 32,
+                      "updated_by": 32,
+                      "createdAt": "2020-08-20T08:01:03.569Z",
+                      "updatedAt": "2020-08-20T08:01:03.569Z"
+                  }
+              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /** *******************************************************************/
+
+ /**
+ * @swagger
+ * /web/terms:
+ *   post:
+ *     summary: create term
+ *     tags:
+ *       - Terms
+ *     description:
+ *     parameters:
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to register.
+ *         schema:
+ *            type: object
+ *            example:
+ *                  {
+                        "content": "...<html tag>",
+                        "is_published": true,
+                        "applied_date": "2020-08-20T08:01:03.569Z"
+                    }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data": {
+                      "id": 2,
+                      "content": "ABC123",
+                      "is_published": true,
+                      "term_no": "71TBUEFZ",
+                      "created_by": 32,
+                      "updated_by": 32,
+                      "updatedAt": "2020-08-20T08:40:55.935Z",
+                      "createdAt": "2020-08-20T08:40:55.935Z",
+                      "applied_date": null
+                  }
+              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/** *******************************************************************/
+
+ /**
+ * @swagger
+ * /web/terms/{term_no}:
+ *   put:
+ *     summary: update term
+ *     tags:
+ *       - Terms
+ *     description:
+ *     parameters:
+ *       - name: term_no
+ *         in: path
+ *         type: string
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to register.
+ *         schema:
+ *            type: object
+ *            example:
+ *                  {
+                        "content": "ABC123",
+                        "is_published": true,
+                        "applied_date": "2020-08-20T08:01:03.569Z"
+                    }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data": {
+                      "id": 1,
+                      "content": "ABC123",
+                      "applied_date": "2020-08-20T08:01:03.569Z",
+                      "term_no": "GKU1I3T0",
+                      "is_published": true,
+                      "created_by": 32,
+                      "updated_by": 32,
+                      "createdAt": "2020-08-20T08:01:03.569Z",
+                      "updatedAt": "2020-08-20T08:32:24.958Z"
+                  }
+              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
