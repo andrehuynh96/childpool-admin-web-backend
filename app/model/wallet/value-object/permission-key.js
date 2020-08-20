@@ -592,4 +592,34 @@ module.exports = {
     "GROUP_NAME": "Email Template",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "VIEW_LIST_TERM": {
+    "KEY": "VIEW_LIST_TERM",
+    "DESCRIPTION": "View list term",
+    "GROUP_NAME": "Term",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_TERM_DETAIL": {
+    "KEY": "VIEW_TERM_DETAIL",
+    "DESCRIPTION": "View term detail",
+    "GROUP_NAME": "Term",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "UPDATE_TERM": {
+    "KEY": "UPDATE_TERM",
+    "DESCRIPTION": "Update term",
+    "GROUP_NAME": "Term",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "CREATE_TERM": {
+    "KEY": "CREATE_TERM",
+    "DESCRIPTION": "Create term",
+    "GROUP_NAME": "Term",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "DELETE_TERM": {
+    "KEY": "DELETE_TERM",
+    "DESCRIPTION": "Delete term",
+    "GROUP_NAME": "Term",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 };
