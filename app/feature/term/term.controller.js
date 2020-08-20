@@ -1,7 +1,7 @@
 const logger = require('app/lib/logger');
 const Term = require('app/model/wallet').terms;
 const moment = require('moment');
-const Hashids = require('hashids');
+const Hashids = require('hashids/cjs');
 module.exports = {
     getAll: async (req, res, next) => {
         try {
