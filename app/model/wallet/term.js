@@ -22,10 +22,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: true
         },
-        language: {
-            type: DataTypes.STRING(100),
-            allowNull: false,
-        },
         created_by: {
             type: DataTypes.INTEGER,
             allowNull: false,

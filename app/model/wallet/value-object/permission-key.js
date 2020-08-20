@@ -530,6 +530,12 @@ module.exports = {
     "GROUP_NAME": "Members",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
+  "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS": {
+    "KEY": "MEMBERSHIP_UPDATE_MEMBER_KYC_STATUS",
+    "DESCRIPTION": "Membership update member kyc status",
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
 
   "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING": {
     "KEY": "MEMBERSHIP_VIEW_CLAIM_MEMBERSHIP_REWARD_SETTING",
@@ -571,7 +577,7 @@ module.exports = {
   "MEMBERSHIP_EXPORT_CSV_MEMBERS": {
     "KEY": "MEMBERSHIP_EXPORT_CSV_MEMBERS",
     "DESCRIPTION": "Export members to CSV file",
-    "GROUP_NAME": "Member",
+    "GROUP_NAME": "Members",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "VIEW_EMAIL_TEMPLATE_LIST": {
@@ -590,6 +596,24 @@ module.exports = {
     "KEY": "UPDATE_EMAIL_TEMPLATE",
     "DESCRIPTION": "Update email template",
     "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "CREATE_EMAIL_TEMPLATE": {
+    "KEY": "CREATE_EMAIL_TEMPLATE",
+    "DESCRIPTION": "Create email template",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "DELETE_EMAIL_TEMPLATE": {
+    "KEY": "DELETE_EMAIL_TEMPLATE",
+    "DESCRIPTION": "Delete email template",
+    "GROUP_NAME": "Email Template",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
+  },
+  "VIEW_LIST_CRYPTO_ADDRESS": {
+    "KEY": "VIEW_LIST_CRYPTO_ADDRESS",
+    "DESCRIPTION": "View list crypto address",
+    "GROUP_NAME": "Crypto address",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
   "VIEW_LIST_TERM": {
