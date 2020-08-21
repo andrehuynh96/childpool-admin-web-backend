@@ -1,6 +1,8 @@
+const logger = require('app/lib/logger');
 const bech32 = require("bech32");
 const WAValidator = require("wallet-address-validator");
 const NeonCore = require('@cityofzion/neon-core');
+const Bitcoinjs = require('bitcoinjs-lib');
 
 module.exports = {
   validate: (platform, address) => {
@@ -12,14 +14,17 @@ module.exports = {
       valid = _verifyIrisAddress(address);
     } else if (platform == "ONT" || platform == "ONG") {
       valid = _verifyOntAddress(address);
-    } else {
+    } else if (platform == "BTCSW") {
+      valid = _verifyBtcSegwitAddress(address);
+    }
+    else {
       valid = WAValidator.validate(address, platform, "testnet");
       valid = valid ? true : WAValidator.validate(address, platform);
     }
 
     return valid;
   }
-}
+};
 
 function _verifyCosmosAddress(address) {
   try {
@@ -46,6 +51,16 @@ function _verifyOntAddress(address) {
     return NeonCore.wallet.isAddress(address);
   } catch (e) {
     logger.error(e);
+    return false;
+  }
+}
+
+function _verifyBtcSegwitAddress (address, testnet = false) {
+  try {
+    let network = testnet ? Bitcoinjs.networks.testnet : Bitcoinjs.networks.bitcoin;
+    Bitcoinjs.address.toOutputScript(address, network);
+    return true;
+  } catch (e) {
     return false;
   }
 }
