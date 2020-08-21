@@ -1,5 +1,4 @@
 const logger = require("app/lib/logger");
-const config = require("app/config");
 const database = require('app/lib/database').db().wallet;
 const ReceivingAddress = require("app/model/wallet").receiving_addresses;
 const Address = require("app/lib/address");
@@ -7,10 +6,10 @@ const Address = require("app/lib/address");
 module.exports = {
   getAll: async (req, res, next) => {
     try {
-      let where = {}
-      let currency_symbol = req.query.currency_symbol
+      let where = {};
+      let currency_symbol = req.query.currency_symbol;
       if (currency_symbol)
-        where.currency_symbol = currency_symbol.toUpperCase()
+        where.currency_symbol = currency_symbol.toUpperCase();
       let results = await ReceivingAddress.findAll({
         where,
         order: [['created_at', 'DESC']]
@@ -174,11 +173,11 @@ module.exports = {
             id: req.params.id
           }
         });
-  
+
         if (!result) {
           return res.badRequest(res.__("RECEIVING_ADDRESS_NOT_FOUND"), "RECEIVING_ADDRESS_NOT_FOUND", { field: ['id'] });
         }
-  
+
         await ReceivingAddress.update({
           description: req.body.description,
           updated_by: req.user.id,
@@ -188,7 +187,7 @@ module.exports = {
           },
           returning: true,
         });
-  
+
         return res.ok(true);
     } catch (error) {
       logger.error("update receiving addresses memo fail", error);
