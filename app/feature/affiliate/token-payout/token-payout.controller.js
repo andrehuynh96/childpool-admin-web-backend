@@ -205,7 +205,7 @@ module.exports = {
 
       const cache = claimRequests.reduce((result, value) => {
         result[value.id] = value;
-        
+
         return result;
       }, {});
       const notFoundIdList = [];
@@ -249,7 +249,7 @@ module.exports = {
 
       transaction.commit();
       return res.ok(true);
-    } 
+    }
     catch (error) {
       if (transaction) {
         transaction.rollback();
@@ -295,7 +295,7 @@ module.exports = {
             currency_symbol: item.currency_symbol,
             amount: item.amount,
             action: MemberRewardTransactionAction.SENT,
-            tx_id: item.tx_id,
+            tx_id: item.txid,
             system_type: item.system_type
           });
         });
