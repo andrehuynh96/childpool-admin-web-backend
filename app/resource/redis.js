@@ -2,7 +2,7 @@ const config = require('app/config');
 
 const keys = {
   stakingApi: {
-    token: `${config.redis.prefix}:staking:api:token`,
+    token: `${config.redis.prefix}:staking:api:token-${config.app.version}`,
   },
   affiliate: {
     token: `${config.redis.prefix}:affiliate:token-${config.app.version}`,
@@ -20,4 +20,4 @@ String.prototype.withParams = function (...params) {
   return str;
 };
 
-module.exports = Object.assign({}, keys); 
+module.exports = Object.assign({}, keys);

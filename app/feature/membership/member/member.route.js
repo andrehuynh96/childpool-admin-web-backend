@@ -2,67 +2,91 @@ const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./member.controller');
 const validator = require("app/middleware/validator.middleware");
-const { membershipType, referrer } = require('./validator');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
+const {
+  membershipType,
+  referrer,
+  setMaxReferences,
+} = require('./validator');
 
 const router = express.Router();
 
 router.get(
-    '/members',
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
-    controller.search
+  '/members',
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_LIST),
+  controller.search
 );
 
 router.get("/members/:memberId",
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
-    controller.getMemberDetail
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
+  controller.getMemberDetail
+);
+
+router.get("/members/:memberId/max-references",
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
+  controller.getMaxReferences
 );
 
 router.put("/members/:memberId/membership-types",
-    validator(membershipType),
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
-    controller.updateMembershipType
+  validator(membershipType),
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+  controller.updateMembershipType
 );
 
 router.put("/members/:memberId/referrer-codes",
-    validator(referrer),
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
-    controller.updaterReferrerCode
+  validator(referrer),
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+  controller.updaterReferrerCode
+);
+
+router.put("/members/:memberId/max-references",
+  validator(setMaxReferences),
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+  controller.setMaxReferences
 );
 
 router.get("/membership-types",
-    controller.getMembershipTypeList,
+  controller.getMembershipTypeList,
 );
 
 router.get("/member-order-status",
-    controller.getMemberOrderStatusFillter,
+  controller.getMemberOrderStatusFillter,
 );
 
 router.get("/kycs",
-    controller.getAllKyc,
+  controller.getAllKyc,
 );
 
 router.get("/members/:memberId/tree-chart",
-    authenticate,
-    controller.getTreeChart
+  authenticate,
+  controller.getTreeChart
 );
 
 router.get("/members/:memberId/referral-structure",
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_VIEW_REFERRAL_STRUCTURE),
-    controller.getMemberReferralStructure
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_REFERRAL_STRUCTURE),
+  controller.getMemberReferralStructure
 );
 
 router.get(
-	'/members-csv',
-    authenticate,
-    authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_MEMBERS),
-	controller.downloadCSV
+  '/members-csv',
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_EXPORT_CSV_MEMBERS),
+  controller.downloadCSV
+);
+
+router.post(
+  '/members/:memberId/resend-active-email',
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_VIEW_MEMBER_DETAIL),
+  controller.resendActiveEmail
 );
 
 module.exports = router;
@@ -216,6 +240,49 @@ module.exports = router;
 */
 
 /**
+* @swagger
+* /web/membership/members/{memberId}/max-references:
+*   get:
+*     summary: Get max references of member
+*     tags:
+*       - Members
+*     description:
+*     parameters:
+*       - name: memberId
+*         in: path
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": {
+                    "max_references": 0
+                }
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
  * @swagger
  * /web/membership/members/{memberId}/membership-types:
  *   put:
@@ -293,7 +360,7 @@ module.exports = router;
 *            - referrerCode
 *            example:
 *                  {
-                       "referrerCode": "3ZBCN9HLM"
+                    "referrerCode": "3ZBCN9HLM"
 *                  }
 *     produces:
 *       - application/json
@@ -322,6 +389,67 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+/**
+* @swagger
+* /web/membership/members/{memberId}/max-references:
+*   put:
+*     summary: Set max references
+*     tags:
+*       - Members
+*     description: Set max references
+*     parameters:
+*       - name: memberId
+*         in: path
+*         type: string
+*         required: true
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON to update.
+*         schema:
+*            type: object
+*            required:
+*            - membershipTypeId
+*            - referrerCode
+*            example:
+*                  {
+                    "max_references": 5
+*                  }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+router.put("/members/:memberId/max-references",
+  validator(setMaxReferences),
+  authenticate,
+  authority(PermissionKey.MEMBERSHIP_UPDATE_MEMBER),
+  controller.setMaxReferences
+);
 
 /**
  * @swagger

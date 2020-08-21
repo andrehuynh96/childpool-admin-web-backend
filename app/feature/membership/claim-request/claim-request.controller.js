@@ -191,10 +191,13 @@ module.exports = {
       }
 
       const records = await readFileCSV(body.claimRequestTxid.data);
+      if (records.length == 0) {
+        return res.badRequest(res.__("CSV_FILE_IS_EMPTY"),"CSV_FILE_IS_EMPTY",{ field: [body.claimRequestTxid.file.name] });
+      }
       const txidColumnName = 'TX ID';
-      const emptyTxidItem = records.find(x => x.Id && !x[txidColumnName]);
-      if (emptyTxidItem) {
-        return res.badRequest(res.__("CSV_FILE_HAS_EMPTY_TXID"),"CSV_FILE_HAS_EMPTY_TXID",{ field: [body.claimRequestTxid.file.name] });
+      const emptyItem = records.find(x => !x.Id || !x[txidColumnName]);
+      if (emptyItem) {
+        return res.badRequest(res.__("CSV_FILE_HAS_EMPTY_ID_OR_TXID"),"CSV_FILE_HAS_EMPTY_ID_OR_TXID",{ field: [body.claimRequestTxid.file.name] });
       }
       const claimRequestIds = records.filter(x => x.Id).map(item => item.Id);
       // Check claim request
