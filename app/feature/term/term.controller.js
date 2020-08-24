@@ -12,7 +12,7 @@ module.exports = {
             const { count: total, rows: items } = await Term.findAndCountAll({
                 limit,
                 offset,
-                order: [['created_at', 'DESC']]
+                order: [['applied_date','DESC'],['created_at', 'DESC']]
             });
             return res.ok({
                 items: items.length > 0 ? items : [],
@@ -101,7 +101,7 @@ module.exports = {
 
             }
             data.updated_by = req.user.id;
-
+            console.log(data.ja_content);
             const [_, termResponse] = await Term.update(
                 data,
                 {

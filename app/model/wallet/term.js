@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('long'),
       allowNull: false,
     },
+    ja_content: {
+      type: DataTypes.TEXT('long'),
+      allowNull: true,
+    },
     applied_date: {
       type: DataTypes.DATE,
       allowNull: true,
