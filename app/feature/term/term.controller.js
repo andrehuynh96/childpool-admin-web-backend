@@ -50,6 +50,14 @@ module.exports = {
     create: async (req, res, next) => {
         try {
             const data = req.body;
+
+            if (data.applied_date) {
+                if (moment(data.applied_date).toDate() <= moment().toDate()) {
+                    return res.badRequest(res.__("APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY"), "APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY", { field: ['applied_date'] });
+                }
+                data.applied_date = moment(data.applied_date).toDate();
+
+            }
             let term_no = null;
             let term = null;
             do {
@@ -89,6 +97,9 @@ module.exports = {
                 updated_by: req.user.id
             };
             if (body.applied_date) {
+                if (moment(body.applied_date).toDate() <= moment().toDate()) {
+                    return res.badRequest(res.__("APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY"), "APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY", { field: ['applied_date'] });
+                }
                 data.applied_date = moment(body.applied_date).toDate();
 
             }
