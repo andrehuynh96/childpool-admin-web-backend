@@ -26,7 +26,7 @@ router.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: {
-    maxAge: 3600000, // 1 hour
+    maxAge: config.sessionExpiredTimeInSeconds,
     path: '/',
     secure: false,
     httpOnly: true,
