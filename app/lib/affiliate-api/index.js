@@ -419,6 +419,7 @@ class MembershipApi extends AffiliateApi {
     }
     catch (err) {
       logger.error("registerMembership:", err);
+
       return { httpCode: err.response.status, data: err.response.data };
     }
   }

@@ -9,6 +9,7 @@ const destObject = {
     '[].type': '[].type',
     '[].status': '[].status',
     '[].amount': '[].amount',
+    '[].txid': '[].txid',
     '[].currency_symbol': '[].currency_symbol',
     '[].payout_transferred': '[].payout_transferred',
     '[].createdAt': '[].created_at',

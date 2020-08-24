@@ -26,7 +26,7 @@ router.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: {
-    maxAge: 3600000, // 1 hour
+    maxAge: config.sessionExpiredTimeInSeconds,
     path: '/',
     secure: false,
     httpOnly: true,
@@ -93,6 +93,7 @@ router.get('/', function (req, res) {
     buildNumber: config.app.buildNumber,
     description: config.app.description,
     enableSeed: config.enableSeed,
+    recaptchaSiteKey: config.recaptchaSiteKey,
   };
   res.json(result);
 });

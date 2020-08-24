@@ -26,6 +26,7 @@ const config = {
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
   sessionSecretKey: process.env.SESSION_SECRET_KEY || 'CHILDPOOL-6672b85fc8d14d26a221253b23f91234',
+  sessionExpiredTimeInSeconds: parseInt(process.env.SESSION_EXPIRED_TIME_IN_SECONDS || 7200000),
   app: {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
@@ -170,6 +171,9 @@ const config = {
   },
   stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
   apiUrl: process.env.API_URL || process.env.WEBSITE_URL,
+  patchData: {
+    isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
+  },
 };
 
 module.exports = config;
