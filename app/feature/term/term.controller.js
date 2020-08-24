@@ -91,18 +91,16 @@ module.exports = {
             if (!term) {
                 return res.badRequest(res.__("TERM_NOT_FOUND"), "TERM_NOT_FOUND", { field: ['term_no'] });
             }
-            const data = {
-                content: body.content,
-                is_published: body.is_published,
-                updated_by: req.user.id
-            };
-            if (body.applied_date) {
-                if (moment(body.applied_date).toDate() <= moment().toDate()) {
+            const data = body;
+
+            if (data.applied_date) {
+                if (moment(data.applied_date).toDate() <= moment().toDate()) {
                     return res.badRequest(res.__("APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY"), "APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY", { field: ['applied_date'] });
                 }
-                data.applied_date = moment(body.applied_date).toDate();
+                data.applied_date = moment(data.applied_date).toDate();
 
             }
+            data.updated_by = req.user.id;
 
             const [_, termResponse] = await Term.update(
                 data,
