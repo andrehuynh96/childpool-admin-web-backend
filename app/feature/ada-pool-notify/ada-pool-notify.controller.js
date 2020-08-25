@@ -1,5 +1,6 @@
 const logger = require('app/lib/logger');
 const AdaPoolNotifyCfg = require('app/model/wallet').ada_pool_notify_cfgs;
+const AdaPoolNotifyHis = require('app/model/wallet').ada_pool_notify_his;
 
 module.exports = {
   getOne: async (req, res, next) => {
@@ -25,15 +26,20 @@ module.exports = {
   },
   getNotificationHistories: async (req, res, next) => {
     try {
-      let current = await AdaPoolNotifyCfg.findOne({
-        order: [['created_at', 'DESC']]
+      let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+      let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+      const { count: total, rows: items } = await AdaPoolNotifyHis.findAndCountAll({
+        limit,
+        offset,
+        order: [['created_at', 'ASC']]
       });
 
-      if (!current) {
-        current = new AdaPoolNotifyCfg();
-      }
-
-      return res.ok(current);
+      return res.ok({
+        items: items && items.length > 0 ? items : [],
+        offset: offset,
+        limit: limit,
+        total: total,
+      });
     }
     catch (error) {
       logger.error('Get getNotificationHistories fail', error);
