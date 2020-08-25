@@ -9,7 +9,11 @@ module.exports = {
       });
 
       if (!current) {
-        current = new AdaPoolNotifyCfg();
+        current = {
+          is_enabled: false,
+          size: null,
+          emails: null,
+        };
       }
 
       return res.ok(current);
