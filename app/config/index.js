@@ -173,6 +173,7 @@ const config = {
   apiUrl: process.env.API_URL || process.env.WEBSITE_URL,
   patchData: {
     isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
+    patchIsEnabledSyncMembershipType: process.env.PATCH_IS_ENABLED_SYNC_MEMBERSHIP_TYPE === 'true',
   },
 };
 
