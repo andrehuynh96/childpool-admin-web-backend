@@ -12,7 +12,7 @@ module.exports = {
             const { count: total, rows: items } = await Term.findAndCountAll({
                 limit,
                 offset,
-                order: [['created_at', 'DESC']]
+                order: [['applied_date','DESC'],['created_at', 'DESC']]
             });
             return res.ok({
                 items: items.length > 0 ? items : [],
@@ -50,6 +50,14 @@ module.exports = {
     create: async (req, res, next) => {
         try {
             const data = req.body;
+
+            if (data.applied_date) {
+                if (moment(data.applied_date).toDate() <= moment().toDate()) {
+                    return res.badRequest(res.__("APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY"), "APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY", { field: ['applied_date'] });
+                }
+                data.applied_date = moment(data.applied_date).toDate();
+
+            }
             let term_no = null;
             let term = null;
             do {
@@ -83,16 +91,17 @@ module.exports = {
             if (!term) {
                 return res.badRequest(res.__("TERM_NOT_FOUND"), "TERM_NOT_FOUND", { field: ['term_no'] });
             }
-            const data = {
-                content: body.content,
-                is_published: body.is_published,
-                updated_by: req.user.id
-            };
-            if (body.applied_date) {
-                data.applied_date = moment(body.applied_date).toDate();
+            const data = body;
+
+            if (data.applied_date) {
+                if (moment(data.applied_date).toDate() <= moment().toDate()) {
+                    return res.badRequest(res.__("APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY"), "APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY", { field: ['applied_date'] });
+                }
+                data.applied_date = moment(data.applied_date).toDate();
 
             }
-
+            data.updated_by = req.user.id;
+            console.log(data.ja_content);
             const [_, termResponse] = await Term.update(
                 data,
                 {
