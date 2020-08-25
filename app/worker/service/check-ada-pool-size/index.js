@@ -1,8 +1,16 @@
 const AdaPool = require("app/model/wallet").ada_pools
 const AdaPoolNotifyCfg = require("app/model/wallet").ada_pool_notify_cfgs
+const AdaPoolNotifyHis = require("app/model/wallet").ada_pool_notify_his
 const axios = require('axios');
 const mailer = require('app/lib/mailer');
 const config = require('app/config');
+const InfinitoApi = require('node-infinito-api');
+const opts = {
+  apiKey: config.sdk.apiKey,
+  secret: config.sdk.secret,
+  baseUrl: config.sdk.url
+};
+const api = new InfinitoApi(opts);
 
 class CheckAdaPoolNotifyCfg {
     constructor() {
@@ -12,7 +20,8 @@ class CheckAdaPoolNotifyCfg {
       let pools = await AdaPool.findAll();
       let cfg = await AdaPoolNotifyCfg.findOne();
       let warningPools = []
-      if (pools && pools.length > 0 && cfg) {
+      let lastBlock = await this.getBestBlock()
+      if (lastBlock && pools && pools.length > 0 && cfg && cfg.is_enabled == true) {
         for (let e of pools) {
           let result = await axios.get(`https://js.adapools.org/pools/${e.address}/summary.json`)
           let poolInfo = result.data.data
@@ -23,6 +32,20 @@ class CheckAdaPoolNotifyCfg {
         }
       }
       if(warningPools.length > 0){
+        let models = []
+        warningPools.forEach(pool => {
+          models.push({
+            epoch: lastBlock.epoch,
+            slot: lastBlock.slot,
+            block: lastBlock.height,
+            name: pool.db_name,
+            size: parseFloat(pool.total_stake)/1e6
+          })
+        });
+        await AdaPoolNotifyHis.bulkCreate(
+          models, {
+          returning: true
+        });
         await this.sendMail(cfg.emails, warningPools)
         return true
       }
@@ -38,6 +61,30 @@ class CheckAdaPoolNotifyCfg {
       }
       data = Object.assign({}, data, config.email);
       await mailer.sendWithTemplate(subject, from, listEmail, data, config.emailTemplate.adaPoolNotification);
+    }
+
+    async getBestBlock(){
+      try {
+        let params = [
+          {
+            name: "getBestBlock",
+            method: "GET",
+            url: '/chains/v1/ADA/bestblock'
+          }
+        ];
+    
+        api.extendMethod("chains", params, api);
+        const response = await api.chains.getBestBlock();
+        if(response.data && response.cd == 0){
+          return response.data;
+    
+        }else {
+          return null
+        }
+      }catch(err){
+        console.log(err)
+        return null
+      }
     }
   }
   module.exports = CheckAdaPoolNotifyCfg;
