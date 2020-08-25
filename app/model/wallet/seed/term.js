@@ -14,7 +14,7 @@ module.exports = async () => {
             content: fs.readFileSync(path.join(termPath, './html.ejs'), 'utf-8'),
             ja_content: fs.readFileSync(path.join(termPath, './html.ejs'), 'utf-8'),
             applied_date: moment(lastReleaseDate).toDate(),
-            term_no: 'TERM3107',
+            term_no: 'TERM200819',
             created_by: 0,
             updated_by: 0
         };
