@@ -26,6 +26,7 @@ const config = {
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
   sessionSecretKey: process.env.SESSION_SECRET_KEY || 'CHILDPOOL-6672b85fc8d14d26a221253b23f91234',
+  sessionExpiredTimeInSeconds: parseInt(process.env.SESSION_EXPIRED_TIME_IN_SECONDS || 7200000),
   app: {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
@@ -111,6 +112,7 @@ const config = {
     confirmNewIp: process.env.PARTNER_NAME.toLowerCase() + "/confirm-ip.ejs",
     confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
+    adaPoolNotification: process.env.PARTNER_NAME.toLowerCase() + "/ada-pool-check.ejs",
   },
   masterWebsite: {
     urlViewRequest: process.env.MASTER_WEBSITE_URL + '/admin/childpool/detail'
@@ -125,6 +127,7 @@ const config = {
   schedule: {
     updateAffiliate: process.env.SCHEDULE_UPDATE_AFFILIATE_REWARD,
     checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
+    checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,

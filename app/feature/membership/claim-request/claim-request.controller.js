@@ -209,7 +209,7 @@ module.exports = {
       });
       const cache = claimRequests.reduce((result, value) => {
         result[value.id] = value;
-        
+
         return result;
       }, {});
 
@@ -301,7 +301,7 @@ module.exports = {
             currency_symbol: item.currency_symbol,
             amount: item.amount,
             action: MemberRewardTransactionAction.SENT,
-            tx_id: item.tx_id,
+            tx_id: item.txid,
             system_type: item.system_type
           });
         });
