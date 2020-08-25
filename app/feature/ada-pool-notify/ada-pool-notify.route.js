@@ -9,13 +9,13 @@ const router = express.Router();
 
 router.get('/ada-pool-notify',
   authenticate,
-  authority(PermissionKey.VIEW_ADA_POOL_NOTIFY_CONFIG_LIST),
+  authority(PermissionKey.VIEW_ADA_POOL_NOTIFY_CONFIG),
   controller.getOne
 );
 
 router.get('/ada-pool-notify/histories',
   authenticate,
-  authority(PermissionKey.VIEW_ADA_POOL_NOTIFY_CONFIG_LIST),
+  authority(PermissionKey.VIEW_ADA_POOL_NOTIFY_CONFIG),
   controller.getNotificationHistories
 );
 

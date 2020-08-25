@@ -646,9 +646,9 @@ module.exports = {
     "GROUP_NAME": "Term",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"]
   },
-  "VIEW_ADA_POOL_NOTIFY_CONFIG_LIST": {
-    "KEY": "VIEW_ADA_POOL_NOTIFY_CONFIG_LIST",
-    "DESCRIPTION": "View ADA pool notify config list",
+  "VIEW_ADA_POOL_NOTIFY_CONFIG": {
+    "KEY": "VIEW_ADA_POOL_NOTIFY_CONFIG",
+    "DESCRIPTION": "View ADA pool notify config",
     "GROUP_NAME": "Notify to ADA stakeholder",
     "ROLES": ["Master", "Admin"]
   },
@@ -658,6 +658,5 @@ module.exports = {
     "GROUP_NAME": "Notify to ADA stakeholder",
     "ROLES": ["Master", "Admin"]
   },
-
 
 };
