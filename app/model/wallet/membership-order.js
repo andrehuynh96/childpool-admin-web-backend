@@ -132,6 +132,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: true,
     },
+    recalculate_reward: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      default: false,
+    },
     updated_description_at: {
       type: DataTypes.DATE,
       allowNull: true,

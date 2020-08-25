@@ -24,6 +24,8 @@ router.use('/membership', require('./membership'));
 router.use(require('./platform/platform.route'));
 router.use('/affiliate', require('./affiliate'));
 router.use(require('./currency/currency.route'));
+router.use(require('./term/term.route'));
+router.use(require('./ada-pool-notify/ada-pool-notify.route'));
 
 module.exports = router;
 
