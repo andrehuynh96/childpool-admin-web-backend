@@ -18,7 +18,7 @@ const blockchainHelpper = require('app/lib/blockchain-helpper');
 const AppSystemType = require("app/model/wallet/value-object/system-type");
 const path = require('path');
 const { readFileCSV } = require('app/lib/stream');
-const { forEach } = require('p-iteration');
+const { forEachSeries } = require('p-iteration');
 module.exports = {
   search: async (req, res, next) => {
     try {
@@ -185,14 +185,14 @@ module.exports = {
       const records = await readFileCSV(body.tokenPayoutTxid.data);
 
       if (records.length == 0) {
-        return res.badRequest(res.__("CSV_FILE_IS_EMPTY"),"CSV_FILE_IS_EMPTY",{ field: [body.tokenPayoutTxid.file.name] });
+        return res.badRequest(res.__("CSV_FILE_IS_EMPTY"), "CSV_FILE_IS_EMPTY", { field: [body.tokenPayoutTxid.file.name] });
       }
       const txidColumnName = 'TX ID';
-
+      const timeTransferedColumn = 'Data Time transfered';
       const emptyItem = records.find(x => !x.Id || !x[txidColumnName]);
 
       if (emptyItem) {
-        return res.badRequest(res.__("CSV_FILE_HAS_EMPTY_ID_OR_TXID"),"CSV_FILE_HAS_EMPTY_ID_OR_TXID",{ field: [body.tokenPayoutTxid.file.name] });
+        return res.badRequest(res.__("CSV_FILE_HAS_EMPTY_ID_OR_TXID"), "CSV_FILE_HAS_EMPTY_ID_OR_TXID", { field: [body.tokenPayoutTxid.file.name] });
       }
       const claimRequestIds = records.filter(x => x.Id).map(item => item.Id);
       // Check claim request
@@ -221,11 +221,56 @@ module.exports = {
         });
       }
 
+      const affiliateRewardIdList = [];
       transaction = await database.transaction();
 
-      await forEach(records, async (item) => {
-        const updateClaimRequest = ClaimRequest.update(
-          { txid: item[txidColumnName] },
+      await forEachSeries(records, async (item) => {
+        const claimRequest = cache[item.Id];
+        let updateClaimRequestTask, memberRewardTransactionHisTask;
+
+        if (!claimRequest) {
+          return;
+        }
+
+        if (claimRequest.status === ClaimRequestStatus.Pending) {
+          updateClaimRequestTask = ClaimRequest.update(
+            {
+              txid: item[txidColumnName],
+              status: ClaimRequestStatus.Approved,
+              payout_transferred: item[timeTransferedColumn] || Sequelize.fn('NOW')
+            },
+            {
+              where: {
+                id: item.Id
+              },
+              returning: true,
+              transaction: transaction
+            }
+          );
+          affiliateRewardIdList.push(claimRequest.affiliate_claim_reward_id);
+
+          memberRewardTransactionHisTask = MemberRewardTransactionHis.create(
+            {
+              member_id: claimRequest.member_id,
+              claim_request_id: claimRequest.id,
+              currency_symbol: claimRequest.currency_symbol,
+              amount: claimRequest.amount,
+              action: MemberRewardTransactionAction.SENT,
+              tx_id: item[txidColumnName],
+              system_type: claimRequest.system_type
+            }, {
+            returning: true,
+            transaction: transaction
+          });
+
+          await Promise.all([updateClaimRequestTask, memberRewardTransactionHisTask]);
+          return;
+        }
+
+        updateClaimRequestTask = ClaimRequest.update(
+          {
+            txid: item[txidColumnName]
+          },
           {
             where: {
               id: item.Id
@@ -234,7 +279,7 @@ module.exports = {
             transaction: transaction
           });
 
-        const updateMemberRewardTransactionHis = MemberRewardTransactionHis.update(
+        memberRewardTransactionHisTask = MemberRewardTransactionHis.update(
           { tx_id: item[txidColumnName] },
           {
             where: {
@@ -244,15 +289,24 @@ module.exports = {
             transaction: transaction
           });
 
-        await Promise.all([updateClaimRequest, updateMemberRewardTransactionHis]);
+        await Promise.all([updateClaimRequestTask, memberRewardTransactionHisTask]);
       });
 
-      transaction.commit();
+      if (affiliateRewardIdList.length > 0) {
+        const result = await affiliateApi.updateClaimRequests(affiliateRewardIdList, ClaimRequestStatus.Approved);
+
+        if (result.httpCode !== 200) {
+          await transaction.rollback();
+
+          return res.status(result.httpCode).send(result.data);
+        }
+      }
+      await transaction.commit();
       return res.ok(true);
     }
     catch (error) {
       if (transaction) {
-        transaction.rollback();
+        await transaction.rollback();
       }
 
       logger.info('update token payout tx_id fail', error);
