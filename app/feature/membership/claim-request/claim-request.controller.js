@@ -1,6 +1,5 @@
 /* eslint-disable no-cond-assign */
 const logger = require('app/lib/logger');
-const config = require('app/config');
 const ClaimRequest = require("app/model/wallet").claim_requests;
 const MemberRewardTransactionHis = require("app/model/wallet").member_reward_transaction_his;
 const ClaimRequestStatus = require("app/model/wallet/value-object/claim-request-status");
@@ -226,53 +225,72 @@ module.exports = {
         });
       }
 
-      const pendingClaimRequests = await ClaimRequest.findAll({
-        where: {
-          status: ClaimRequestStatus.Pending,
-          id: claimRequestIds
-        }
-      });
-      const affiliateRewardIdList = pendingClaimRequests.map(item => item.affiliate_claim_reward_id);
-
+      const affiliateRewardIdList = [];
       transaction = await database.transaction();
 
       await forEach(records, async (item) => {
-        const updateClaimRequest = ClaimRequest.update(
-          {
-            txid: item[txidColumnName]
-          },
-          {
-            where: {
-              id: item.Id
-            },
-            returning: true,
-            transaction: transaction
-          });
+        const claimRequest = claimRequests.find(x => x.id == item.Id);
+        let updateClaimRequestTask, memberRewardTransactionHisTask;
 
-        const updateStatus = ClaimRequest.update(
-          {
-            status: ClaimRequestStatus.Approved,
-            payout_transferred: Sequelize.fn('NOW')
-          },
-          {
-            where: {
-              id: item.Id,
-              status: ClaimRequestStatus.Pending
-            },
-            returning: true,
-            transaction: transaction
-          });
-        const updateMemberRewardTransactionHis = MemberRewardTransactionHis.update(
-          { tx_id: item[txidColumnName] },
-          {
-            where: {
-              claim_request_id: item.Id
-            },
-            returning: true,
-            transaction: transaction
-          });
+        if (claimRequest) {
+          if (claimRequest.status === ClaimRequestStatus.Pending) {
+            updateClaimRequestTask = ClaimRequest.update(
+              {
+                txid: item[txidColumnName],
+                status: ClaimRequestStatus.Approved,
+                payout_transferred: Sequelize.fn('NOW')
+              },
+              {
+                where: {
+                  id: item.Id,
+                  status: ClaimRequestStatus.Pending
+                },
+                returning: true,
+                transaction: transaction
+              }
+            );
+            affiliateRewardIdList.push(claimRequest.affiliate_claim_reward_id);
 
-        await Promise.all([updateClaimRequest, updateStatus, updateMemberRewardTransactionHis]);
+            memberRewardTransactionHisTask = MemberRewardTransactionHis.create(
+              {
+                member_id: claimRequest.member_id,
+                claim_request_id: claimRequest.id,
+                currency_symbol: claimRequest.currency_symbol,
+                amount: claimRequest.amount,
+                action: MemberRewardTransactionAction.SENT,
+                tx_id: item[txidColumnName],
+                system_type: claimRequest.system_type
+              }, {
+              returning: true,
+              transaction: transaction
+            });
+          }
+          else {
+            updateClaimRequestTask = ClaimRequest.update(
+              {
+                txid: item[txidColumnName]
+              },
+              {
+                where: {
+                  id: item.Id
+                },
+                returning: true,
+                transaction: transaction
+              });
+
+            memberRewardTransactionHisTask = MemberRewardTransactionHis.update(
+              { tx_id: item[txidColumnName] },
+              {
+                where: {
+                  claim_request_id: item.Id
+                },
+                returning: true,
+                transaction: transaction
+              });
+          }
+        }
+
+        await Promise.all([updateClaimRequestTask, memberRewardTransactionHisTask]);
       });
 
       if (affiliateRewardIdList.length > 0) {
