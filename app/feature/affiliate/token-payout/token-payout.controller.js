@@ -18,7 +18,7 @@ const blockchainHelpper = require('app/lib/blockchain-helpper');
 const AppSystemType = require("app/model/wallet/value-object/system-type");
 const path = require('path');
 const { readFileCSV } = require('app/lib/stream');
-const { forEachSeries } = require('p-iteration');
+const { forEach } = require('p-iteration');
 module.exports = {
   search: async (req, res, next) => {
     try {
@@ -224,7 +224,7 @@ module.exports = {
       const affiliateRewardIdList = [];
       transaction = await database.transaction();
 
-      await forEachSeries(records, async (item) => {
+      await forEach(records, async (item) => {
         const claimRequest = claimRequests.find(x => x.id == item.Id);
         let updateClaimRequestTask, memberRewardTransactionHisTask;
 
