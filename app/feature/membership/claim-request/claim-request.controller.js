@@ -246,8 +246,7 @@ module.exports = {
             },
             {
               where: {
-                id: item.Id,
-                status: ClaimRequestStatus.Pending
+                id: item.Id
               },
               returning: true,
               transaction: transaction
@@ -272,8 +271,6 @@ module.exports = {
           await Promise.all([updateClaimRequestTask, memberRewardTransactionHisTask]);
           return;
         }
-
-
 
         updateClaimRequestTask = ClaimRequest.update(
           {
