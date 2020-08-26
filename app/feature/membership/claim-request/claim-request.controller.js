@@ -171,18 +171,17 @@ module.exports = {
           transaction: transaction
         }
       );
-      transaction.commit();
+     await transaction.commit();
       return res.ok(true);
     }
     catch (error) {
-      transaction.rollback();
+     await transaction.rollback();
       logger.info('update claim request tx_id fail', error);
       next(error);
     }
   },
   updateTxidCSV: async (req, res, next) => {
     let transaction;
-
     try {
       const { body } = req;
       let file = path.parse(body.claimRequestTxid.file.name);
@@ -192,12 +191,12 @@ module.exports = {
 
       const records = await readFileCSV(body.claimRequestTxid.data);
       if (records.length == 0) {
-        return res.badRequest(res.__("CSV_FILE_IS_EMPTY"),"CSV_FILE_IS_EMPTY",{ field: [body.claimRequestTxid.file.name] });
+        return res.badRequest(res.__("CSV_FILE_IS_EMPTY"), "CSV_FILE_IS_EMPTY", { field: [body.claimRequestTxid.file.name] });
       }
       const txidColumnName = 'TX ID';
       const emptyItem = records.find(x => !x.Id || !x[txidColumnName]);
       if (emptyItem) {
-        return res.badRequest(res.__("CSV_FILE_HAS_EMPTY_ID_OR_TXID"),"CSV_FILE_HAS_EMPTY_ID_OR_TXID",{ field: [body.claimRequestTxid.file.name] });
+        return res.badRequest(res.__("CSV_FILE_HAS_EMPTY_ID_OR_TXID"), "CSV_FILE_HAS_EMPTY_ID_OR_TXID", { field: [body.claimRequestTxid.file.name] });
       }
       const claimRequestIds = records.filter(x => x.Id).map(item => item.Id);
       // Check claim request
@@ -227,11 +226,21 @@ module.exports = {
         });
       }
 
+      const pendingClaimRequests = await ClaimRequest.findAll({
+        where: {
+          status: ClaimRequestStatus.Pending,
+          id: claimRequestIds
+        }
+      });
+      const affiliateRewardIdList = pendingClaimRequests.map(item => item.affiliate_claim_reward_id);
+
       transaction = await database.transaction();
 
       await forEach(records, async (item) => {
         const updateClaimRequest = ClaimRequest.update(
-          { txid: item[txidColumnName] },
+          {
+            txid: item[txidColumnName]
+          },
           {
             where: {
               id: item.Id
@@ -240,6 +249,19 @@ module.exports = {
             transaction: transaction
           });
 
+        const updateStatus = ClaimRequest.update(
+          {
+            status: ClaimRequestStatus.Approved,
+            payout_transferred: Sequelize.fn('NOW')
+          },
+          {
+            where: {
+              id: item.Id,
+              status: ClaimRequestStatus.Pending
+            },
+            returning: true,
+            transaction: transaction
+          });
         const updateMemberRewardTransactionHis = MemberRewardTransactionHis.update(
           { tx_id: item[txidColumnName] },
           {
@@ -250,15 +272,25 @@ module.exports = {
             transaction: transaction
           });
 
-        await Promise.all([updateClaimRequest, updateMemberRewardTransactionHis]);
+        await Promise.all([updateClaimRequest, updateStatus, updateMemberRewardTransactionHis]);
       });
 
-      transaction.commit();
+      if (affiliateRewardIdList.length > 0) {
+        const result = await membershipApi.updateClaimRequests(affiliateRewardIdList, ClaimRequestStatus.Approved);
+
+        if (result.httpCode !== 200) {
+          await transaction.rollback();
+
+          return res.status(result.httpCode).send(result.data);
+        }
+      }
+
+      await transaction.commit();
       return res.ok(true);
     }
     catch (error) {
       if (transaction) {
-        transaction.rollback();
+        await transaction.rollback();
       }
 
       logger.info('update claim request tx_id fail', error);

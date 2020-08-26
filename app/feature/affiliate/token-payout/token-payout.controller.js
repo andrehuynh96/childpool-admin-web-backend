@@ -221,6 +221,13 @@ module.exports = {
         });
       }
 
+      const pendingClaimRequests = await ClaimRequest.findAll({
+        where: {
+          status: ClaimRequestStatus.Pending,
+          id: claimRequestIds
+        }
+      });
+      const affiliateRewardIdList = pendingClaimRequests.map(item => item.affiliate_claim_reward_id);
       transaction = await database.transaction();
 
       await forEach(records, async (item) => {
@@ -234,6 +241,18 @@ module.exports = {
             transaction: transaction
           });
 
+        const updateStatus = ClaimRequest.update(
+          { status: ClaimRequestStatus.Approved,
+            payout_transferred: Sequelize.fn('NOW')
+           },
+          {
+            where: {
+              id: item.Id,
+              status:ClaimRequestStatus.Pending
+            },
+            returning: true,
+            transaction: transaction
+          });
         const updateMemberRewardTransactionHis = MemberRewardTransactionHis.update(
           { tx_id: item[txidColumnName] },
           {
@@ -244,15 +263,24 @@ module.exports = {
             transaction: transaction
           });
 
-        await Promise.all([updateClaimRequest, updateMemberRewardTransactionHis]);
+        await Promise.all([updateClaimRequest, updateStatus, updateMemberRewardTransactionHis]);
       });
 
-      transaction.commit();
+      if (affiliateRewardIdList.length > 0) {
+        const result = await affiliateApi.updateClaimRequests(affiliateRewardIdList, ClaimRequestStatus.Approved);
+
+        if (result.httpCode !== 200) {
+          await transaction.rollback();
+
+          return res.status(result.httpCode).send(result.data);
+        }
+      }
+      await transaction.commit();
       return res.ok(true);
     }
     catch (error) {
       if (transaction) {
-        transaction.rollback();
+        await transaction.rollback();
       }
 
       logger.info('update token payout tx_id fail', error);
