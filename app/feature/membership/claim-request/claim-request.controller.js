@@ -19,7 +19,7 @@ const blockchainHelpper = require('app/lib/blockchain-helpper');
 const SystemType = require("app/model/wallet/value-object/system-type");
 const path = require('path');
 const { readFileCSV } = require('app/lib/stream');
-const { forEach } = require('p-iteration');
+const { forEachSeries } = require('p-iteration');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -170,11 +170,11 @@ module.exports = {
           transaction: transaction
         }
       );
-     await transaction.commit();
+      await transaction.commit();
       return res.ok(true);
     }
     catch (error) {
-     await transaction.rollback();
+      await transaction.rollback();
       logger.info('update claim request tx_id fail', error);
       next(error);
     }
@@ -193,6 +193,7 @@ module.exports = {
         return res.badRequest(res.__("CSV_FILE_IS_EMPTY"), "CSV_FILE_IS_EMPTY", { field: [body.claimRequestTxid.file.name] });
       }
       const txidColumnName = 'TX ID';
+      const timeTransferedColumn = 'Data Time transfered';
       const emptyItem = records.find(x => !x.Id || !x[txidColumnName]);
       if (emptyItem) {
         return res.badRequest(res.__("CSV_FILE_HAS_EMPTY_ID_OR_TXID"), "CSV_FILE_HAS_EMPTY_ID_OR_TXID", { field: [body.claimRequestTxid.file.name] });
@@ -228,67 +229,73 @@ module.exports = {
       const affiliateRewardIdList = [];
       transaction = await database.transaction();
 
-      await forEach(records, async (item) => {
-        const claimRequest = claimRequests.find(x => x.id == item.Id);
+      await forEachSeries(records, async (item) => {
+        const claimRequest = cache[item.Id];
         let updateClaimRequestTask, memberRewardTransactionHisTask;
 
-        if (claimRequest) {
-          if (claimRequest.status === ClaimRequestStatus.Pending) {
-            updateClaimRequestTask = ClaimRequest.update(
-              {
-                txid: item[txidColumnName],
-                status: ClaimRequestStatus.Approved,
-                payout_transferred: Sequelize.fn('NOW')
-              },
-              {
-                where: {
-                  id: item.Id,
-                  status: ClaimRequestStatus.Pending
-                },
-                returning: true,
-                transaction: transaction
-              }
-            );
-            affiliateRewardIdList.push(claimRequest.affiliate_claim_reward_id);
+        if (!claimRequest) {
+          return;
+        }
 
-            memberRewardTransactionHisTask = MemberRewardTransactionHis.create(
-              {
-                member_id: claimRequest.member_id,
-                claim_request_id: claimRequest.id,
-                currency_symbol: claimRequest.currency_symbol,
-                amount: claimRequest.amount,
-                action: MemberRewardTransactionAction.SENT,
-                tx_id: item[txidColumnName],
-                system_type: claimRequest.system_type
-              }, {
+        if (claimRequest.status === ClaimRequestStatus.Pending) {
+          updateClaimRequestTask = ClaimRequest.update(
+            {
+              txid: item[txidColumnName],
+              status: ClaimRequestStatus.Approved,
+              payout_transferred: item[timeTransferedColumn] || Sequelize.fn('NOW')
+            },
+            {
+              where: {
+                id: item.Id,
+                status: ClaimRequestStatus.Pending
+              },
               returning: true,
               transaction: transaction
-            });
-          }
-          else {
-            updateClaimRequestTask = ClaimRequest.update(
-              {
-                txid: item[txidColumnName]
-              },
-              {
-                where: {
-                  id: item.Id
-                },
-                returning: true,
-                transaction: transaction
-              });
+            }
+          );
+          affiliateRewardIdList.push(claimRequest.affiliate_claim_reward_id);
 
-            memberRewardTransactionHisTask = MemberRewardTransactionHis.update(
-              { tx_id: item[txidColumnName] },
-              {
-                where: {
-                  claim_request_id: item.Id
-                },
-                returning: true,
-                transaction: transaction
-              });
-          }
+          memberRewardTransactionHisTask = MemberRewardTransactionHis.create(
+            {
+              member_id: claimRequest.member_id,
+              claim_request_id: claimRequest.id,
+              currency_symbol: claimRequest.currency_symbol,
+              amount: claimRequest.amount,
+              action: MemberRewardTransactionAction.SENT,
+              tx_id: item[txidColumnName],
+              system_type: claimRequest.system_type
+            }, {
+            returning: true,
+            transaction: transaction
+          });
+
+          await Promise.all([updateClaimRequestTask, memberRewardTransactionHisTask]);
+          return;
         }
+
+
+
+        updateClaimRequestTask = ClaimRequest.update(
+          {
+            txid: item[txidColumnName]
+          },
+          {
+            where: {
+              id: item.Id
+            },
+            returning: true,
+            transaction: transaction
+          });
+
+        memberRewardTransactionHisTask = MemberRewardTransactionHis.update(
+          { tx_id: item[txidColumnName] },
+          {
+            where: {
+              claim_request_id: item.Id
+            },
+            returning: true,
+            transaction: transaction
+          });
 
         await Promise.all([updateClaimRequestTask, memberRewardTransactionHisTask]);
       });
