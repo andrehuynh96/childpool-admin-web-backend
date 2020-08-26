@@ -8,6 +8,7 @@ const config = require("app/config");
       await Promise.all([require("./role-permission")(), require("./user-role")()]);
     }
     await require("./root-permission")();
+    await require("./term")();
     console.log('Seeding data done.');
   }
   catch (err) {
