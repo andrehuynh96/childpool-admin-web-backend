@@ -94,12 +94,12 @@ module.exports = {
             const data = body;
 
             if (data.applied_date) {
-                if (moment(data.applied_date).toDate() <= moment().toDate()) {
-                    return res.badRequest(res.__("APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY"), "APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY", { field: ['applied_date'] });
-                }
+                // if (moment(data.applied_date).toDate() <= moment().toDate()) {
+                //     return res.badRequest(res.__("APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY"), "APPLIED_DATE_MUST_BE_GREATER_THAN_TODAY", { field: ['applied_date'] });
+                // }
                 data.applied_date = moment(data.applied_date).toDate();
-
             }
+
             data.updated_by = req.user.id;
             const [_, termResponse] = await Term.update(
                 data,
