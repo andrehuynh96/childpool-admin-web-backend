@@ -22,7 +22,7 @@ module.exports = async () => {
       result[value.KEY] = value;
       return result;
     }, {});
-    const listRole = roles.reduce((result, value) => {
+    const roleCache = roles.reduce((result, value) => {
       const roleName = value.name;
       result[roleName] = value.id;
       return result;
@@ -34,7 +34,7 @@ module.exports = async () => {
       if (initPermission) {
         initPermission.ROLES.forEach(ele => {
           data.push({
-            role_id: listRole[ele],
+            role_id: roleCache[ele],
             permission_id: item.id
           });
         });
