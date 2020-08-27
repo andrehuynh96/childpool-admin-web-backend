@@ -1,4 +1,4 @@
-// Multi language excel file https://docs.google.com/spreadsheets/d/1nTPhd6TVYbN52f-B_o5fyH-OAcAXmQU2HNE-b5Kdl6Y/edit#gid=1979940527
+// Please update new permission in this link https://docs.google.com/spreadsheets/d/1IJGzUpROXB8u3h4V6YGnf6BgtAGPqP97bHIf5hwkfqc/edit#gid=1745652268
 module.exports = {
   "CHANGE_PASSWORD_ACCOUNT": {
     "KEY": "CHANGE_PASSWORD_ACCOUNT",
