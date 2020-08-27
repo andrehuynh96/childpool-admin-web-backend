@@ -7,8 +7,8 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 module.exports = async () => {
-  let rolePermission = await RolePermission.findAll();
-  const permissionIds = _.uniq(rolePermission.map(item => item.permission_id));
+  let rolePermissions = await RolePermission.findAll();
+  const permissionIds = _.uniq(rolePermissions.map(item => item.permission_id));
   let roles = await Role.findAll();
   let newPermissions = await Permission.findAll({
     where: {
@@ -17,20 +17,31 @@ module.exports = async () => {
     raw: true
   });
   if (newPermissions.length > 0) {
-    roles = Object.assign({}, ...roles.map(ele => { return { [ele.name]: ele.id }; }));
+    const cache = Object.keys(PermissionKey).reduce((result, key) => {
+      const value = PermissionKey[key];
+      result[value.KEY] = value;
+      return result;
+    }, {});
+    const listRole = roles.reduce((result, value) => {
+      const roleName = value.name;
+      result[roleName] = value.id;
+      return result;
+    },{});
+
     let data = [];
     newPermissions.forEach(item => {
-      const permission = Object.keys(PermissionKey).find(x => x == item.name);
-      if (permission) {
-        PermissionKey[item.name].ROLES.forEach(ele => {
+      const initPermission =  cache[item.name];
+      if (initPermission) {
+        initPermission.ROLES.forEach(ele => {
           data.push({
-            role_id: roles[ele],
+            role_id: listRole[ele],
             permission_id: item.id
           });
         });
       }
 
     });
+
     await RolePermission.bulkCreate(data, {
       returning: true
     });
