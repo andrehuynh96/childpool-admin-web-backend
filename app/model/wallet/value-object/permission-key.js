@@ -748,11 +748,4 @@ module.exports = {
     "ROLES": ["Master", "Admin"],
     "CREATED_DATE":"2020-09-01T00:00:00.000Z"
   },
-  "UPDATE_ADA_POOL_NOTIFY_CONFIG_TEST_1": {
-    "KEY": "UPDATE_ADA_POOL_NOTIFY_CONFIG_TEST_1",
-    "DESCRIPTION": "Update ADA pool notify config",
-    "GROUP_NAME": "Test",
-    "ROLES": ["Master", "Admin"],
-    "CREATED_DATE":"2020-09-01T00:00:00.000Z"
-  },
 };
