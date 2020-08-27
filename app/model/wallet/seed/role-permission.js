@@ -32,9 +32,9 @@ module.exports = async () => {
     newPermissions.forEach(item => {
       const initPermission =  cache[item.name];
       if (initPermission) {
-        initPermission.ROLES.forEach(ele => {
+        initPermission.ROLES.forEach(roleName => {
           data.push({
-            role_id: roleCache[ele],
+            role_id: roleCache[roleName],
             permission_id: item.id
           });
         });
