@@ -5,17 +5,20 @@ module.exports = {
     // eslint-disable-next-line no-unused-vars
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.describeTable('ada_pool_notify_cfgs')
+        queryInterface.describeTable('permissions')
           .then(async (tableDefinition) => {
-            if (tableDefinition['is_enabled']) {
+            if (tableDefinition['initialized_date']) {
               return Promise.resolve();
             }
 
-            await queryInterface.addColumn('ada_pool_notify_cfgs', 'is_enabled', {
-              type: Sequelize.DataTypes.BOOLEAN,
+            await queryInterface.addColumn('permissions', 'initialized_date', {
+              type: Sequelize.DataTypes.DATE,
               allowNull: true,
-              default: true,
+              defaultValue: null,
             });
+
+            const sql = 'UPDATE permissions SET initialized_date=created_at where initialized_date IS NULL;';
+            await queryInterface.sequelize.query(sql, {}, {});
 
             return Promise.resolve();
           })
@@ -27,7 +30,7 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.removeColumn('ada_pool_notify_cfgs', 'is_enabled', { transaction: t }),
+        queryInterface.removeColumn('permissions', 'initialized_date', { transaction: t }),
       ]);
     });
   }

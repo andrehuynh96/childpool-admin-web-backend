@@ -7,6 +7,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 module.exports = async () => {
+  console.log('Seeding permissions for all roles...');
   let rolePermissions = await RolePermission.findAll();
   const permissionIds = _.uniq(rolePermissions.map(item => item.permission_id));
   let roles = await Role.findAll();
@@ -16,34 +17,41 @@ module.exports = async () => {
     },
     raw: true
   });
+
   if (newPermissions.length > 0) {
-    const cache = Object.keys(PermissionKey).reduce((result, key) => {
+    const permissioncache = Object.keys(PermissionKey).reduce((result, key) => {
       const value = PermissionKey[key];
       result[value.KEY] = value;
       return result;
     }, {});
+
     const roleCache = roles.reduce((result, value) => {
-      const roleName = value.name;
+      const roleName = _.trim(value.name);
       result[roleName] = value.id;
+
       return result;
-    },{});
+    }, {});
 
     let data = [];
     newPermissions.forEach(item => {
-      const initPermission =  cache[item.name];
+      const initPermission = permissioncache[item.name];
       if (initPermission) {
+        console.log(`New permission: ${item.name}`);
         initPermission.ROLES.forEach(roleName => {
-          data.push({
-            role_id: roleCache[roleName],
-            permission_id: item.id
-          });
+          const roleId = roleCache[_.trim(roleName)];
+          if (roleId) {
+            data.push({
+              role_id: roleId,
+              permission_id: item.id
+            });
+          }
         });
       }
-
     });
 
     await RolePermission.bulkCreate(data, {
       returning: true
     });
+    console.log('Done.');
   }
 };
