@@ -2,6 +2,7 @@ const Wallet = require('app/model/wallet').wallets;
 const WalletPrivKeys = require('app/model/wallet').wallet_priv_keys;
 const memberTrackingVote = require('app/model/wallet').member_tracking_votes;
 const GetBalanceAmountLib = require('app/lib/address/balance-amount');
+const stakingPlatform = ['IRIS','ATOM','ONT','XTZ','ONE','ADA','QTUM'];
 class GetBalanceAmountAddress {
     constructor() {
     }
@@ -17,14 +18,14 @@ class GetBalanceAmountAddress {
                 }
               ],
               where: {
-                  platform: 'XTZ'
+                  platform: 'QTUM'
               },
               raw: true,
         });
         // is Todo:
         // call function get balance and amount from lib
         const data = await GetBalanceAmountLib.getBalanceAmount(walletPrivKeys.platform,walletPrivKeys.address);
-        // console.log(data);
+        // console.log('================>',data);
         //
 
         // const data = walletPrivKeys.map(item => {

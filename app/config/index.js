@@ -192,7 +192,14 @@ const config = {
   },
   tezos: {
     tezosServerUrl: process.env.TEZOS_SERVER_URL
-  }
+  },
+  harmony: {
+    urlShard0: process.env.HARMONY_TESTNET == "1" ? process.env.URL_HARMONY_TESTNET_SHARD_0 : process.env.URL_HARMONY_MAINNET_SHARD_0,
+    urlShard1: process.env.HARMONY_TESTNET == "1" ? process.env.URL_HARMONY_TESTNET_SHARD_1 : process.env.URL_HARMONY_MAINNET_SHARD_1,
+    urlShard2: process.env.HARMONY_TESTNET == "1" ? process.env.URL_HARMONY_TESTNET_SHARD_2 : process.env.URL_HARMONY_MAINNET_SHARD_2,
+    urlShard3: process.env.HARMONY_TESTNET == "1" ? process.env.URL_HARMONY_TESTNET_SHARD_3 : process.env.URL_HARMONY_MAINNET_SHARD_3,
+  },
+  qtumApi: process.env.QTUM_API
 };
 
 module.exports = config;

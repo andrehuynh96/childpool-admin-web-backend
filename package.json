@@ -19,6 +19,8 @@
   "license": "ISC",
   "dependencies": {
     "@cityofzion/neon-core": "^4.8.0",
+    "@harmony-js/core": "^0.1.45",
+    "@harmony-js/utils": "^0.1.45",
     "address-rfc2822": "^2.0.5",
     "aws-sdk": "^2.722.0",
     "axios": "^0.19.2",
@@ -63,6 +65,7 @@
     "p-iteration": "^1.1.8",
     "pg": "^7.18.1",
     "pg-hstore": "^2.3.3",
+    "qtumjs-lib": "0.0.8",
     "query-string": "^6.13.1",
     "redis": "^3.0.2",
     "rootpath": "^0.1.2",
