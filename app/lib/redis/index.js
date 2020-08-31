@@ -46,6 +46,7 @@ const cache = {
 
   quit: () => {
     if (!client) {
+      console.log(123);
       client.quit();
     }
   }

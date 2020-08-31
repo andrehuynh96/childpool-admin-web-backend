@@ -17,14 +17,14 @@ class GetBalanceAmountAddress {
                 }
               ],
               where: {
-                  platform: 'ATOM'
+                  platform: 'XTZ'
               },
               raw: true,
         });
-        // is TODO:
+        // is Todo:
         // call function get balance and amount from lib
         const data = await GetBalanceAmountLib.getBalanceAmount(walletPrivKeys.platform,walletPrivKeys.address);
-        console.log(data);
+        // console.log(data);
         //
 
         // const data = walletPrivKeys.map(item => {
@@ -34,6 +34,7 @@ class GetBalanceAmountAddress {
         //         address: item.address,
         //     };
         // });
+
         // await memberTrackingVote.bulkCreate(data);
         return true;
     }

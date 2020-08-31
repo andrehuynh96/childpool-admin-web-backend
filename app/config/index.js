@@ -168,7 +168,9 @@ const config = {
     },
   },
   ONT: {
-    restUrl: process.env.ONT_REST_SERVER_URL
+    restUrl: process.env.ONT_REST_SERVER_URL,
+    network: process.env.API_MAINNET_ONT,
+    validatorAddress: process.env.VALIDATOR_ADDRESS_ONT
   },
   stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
   apiUrl: process.env.API_URL || process.env.WEBSITE_URL,
@@ -182,6 +184,14 @@ const config = {
       apiKey: process.env.CHANGELLY_API_KEY,
       secretKey: process.env.CHANGELLY_API_SECRET
     }
+  opts : {
+    apiKey: process.env.INFINITO_API_KEY,
+    secret: process.env.INFINITO_API_SECRET,
+    baseUrl: process.env.INFINITO_API_URL,
+    logLevel: "ALL"
+  },
+  tezos: {
+    tezosServerUrl: process.env.TEZOS_SERVER_URL
   }
 };
 
