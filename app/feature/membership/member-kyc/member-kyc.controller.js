@@ -185,6 +185,17 @@ module.exports = {
       next(error);
     }
   },
+  getKycProperties: async (req, res, next) => {
+    try {
+      const kycProperties = await KycProperty.findAll({});
+
+      return res.ok(kycProperties);
+    }
+    catch (error) {
+      logger.info('getKycProperties fail', error);
+      next(error);
+    }
+  },
   updateStatus: async (req, res, next) => {
     let transaction;
     try {
@@ -250,7 +261,7 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
-      const [ num, memberKycResponse] = await MemberKyc.update({
+      const [num, memberKycResponse] = await MemberKyc.update({
         status: kycStatus
       }, {
         where: {

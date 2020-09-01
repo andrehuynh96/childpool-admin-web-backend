@@ -313,5 +313,9 @@ router.get(
 *           $ref: '#/definitions/500'
 */
 
+router.get(
+  '/kyc-properties',
+  controller.getKycProperties
+);
 
 module.exports = router;
