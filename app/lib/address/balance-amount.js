@@ -4,7 +4,6 @@ const config = require('app/config');
 const InfinitoApi = require('node-infinito-api');
 const { GovernanceTxBuilder, Crypto } = require('ontology-ts-sdk');
 const BigNumber = require('bignumber.js');
-const qtum = require('qtumjs-lib');
 const { Harmony } = require('@harmony-js/core');
 const {
     ChainID,
@@ -29,15 +28,19 @@ module.exports = {
                 return result;
             }
             else if (platform == 'ONE') {
-                const result = await getBalanceAmountONE(address);
-                return result;
+                const balance = await getBalanceONE(address);
+                const amount = await getAmountONE(address);
+                return {
+                    balance: balance,
+                    amount: amount
+                };
             }
             else if (platform == 'QTUM') {
                 const result = await getBalanceAmountQTUM(address);
                 return result;
             }
             else {
-                const result = {};
+                const result = await getBalanceAmountADA(address);
                 return result;
             }
         }
@@ -60,10 +63,9 @@ async function getBalanceAmountFromABP(platform, address) {
     let amount = 0;
     if (amountResult.data.length > 0) {
         amountResult.data.forEach(item => {
-            amount += BigNumber(item.balance).toNumber();
+                amount += BigNumber(item.balance).toNumber();
         });
     }
-
     return {
         balance: balance,
         amount: amount
@@ -74,7 +76,7 @@ async function getBalanceAmountONTAndONG(platform, address) {
     const network = config.ONT.network;
     const assetName = platform.toLowerCase();
     const getAsset = await axios.get(`${network}/v2/addresses/${address}/balances?asset_name=${assetName}`);
-    const balance = BigNumber(getAsset.data.result[0].balance).times(1e9).toNumber();
+    const balance = BigNumber(getAsset.data.result[0].balance).toNumber();
 
     // GET Staking Amount
     const userAddr = new Crypto.Address(address);
@@ -105,25 +107,49 @@ async function getBalanceAmountXTZ(address) {
     };
 }
 
-async function getBalanceAmountONE(address) {
+async function getBalanceONE(address) {
     let balance = 0;
     const shards = Object.values(config.harmony);
-    for (let item of shards){
+    for (let item of shards) {
         const hmy = new Harmony(
             item,
             {
                 chainType: ChainType.Harmony,
                 chainId: ChainID.HmyTestnet,
             });
-            const response = await hmy.blockchain.getBalance({ address: address });
-            const shardBalance = fromWei(hexToNumber(response.result), Units.one);
-            const numBalance = BigNumber(shardBalance).toNumber();
-            balance += numBalance;
+        const response = await hmy.blockchain.getBalance({ address: address });
+        const shardBalance = fromWei(hexToNumber(response.result), Units.one);
+        const numBalance = BigNumber(shardBalance).toNumber();
+        balance += numBalance;
     }
-    return {
-        balance: balance,
-        amount: 0
+
+
+    return balance;
+}
+
+async function getAmountONE(address) {
+    const data = {
+        jsonrpc: '2.0',
+        method: 'hmy_getDelegationsByDelegator',
+        params: [address],
+        id: 1
     };
+    let options = {
+        method: 'POST',
+        url: config.harmony.urlShard0,
+        headers: {
+            'Content-Type': 'application/json'
+          },
+        data : JSON.stringify(data)
+    };
+    const response = await axios(options);
+    let amount = 0;
+    const { result } = response.data;
+    result.forEach( item => {
+        amount += item.amount;
+    });
+    const totalAmount = BigNumber(amount).toNumber();
+    return totalAmount;
 }
 
 async function getBalanceAmountQTUM(address) {
@@ -131,9 +157,23 @@ async function getBalanceAmountQTUM(address) {
         baseURL: config.qtumApi,
         timeout: 2000
     });
-    const res = await api.get(`/address/${address}/balance`);
-    const balance = BigNumber(res.data).times(BigNumber(10).pow(-8)).toNumber();
-    console.log(balance);
+    const result = await api.get(`/address/${address}`);
+    const balance = BigNumber(result.data.balance).toNumber();
+    const amount = BigNumber(result.data.staking).toNumber();
+    return {
+        balance: balance,
+        amount: amount
+    };
+}
+
+async function getBalanceAmountADA(address) {
+    const api = new InfinitoApi(config.opts);
+    const apiCoin = api['ADA'];
+    const balanceResult = await apiCoin.getBalance(address);
+    // const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
+    const balance = BigNumber(balanceResult.data.balance).toNumber();
+
+    // console.log('amount=========>',amountResult);
     return {
         balance: balance,
         amount: 0
