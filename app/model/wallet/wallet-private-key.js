@@ -31,6 +31,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    run_batch_day: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
+    try_batch_num: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
     }
   }, {
     underscored: true,
@@ -50,4 +60,4 @@ module.exports = (sequelize, DataTypes) => {
     WalletPrivKey.belongsTo(models.wallets, { foreignKey: 'wallet_id', targetKey: 'id', as: 'Wallet', })
   };
   return WalletPrivKey;
-} 
+}

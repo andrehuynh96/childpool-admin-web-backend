@@ -188,7 +188,7 @@ const config = {
     apiKey: process.env.INFINITO_API_KEY,
     secret: process.env.INFINITO_API_SECRET,
     baseUrl: process.env.INFINITO_API_URL,
-    logLevel: "ALL"
+    logLevel: "NONE"
   },
   tezos: {
     tezosServerUrl: process.env.TEZOS_SERVER_URL
