@@ -57,7 +57,7 @@ module.exports = {
           }
         });
 
-        if (walletPrivKeys == 0) {
+        if (walletPrivKeys.length == 0) {
           return res.ok({
             items: [],
             offset: offset,
