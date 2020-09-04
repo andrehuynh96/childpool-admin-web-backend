@@ -53,27 +53,23 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                    "data": {
-                        "items": [
-                            {
-                                "id": "3e7b875a-fde5-4fbe-835c-d1cb28a5c67b",
-                                "member_id": "4e6c23fb-9f88-4901-86ba-9a025fcfc517",
-                                "platform": "ONT",
-                                "address": "AXFLrvFhYXP5obxqWV4X61wgS3vmzopeSc",
-                                "balance": 0,
-                                "amount": 0,
-                                "createdAt": "2020-09-03T08:04:03.371Z",
-                                "updatedAt": "2020-09-03T08:04:03.371Z",
-                                "Member": {
-                                    "email": "hungtm+dev1@blockchainlabs.asia"
-                                }
-                            }
-                        ],
-                        "offset": 0,
-                        "limit": 10,
-                        "total": 1
-                    }
-                }
+                  "data": {
+                      "items": [
+                          {
+                              "id": "3e7b875a-fde5-4fbe-835c-d1cb28a5c67b",
+                              "platform": "ONT",
+                              "address": "AXFLrvFhYXP5obxqWV4X61wgS3vmzopeSc",
+                              "balance": 0,
+                              "amount": 0,
+                              "createdAt": "2020-09-03T08:04:03.371Z",
+                              "updatedAt": "2020-09-03T08:04:03.371Z"
+                          }
+                      ],
+                      "offset": 0,
+                      "limit": 10,
+                      "total": 1
+                  }
+              }
  *       400:
  *         description: Error
  *         schema:
@@ -92,4 +88,4 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /** *******************************************************************/
+/** *******************************************************************/
