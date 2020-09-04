@@ -749,5 +749,11 @@ module.exports = {
     "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE":"2020-09-01T00:00:00.000Z"
   },
-
+  "VIEW_LIST_MEMBER_ASSET": {
+    "KEY": "VIEW_LIST_MEMBER_ASSET",
+    "DESCRIPTION": "Search list member asset",
+    "GROUP_NAME": "Member asset",
+    "ROLES": ["Master", "Admin"],
+    "INITIALIZED_DATE":"2020-09-04T02:50:08.764Z"
+  },
 };
