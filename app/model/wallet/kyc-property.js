@@ -54,6 +54,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(256),
       allowNull: true
     },
+    max_length: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
       underscored: true,
       timestamps: true,
