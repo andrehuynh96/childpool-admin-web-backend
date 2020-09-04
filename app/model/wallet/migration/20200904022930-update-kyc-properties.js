@@ -10,7 +10,7 @@ const KYC_PROPERTIES = [
     "require_flg": true,
     "order_index": 0,
     "enabled_flg": true,
-    "max_length": 128,
+    "max_length": 100,
   },
   {
     "field_name": "Account Type",
@@ -34,7 +34,7 @@ const KYC_PROPERTIES = [
     "check_data_type_flg": false,
     "order_index": 2,
     "enabled_flg": true,
-    "max_length": 128,
+    "max_length": 100,
   },
   {
     "field_name": "Last Name",
@@ -46,7 +46,7 @@ const KYC_PROPERTIES = [
     "check_data_type_flg": false,
     "order_index": 1,
     "enabled_flg": true,
-    "max_length": 128,
+    "max_length": 100,
   },
   {
     "field_name": "Last Name Kanji",
@@ -58,7 +58,7 @@ const KYC_PROPERTIES = [
     "check_data_type_flg": false,
     "order_index": 3,
     "enabled_flg": true,
-    "max_length": 128,
+    "max_length": 100,
   },
   {
     "field_name": "First Name Kanji",
@@ -70,7 +70,7 @@ const KYC_PROPERTIES = [
     "check_data_type_flg": false,
     "order_index": 4,
     "enabled_flg": true,
-    "max_length": 128,
+    "max_length": 100,
   },
   {
     "field_name": "Address",
