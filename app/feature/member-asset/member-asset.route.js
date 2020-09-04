@@ -5,7 +5,7 @@ const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const router = express.Router();
 
-router.get('/member-asset',
+router.get('/member-assets',
   authenticate,
   authority(PermissionKey.VIEW_LIST_MEMBER_ASSET),
   controller.search
@@ -16,9 +16,9 @@ module.exports = router;
 /** *******************************************************************/
 /**
  * @swagger
- * /web/member-asset:
+ * /web/member-assets:
  *   get:
- *     summary: search member asset
+ *     summary: Search member assets
  *     tags:
  *       - Member Asset
  *     description:
