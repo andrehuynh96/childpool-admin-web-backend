@@ -1,14 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
-  const Model = sequelize.define('member_tracking_votes', {
+  const Model = sequelize.define('member_assets', {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4(),
-    },
-    member_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
     },
     platform: {
       type: DataTypes.STRING(16),
@@ -32,14 +28,6 @@ module.exports = (sequelize, DataTypes) => {
     underscored: true,
     timestamps: true,
   });
-
-  Model.associate = (models) => {
-    Model.belongsTo(models.members, {
-      as: 'Member',
-      foreignKey: 'member_id',
-      targetKey: 'id'
-    });
-  };
 
   return Model;
 };

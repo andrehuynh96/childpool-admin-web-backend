@@ -1,6 +1,8 @@
 const logger = require('app/lib/logger');
-const MemberTrackingVote = require('app/model/wallet').member_tracking_votes;
+const MemberAssets = require('app/model/wallet').member_assets;
 const Member = require('app/model/wallet').members;
+const Wallet = require('app/model/wallet').wallets;
+const WalletPrivKey = require('app/model/wallet').wallet_priv_keys;
 const moment = require('moment');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
@@ -32,40 +34,53 @@ module.exports = {
                 return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
             }
 
+            if (query.email || query.address) {
+                where.address = {};
+            }
+
             if (query.email) {
                 memberCond.email = { [Op.iLike]: `%${query.email}%` };
+                const members = await Member.findAll({
+                    where: memberCond
+                });
+
+                const memberIds = members.map(item => item.id);
+                const wallets = await Wallet.findAll({
+                    where: {
+                        member_id: memberIds
+                    }
+                });
+                const walletIds = wallets.map(item => item.id);
+                const walletPrivKeys = await WalletPrivKey.findAll({
+                    where: {
+                        wallet_id: walletIds
+                    }
+                });
+                const addressList = walletPrivKeys.map(item => item.address);
+                where.address[Op.in] = addressList;
             }
 
             if (query.address) {
-                where.address = { [Op.iLike] : `%${query.address}%` };
+                where.address[Op.iLike] = `%${query.address}%` ;
             }
 
             if (query.platform) {
                 where.platform = query.platform;
             }
-
-            const { count: total, rows: items } = await MemberTrackingVote.findAndCountAll({
+            console.log(where);
+            const { count: total, rows: items } = await MemberAssets.findAndCountAll({
                 limit,
                 offset,
-                include: [
-                  {
-                    attributes: ['email'],
-                    as: "Member",
-                    model: Member,
-                    where: memberCond,
-                    required: true
-                  }
-                ],
                 where: where,
                 order: [['created_at', 'DESC']]
               });
 
-              return res.ok({
+            return res.ok({
                 items: items.length > 0 ? items : [],
                 offset: offset,
                 limit: limit,
                 total: total
-              });
+            });
         }
         catch (error) {
             logger.error('search member asset fail',error);
