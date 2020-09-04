@@ -106,7 +106,7 @@ const KYC_PROPERTIES = [
     "check_data_type_flg": false,
     "order_index": 5,
     "enabled_flg": true,
-    "max_length": null
+    "max_length": 500,
   },
   {
     "field_name": "City",
