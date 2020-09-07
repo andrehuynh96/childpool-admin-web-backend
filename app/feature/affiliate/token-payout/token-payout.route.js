@@ -65,6 +65,7 @@ router.get(
     authenticate,
     controller.getCryptoPlatform
 );
+
 module.exports = router;
 
 /** ******************************************************************/
