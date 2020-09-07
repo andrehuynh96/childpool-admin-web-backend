@@ -10,4 +10,4 @@ module.exports = {
     CheckAdaPoolSizeSchedule.run();
     CheckExchangeStatusSchedule.run();
   }
-}
+};

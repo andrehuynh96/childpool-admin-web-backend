@@ -1,5 +1,5 @@
 const logger = require("app/lib/logger");
-const GetBalanceAmountAddress = require("../service/get-balance-amount/index");
+const GetBalanceAmountAddress = require("../service/get-member-asset/index");
 
 module.exports = {
   execute: async () => {
@@ -11,4 +11,4 @@ module.exports = {
       logger.error("get balance and amount job error:", err);
     }
   }
-}
+};

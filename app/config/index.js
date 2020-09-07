@@ -169,7 +169,6 @@ const config = {
   },
   ONT: {
     restUrl: process.env.ONT_REST_SERVER_URL,
-    network: process.env.API_MAINNET_ONT,
     validatorAddress: process.env.VALIDATOR_ADDRESS_ONT
   },
   stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
@@ -194,10 +193,10 @@ const config = {
     tezosServerUrl: process.env.TEZOS_SERVER_URL
   },
   harmony: {
-    urlShard0: process.env.HARMONY_TESTNET == "1" ? process.env.URL_HARMONY_TESTNET_SHARD_0 : process.env.URL_HARMONY_MAINNET_SHARD_0,
-    urlShard1: process.env.HARMONY_TESTNET == "1" ? process.env.URL_HARMONY_TESTNET_SHARD_1 : process.env.URL_HARMONY_MAINNET_SHARD_1,
-    urlShard2: process.env.HARMONY_TESTNET == "1" ? process.env.URL_HARMONY_TESTNET_SHARD_2 : process.env.URL_HARMONY_MAINNET_SHARD_2,
-    urlShard3: process.env.HARMONY_TESTNET == "1" ? process.env.URL_HARMONY_TESTNET_SHARD_3 : process.env.URL_HARMONY_MAINNET_SHARD_3,
+    urlShard0: process.env.URL_HARMONY_SHARD_0,
+    urlShard1: process.env.URL_HARMONY_SHARD_1,
+    urlShard2: process.env.URL_HARMONY_SHARD_2,
+    urlShard3: process.env.URL_HARMONY_SHARD_3,
   },
   qtumApi: process.env.QTUM_API
 };
