@@ -5,7 +5,7 @@ const CheckExchangeStatusSchedule = require("./check-exchange-status.schedule")
 
 module.exports = {
   start: () => {
-    // UpdateAffiliateSchedule.run();
+    UpdateAffiliateSchedule.run();
     // CheckDistributeRewardSchedule.run();
     CheckAdaPoolSizeSchedule.run();
     CheckExchangeStatusSchedule.run();

@@ -30,7 +30,7 @@ class GetBalanceAmountAddress {
             address: item.address,
             balance: data.balance,
             amount: data.amount,
-            reward: data.reward ? data.reward : 0
+            reward: data.reward
           });
           await WalletPrivKeys.update({
             run_batch_day: dayOfYear
