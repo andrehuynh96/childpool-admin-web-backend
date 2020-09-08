@@ -2,17 +2,19 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
+    // eslint-disable-next-line no-unused-vars
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.describeTable('claim_requests')
+        queryInterface.describeTable('kyc_properties')
           .then(async (tableDefinition) => {
-            if (tableDefinition['payout_transferred']) {
+            if (tableDefinition['max_length']) {
               return Promise.resolve();
             }
 
-            await queryInterface.addColumn('claim_requests', 'payout_transferred', {
-              type: Sequelize.DataTypes.DATE,
+            await queryInterface.addColumn('kyc_properties', 'max_length', {
+              type: Sequelize.DataTypes.INTEGER,
               allowNull: true,
+              defaultValue: null,
             });
 
             return Promise.resolve();
@@ -25,7 +27,7 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.removeColumn('claim_requests', 'payout_transferred', { transaction: t }),
+        queryInterface.removeColumn('kyc_properties', 'max_length', { transaction: t }),
       ]);
     });
   }
