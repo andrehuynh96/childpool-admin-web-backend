@@ -257,7 +257,8 @@ module.exports = {
               amount: claimRequest.amount,
               action: MemberRewardTransactionAction.SENT,
               tx_id: item[txidColumnName],
-              system_type: claimRequest.system_type
+              system_type: claimRequest.system_type,
+              payout_transferred: item[timeTransferedColumn] || Sequelize.fn('NOW')
             }, {
             returning: true,
             transaction: transaction
@@ -266,11 +267,18 @@ module.exports = {
           await Promise.all([updateClaimRequestTask, memberRewardTransactionHisTask]);
           return;
         }
-
+        const updateTransferredData = {
+          txid: item[txidColumnName]
+        };
+        const updateTransferredHisData = {
+          tx_id: item[txidColumnName]
+        };
+        if (item[timeTransferedColumn]) {
+          updateTransferredData.payout_transferred = item[timeTransferedColumn];
+          updateTransferredHisData.payout_transferred = item[timeTransferedColumn];
+        }
         updateClaimRequestTask = ClaimRequest.update(
-          {
-            txid: item[txidColumnName]
-          },
+          updateTransferredData,
           {
             where: {
               id: item.Id
@@ -278,9 +286,8 @@ module.exports = {
             returning: true,
             transaction: transaction
           });
-
         memberRewardTransactionHisTask = MemberRewardTransactionHis.update(
-          { tx_id: item[txidColumnName] },
+          updateTransferredHisData,
           {
             where: {
               claim_request_id: item.Id
@@ -288,7 +295,6 @@ module.exports = {
             returning: true,
             transaction: transaction
           });
-
         await Promise.all([updateClaimRequestTask, memberRewardTransactionHisTask]);
       });
 
@@ -350,7 +356,8 @@ module.exports = {
             amount: item.amount,
             action: MemberRewardTransactionAction.SENT,
             tx_id: item.txid,
-            system_type: item.system_type
+            system_type: item.system_type,
+            payout_transferred: Sequelize.fn('NOW')
           });
         });
         const idList = claimRequests.map(item => item.affiliate_claim_reward_id);
