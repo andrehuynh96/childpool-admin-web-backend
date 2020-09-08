@@ -16,6 +16,11 @@ module.exports = {
       if (query.name) {
         cond.name = { [Op.iLike]: `%${query.name}%` };
       }
+
+      if (query.symbol) {
+        cond.symbol = { [Op.iLike]: `%${query.symbol}%` };
+      }
+
       if (query.platform) {
         cond.platform = query.platform;
       }
