@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const schema = Joi.object().keys({
-  payoutTransferred: Joi.string().min(10).max(40).required()
+  payoutTransferred: Joi.date().required()
 });
 
 module.exports = schema;

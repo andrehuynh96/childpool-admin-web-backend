@@ -523,11 +523,11 @@ module.exports = {
       });
 
       if (!claimRequest) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+        return res.forbidden(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
       }
 
       if (claimRequest.status !== ClaimRequestStatus.Approved) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_APPROVED"), "CLAIM_REQUEST_NOT_APPROVED", { field: ['claimRequestId'] });
+        return res.forbidden(res.__("CLAIM_REQUEST_NOT_APPROVED"), "CLAIM_REQUEST_NOT_APPROVED", { field: ['claimRequestId'] });
       }
       transaction = await database.transaction();
       await ClaimRequest.update({

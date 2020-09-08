@@ -20,8 +20,6 @@ const SystemType = require("app/model/wallet/value-object/system-type");
 const path = require('path');
 const { readFileCSV } = require('app/lib/stream');
 const { forEachSeries } = require('p-iteration');
-const { EWOULDBLOCK } = require('constants');
-const { payoutTransferred } = require('./validator');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -533,11 +531,11 @@ module.exports = {
       });
 
       if (!claimRequest) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+        return res.forbidden(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
       }
 
       if (claimRequest.status !== ClaimRequestStatus.Approved) {
-        return res.badRequest(res.__("CLAIM_REQUEST_NOT_APPROVED"), "CLAIM_REQUEST_NOT_APPROVED", { field: ['claimRequestId'] });
+        return res.forbidden(res.__("CLAIM_REQUEST_NOT_APPROVED"), "CLAIM_REQUEST_NOT_APPROVED", { field: ['claimRequestId'] });
       }
       transaction = await database.transaction();
       await ClaimRequest.update({
