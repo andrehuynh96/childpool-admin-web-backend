@@ -4,13 +4,13 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.describeTable('claim_requests')
+        queryInterface.describeTable('member_reward_transaction_his')
           .then(async (tableDefinition) => {
             if (tableDefinition['payout_transferred']) {
               return Promise.resolve();
             }
 
-            await queryInterface.addColumn('claim_requests', 'payout_transferred', {
+            await queryInterface.addColumn('member_reward_transaction_his', 'payout_transferred', {
               type: Sequelize.DataTypes.DATE,
               allowNull: true,
             });
@@ -25,7 +25,7 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.removeColumn('claim_requests', 'payout_transferred', { transaction: t }),
+        queryInterface.removeColumn('member_reward_transaction_his', 'payout_transferred', { transaction: t }),
       ]);
     });
   }
