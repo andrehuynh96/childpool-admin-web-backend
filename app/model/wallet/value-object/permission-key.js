@@ -756,4 +756,18 @@ module.exports = {
     "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE":"2020-09-04T02:50:08.764Z"
   },
+  "MEMBERSHIP_UPDATE_PAYOUT_TRANSFERRED": {
+    "KEY": "MEMBERSHIP_UPDATE_PAYOUT_TRANSFERRED",
+    "DESCRIPTION": "Update payout transferred commission payout",
+    "GROUP_NAME": "Claim request",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE":"2020-09-08T09:50:08.764Z"
+  },
+  "AFFILIATE_UPDATE_PAYOUT_TRANSFERRED": {
+    "KEY": "AFFILIATE_UPDATE_PAYOUT_TRANSFERRED",
+    "DESCRIPTION": "Update payout transferred token payout",
+    "GROUP_NAME": "Token payout",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE":"2020-09-08T09:50:08.764Z"
+  },
 };
