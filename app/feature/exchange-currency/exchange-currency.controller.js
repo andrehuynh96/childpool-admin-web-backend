@@ -44,67 +44,41 @@ module.exports = {
   },
   getDetails: async (req, res, next) => {
     try {
-      const ExchangeCurrency = await ExchangeCurrency.findAll({
+      const { params } = req;
+      const exchangeCurrency = await ExchangeCurrency.findOne({
         where: {
-          name: req.params.name,
-          deleted_flg: false
+          id: params.exchangeCurrencyId,
         }
       });
 
-      if (!ExchangeCurrency) {
-        return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ['id'] });
+      if (!exchangeCurrency) {
+        return res.badRequest(res.__("EXCHANGE_CURRENCY_NOT_FOUND"), "EXCHANGE_CURRENCY_NOT_FOUND", { fields: ['id'] });
       }
-      return res.ok(ExchangeCurrency);
+
+      return res.ok(mapper(exchangeCurrency));
     }
     catch (error) {
-      logger.error('get email template detail fail', error);
+      logger.error('get exchange currency details fail', error);
       next(error);
     }
   },
   update: async (req, res, next) => {
-    let transaction;
     try {
-      const { body } = req;
-      const ExchangeCurrencys = body.email_templates;
-      transaction = await database.transaction();
-      for (let item of ExchangeCurrencys) {
-        const ExchangeCurrency = await ExchangeCurrency.findOne({
-          where: {
-            name: item.name,
-            language: item.language,
-            deleted_flg: false
-          }
-        });
-
-        if (ExchangeCurrency) {
-          await ExchangeCurrency.update(
-            {
-              subject: item.subject,
-              template: item.template
-            },
-            {
-              where: {
-                name: item.name,
-                language: item.language
-              },
-              returning: true,
-              transaction: transaction
-            });
-        } else {
-          await ExchangeCurrency.create(
-            item,
-            { transaction: transaction });
+      const { params, body } = req;
+      const exchangeCurrency = await ExchangeCurrency.findOne({
+        where: {
+          id: params.exchangeCurrencyId,
         }
+      });
+
+      if (!exchangeCurrency) {
+        return res.badRequest(res.__("EXCHANGE_CURRENCY_NOT_FOUND"), "EXCHANGE_CURRENCY_NOT_FOUND", { fields: ['id'] });
       }
-      await transaction.commit();
 
       return res.ok(true);
     }
     catch (error) {
-      if (transaction) {
-        await transaction.rollback();
-      }
-      logger.error('update email template fail', error);
+      logger.error('update exchange currency fail', error);
       next(error);
     }
   },
@@ -112,7 +86,6 @@ module.exports = {
     try {
       const { body, user } = req;
       const { group_name, option_name, display_order, email_templates } = body;
-      const name = uuidV4();
       const ExchangeCurrencyOptions = email_templates.map(item => {
         return {
           name,
@@ -134,80 +107,7 @@ module.exports = {
       next(error);
     }
   },
-  updateExchangeCurrencyOption: async (req, res, next) => {
-    let transaction;
 
-    try {
-      const { params, body, user } = req;
-      const { name } = params;
-      const { option_name, display_order, email_templates } = body;
-      const ExchangeCurrency = await ExchangeCurrency.findOne({
-        where: {
-          name,
-          language: 'en',
-          option_name: { [Op.not]: null },
-          deleted_flg: false,
-        },
-      });
-      if (!ExchangeCurrency) {
-        return res.badRequest(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: [req.params.name] });
-      }
-
-      transaction = await database.transaction();
-      await forEach(email_templates, async item => {
-        const ExchangeCurrency = await ExchangeCurrency.findOne({
-          where: {
-            name: name,
-            language: item.language,
-            deleted_flg: false,
-          }
-        });
-
-        if (!ExchangeCurrency) {
-          const data = {
-            ...item,
-            name,
-            option_name,
-            display_order,
-            subject: item.subject,
-            template: item.template,
-            language: item.language,
-            created_by: user.id,
-          };
-
-          await ExchangeCurrency.create(data, { transaction: transaction });
-          return;
-        }
-
-        const data = {
-          option_name,
-          display_order,
-          subject: item.subject,
-          template: item.template,
-          updated_by: user.id,
-        };
-
-        await ExchangeCurrency.update(data, {
-          where: {
-            id: ExchangeCurrency.id,
-          },
-          returning: true,
-          transaction: transaction
-        });
-      });
-      await transaction.commit();
-
-      return res.ok(true);
-    }
-    catch (error) {
-      logger.error('create option fail', error);
-      if (transaction) {
-        await transaction.rollback();
-      }
-
-      next(error);
-    }
-  },
 
 
 };
