@@ -16,7 +16,7 @@ class GetBalanceAmountAddress {
         where: {
           platform: stakingPlatform,
           run_batch_day: { [Op.lt]: dayOfYear },
-          deleted: false
+          deleted_flg: false
         },
         raw: true,
         order: [['try_batch_num', 'ASC']]
