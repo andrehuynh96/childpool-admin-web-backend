@@ -106,6 +106,64 @@ router.get('/exchange-currencies',
 */
 /* #endregion */
 
+/* #region Get platform of currencies */
+router.get('/exchange-currencies/platforms',
+  authenticate,
+  controller.getPlatforms
+);
+
+/**
+* @swagger
+* /web/exchange-currencies/platforms:
+*   get:
+*     summary: Get platform of currencies
+*     tags:
+*       - Exchange
+*     description:
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": [
+                    {
+                      "id": 2,
+                      "symbol": "BTC",
+                      "platform": "BTC",
+                      "name": "Bitcoin",
+                      "icon": "https://web-api.changelly.com/api/coins/btc.png",
+                      "order_index": 0,
+                      "status": 1,
+                      "from_flg": true,
+                      "to_flg": true,
+                      "fix_rate_flg": true,
+                      "created_at": "2020-09-04T07:27:17.601Z",
+                      "updated_at": "2020-09-04T07:27:17.601Z"
+                    }
+                ]
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+/* #endregion */
+
 /* #region Get exchange currency details */
 router.get('/exchange-currencies/:exchangeCurrencyId',
   validator(exchangeCurrencyIdParam, 'params'),
@@ -173,7 +231,7 @@ router.get('/exchange-currencies/:exchangeCurrencyId',
 
 /* #region Create exchange currency */
 router.post('/exchange-currencies/',
-  validator(update, 'body'),
+  validator(create, 'body'),
   authenticate,
   authority(PermissionKey.CREATE_EXCHANGE_CURRENCY),
   controller.create
