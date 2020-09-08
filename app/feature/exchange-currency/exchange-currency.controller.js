@@ -1,6 +1,7 @@
 const logger = require('app/lib/logger');
 const Sequelize = require('sequelize');
 const ExchangeCurrency = require('app/model/wallet').exchange_currencies;
+const ExchangeCurrencyStatus = require("app/model/wallet/value-object/exchange-currency-status");
 const mapper = require("app/feature/response-schema/exchange-currency.response-schema");
 
 const Op = Sequelize.Op;
@@ -81,7 +82,7 @@ module.exports = {
   },
   update: async (req, res, next) => {
     try {
-      const { params, body } = req;
+      const { params, body, user } = req;
       const [numOfItems, items] = await ExchangeCurrency.update({
         symbol: body.symbol,
         platform: body.platform,
@@ -92,6 +93,7 @@ module.exports = {
         from_flg: body.from_flg,
         to_flg: body.to_flg,
         fix_rate_flg: body.fix_rate_flg,
+        updated_by: user.id,
       }, {
         where: {
           id: params.exchangeCurrencyId,
@@ -113,25 +115,32 @@ module.exports = {
   create: async (req, res, next) => {
     try {
       const { body, user } = req;
-      const { group_name, option_name, display_order, email_templates } = body;
-      const ExchangeCurrencyOptions = email_templates.map(item => {
-        return {
-          name,
-          option_name,
-          group_name,
-          display_order,
-          subject: item.subject,
-          template: item.template,
-          language: item.language,
-          created_by: user.id,
-        };
-      });
-      await ExchangeCurrency.bulkCreate(ExchangeCurrencyOptions);
+      const data = {
+        ...body,
+        created_by: user.id,
+      };
+      const exchangeCurrency = await ExchangeCurrency.create(data);
 
-      return res.ok(true);
+      return res.ok(mapper(exchangeCurrency));
     }
     catch (error) {
-      logger.error('create option fail', error);
+      logger.error('create exchangeCurrency fail', error);
+      next(error);
+    }
+  },
+  getExchangeCurrencyStatuses: async (req, res, next) => {
+    try {
+      const result = Object.entries(ExchangeCurrencyStatus).map(items => {
+        return {
+          value: items[1],
+          label: items[0],
+        };
+      });
+
+      return res.ok(result);
+    }
+    catch (error) {
+      logger.error('create getExchangeCurrencyStatuses fail', error);
       next(error);
     }
   },
