@@ -286,7 +286,6 @@ module.exports = {
             returning: true,
             transaction: transaction
           });
-        console.log(updateTransferredHisData,item.Id);
         memberRewardTransactionHisTask = MemberRewardTransactionHis.update(
           updateTransferredHisData,
           {
@@ -296,7 +295,6 @@ module.exports = {
             returning: true,
             transaction: transaction
           });
-          console.log(memberRewardTransactionHisTask);
         await Promise.all([updateClaimRequestTask, memberRewardTransactionHisTask]);
       });
 
