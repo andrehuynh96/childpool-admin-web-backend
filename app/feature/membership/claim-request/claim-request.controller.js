@@ -531,7 +531,7 @@ module.exports = {
       });
 
       if (!claimRequest) {
-        return res.forbidden(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
       }
 
       if (claimRequest.status !== ClaimRequestStatus.Approved) {
