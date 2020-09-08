@@ -1,8 +1,5 @@
-// const _ = require('lodash');
-const { forEach } = require('p-iteration');
 const logger = require('app/lib/logger');
 const Sequelize = require('sequelize');
-const database = require('app/lib/database').db().wallet;
 const ExchangeCurrency = require('app/model/wallet').exchange_currencies;
 const mapper = require("app/feature/response-schema/exchange-currency.response-schema");
 
@@ -56,6 +53,21 @@ module.exports = {
       }
 
       return res.ok(mapper(exchangeCurrency));
+    }
+    catch (error) {
+      logger.error('get exchange currency details fail', error);
+      next(error);
+    }
+  },
+  getPlatforms: async (req, res, next) => {
+    try {
+      const result = await ExchangeCurrency.findAll({
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('platform')), 'platform']],
+        order: [['platform', 'ASC']],
+        raw: true
+      });
+
+      return res.ok(result);
     }
     catch (error) {
       logger.error('get exchange currency details fail', error);
@@ -118,7 +130,5 @@ module.exports = {
       next(error);
     }
   },
-
-
 
 };
