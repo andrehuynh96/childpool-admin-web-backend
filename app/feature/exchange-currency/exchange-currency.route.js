@@ -106,6 +106,62 @@ router.get('/exchange-currencies',
 */
 /* #endregion */
 
+/* #region Get exchange currency statuses */
+router.get('/exchange-currencies/statuses',
+  authenticate,
+  controller.getExchangeCurrencyStatuses
+);
+
+/**
+* @swagger
+* /web/exchange-currencies/statuses:
+*   get:
+*     summary: Get exchange currency statuses
+*     tags:
+*       - Exchange
+*     description:
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": [
+                    {
+                        "value": -1,
+                        "label": "DISABLED"
+                    },
+                    {
+                        "value": 1,
+                        "label": "ENABLED"
+                    },
+                    {
+                        "value": 0,
+                        "label": "COMMING_SOON"
+                    }
+                ]
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+/* #endregion */
+
 /* #region Get platform of currencies */
 router.get('/exchange-currencies/platforms',
   authenticate,
