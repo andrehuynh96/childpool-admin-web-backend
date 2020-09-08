@@ -1,5 +1,6 @@
 const { Temporalize } = require('sequelize-temporalize');
 const Status = require("./value-object/exchange-transaction-status");
+const Provider = require("./value-object/exchange-provider");
 
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define("exchange_transactions", {
@@ -95,10 +96,23 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: true
     },
+    provider: {
+      type: DataTypes.STRING(16),
+      allowNull: false,
+      defaultValue: Provider.CHANGELLY
+    },
+    rate_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    response: {
+      type: DataTypes.TEXT('medium'),
+      allowNull: true
+    },
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 
   Temporalize({
     model: Model,
@@ -109,6 +123,5 @@ module.exports = (sequelize, DataTypes) => {
       modelSuffix: "_his"
     }
   });
-
   return Model;
-};
+} 

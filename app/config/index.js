@@ -127,7 +127,8 @@ const config = {
   schedule: {
     updateAffiliate: process.env.SCHEDULE_UPDATE_AFFILIATE_REWARD,
     checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
-    checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE
+    checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE,
+    checkExchangeStatus: process.env.SCHEDULE_CHECK_EXCHANGE_STATUS,
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
@@ -175,6 +176,13 @@ const config = {
     isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
     patchIsEnabledSyncMembershipType: process.env.PATCH_IS_ENABLED_SYNC_MEMBERSHIP_TYPE === 'true',
   },
+  exchange: {
+    changelly: {
+      url: process.env.CHANGELLY_URL,
+      apiKey: process.env.CHANGELLY_API_KEY,
+      secretKey: process.env.CHANGELLY_API_SECRET
+    }
+  }
 };
 
 module.exports = config;

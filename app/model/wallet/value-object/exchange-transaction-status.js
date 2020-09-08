@@ -8,4 +8,6 @@ module.exports = {
   FAILED: 'FAILED',
   REFUNDED: 'REFUNDED',
   EXPIRED: 'EXPIRED',
-};
+  OVERDUE: 'OVERDUE',
+  HOLD: 'HOLD',
+}

@@ -1,5 +1,4 @@
 const Status = require("./value-object/exchange-currency-status");
-
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define("exchange_currencies", {
     id: {
@@ -70,10 +69,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: 0
     },
+    contract_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 
   return Model;
-};
+} 
