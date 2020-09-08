@@ -56,6 +56,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    payout_transferred: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,
