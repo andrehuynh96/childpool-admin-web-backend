@@ -65,24 +65,35 @@ module.exports = {
   update: async (req, res, next) => {
     try {
       const { params, body } = req;
-      const exchangeCurrency = await ExchangeCurrency.findOne({
+      const [numOfItems, items] = await ExchangeCurrency.update({
+        symbol: body.symbol,
+        platform: body.platform,
+        name: body.name,
+        icon: body.icon,
+        order_index: body.order_index,
+        status: body.status,
+        from_flg: body.from_flg,
+        to_flg: body.to_flg,
+        fix_rate_flg: body.fix_rate_flg,
+      }, {
         where: {
           id: params.exchangeCurrencyId,
-        }
+        },
+        returning: true,
       });
 
-      if (!exchangeCurrency) {
-        return res.badRequest(res.__("EXCHANGE_CURRENCY_NOT_FOUND"), "EXCHANGE_CURRENCY_NOT_FOUND", { fields: ['id'] });
+      if (!numOfItems) {
+        return res.badRequest(res.__("EXCHANGE_CURRENCY_NOT_FOUND"), "EXCHANGE_CURRENCY_NOT_FOUND");
       }
 
-      return res.ok(true);
+      return res.ok(mapper(items[0]));
     }
     catch (error) {
       logger.error('update exchange currency fail', error);
       next(error);
     }
   },
-  createExchangeCurrencyOption: async (req, res, next) => {
+  create: async (req, res, next) => {
     try {
       const { body, user } = req;
       const { group_name, option_name, display_order, email_templates } = body;

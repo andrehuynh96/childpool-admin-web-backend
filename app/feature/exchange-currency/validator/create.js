@@ -1,19 +1,17 @@
 const Joi = require('joi');
-const groupName = require('app/model/wallet/value-object/email-template-groupname');
-const GroupNameList = Object.values(groupName);
 
 const schema = Joi.object().keys({
-  option_name: Joi.string().max(256).required(),
-  group_name: Joi.string().valid(GroupNameList).required(),
-  display_order: Joi.number().allow(null).optional(),
-  email_templates: Joi.array().items(
-    Joi.object().keys({
-      subject: Joi.string().max(1000).required(),
-      template: Joi.string().required(),
-      language: Joi.string().max(20).required()
-    }
-    ).required()
-  ).required()
+  symbol: Joi.string().max(128).required(),
+  platform: Joi.string().max(128).required(),
+  name: Joi.string().max(128).required(),
+  icon: Joi.string().max(256).required(),
+  decimals: Joi.number().integer().optional(),
+  contract_address: Joi.string().max(256).allow('').allow(null).optional(),
+  order_index: Joi.number().integer().optional(),
+  status: Joi.number().integer().required(),
+  from_flg: Joi.boolean().required(),
+  to_flg: Joi.boolean().required(),
+  fix_rate_flg: Joi.boolean().required(),
 });
 
 module.exports = schema;

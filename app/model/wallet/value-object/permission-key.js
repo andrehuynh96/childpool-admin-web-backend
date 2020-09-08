@@ -765,20 +765,19 @@ module.exports = {
     "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE": "2020-09-08T00:00:00.000Z"
   },
-  "ADD_EXCHANGE_CURRENCY": {
-    "KEY": "ADD_EXCHANGE_CURRENCY",
-    "DESCRIPTION": "Add exchange currency",
+  "CREATE_EXCHANGE_CURRENCY": {
+    "KEY": "CREATE_EXCHANGE_CURRENCY",
+    "DESCRIPTION": "Create exchange currency",
     "GROUP_NAME": "Exchange",
     "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE": "2020-09-08T00:00:00.000Z"
   },
-  "EDIT_EXCHANGE_CURRENCY": {
-    "KEY": "EDIT_EXCHANGE_CURRENCY",
-    "DESCRIPTION": "Edit exchange currency",
+  "UPDATE_EXCHANGE_CURRENCY": {
+    "KEY": "UPDATE_EXCHANGE_CURRENCY",
+    "DESCRIPTION": "Update exchange currency",
     "GROUP_NAME": "Exchange",
     "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE": "2020-09-08T00:00:00.000Z"
   },
-
 
 };

@@ -106,31 +106,24 @@ router.get('/exchange-currencies',
 */
 /* #endregion */
 
+/* #region Get exchange currency details */
 router.get('/exchange-currencies/:exchangeCurrencyId',
   validator(exchangeCurrencyIdParam, 'params'),
   authenticate,
-  authority(PermissionKey.VIEW_EMAIL_TEMPLATE_DETAIL),
+  authority(PermissionKey.UPDATE_EXCHANGE_CURRENCY),
   controller.getDetails
 );
 
-// router.put('/exchange-currencies',
-//   authenticate,
-//   authority(PermissionKey.UPDATE_EMAIL_TEMPLATE),
-//   validator(update),
-//   controller.update
-// );
-
-
 /**
 * @swagger
-* /web/exchange-currencies/{name}:
+* /web/exchange-currencies/:exchangeCurrencyId:
 *   get:
-*     summary: get email template detail
+*     summary: Get exchange currency details
 *     tags:
-*       - Email Template
-*     description: get email template detail
+*       - Exchange
+*     description:
 *     parameters:
-*       - name: name
+*       - name: exchangeCurrencyId
 *         in: path
 *         type: string
 *         required: true
@@ -144,14 +137,18 @@ router.get('/exchange-currencies/:exchangeCurrencyId',
 *             {
                 "data": [
                     {
-                        "id": "872a4a9d-cabe-4524-a01d-c70f74884d2b",
-                        "name": "MEMBERSHIP_ORDER_APPROVED",
-                        "subject": "Membership payment jp",
-                        "template":"<!doctype html>\n<html>\n  <head>\ .......dai lam do",
-                        "language": "en",
-                        "deleted_flg": false,
-                        "createdAt": "2020-02-13T03:08:47.449Z",
-                        "updatedAt": "2020-02-13T03:08:47.449Z"
+                      "id": 2,
+                      "symbol": "BTC",
+                      "platform": "BTC",
+                      "name": "Bitcoin",
+                      "icon": "https://web-api.changelly.com/api/coins/btc.png",
+                      "order_index": 0,
+                      "status": 1,
+                      "from_flg": true,
+                      "to_flg": true,
+                      "fix_rate_flg": true,
+                      "created_at": "2020-09-04T07:27:17.601Z",
+                      "updated_at": "2020-09-04T07:27:17.601Z"
                     }
                 ]
             }
@@ -172,226 +169,23 @@ router.get('/exchange-currencies/:exchangeCurrencyId',
 *         schema:
 *           $ref: '#/definitions/500'
 */
+/* #endregion */
+
+/* #region Create exchange currency */
+router.post('/exchange-currencies/',
+  validator(update, 'body'),
+  authenticate,
+  authority(PermissionKey.CREATE_EXCHANGE_CURRENCY),
+  controller.create
+);
 
 /**
 * @swagger
 * /web/exchange-currencies:
-*   put:
-*     summary: update email template
-*     tags:
-*       - Email Template
-*     description: update email template
-*     parameters:
-*       - name: data
-*         in: body
-*         required: true
-*         description: submit data JSON.
-*         schema:
-*            type: object
-*            example:
-*                  {
-                        "email_templates":[
-                            {
-                                 "name": "CHILDPOOL_CONFIRM_IP",
-                                 "subject": "Confirm new ip address",
-                                 "template": "<!doctype html>\n<html>\n  <head>\n.......",
-                                 "language": "en"
-                            },
-                            {
-                                 "name": "CHILDPOOL_CONFIRM_IP",
-                                 "subject": "新しいIPアドレスを確認",
-                                 "template": "<!doctype html>\n<html>\n  <head>\n.......",
-                                 "language": "jp"
-                            }
-                        ]
-*                  }
-*     produces:
-*       - application/json
-*     responses:
-*       200:
-*         description: Ok
-*         examples:
-*           application/json:
-*             {
-                "data": true
-              }
-*       400:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/400'
-*       401:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/401'
-*       404:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/404'
-*       500:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/500'
-*/
-
-/**
-* @swagger
-* /web/exchange-currencies/reasons/group-names:
-*   get:
-*     summary: get group name list
-*     tags:
-*       - Email Template
-*     description: get group name list
-*     parameters:
-*     produces:
-*       - application/json
-*     responses:
-*       200:
-*         description: Ok
-*         examples:
-*           application/json:
-*             {
-                    "data": {
-                        "MEMBERSHIP_ORDER_REJECTED_REASON": "MEMBERSHIP_ORDER_REJECTED_REASON"
-                    }
-                }
-*       400:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/400'
-*       401:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/401'
-*       404:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/404'
-*       500:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/500'
-*/
-
-/**
-* @swagger
-* /web/email-template-options:
-*   get:
-*     summary: get email template reason list rejected order
-*     tags:
-*       - Email Template
-*     description: get email template reason list rejected order
-*     parameters:
-*       - name: groupName
-*         in: path
-*         type: string
-*         required: true
-*     produces:
-*       - application/json
-*     responses:
-*       200:
-*         description: Ok
-*         examples:
-*           application/json:
-*             {
-                "data": [
-                    {
-                        "id": "872a4a9d-cabe-4524-a01d-c70f74884d2b",
-                        "name": "MEMBERSHIP_ORDER_APPROVED",
-                        "subject": "Membership payment jp",
-                        "template":"<!doctype html>\n<html>\n  <head>\ .......dai lam do",
-                        "language": "en",
-                        "deleted_flg": false,
-                        "createdAt": "2020-02-13T03:08:47.449Z",
-                        "updatedAt": "2020-02-13T03:08:47.449Z"
-                    }
-                ]
-            }
-*       400:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/400'
-*       401:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/401'
-*       404:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/404'
-*       500:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/500'
-*/
-
-/**
-* @swagger
-* /web/email-template-options:
 *   post:
-*     summary: create email template option
+*     summary: Create exchange currency
 *     tags:
-*       - Email Template
-*     description: create email template option
-*     parameters:
-*       - name: data
-*         in: body
-*         required: true
-*         description: submit data JSON.
-*         schema:
-*            type: object
-*            example:
-*              {
-                    "option_name": "KYC_INSUFFICIENT Option 3",
-                    "group_name": "CHILDPOOL_KYC_INSUFFICIENT",
-                    "display_order": null,
-                    "email_templates": [
-                        {
-                            "subject": "Confirm new ip address",
-                            "template": "<!doctype html>\n<html>\n  <head>\n.......",
-                            "language": "en"
-                        },
-                        {
-                            "subject": "新しいIPアドレスを確認",
-                            "template": "<!doctype html>\n<html>\n  <head>\n.......",
-                            "language": "ja"
-                        }
-                    ]
-                }
-*     produces:
-*       - application/json
-*     responses:
-*       200:
-*         description: Ok
-*         examples:
-*           application/json:
-*             {
-                "data": true
-              }
-*       400:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/400'
-*       401:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/401'
-*       404:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/404'
-*       500:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/500'
-*/
-
-/**
-* @swagger
-* /web/email-template-options/{name}:
-*   put:
-*     summary: Update email template option
-*     tags:
-*       - Email Template
+*       - Exchange
 *     description:
 *     parameters:
 *       - name: data
@@ -401,22 +195,17 @@ router.get('/exchange-currencies/:exchangeCurrencyId',
 *         schema:
 *            type: object
 *            example:
-*              {
-                  "option_name" : "KYC_INSUFFICIENT Option 3 Update",
-                  "display_order": 1,
-                  "email_templates": [
-                      {
-                          "subject": "Confirm new ip address",
-                          "template": "<!doctype html>\n<html>\n  <head>\n.......",
-                          "language": "en"
-                      },
-                      {
-                          "subject": "新しいIPアドレスを確認",
-                          "template": "aaaaaa",
-                          "language": "ja"
-                      }
-                  ]
-                }
+*                  {
+                      "symbol": "BTC",
+                      "platform": "BTC",
+                      "name": "Bitcoin",
+                      "icon": "https://web-api.changelly.com/api/coins/btc.png",
+                      "order_index": 10,
+                      "status": 1,
+                      "from_flg": true,
+                      "to_flg": true,
+                      "fix_rate_flg": true
+*                  }
 *     produces:
 *       - application/json
 *     responses:
@@ -425,8 +214,23 @@ router.get('/exchange-currencies/:exchangeCurrencyId',
 *         examples:
 *           application/json:
 *             {
-                "data": true
-              }
+                "data": [
+                    {
+                      "id": 2,
+                      "symbol": "BTC",
+                      "platform": "BTC",
+                      "name": "Bitcoin",
+                      "icon": "https://web-api.changelly.com/api/coins/btc.png",
+                      "order_index": 0,
+                      "status": 1,
+                      "from_flg": true,
+                      "to_flg": true,
+                      "fix_rate_flg": true,
+                      "created_at": "2020-09-04T07:27:17.601Z",
+                      "updated_at": "2020-09-04T07:27:17.601Z"
+                    }
+                ]
+            }
 *       400:
 *         description: Error
 *         schema:
@@ -444,19 +248,48 @@ router.get('/exchange-currencies/:exchangeCurrencyId',
 *         schema:
 *           $ref: '#/definitions/500'
 */
+/* #endregion */
+
+/* #region Update exchange currency */
+router.put('/exchange-currencies/:exchangeCurrencyId',
+  validator(exchangeCurrencyIdParam, 'params'),
+  validator(update, 'body'),
+  authenticate,
+  authority(PermissionKey.UPDATE_EXCHANGE_CURRENCY),
+  controller.update
+);
 
 /**
 * @swagger
-* /web/email-template-options/{name}/duplicate:
+* /web/exchange-currencies/:exchangeCurrencyId:
 *   put:
-*     summary: duplicate email template option
+*     summary: Update exchange currency
 *     tags:
-*       - Email Template
-*     description: duplicate email template option
+*       - Exchange
+*     description:
 *     parameters:
+*       - name: exchangeCurrencyId
+*         in: path
+*         type: string
+*         required: true
 *       - name: data
 *         in: body
 *         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                      "symbol": "BTC",
+                      "platform": "BTC",
+                      "name": "Bitcoin",
+                      "icon": "https://web-api.changelly.com/api/coins/btc.png",
+                      "order_index": 10,
+                      "status": 1,
+                      "from_flg": true,
+                      "to_flg": true,
+                      "fix_rate_flg": true
+*                  }
 *     produces:
 *       - application/json
 *     responses:
@@ -465,8 +298,23 @@ router.get('/exchange-currencies/:exchangeCurrencyId',
 *         examples:
 *           application/json:
 *             {
-                "data": true
-              }
+                "data": [
+                    {
+                      "id": 2,
+                      "symbol": "BTC",
+                      "platform": "BTC",
+                      "name": "Bitcoin",
+                      "icon": "https://web-api.changelly.com/api/coins/btc.png",
+                      "order_index": 0,
+                      "status": 1,
+                      "from_flg": true,
+                      "to_flg": true,
+                      "fix_rate_flg": true,
+                      "created_at": "2020-09-04T07:27:17.601Z",
+                      "updated_at": "2020-09-04T07:27:17.601Z"
+                    }
+                ]
+            }
 *       400:
 *         description: Error
 *         schema:
@@ -484,44 +332,6 @@ router.get('/exchange-currencies/:exchangeCurrencyId',
 *         schema:
 *           $ref: '#/definitions/500'
 */
+/* #endregion */
 
-/**
-* @swagger
-* /web/email-template-options/{name}:
-*   delete:
-*     summary: delete email template option
-*     tags:
-*       - Email Template
-*     description: delete email template option
-*     parameters:
-*       - name: data
-*         in: body
-*         required: true
-*     produces:
-*       - application/json
-*     responses:
-*       200:
-*         description: Ok
-*         examples:
-*           application/json:
-*             {
-                "data": true
-              }
-*       400:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/400'
-*       401:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/401'
-*       404:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/404'
-*       500:
-*         description: Error
-*         schema:
-*           $ref: '#/definitions/500'
-*/
 module.exports = router;
