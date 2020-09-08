@@ -1,0 +1,3 @@
+module.exports = {
+  'Changelly': 'Changelly'
+}
