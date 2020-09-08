@@ -518,6 +518,56 @@ module.exports = {
       next(error);
     }
   },
+  updatePayoutTransferred: async (req,res,next) => {
+    let transaction;
+    try {
+      const { params, body } = req;
+      const payout_transferred = moment(body.payoutTransferred).toDate();
+      const claimRequest = await ClaimRequest.findOne({
+        where: {
+          id: params.claimRequestId,
+          system_type: SystemType.MEMBERSHIP
+        }
+      });
+
+      if (!claimRequest) {
+        return res.badRequest(res.__("CLAIM_REQUEST_NOT_FOUND"), "CLAIM_REQUEST_NOT_FOUND", { field: ['claimRequestId'] });
+      }
+
+      if (claimRequest.status !== ClaimRequestStatus.Approved) {
+        return res.forbidden(res.__("CLAIM_REQUEST_NOT_APPROVED"), "CLAIM_REQUEST_NOT_APPROVED", { field: ['claimRequestId'] });
+      }
+      transaction = await database.transaction();
+      await ClaimRequest.update({
+        payout_transferred: payout_transferred
+      },{
+        where: {
+          id: params.claimRequestId
+        },
+        returning: true,
+        transaction: transaction
+      });
+
+      await MemberRewardTransactionHis.update({
+        payout_transferred: payout_transferred
+      },{
+        where: {
+          claim_request_id: params.claimRequestId
+        },
+        returning: true,
+        transaction: transaction
+      });
+      await transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        transaction.rollback();
+      }
+      logger.error('Update payout transferred fail',error);
+      next(error);
+    }
+  },
 };
 
 function stringifyAsync(data, columns) {
