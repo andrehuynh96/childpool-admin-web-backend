@@ -6,6 +6,7 @@ const schema = Joi.object().keys({
   name: Joi.string().max(128).required(),
   icon: Joi.string().max(256).required(),
   decimals: Joi.number().integer().optional(),
+  description: Joi.string().max(1000).allow('').allow(null).optional(),
   contract_address: Joi.string().max(256).allow('').allow(null).optional(),
   order_index: Joi.number().integer().optional(),
   status: Joi.number().integer().required(),
