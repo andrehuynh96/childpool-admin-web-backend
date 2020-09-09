@@ -102,15 +102,7 @@ module.exports = {
     try {
       const { params, body, user } = req;
       const [numOfItems, items] = await ExchangeCurrency.update({
-        symbol: body.symbol,
-        platform: body.platform,
-        name: body.name,
-        icon: body.icon,
-        order_index: body.order_index,
-        status: body.status,
-        from_flg: body.from_flg,
-        to_flg: body.to_flg,
-        fix_rate_flg: body.fix_rate_flg,
+        ...body,
         updated_by: user.id,
       }, {
         where: {
