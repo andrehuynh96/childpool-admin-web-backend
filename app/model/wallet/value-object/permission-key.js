@@ -794,5 +794,12 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE":"2020-09-08T09:50:08.764Z"
   },
+  "VIEW_LIST_EXCHANGE_TRANSACTION": {
+    "KEY": "VIEW_LIST_EXCHANGE_TRANSACTION",
+    "DESCRIPTION": "Search exchange transaction",
+    "GROUP_NAME": "Exchange Transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE":"2020-09-09T10:05:08.764Z"
+  },
 
 };

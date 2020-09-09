@@ -28,6 +28,7 @@ router.use(require('./term/term.route'));
 router.use(require('./ada-pool-notify/ada-pool-notify.route'));
 router.use(require('./member-asset/member-asset.route'));
 router.use(require('./exchange-currency/exchange-currency.route'));
+router.use(require('./exchange-transaction/exchange-transaction.route'));
 
 module.exports = router;
 

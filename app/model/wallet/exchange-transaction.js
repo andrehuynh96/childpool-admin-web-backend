@@ -123,5 +123,13 @@ module.exports = (sequelize, DataTypes) => {
       modelSuffix: "_his"
     }
   });
+  Model.associate = (models) => {
+    Model.belongsTo(models.members, {
+      as: 'Member',
+      foreignKey: 'member_id',
+      targetKey: 'id'
+    });
+  };
+
   return Model;
-} 
+};
