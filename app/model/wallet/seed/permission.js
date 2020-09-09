@@ -4,24 +4,22 @@ const RolePermission = require("app/model/wallet").role_permissions;
 const PermissionKey = require("app/model/wallet/value-object/permission-key");
 const Sequelize = require('sequelize');
 const { forEach } = require('p-iteration');
+const moment = require('moment');
+
 const Op = Sequelize.Op;
+const START_SPRINT_DATE = moment("2020-08-26T00:00:00.000Z");
 
 module.exports = async () => {
-  let models = [];
-  let permissions = Object.keys(PermissionKey).map(key => {
-    return PermissionKey[key].KEY;
-  });
-  const updateModelTasks = [];
+  const models = [];
+  const initPermissionNameCache = {};
+  const obsoletePermissionIdList = [];
+  const allPermissions = await Model.findAll({});
 
   await forEach(Object.keys(PermissionKey), async key => {
     const value = PermissionKey[key];
     let { KEY: permissionKey, GROUP_NAME: groupName, DESCRIPTION: description } = value;
-
-    let m = await Model.findOne({
-      where: {
-        name: permissionKey,
-      }
-    });
+    let m = allPermissions.find(item => item.name === permissionKey);
+    initPermissionNameCache[permissionKey] = true;
 
     if (!m) {
       let model = {
@@ -29,45 +27,36 @@ module.exports = async () => {
         description: description || _.capitalize(_.replace(permissionKey, /_/g, ' ')),
         group_name: groupName,
         deleted_flg: false,
+        initialized_date: moment(value.INITIALIZED_DATE),
         created_by: 0,
         updated_by: 0
       };
       models.push(model);
-    } else {
-      if (!m.group_name) {
-        m.group_name = groupName;
-      }
-
-      if (!m.description || m.description === m.name) {
-        m.description = _.capitalize(_.replace(permissionKey, /_/g, ' '));
-      }
-
-      updateModelTasks.push(m.save());
     }
   });
 
-  await Promise.all(updateModelTasks);
+  if (models.length) {
+    await Model.bulkCreate(
+      models, {
+      returning: true
+    });
+  }
 
-  await Model.bulkCreate(
-    models, {
-    returning: true
+  allPermissions.forEach(permission => {
+    const diff = START_SPRINT_DATE.diff(moment(permission.initialized_date), 'seconds');
+
+    if (!initPermissionNameCache[permission.name] && diff >= 0) {
+      obsoletePermissionIdList.push(permission.id);
+      console.log('Remove permission ', permission.name, permission.id);
+    }
   });
 
-  let permissionObsolete = await Model.findAll({
-    where: {
-      name: {
-        [Op.notIn]: permissions
-      }
-    },
-    raw: true
-  });
-
-  if (permissionObsolete && permissionObsolete.length > 0) {
-    let ids = permissionObsolete.map(i => i.id);
+  if (obsoletePermissionIdList.length > 0) {
+    console.log('Remove ids: ', obsoletePermissionIdList);
     await RolePermission.destroy({
       where: {
         permission_id: {
-          [Op.in]: ids
+          [Op.in]: obsoletePermissionIdList,
         }
       }
     });
@@ -75,7 +64,7 @@ module.exports = async () => {
     await Model.destroy({
       where: {
         id: {
-          [Op.in]: ids
+          [Op.in]: obsoletePermissionIdList,
         }
       }
     });

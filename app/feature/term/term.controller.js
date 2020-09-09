@@ -101,7 +101,6 @@ module.exports = {
             }
 
             data.updated_by = req.user.id;
-            console.log(data.ja_content);
             const [_, termResponse] = await Term.update(
                 data,
                 {
