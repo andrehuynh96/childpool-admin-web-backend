@@ -5,6 +5,11 @@ const ExchangeCurrencyStatus = require("app/model/wallet/value-object/exchange-c
 const mapper = require("app/feature/response-schema/exchange-currency.response-schema");
 
 const Op = Sequelize.Op;
+const EXCHANGE_CURRENCY_STATUS_TEXT_CACHE = Object.entries(ExchangeCurrencyStatus).reduce((result, items) => {
+  result[items[1]] = items[0];
+
+  return result;
+}, {});
 
 module.exports = {
   search: async (req, res, next) => {
@@ -26,6 +31,10 @@ module.exports = {
         cond.platform = query.platform;
       }
 
+      if (query.status) {
+        cond.status = query.status;
+      }
+
       const { count: total, rows: items } = await ExchangeCurrency.findAndCountAll({
         limit,
         offset,
@@ -33,8 +42,15 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
+      const result = items.map(item => {
+        return {
+          ...mapper(item),
+          status_text: EXCHANGE_CURRENCY_STATUS_TEXT_CACHE[item.status],
+        };
+      });
+
       return res.ok({
-        items: mapper(items),
+        items: result,
         offset: offset,
         limit: limit,
         total: total
@@ -57,6 +73,8 @@ module.exports = {
       if (!exchangeCurrency) {
         return res.badRequest(res.__("EXCHANGE_CURRENCY_NOT_FOUND"), "EXCHANGE_CURRENCY_NOT_FOUND", { fields: ['id'] });
       }
+
+      exchangeCurrency.statusText = EXCHANGE_CURRENCY_STATUS_TEXT_CACHE[exchangeCurrency.status];
 
       return res.ok(mapper(exchangeCurrency));
     }
