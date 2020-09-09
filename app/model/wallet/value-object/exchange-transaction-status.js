@@ -10,4 +10,4 @@ module.exports = {
   EXPIRED: 'EXPIRED',
   OVERDUE: 'OVERDUE',
   HOLD: 'HOLD',
-}
+};
