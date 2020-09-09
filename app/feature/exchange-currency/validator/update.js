@@ -13,6 +13,7 @@ const schema = Joi.object().keys({
   from_flg: Joi.boolean().required(),
   to_flg: Joi.boolean().required(),
   fix_rate_flg: Joi.boolean().required(),
+  contract_flg: Joi.boolean().required(),
 });
 
 module.exports = schema;
