@@ -45,8 +45,9 @@ module.exports = {
               id: t.id
             },
           });
+        sleep.sleep(1);
       }
-      sleep.sleep(1);
+
     }
     catch (err) {
       logger.error(err);
