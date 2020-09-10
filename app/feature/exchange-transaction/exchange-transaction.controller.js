@@ -66,7 +66,7 @@ module.exports = {
       next(error);
     }
   },
-  getStatus: async (req, res, next) => {
+  getStatuses: async (req, res, next) => {
     try {
       const exchangeTransactionsStatus = Object.values(ExchangeTransactionsStatus).map(item => {
         return {
