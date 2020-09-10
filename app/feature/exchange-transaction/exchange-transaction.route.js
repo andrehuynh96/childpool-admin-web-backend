@@ -118,7 +118,7 @@ router.get('/exchange-transactions',
 
 router.get('/exchange-transactions/statuses',
   authenticate,
-  controller.getStatus
+  controller.getStatuses
 );
 
 /**
