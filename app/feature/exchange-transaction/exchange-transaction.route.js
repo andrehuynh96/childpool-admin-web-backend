@@ -116,14 +116,14 @@ router.get('/exchange-transactions',
 /* #end region */
 
 
-router.get('/exchange-transactions/status',
+router.get('/exchange-transactions/statuses',
   authenticate,
   controller.getStatus
 );
 
 /**
 * @swagger
-* /web/exchange-transactions/status:
+* /web/exchange-transactions/statuses:
 *   get:
 *     summary: Get dropdown list exchange transaction status
 *     tags:
