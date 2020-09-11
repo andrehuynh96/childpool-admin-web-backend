@@ -1,11 +1,11 @@
 const logger = require('app/lib/logger');
 const WalletPrivKeys = require('app/model/wallet').wallet_priv_keys;
 const MemberAsset = require('app/model/wallet').member_assets;
-const GetBalanceAmountLib = require('app/lib/address/member-asset');
+const GetMemberAssetLib = require('app/lib/address/member-asset');
 const stakingPlatform = ['IRIS', 'ATOM', 'ONT', 'XTZ', 'ONE', 'ADA', 'QTUM'];
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
-class GetBalanceAmountAddress {
+class GetMemberAssetAddress {
   constructor() {
   }
   async get() {
@@ -14,6 +14,7 @@ class GetBalanceAmountAddress {
       const walletPrivKeys = await WalletPrivKeys.findAll({
         attributes: ['address', 'platform', 'run_batch_day', 'try_batch_num'],
         where: {
+          // platform: stakingPlatform,
           platform: stakingPlatform,
           run_batch_day: { [Op.lt]: dayOfYear },
           deleted_flg: false
@@ -22,10 +23,11 @@ class GetBalanceAmountAddress {
         order: [['try_batch_num', 'ASC']]
       });
       for (let item of walletPrivKeys) {
-        console.log('Waiting for',item.platform,'response');
-        const data = await GetBalanceAmountLib.getAsset(item.platform, item.address);
-        console.log(item.platform,data);
-        if (data.balance && data.amount && data.reward) {
+        try {
+          console.log('Waiting for',item.platform,'response');
+          const data = await GetMemberAssetLib.getAsset(item.platform, item.address);
+          console.log(item.platform,data);
+
           await MemberAsset.create({
             platform: item.platform,
             address: item.address,
@@ -33,15 +35,18 @@ class GetBalanceAmountAddress {
             amount: data.amount,
             reward: data.reward
           });
+
           await WalletPrivKeys.update({
-            run_batch_day: dayOfYear
+            run_batch_day: dayOfYear,
+            try_batch_num: 0
           }, {
             where: {
               address: item.address
             }
           });
+
         }
-        else {
+        catch (error) {
           await WalletPrivKeys.update({
             try_batch_num: parseInt(item.try_batch_num) + 1
           },{
@@ -59,4 +64,4 @@ class GetBalanceAmountAddress {
     }
   }
 }
-module.exports = GetBalanceAmountAddress;
+module.exports = GetMemberAssetAddress;

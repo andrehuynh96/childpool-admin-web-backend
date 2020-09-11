@@ -12,8 +12,12 @@ const {
   fromWei,
   Units,
 } = require('@harmony-js/utils');
+const moment = require('moment');
+const api = new InfinitoApi(config.infinitoApiOpts);
 
-const api = new InfinitoApi(config.opts);
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+
 module.exports = {
   getAsset: async (platform, address) => {
     try {
@@ -27,7 +31,7 @@ module.exports = {
       }
       else if (platform == 'XTZ') {
         const result = await getAssetXTZ(address);
-        return { ...result, reward: 0 };
+        return result;
       }
       else if (platform == 'ONE') {
         const balance = await getBalanceONE(address);
@@ -39,30 +43,29 @@ module.exports = {
         };
       }
       else if (platform == 'QTUM') {
-        const result = await getBalanceAmountQTUM(address);
-        return { ...result, reward: 0 };
+        const result = await getAssetQTUM(address);
+        return result;
       }
       else {
         const balance = await getBalanceADA(address);
         const amount = await getAmountADA(address);
         const reward = await getRewardADA(address);
-        if (!amount || !reward || !balance) {
-          return false;
-        }
-        return {
+        const result = {
           balance: balance,
           amount: amount,
           reward: reward
         };
+        return result;
       }
     }
     catch (error) {
       logger.error('get balance and amount fail', error);
-      return false;
+      throw error;
     }
   }
 };
 
+// IRIS & ATOM
 async function getAssetIRISorATOM(platform, address) {
   try {
     const apiCoin = api[platform];
@@ -94,11 +97,11 @@ async function getAssetIRISorATOM(platform, address) {
   }
   catch (error) {
     logger.error('get balance,staking amount and reward ATOM fail', error);
-    return false;
+    throw error;
   }
 }
 
-
+// ONT
 async function getAssetONT(address) {
   try {
     const network = config.ONT.restUrl;
@@ -110,7 +113,7 @@ async function getAssetONT(address) {
       balance = BigNumber(getAsset.data.Result.ont).toNumber();
     }
     else {
-      return false;
+      return null;
     }
 
     // GET Staking Amount
@@ -123,7 +126,7 @@ async function getAssetONT(address) {
       amount = consensusPos + freezePos + newPos;
     }
     else {
-      return false;
+      return null;
     }
 
     // GET Reward
@@ -132,7 +135,7 @@ async function getAssetONT(address) {
       reward = BigNumber(splitFee.amount).toNumber();
     }
     else {
-      return false;
+      return null;
     }
     return {
       balance: balance,
@@ -142,21 +145,49 @@ async function getAssetONT(address) {
   }
   catch (error) {
     logger.error(error);
-    return false;
+    throw error;
   }
 }
 
+// XTZ
 async function getAssetXTZ(address) {
-  const network = config.tezos.tezosServerUrl;
-  const getBalancePath = `${network}/chains/main/blocks/head/context/contracts/${address}/balance`;
+  try {
+    const network = config.tezos.tezosServerUrl;
+    const getBalancePath = `${network}/chains/main/blocks/head/context/contracts/${address}/balance`;
 
-  const balanceResult = await axios.get(getBalancePath);
-  const balance = BigNumber(balanceResult.data).toNumber();
+    const balanceResult = await axios.get(getBalancePath);
+    const balance = BigNumber(balanceResult.data).toNumber();
 
-  return {
-    amount: balance,
-    balance: balance
-  };
+    const today = new Date();
+    const fromDate = moment(today).startOf('date').toDate();
+    const toDate = moment(today).endOf('date').toDate();
+    // const tezosPayment = await Payment.findAll({
+    //   where: {
+    //     address: address,
+    //     created_at: {
+    //       [Op.gt]: fromDate,
+    //       [Op.lt]: toDate
+    //     },
+    //     paid: 1
+    //   }
+    // });
+    let reward = 0;
+    // if (tezosPayment.length > 0) {
+    //   tezosPayment.forEach(item => {
+    //     reward += BigNumber(item.amount).toNumber();
+    //   });
+    // }
+
+    return {
+      balance: balance,
+      amount: balance,
+      reward: reward
+    };
+  }
+  catch (error) {
+    logger.error('get balance amount reward tezos fail', error);
+    throw error;
+  }
 }
 
 async function getBalanceONE(address) {
@@ -179,7 +210,7 @@ async function getBalanceONE(address) {
   }
   catch (error) {
     logger.error(error);
-    return false;
+    throw error;
   }
 }
 
@@ -214,51 +245,71 @@ async function getAmountAndRewardONE(address) {
     };
   }
   catch (error) {
-    return false;
+    logger.error(error);
+    throw error;
   }
 }
 
-async function getBalanceAmountQTUM(address) {
-  const api = axios.create({
-    baseURL: config.qtumApi,
-    timeout: 2000
-  });
-  const result = await api.get(`/address/${address}`);
-  const balance = BigNumber(result.data.balance).toNumber();
-  const amount = BigNumber(result.data.staking).toNumber();
-  return {
-    balance: balance,
-    amount: amount
-  };
+async function getAssetQTUM(address) {
+  try {
+    const api = axios.create({
+      baseURL: config.qtum.url,
+      timeout: 2000
+    });
+    const result = await api.get(`/address/${address}`);
+    const balance = BigNumber(result.data.balance).toNumber();
+    const amount = BigNumber(result.data.mature).toNumber();
+    return {
+      balance: balance,
+      amount: amount,
+      reward: 0
+    };
+  }
+  catch (err) {
+    logger.error(err);
+    throw err;
+  }
 }
 
 async function getBalanceADA(address) {
-  const apiCoin = api['ADA'];
-  const balanceResult = await apiCoin.getBalance(address);
-  const balance = BigNumber(balanceResult.data.balance).toNumber();
+  try {
+    const apiCoin = api['ADA'];
+    const balanceResult = await apiCoin.getBalance(address);
+    const balance = BigNumber(balanceResult.data.balance).toNumber();
 
-  return balance;
+    return balance;
+  }
+  catch (error) {
+    logger.error(error);
+    throw error;
+  }
 }
 
 async function getAmountADA(address) {
-  const bestBlock = await getBestBlockADA();
-  if (bestBlock) {
-    const response = await getAdaShelleyDelegationsInfoOfDelegator(bestBlock.hash, address);
-    if (response && response.pool_id) {
-      const adaValidatorURL = `https://js.adapools.org/pools/${response.pool_id}/summary.json`;
-      let { data: { data: { total_stake } } } = await axios.get(adaValidatorURL);
-      if (total_stake) {
-        return BigNumber(total_stake).toNumber();
+  try {
+    const bestBlock = await getBestBlockADA();
+    if (bestBlock) {
+      const response = await getAdaShelleyDelegationsInfoOfDelegator(bestBlock.hash, address);
+      if (response && response.pool_id) {
+        const adaValidatorURL = `https://js.adapools.org/pools/${response.pool_id}/summary.json`;
+        let { data: { data: { total_stake } } } = await axios.get(adaValidatorURL);
+        if (total_stake) {
+          return BigNumber(total_stake).toNumber();
+        }
+        else {
+          return 0;
+        }
       }
       else {
-        return false;
+        return 0;
       }
     }
-    else {
-      return 0;
-    }
+    return 0;
   }
-  return false;
+  catch (err) {
+    logger.error(err);
+    throw err;
+  }
 }
 
 async function getBestBlockADA() {
@@ -281,7 +332,8 @@ async function getBestBlockADA() {
     }
   }
   catch (err) {
-    return null;
+    logger.error(err);
+    throw err;
   }
 }
 
@@ -297,7 +349,7 @@ async function getAdaShelleyDelegationsInfoOfDelegator(currentBlockHash, delegat
     if (data && data.length > 0) {
 
       let lastTx = data[data.length - 1];
-      let certs = lastTx.certificates.filter(cer => cer.kind == 'StakeDelegation')
+      let certs = lastTx.certificates.filter(cer => cer.kind == 'StakeDelegation');
       if (certs && certs.length > 0) {
         return {
           pool_id: certs[0].poolKeyHash,
@@ -330,7 +382,7 @@ async function getAdaShelleyDelegationsInfoOfDelegator(currentBlockHash, delegat
               let StakeRegistration = el.certificates.filter(cer => cer.kind == 'StakeRegistration');
               return StakeRegistration.length > 0;
             } else {
-              return false
+              return false;
             }
           });
           if (listRegisterCertificates && listRegisterCertificates.length > 0) {
@@ -343,33 +395,39 @@ async function getAdaShelleyDelegationsInfoOfDelegator(currentBlockHash, delegat
     }
     return {};
   } catch (error) {
-    return {};
+    logger.error(error);
+    throw error;
   }
 }
 
 async function getRewardADA(address) {
-  let params = [
-    {
-      name: "getCurrentReward",
-      method: "GET",
-      url: '/chains/v1/ADA/addr/{addr}/reward',
-      "params": [
-        "addr",
-      ]
+  try {
+    let params = [
+      {
+        name: "getCurrentReward",
+        method: "GET",
+        url: '/chains/v1/ADA/addr/{addr}/reward',
+        "params": [
+          "addr",
+        ]
+      }
+    ];
+    api.extendMethod("chains", params, api);
+    const response = await api.chains.getCurrentReward(address);
+    if (response && response.data.length > 0) {
+      let reward = 0;
+      response.data.forEach(item => {
+        reward += item.rewardAccountBalance;
+      });
+      return reward;
     }
-  ];
-  api.extendMethod("chains", params, api);
-  const response = await api.chains.getCurrentReward(address);
-  console.log(response.data);
-  if (response && response.data.length > 0) {
-    let reward = 0;
-    response.data.forEach(item => {
-      reward += item.rewardAccountBalance;
-    });
-    return reward;
+    else {
+      return 0;
+    }
   }
-  else {
-    return false;
+  catch (error) {
+    logger.error(error);
+    throw error;
   }
 }
 

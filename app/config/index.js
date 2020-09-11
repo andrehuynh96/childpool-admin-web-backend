@@ -129,6 +129,7 @@ const config = {
     checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
     checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE,
     checkExchangeStatus: process.env.SCHEDULE_CHECK_EXCHANGE_STATUS,
+    getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
@@ -183,7 +184,8 @@ const config = {
       apiKey: process.env.CHANGELLY_API_KEY,
       secretKey: process.env.CHANGELLY_API_SECRET
     }
-  opts : {
+  },
+  infinitoApiOpts: {
     apiKey: process.env.INFINITO_API_KEY,
     secret: process.env.INFINITO_API_SECRET,
     baseUrl: process.env.INFINITO_API_URL,
@@ -198,7 +200,9 @@ const config = {
     urlShard2: process.env.URL_HARMONY_SHARD_2,
     urlShard3: process.env.URL_HARMONY_SHARD_3,
   },
-  qtumApi: process.env.QTUM_API
+  qtum: {
+    url: process.env.QTUM_API
+  }
 };
 
 module.exports = config;

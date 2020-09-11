@@ -1,11 +1,11 @@
 const logger = require("app/lib/logger");
-const GetBalanceAmountAddress = require("../service/get-member-asset/index");
+const GetMemberAssetAddress = require("../service/get-member-asset");
 
 module.exports = {
   execute: async () => {
     try {
-      let service = new GetBalanceAmountAddress();
-      service.get();
+      let service = new GetMemberAssetAddress();
+      await service.get();
     }
     catch (err) {
       logger.error("get balance and amount job error:", err);

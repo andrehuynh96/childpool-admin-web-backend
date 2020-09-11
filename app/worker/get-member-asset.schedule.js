@@ -1,13 +1,13 @@
 const cron = require('node-cron');
 const config = require('app/config');
-const getBalanceAmount = require("./job/get-member-asset");
+const getMemberAsset = require("./job/get-member-asset");
 const runWithLockFile = require('app/lib/run-lock-file');
-const GET_BALANCE_AMOUNT_LOCK_FILE = 'get_balance_amount.lock';
+const GET_MEMBER_ASSET_LOCK_FILE = 'get_member_asset.lock';
 
 module.exports = {
     run: () => {
-      cron.schedule(config.schedule.getBalanceAmount, async () => {
-        await runWithLockFile(getBalanceAmount, GET_BALANCE_AMOUNT_LOCK_FILE, "get balance amount");
+      cron.schedule(config.schedule.getMemberAsset, async () => {
+        await runWithLockFile(getMemberAsset, GET_MEMBER_ASSET_LOCK_FILE, "get member asset");
       });
     }
   };
