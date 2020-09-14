@@ -23,7 +23,7 @@ const cache = {
     }
 
     client.on("connect", function () {
-      console.log("Redis cache connected sucessfully");
+      console.log("Redis cache connected successfully");
       if (callBack) {
         callBack();
         callBack = null;
@@ -49,6 +49,6 @@ const cache = {
       client.quit();
     }
   }
-}
+};
 
 module.exports = cache;
