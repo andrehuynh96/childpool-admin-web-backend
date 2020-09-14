@@ -6,10 +6,10 @@ const GetMemberAssetSchedule = require("./get-member-asset.schedule");
 
 module.exports = {
   start: () => {
-    // UpdateAffiliateSchedule.run();
-    // CheckDistributeRewardSchedule.run();
-    // CheckAdaPoolSizeSchedule.run();
-    // CheckExchangeStatusSchedule.run();
+    UpdateAffiliateSchedule.run();
+    CheckDistributeRewardSchedule.run();
+    CheckAdaPoolSizeSchedule.run();
+    CheckExchangeStatusSchedule.run();
     GetMemberAssetSchedule.run();
   }
 };

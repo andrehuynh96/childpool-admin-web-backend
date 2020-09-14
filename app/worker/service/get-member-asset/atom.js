@@ -7,7 +7,8 @@ class ATOM extends GetMemberAsset {
   }
   async get(address) {
     try {
-
+      let data;
+      return data;
     } catch (error) {
       logger.error(error);
       return null;
