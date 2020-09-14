@@ -8,6 +8,7 @@ const Op = Sequelize.Op;
 
 module.exports = {
   execute: async () => {
+    let transaction;
     try {
       const StakingPlatforms = config.stakingPlatform.split(',');
       const dayOfYear = Math.floor((Date.now() - Date.parse(new Date().getFullYear(), 0, 0)) / 86400000);
@@ -21,37 +22,26 @@ module.exports = {
         raw: true,
         order: [['try_batch_num', 'ASC']]
       });
-      let transaction;
       for (let platform of StakingPlatforms) {
         let serviceName = platform.toLowerCase();
         let Service = require(`../service/get-member-asset/${serviceName}.js`);
         let service = new Service();
-        console.log(service);
+        let insertItems = [];
         if (service) {
           let items = walletPrivKeys.filter(e => e.platform == platform);
-          console.log(items);
           for (let item of items) {
             logger.info('Waiting for',item.platform,'response');
             let data = await service.get(item.address);
             logger.info(item.platform,data);
             transaction = await database.transaction();
             if (data) {
-              await MemberAsset.create({
+              insertItems.push ({
                 platform: item.platform,
                 address: item.address,
                 balance: data.balance,
                 amount: data.amount,
                 reward: data.reward
-              }, transaction);
-
-              await WalletPrivKeys.update({
-                run_batch_day: dayOfYear,
-                try_batch_num: 0
-              }, {
-                where: {
-                  address: item.address
-                }, transaction
-              });
+              })  
             } else {
               await WalletPrivKeys.update({
                 try_batch_num: parseInt(item.try_batch_num) + 1
@@ -60,6 +50,17 @@ module.exports = {
                   address: item.address
                 },
                 transaction
+              });
+            }
+            if (insertItems.length > 0) {
+              await MemberAsset.bulkCreate(insertItems, { transaction });
+              await WalletPrivKeys.update({
+                run_batch_day: dayOfYear,
+                try_batch_num: 0
+              }, {
+                where: {
+                  address: insertItems.map(e => e.address)
+                }, transaction
               });
             }
             await transaction.commit();
