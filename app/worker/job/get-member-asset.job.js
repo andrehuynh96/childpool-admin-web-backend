@@ -8,6 +8,7 @@ const Op = Sequelize.Op;
 
 module.exports = {
   execute: async () => {
+    let transaction;
     try {
       const StakingPlatforms = config.stakingPlatform.split(',');
       const dayOfYear = Math.floor((Date.now() - Date.parse(new Date().getFullYear(), 0, 0)) / 86400000);
@@ -21,7 +22,6 @@ module.exports = {
         raw: true,
         order: [['try_batch_num', 'ASC']]
       });
-      let transaction;
       for (let platform of StakingPlatforms) {
         let serviceName = platform.toLowerCase();
         let Service = require(`../service/get-member-asset/${serviceName}.js`);

@@ -173,7 +173,7 @@ const config = {
     validatorAddress: process.env.VALIDATOR_ADDRESS_ONT
   },
   stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
-  stakingPlatform: process.env.STAKING_PLATFORM || "ATOM,IRIS,ONG",
+  stakingPlatform: process.env.STAKING_PLATFORM || "ATOM,IRIS,ONG,ONT,TADA,QTUM,XTZ",
   apiUrl: process.env.API_URL || process.env.WEBSITE_URL,
   patchData: {
     isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
