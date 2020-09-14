@@ -14,4 +14,4 @@ class ATOM extends GetMemberAsset {
     }
   }
 }
-
+module.exports = ATOM;

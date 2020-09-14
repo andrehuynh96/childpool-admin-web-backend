@@ -15,3 +15,4 @@ class IRIS extends GetMemberAsset {
   }
 }
 
+module.exports = IRIS;

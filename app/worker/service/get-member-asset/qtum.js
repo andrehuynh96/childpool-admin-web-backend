@@ -15,3 +15,4 @@ class QTUM extends GetMemberAsset {
   }
 }
 
+module.exports = QTUM;

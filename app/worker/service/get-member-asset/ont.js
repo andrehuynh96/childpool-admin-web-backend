@@ -15,3 +15,4 @@ class ONT extends GetMemberAsset {
   }
 }
 
+module.exports = ONT;

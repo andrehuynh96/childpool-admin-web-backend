@@ -15,3 +15,4 @@ class XTZ extends GetMemberAsset {
   }
 }
 
+module.exports = XTZ;

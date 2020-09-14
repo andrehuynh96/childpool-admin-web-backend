@@ -15,3 +15,4 @@ class ADA extends GetMemberAsset {
   }
 }
 
+module.exports = ADA;

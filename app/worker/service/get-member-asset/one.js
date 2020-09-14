@@ -15,3 +15,4 @@ class ONE extends GetMemberAsset {
   }
 }
 
+module.exports = ONE;
