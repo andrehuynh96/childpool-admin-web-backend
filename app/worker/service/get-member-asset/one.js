@@ -10,6 +10,7 @@ const {
 const config = require('app/config');
 const { Harmony } = require('@harmony-js/core');
 const BigNumber = require('bignumber.js');
+const axios = require('axios');
 class ONE extends GetMemberAsset {
   constructor() {
     super();

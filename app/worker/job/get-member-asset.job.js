@@ -29,11 +29,11 @@ module.exports = {
         let insertItems = [];
         if (service) {
           let items = walletPrivKeys.filter(e => e.platform == platform);
+          transaction = await database.transaction();
           for (let item of items) {
             logger.info('Waiting for',item.platform,'response');
             let data = await service.get(item.address);
             logger.info(item.platform,data);
-            transaction = await database.transaction();
             if (data) {
               insertItems.push ({
                 platform: item.platform,
@@ -52,19 +52,19 @@ module.exports = {
                 transaction
               });
             }
-            if (insertItems.length > 0) {
-              await MemberAsset.bulkCreate(insertItems, { transaction });
-              await WalletPrivKeys.update({
-                run_batch_day: dayOfYear,
-                try_batch_num: 0
-              }, {
-                where: {
-                  address: insertItems.map(e => e.address)
-                }, transaction
-              });
-            }
-            await transaction.commit();
           }
+          if (insertItems.length > 0) {
+            await MemberAsset.bulkCreate(insertItems, { transaction });
+            await WalletPrivKeys.update({
+              run_batch_day: dayOfYear,
+              try_batch_num: 0
+            }, {
+              where: {
+                address: insertItems.map(e => e.address)
+              }, transaction
+            });
+          }
+          await transaction.commit();
         }
       }
       return true;
