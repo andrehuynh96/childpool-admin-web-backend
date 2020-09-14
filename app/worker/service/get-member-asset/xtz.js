@@ -3,6 +3,7 @@ const logger = require('app/lib/logger');
 const config = require('app/config');
 const axios = require('axios');
 const BigNumber = require('bignumber.js');
+const tezosReward = require('app/lib/staking-api/tezos-reward');
 class XTZ extends GetMemberAsset {
   constructor() {
     super();
@@ -14,8 +15,8 @@ class XTZ extends GetMemberAsset {
 
     const balanceResult = await axios.get(getBalancePath);
     const balance = BigNumber(balanceResult.data).toNumber();
-    let reward = 0;
-
+    let resultPayment = await tezosReward.getTezosReward(address);
+    const reward = resultPayment.data.amount;
     return {
       balance: balance,
       amount: balance,

@@ -647,7 +647,7 @@ module.exports = {
       ] : [];
 
       let order = [];
-      const order_by  = query.order_by ;
+      const order_by  = query.orderBy ;
       if (order_by) {
         for (let sort of order_by.split(',')) {
           if (sort.includes('-')) {
