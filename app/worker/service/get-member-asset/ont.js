@@ -1,6 +1,6 @@
 const GetMemberAsset = require("./base");
 const axios = require('axios');
-const logger = require('app/logger');
+const logger = require('app/lib/logger');
 const config = require('app/config');
 const BigNumber = require('bignumber.js');
 const { GovernanceTxBuilder, Crypto } = require('ontology-ts-sdk');

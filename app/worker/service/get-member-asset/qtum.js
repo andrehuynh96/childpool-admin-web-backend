@@ -1,5 +1,5 @@
 const GetMemberAsset = require("./base");
-const logger = require('app/logger');
+const logger = require('app/lib/logger');
 const axios = require('axios');
 const config = require('app/config');
 const BigNumber = require('bignumber.js');
