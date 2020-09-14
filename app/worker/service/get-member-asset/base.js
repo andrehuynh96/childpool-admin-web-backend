@@ -5,4 +5,4 @@ class GetMemberAsset {
     throw new Error(`You have to implement get function in child class`)
   }
 }
-module.exports = GetMemberAssetAddress;
+module.exports = GetMemberAsset;

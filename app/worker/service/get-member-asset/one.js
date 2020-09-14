@@ -1,5 +1,5 @@
 const GetMemberAsset = require("./base");
-const logger = require('app/logger');
+const logger = require('app/lib/logger');
 
 class ONE extends GetMemberAsset {
   constructor() {
@@ -7,7 +7,8 @@ class ONE extends GetMemberAsset {
   }
   async get(address) {
     try {
-
+      let data;
+      return data;
     } catch (error) {
       logger.error(error);
       return null;
