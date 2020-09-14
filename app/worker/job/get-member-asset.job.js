@@ -26,8 +26,10 @@ module.exports = {
         let serviceName = platform.toLowerCase();
         let Service = require(`../service/get-member-asset/${serviceName}.js`);
         let service = new Service();
+        console.log(service);
         if (service) {
           let items = walletPrivKeys.filter(e => e.platform == platform);
+          console.log(items);
           for (let item of items) {
             logger.info('Waiting for',item.platform,'response');
             let data = await service.get(item.address);
