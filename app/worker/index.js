@@ -2,7 +2,7 @@ const UpdateAffiliateSchedule = require("./update-affiliate.schedule");
 const CheckDistributeRewardSchedule = require("./check-distribute-reward.schedule");
 const CheckAdaPoolSizeSchedule = require("./check-ada-pool-size.schedule")
 const CheckExchangeStatusSchedule = require("./check-exchange-status.schedule")
-const GetMemberAsset = require("./get-member-asset.schedule");
+const GetMemberAssetSchedule = require("./get-member-asset.schedule");
 
 module.exports = {
   start: () => {
@@ -10,6 +10,6 @@ module.exports = {
     // CheckDistributeRewardSchedule.run();
     // CheckAdaPoolSizeSchedule.run();
     // CheckExchangeStatusSchedule.run();
-    GetMemberAsset.run();
+    GetMemberAssetSchedule.run();
   }
 };
