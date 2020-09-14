@@ -14,7 +14,7 @@ module.exports = {
       const walletPrivKeys = await WalletPrivKeys.findAll({
         attributes: ['address', 'platform', 'run_batch_day', 'try_batch_num'],
         where: {
-          platform: StakingPlatform,
+          platform: StakingPlatforms,
           run_batch_day: { [Op.lt]: dayOfYear },
           deleted_flg: false
         },
@@ -41,7 +41,7 @@ module.exports = {
                 amount: data.amount,
                 reward: data.reward
               }, transaction);
-  
+
               await WalletPrivKeys.update({
                 run_batch_day: dayOfYear,
                 try_batch_num: 0
@@ -62,13 +62,13 @@ module.exports = {
             }
             await transaction.commit();
           }
-        } 
+        }
       }
       return true;
     }
     catch (err) {
       logger.error("get balance and amount job error:", err);
-      if (transaction) 
+      if (transaction)
         await transaction.rollback();
     }
   }
