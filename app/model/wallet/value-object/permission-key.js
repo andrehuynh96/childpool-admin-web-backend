@@ -801,5 +801,11 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE":"2020-09-09T10:05:08.764Z"
   },
-
+  "VIEW_EXCHANGE_TRANSACTION_DETAIL": {
+    "KEY": "VIEW_EXCHANGE_TRANSACTION_DETAIL",
+    "DESCRIPTION": "View exchange transaction detail",
+    "GROUP_NAME": "Exchange Transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE":"2020-09-09T10:05:08.764Z"
+  },
 };

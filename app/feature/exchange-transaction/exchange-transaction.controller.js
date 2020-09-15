@@ -80,5 +80,25 @@ module.exports = {
       logger.error('get status dropdown list fail', error);
       next(error);
     }
+  },
+  getDetail: async (req,res,next) => {
+    try {
+      const id = req.params.id;
+      const exchangeTransaction = await ExchangeTransaction.findOne({
+        where: {
+          id: id
+        }
+      });
+
+      if (!exchangeTransaction) {
+        return res.notFound(res.__("EXCHANGE_TRANSACTION_NOT_FOUND"),"EXCHANGE_TRANSACTION_NOT_FOUND",{ field: [id] });
+      }
+
+      return res.ok(exchangeTransaction);
+    }
+    catch (error) {
+      logger.error('get exchange transaction detail fail',error);
+      next(error);
+    }
   }
 };
