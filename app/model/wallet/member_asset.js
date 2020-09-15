@@ -6,6 +6,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: DataTypes.UUIDV4(),
     },
+    member_id: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
     platform: {
       type: DataTypes.STRING(16),
       allowNull: false
@@ -29,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
+    unclaim_reward: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+      defaultValue: 0
+    }
   },{
     underscored: true,
     timestamps: true,
