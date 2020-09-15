@@ -85,6 +85,14 @@ module.exports = {
     try {
       const id = req.params.id;
       const exchangeTransaction = await ExchangeTransaction.findOne({
+        include: [
+          {
+            attributes: ['email'],
+            as: "Member",
+            model: Member,
+            required: true
+          }
+        ],
         where: {
           id: id
         }
@@ -93,6 +101,7 @@ module.exports = {
       if (!exchangeTransaction) {
         return res.notFound(res.__("EXCHANGE_TRANSACTION_NOT_FOUND"),"EXCHANGE_TRANSACTION_NOT_FOUND",{ field: [id] });
       }
+      exchangeTransaction.email = exchangeTransaction['Member.email'];
 
       return res.ok(exchangeTransaction);
     }
