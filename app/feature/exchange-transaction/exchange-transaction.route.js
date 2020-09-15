@@ -115,7 +115,7 @@ router.get('/exchange-transactions',
 */
 /* #end region */
 
-router.get('/exchange-transactions/:id',
+router.get('/exchange-transactions/:id/details',
   authenticate,
   authority(PermissionKey.VIEW_EXCHANGE_TRANSACTION_DETAIL),
   controller.getDetail
@@ -123,7 +123,7 @@ router.get('/exchange-transactions/:id',
 
 /**
 * @swagger
-* /web/exchange-transactions/{id}:
+* /web/exchange-transactions/{id}/details:
 *   get:
 *     summary: Get exchange transaction detail
 *     tags:
