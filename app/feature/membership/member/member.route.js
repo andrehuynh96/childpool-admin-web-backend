@@ -130,7 +130,7 @@ module.exports = router;
  *       - name: referrer
  *         in: query
  *         type: string
- *       - name: order_by
+ *       - name: orderBy
  *         in: query
  *         type: string
  *     produces:
