@@ -60,9 +60,14 @@ module.exports = {
   update: async (req, res, next) => {
     let transaction = await database.transaction();
 
+    const rewardMapping = {
+      ...REWARD_NETWORK_FEE_PROPERTIES_MAPPING,
+      ...REWARD_PAYOUT_MIN_PROPERTIES_MAPPING
+    };
+
     try {
       for (let propertyName of Object.keys(req.body)) {
-        const key = REWARD_PAYOUT_MIN_PROPERTIES_MAPPING[propertyName];
+        const key = rewardMapping[propertyName];
         // eslint-disable-next-line no-unused-vars
         const [numOfItems, setting] = await Setting.update({
           value: req.body[propertyName],
