@@ -43,6 +43,11 @@ module.exports = router;
 *           application/json:
 *             {
                 "data": {
+                      "claim_affiliate_reward_atom_network_fee": 0.08,
+                      "claim_affiliate_reward_iris_network_fee": 0.2,
+                      "claim_affiliate_reward_ong_network_fee": 0.3,
+                      "claim_affiliate_reward_one_network_fee": 0.7,
+                      "claim_affiliate_reward_xtz_network_fee": 0.4,
                       "claim_affiliate_reward_atom" : 0.5,
                       "claim_affiliate_reward_iris" : 0.5,
                       "claim_affiliate_reward_ong": 0.01,
