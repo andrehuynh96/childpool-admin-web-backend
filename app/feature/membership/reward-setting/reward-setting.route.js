@@ -41,7 +41,8 @@ module.exports = router;
 *           application/json:
 *             {
                 "data": {
-                  "membership_commission_usdt_minimum_claim_amount": 50
+                  "membership_commission_usdt_minimum_claim_amount": 50,
+                  "membership_commission_usdt_network_fee": 0.1,
                 }
             }
 *       400:
