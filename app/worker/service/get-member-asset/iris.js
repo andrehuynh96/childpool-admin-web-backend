@@ -22,15 +22,16 @@ class IRIS extends GetMemberAsset {
       if (balanceResult && balanceResult.data) {
         balance = balanceResult.data.balance * 1e18;
       }
-
-      const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
-      if (amountResult && amountResult.data.length > 0) {
-        amountResult.data.forEach(item => {
-          amount += BigNumber(item.shares).toNumber();
-        });
-      }
       const validatorAddresses = await StakingPlatform.getValidatorAddresses('IRIS');
       if (validatorAddresses.length > 0) {
+        const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
+        if (amountResult && amountResult.data.length > 0) {
+          amountResult.data.forEach(item => {
+            if (validatorAddresses.indexOf(item.validator_addr) != -1) {
+              amount += BigNumber(item.shares).toNumber() * 1e18;
+            }
+          });
+        }
         const rewardResult = await apiCoin.getRewards(address);
         if (rewardResult && rewardResult.data.total.length > 0) {
           for (let e of rewardResult.data.delegations) {
