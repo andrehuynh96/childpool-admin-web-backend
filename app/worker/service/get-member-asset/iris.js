@@ -48,15 +48,16 @@ class IRIS extends GetMemberAsset {
             order: [['created_at', 'DESC']]    
           })
           if (memberAsset) {
+            let number = 0;
             let histories = await getHistories(address);
             if(histories && histories.data && histories.data.txs && histories.data.txs.length>0){
               let txs=histories.data.txs;
-              let number = 0;
               let claim = 0;
               logger.info('Iris txs: ', txs)
               for (let tx of txs) {
-                if (tx.tx_type = 'get_delegator_rewards_all' && tx.timestamp >= Date.parse(memberAsset.created_at) / 1000) {
-                  claim = claim + BigNumber(tx.amount).toNumber()
+                if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.created_at)) {
+                  claim = claim + BigNumber(tx.amount).toNumber() * 1e18;
+                  logger.info('claim: ', claim);
                 }
               }
               number = unclaimReward + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
@@ -86,7 +87,7 @@ const getHistories=async (address)=>{
       {
         name: "getAllTransactionHistory",
         method: "GET",
-        url: `/chains/v1/IRIS/addr/${address}/txs?offset=0&limit=20`
+        url: `/chains/v1/IRIS/addr/${address}/txs?offset=0&limit=50`
       }
     ];
 
