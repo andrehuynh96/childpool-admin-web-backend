@@ -95,7 +95,8 @@ module.exports = {
         ],
         where: {
           id: id
-        }
+        },
+        raw: true
       });
 
       if (!exchangeTransaction) {
