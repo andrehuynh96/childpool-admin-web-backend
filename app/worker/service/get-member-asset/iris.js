@@ -20,7 +20,7 @@ class IRIS extends GetMemberAsset {
 
       const balanceResult = await apiCoin.getBalance(address);
       if (balanceResult && balanceResult.data) {
-        balance = balanceResult.data.balance * 1e18;
+        balance = BigNumber(balanceResult.data.balance).toNumber() * 1e18;
       }
       const validatorAddresses = await StakingPlatform.getValidatorAddresses('IRIS');
       if (validatorAddresses.length > 0) {
@@ -50,20 +50,19 @@ class IRIS extends GetMemberAsset {
           })
           if (memberAsset) {
             let number = 0;
+            let claim = 0;
             let histories = await getHistories(address);
             if(histories && histories.data && histories.data.txs && histories.data.txs.length>0){
               let txs=histories.data.txs;
-              let claim = 0;
-              logger.info('Iris txs: ', txs)
               for (let tx of txs) {
                 if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.created_at)) {
                   claim = claim + BigNumber(tx.amount).toNumber() * 1e18;
                   logger.info('claim: ', claim);
                 }
               }
-              number = unclaimReward + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
             }
-            reward = number >= 0 ? number : unclaimReward;
+            number = unclaimReward + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
+            reward = number > 0 ? number : 0;
           } else {
             reward = unclaimReward;
           }
@@ -94,10 +93,9 @@ const getHistories=async (address)=>{
 
     api.extendMethod("chains", params, api);
     const response = await api.chains.getAllTransactionHistory();
-    console.log("################: ", response);
     return response;
   }catch(err){
-    console.log(err)
+    logger.error(err)
     return null
   }
 }
