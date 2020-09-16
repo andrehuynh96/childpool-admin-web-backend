@@ -32,12 +32,12 @@ module.exports = {
         order: [['try_batch_num', 'ASC']]
       });
       for (let platform of StakingPlatforms) {
-        let serviceName = platform.toLowerCase();
+        let serviceName = platform.toLowerCase().trim();
         let Service = require(`../service/get-member-asset/${serviceName}.js`);
         let service = new Service();
         let insertItems = [];
         if (service) {
-          let items = walletPrivKeys.filter(e => e.platform == platform);
+          let items = walletPrivKeys.filter(e => e.platform.toUpperCase().trim() == platform.toUpperCase().trim());
           transaction = await database.transaction();
           for (let item of items) {
             logger.info('Waiting for',item.platform,'response');
