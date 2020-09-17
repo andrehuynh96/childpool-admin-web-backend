@@ -187,9 +187,9 @@ const config = {
     }
   },
   infinitoApiOpts: {
-    apiKey: process.env.INFINITO_API_KEY,
-    secret: process.env.INFINITO_API_SECRET,
-    baseUrl: process.env.INFINITO_API_URL,
+    apiKey: process.env.SDK_API_KEY,
+    secret: process.env.SDK_SECRET_KEY,
+    baseUrl: process.env.SDK_URL,
     logLevel: "NONE"
   },
   tezos: {
