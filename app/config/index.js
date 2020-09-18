@@ -127,7 +127,9 @@ const config = {
   schedule: {
     updateAffiliate: process.env.SCHEDULE_UPDATE_AFFILIATE_REWARD,
     checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
-    checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE
+    checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE,
+    checkExchangeStatus: process.env.SCHEDULE_CHECK_EXCHANGE_STATUS,
+    getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
@@ -167,14 +169,41 @@ const config = {
     },
   },
   ONT: {
-    restUrl: process.env.ONT_REST_SERVER_URL
+    restUrl: process.env.ONT_REST_SERVER_URL,
+    validatorAddress: process.env.VALIDATOR_ADDRESS_ONT
   },
   stakingCurrency: process.env.STAKING_CURRENCY || "ATOM,IRIS,ONG",
+  stakingPlatform: process.env.STAKING_PLATFORM || "ATOM,IRIS,ONE,ONT,TADA,QTUM,XTZ",
   apiUrl: process.env.API_URL || process.env.WEBSITE_URL,
   patchData: {
     isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
     patchIsEnabledSyncMembershipType: process.env.PATCH_IS_ENABLED_SYNC_MEMBERSHIP_TYPE === 'true',
   },
+  exchange: {
+    changelly: {
+      url: process.env.CHANGELLY_URL,
+      apiKey: process.env.CHANGELLY_API_KEY,
+      secretKey: process.env.CHANGELLY_API_SECRET
+    }
+  },
+  infinitoApiOpts: {
+    apiKey: process.env.INFINITO_API_KEY,
+    secret: process.env.INFINITO_API_SECRET,
+    baseUrl: process.env.INFINITO_API_URL,
+    logLevel: "NONE"
+  },
+  tezos: {
+    tezosServerUrl: process.env.TEZOS_SERVER_URL
+  },
+  harmony: {
+    urlShard0: process.env.URL_HARMONY_SHARD_0,
+    urlShard1: process.env.URL_HARMONY_SHARD_1,
+    urlShard2: process.env.URL_HARMONY_SHARD_2,
+    urlShard3: process.env.URL_HARMONY_SHARD_3,
+  },
+  qtum: {
+    url: process.env.QTUM_API
+  }
 };
 
 module.exports = config;

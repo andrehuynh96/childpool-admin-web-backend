@@ -5,7 +5,7 @@ const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const parseFormData = require('app/middleware/parse-formdata.middleware');
 const validator = require("app/middleware/validator.middleware");
-const { updateStatus, updateTxid, updateTxidCSV } = require('./validator');
+const { updateStatus, updateTxid, updateTxidCSV, payoutTransferred } = require('./validator');
 const router = express.Router();
 
 router.get(
@@ -65,6 +65,15 @@ router.get(
     authenticate,
     controller.getCryptoPlatform
 );
+
+router.put(
+  '/token-payout/update/:tokenPayoutId/payout-transferred',
+  validator(payoutTransferred),
+  authenticate,
+  authority(PermissionKey.AFFILIATE_UPDATE_PAYOUT_TRANSFERRED),
+  controller.updatePayoutTransferred
+);
+
 module.exports = router;
 
 /** ******************************************************************/
@@ -445,7 +454,7 @@ module.exports = router;
 *            - referrerCode
 *            example:
 *                  {
-                       "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca"
+                      "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca"
 *                  }
 *     produces:
 *       - application/json
@@ -475,7 +484,7 @@ module.exports = router;
 *           $ref: '#/definitions/500'
 */
 
- /**
+/**
  * @swagger
  * /web/affiliate/token-payout/txid/csv:
  *   post:
@@ -495,6 +504,59 @@ module.exports = router;
  *            example:
  *                  {
                         "tokenPayoutTxid": "txid.csv"
+ *                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+/** *******************************************************************/
+
+/**
+ * @swagger
+ * /web/affiliate/token-payout/update/{tokenPayoutId}/payout-transferred:
+ *   post:
+ *     summary: update claim request payout transferred date
+ *     tags:
+ *       - Affiliate
+ *     description: update claim request payout transferred date
+ *     parameters:
+ *       - name: tokenPayoutId
+ *         in: path
+ *         required: true
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: data for update
+ *         schema:
+ *            type: file
+ *            required:
+ *            - payoutTransferred
+ *            example:
+ *                  {
+                        "payoutTransferred": "2020-09-08 11:02:10"
  *                  }
  *     produces:
  *       - application/json
