@@ -72,14 +72,18 @@ module.exports = {
       }
       else {
         if (query.is_crypto && query.currency_symbol) {
-          where.currency_symbol = query.currency_symbol;
+          if (query.currency_symbol == 'BTC') {
+            where.currency_symbol = { [Op.in]: ['BTC','BTCSW'] };
+          }
+          else {
+            where.currency_symbol = query.currency_symbol;
+          }
           if (query.is_external)
             where.wallet_id = { [Op.eq]: null };
           else
             where.wallet_id = { [Op.ne]: null };
         }
       }
-
       let fromDate, toDate;
       if (query.from && query.to) {
         where.created_at = {};
@@ -458,7 +462,12 @@ module.exports = {
       }
       else {
         if (query.is_crypto && query.currency_symbol) {
-          where.currency_symbol = query.currency_symbol;
+          if (query.currency_symbol == 'BTC') {
+            where.currency_symbol = { [Op.in]: ['BTC','BTCSW'] };
+          }
+          else {
+            where.currency_symbol = query.currency_symbol;
+          }
           if (query.is_external)
             where.wallet_id = { [Op.eq]: null };
           else

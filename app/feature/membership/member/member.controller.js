@@ -94,12 +94,26 @@ module.exports = {
         },
       ] : [];
 
+      let order = [];
+      const order_by  = query.order_by ;
+      if (order_by) {
+        for (let sort of order_by.split(',')) {
+          if (sort.includes('-')) {
+            order.push([sort.trim().substring(1), 'DESC']);
+          } else {
+            order.push([sort.trim(), 'ASC']);
+          }
+        }
+      } else {
+        order.push(['created_at', 'DESC']);
+      }
+
       const { count: total, rows: items } = await Member.findAndCountAll({
         limit,
         offset,
         where: memberCond,
         include,
-        order: [['created_at', 'DESC']]
+        order: order
       });
 
       const membershipTypeIds = items.map(item => item.membership_type_id);
@@ -632,10 +646,24 @@ module.exports = {
         },
       ] : [];
 
+      let order = [];
+      const order_by  = query.orderBy ;
+      if (order_by) {
+        for (let sort of order_by.split(',')) {
+          if (sort.includes('-')) {
+            order.push([sort.trim().substring(1), 'DESC']);
+          } else {
+            order.push([sort.trim(), 'ASC']);
+          }
+        }
+      } else {
+        order.push(['created_at', 'DESC']);
+      }
+
       const items = await Member.findAll({
         where: memberCond,
         include,
-        order: [['created_at', 'DESC']]
+        order: order
       });
 
       const membershipTypeIds = items.map(item => item.membership_type_id);

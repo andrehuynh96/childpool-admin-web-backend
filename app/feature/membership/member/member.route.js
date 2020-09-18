@@ -130,6 +130,9 @@ module.exports = router;
  *       - name: referrer
  *         in: query
  *         type: string
+ *       - name: orderBy
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
