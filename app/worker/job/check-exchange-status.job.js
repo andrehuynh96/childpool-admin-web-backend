@@ -23,7 +23,9 @@ module.exports = {
               ExchangeTransactionStatus.CONFIRMING,
               ExchangeTransactionStatus.EXCHANGING,
               ExchangeTransactionStatus.SENDING,
-              ExchangeTransactionStatus.HOLD
+              ExchangeTransactionStatus.HOLD,
+              ExchangeTransactionStatus.EXPIRED,
+              ExchangeTransactionStatus.OVERDUE
             ]
           }
         },
