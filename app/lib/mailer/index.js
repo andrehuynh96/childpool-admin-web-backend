@@ -1,84 +1,170 @@
 const nodemailer = require('nodemailer');
 const config = require('app/config');
+const logger = require('app/lib/logger');
 const path = require("path");
 const ejs = require('ejs');
+const uuidV4 = require('uuid/v4');
 const EmailTemplate = require('email-templates');
+const EmailTemplateModel = require('app/model/wallet').email_templates;
+const EmailLoggingModel = require('app/model/wallet').email_loggings;
+const EmailLoggingStatus = require('app/model/wallet/value-object/email-logging-status');
 
-// https://stackoverflow.com/questions/37567148/unable-to-verify-the-first-certificate-in-node-js
-// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+const TEMPLATES_PATH = path.resolve(__dirname + "../../../../public/email-template/");
+class EmailService {
 
-let transporter = nodemailer.createTransport({
-  host: config.smtp.host,
-  port: config.smtp.port,
-  secure: config.smtp.secure,
-  auth: {
-    user: config.smtp.user,
-    pass: config.smtp.pass
+  constructor() {
+    this.transporter = nodemailer.createTransport({
+      host: config.smtp.host,
+      port: config.smtp.port,
+      secure: config.smtp.secure,
+      ignoreTLS: config.smtp.ignoreTLS,
+      auth: {
+        user: config.smtp.user,
+        pass: config.smtp.pass
+      },
+      tls: {
+        // do not fail on invalid certs
+        rejectUnauthorized: false,
+      },
+    });
   }
-});
 
-transporter.getMailDBTemplate = async (template, data) => {
-  const email = new EmailTemplate({
-    render: (template, locals) => {
-      return new Promise((resolve, reject) => {
-        try {
-          const options = { delimiter: '_', openDelimiter: '$', closeDelimiter: '$' };
-          let html = ejs.render(template, locals, options);
-          resolve(html);
-        } catch (error) {
-          reject(error);
+  async getMailContentFromCustomTemplate(template, data) {
+    const email = new EmailTemplate({
+      render: (template, locals) => {
+        return new Promise((resolve, reject) => {
+          try {
+            const options = { delimiter: '_', openDelimiter: '$', closeDelimiter: '$' };
+            const html = ejs.render(template, locals, options);
+
+            resolve(html);
+          } catch (err) {
+            logger.error(err);
+            reject(err);
+          }
+        });
+      }
+    });
+
+    const mailContent = await email.render(template, data);
+
+    return mailContent;
+  }
+
+  async sendWithDBTemplate(
+    subject,
+    from,
+    to,
+    data,
+    template
+  ) {
+    let mailContent = await this.getMailContentFromCustomTemplate(template, data);
+
+    return this.sendMail({
+      from: from,
+      to: to,
+      subject: subject,
+      html: mailContent
+    });
+  }
+
+  async getMailTemplate(data, fileName) {
+    const email = new EmailTemplate({
+      views: {
+        root: TEMPLATES_PATH,
+        options: { extension: 'ejs' }
+      }
+    });
+    const mailContent = await email.render(fileName, data);
+
+    return mailContent;
+  }
+
+  async sendWithTemplate(
+    subject,
+    from,
+    to,
+    data,
+    templateFile
+  ) {
+    let mailContent = await this.getMailTemplate(data, templateFile);
+
+    return this.sendMail({
+      from: from,
+      to: to,
+      subject: subject,
+      html: mailContent
+    });
+  }
+
+  async findEmailTemplate(templateName, language) {
+    let template = await EmailTemplateModel.findOne({
+      where: {
+        name: templateName,
+        language: language
+      }
+    });
+
+    if (!template && language !== 'en') {
+      template = await EmailTemplateModel.findOne({
+        where: {
+          name: templateName,
+          language: 'en'
         }
       });
     }
-  });
 
-  const mailContent = await email.render(template, data);
-  return mailContent;
-};
+    if (!template) {
+      logger.info(`Not found template: ${templateName}`);
+    }
 
-transporter.sendWithDBTemplate = async function (
-  subject,
-  from,
-  to,
-  data,
-  template
-) {
-  let mailContent = await transporter.getMailDBTemplate(template, data);
-  console.log('Send email to',to);
-  return await transporter.sendMail({
-    from: from,
-    to: to,
-    subject: subject,
-    html: mailContent
-  });
-};
+    return template;
+  }
 
-transporter.getMailTemplate = async (data, fileName) => {
-  let root = path.resolve(
-    __dirname + "../../../../public/email-template/"
-  );
-  const email = new EmailTemplate({
-    views: { root, options: { extension: 'ejs' } }
-  });
-  const mailContent = await email.render(fileName, data);
-  return mailContent;
-};
+  async sendMail(mailOptions) {
+    const id = uuidV4();
+    const email = mailOptions.to;
+    const subject = mailOptions.subject;
+    const body = mailOptions.html;
+    logger.info('Send email to', email);
 
-transporter.sendWithTemplate = async function (
-  subject,
-  from,
-  to,
-  data,
-  templateFile
-) {
-  let mailContent = await transporter.getMailTemplate(data, templateFile);
-  console.log('Send email to',to);
-  return await transporter.sendMail({
-    from: from,
-    to: to,
-    subject: subject,
-    html: mailContent
-  });
-};
+    return new Promise((resolve, reject) => {
+      this.transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          logger.error(err);
+          EmailLoggingModel.create({
+            id,
+            email,
+            subject,
+            body,
+            num_of_views: 0,
+            status: EmailLoggingStatus.Failed,
+            error_message: err.message,
+            sent_result: null,
+          });
 
-module.exports = transporter;
+          return reject(err);
+        }
+
+        logger.info('Message sent: ' + info.response);
+        EmailLoggingModel.create({
+          id,
+          email,
+          subject,
+          body,
+          num_of_views: 0,
+          status: EmailLoggingStatus.Success,
+          error_message: null,
+          sent_result: JSON.stringify(info, null, 2),
+        });
+
+        return resolve(info);
+      });
+    });
+  }
+
+}
+
+const emailService = new EmailService();
+
+module.exports = emailService;

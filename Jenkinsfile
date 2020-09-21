@@ -23,7 +23,7 @@ node('stk-dev-proxy-app-1-jp_172.105.223.9') {
     stage('Deploy') {
         sh 'echo DEPLOY'
         sh 'sudo su - isysadmin -c "mkdir -p $APP_PATH"'
-        sh 'sudo rsync -avz --delete --exclude node_modules/ /home/jenkins/workspace/$JOB_BASE_NAME/ $APP_PATH'
+        sh 'sudo rsync -avz --delete --exclude node_modules/ /home/jenkins/workspace/$JOB_BASE_NAME/$APP_PATH'
         sh 'sudo chown isysadmin: -R $APP_PATH'
         sh 'sudo su - isysadmin -c "cd $APP_PATH && npm install --production"'
         //sh 'sudo su - isysadmin -c "cd $APP_PATH && npm run pm2 && pm2 list && pm2 save"'

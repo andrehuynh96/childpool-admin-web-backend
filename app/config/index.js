@@ -58,6 +58,7 @@ const config = {
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT),
     secure: process.env.SMTP_SECURE.toLowerCase() === 'true',
+    ignoreTLS: (process.env.SMTP_IGNORE_TLS || '').toLowerCase() === 'true',
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
   },
