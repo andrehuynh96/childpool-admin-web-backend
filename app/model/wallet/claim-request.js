@@ -76,16 +76,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     original_amount: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
+      allowNull: true,
     },
     network_fee: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
-    },
+      allowNull: true,
+    }
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   ClaimRequest.associate = (models) => {
     ClaimRequest.belongsTo(models.members, {
