@@ -33,7 +33,6 @@ const config = {
     description: pkg.description,
     buildNumber: process.env.BUILD_NUMBER || '',
     port: parseInt(process.env.PORT || process.env.APP_PORT),
-    url: process.env.APP_URL,
   },
   db: {
     wallet: {

@@ -129,7 +129,7 @@ class EmailService {
     const body = mailOptions.html;
     logger.info('Send email to', email);
 
-    const trackingHost = config.app.url;
+    const trackingHost = config.apiUrl;
     const url = `${trackingHost}/web/email-trackings/${id}`;
     const image = `<br /><img href="${url}" width="0" height="0" />`;
     mailOptions.html = mailOptions.html + image;
