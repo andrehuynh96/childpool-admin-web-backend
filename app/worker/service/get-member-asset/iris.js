@@ -55,7 +55,7 @@ class IRIS extends GetMemberAsset {
             if(histories && histories.data && histories.data.txs && histories.data.txs.length>0){
               let txs=histories.data.txs;
               for (let tx of txs) {
-                if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.created_at)) {
+                if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.createdAt)) {
                   claim = claim + BigNumber(tx.amount).toNumber() * 1e18;
                   logger.info('claim: ', claim);
                 }

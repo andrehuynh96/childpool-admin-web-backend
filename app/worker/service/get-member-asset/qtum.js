@@ -41,7 +41,7 @@ class QTUM extends GetMemberAsset {
           while (true) { 
             let res = await api.get(`/address/${address}/basic-txs?offset=${offset}&limit=${limit}`);
             if (res.data && res.data.transactions.length > 0) {
-              if (memberAsset && res.data.transactions[0].timestamp < Date.parse(memberAsset.created_at) / 1000) {
+              if (memberAsset && res.data.transactions[0].timestamp < Date.parse(memberAsset.createdAt) / 1000) {
                 break;
               }
               for (let tx of res.data.transactions) {
@@ -64,7 +64,7 @@ class QTUM extends GetMemberAsset {
             for (let e of txs) {
               if (!memberAsset) {
                 reward = reward + e.reward
-              }else if (e.timestamp >= Date.parse(memberAsset.created_at) / 1000) {
+              }else if (e.timestamp >= Date.parse(memberAsset.createdAt) / 1000) {
                 reward = reward + e.reward;
               }
             }

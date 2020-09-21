@@ -7,7 +7,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const config = require("app/config");
 const logger = require("app/lib/logger");
-var sleep = require('sleep');
+var sleep = require('sleep-promise');
 
 module.exports = {
   execute: async () => {
@@ -113,7 +113,7 @@ module.exports = {
           else {
             offset = qr.offset + qr.limit;
           }
-          sleep.sleep(1);
+          await sleep(1000);
         }
         if (response && response.length > 0) {
           for (let e of response) {
