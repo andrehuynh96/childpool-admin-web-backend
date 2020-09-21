@@ -1,87 +1,208 @@
 const GetMemberAsset = require("./base");
 const logger = require('app/lib/logger');
 const {
-  ChainID,
-  ChainType,
-  hexToNumber,
-  fromWei,
-  Units,
+    ChainID,
+    ChainType,
+    hexToNumber,
+    fromWei,
+    Units,
 } = require('@harmony-js/utils');
 const config = require('app/config');
 const { Harmony } = require('@harmony-js/core');
 const BigNumber = require('bignumber.js');
+const StakingPlatform = require('app/lib/staking-api/staking-platform');
+const MemberAsset = require('app/model/wallet').member_assets;
 const axios = require('axios');
 class ONE extends GetMemberAsset {
-  constructor() {
-    super();
-  }
-  async get(address) {
-    try {
-      const balance = await getBalanceONE(address);
-      const { amount, reward } = await getAmountAndRewardONE(address);
-      return {
-        balance: balance,
-        amount: amount,
-        reward: reward
-      };
-    } catch (error) {
-      logger.error(error);
-      return null;
+    constructor() {
+        super();
     }
-  }
+    async get(address) {
+        try {
+            const balance = await getBalanceONE(address);
+            const validatorAddresses = await StakingPlatform.getValidatorAddresses('ONE');
+            const { amount, reward, unclaimReward } = await getAmountAndRewardONE(address, validatorAddresses);
+
+            return {
+                balance: balance,
+                amount: amount,
+                reward: reward,
+                unclaimReward: unclaimReward
+            };
+        } catch (error) {
+            logger.error(error);
+            return null;
+        }
+    }
 }
 
 async function getBalanceONE(address) {
-  let balance = 0;
-  const shards = Object.values(config.harmony);
-  for (let item of shards) {
-    const hmy = new Harmony(
-      item,
-      {
-        chainType: ChainType.Harmony,
-        chainId: ChainID.HmyTestnet,
-      });
-    const response = await hmy.blockchain.getBalance({ address: address });
-    const shardBalance = fromWei(hexToNumber(response.result), Units.one);
-    const numBalance = BigNumber(shardBalance).toNumber();
-    balance += numBalance;
-  }
-  return balance;
+    let balance = 0;
+    const shards = Object.values(config.harmony);
+    for (let item of shards) {
+        if (item != null) {
+            const hmy = new Harmony(
+                item, {
+                    chainType: ChainType.Harmony,
+                    chainId: ChainID.HmyTestnet,
+                });
+            const response = await hmy.blockchain.getBalance({ address: address });
+            const shardBalance = fromWei(hexToNumber(response.result), Units.one);
+            const numBalance = BigNumber(shardBalance).toNumber();
+            balance += numBalance;
+        }
+    }
+    return balance;
 }
 
-async function getAmountAndRewardONE(address) {
-  try {
-    const data = {
-      jsonrpc: '2.0',
-      method: 'hmy_getDelegationsByDelegator',
-      params: [address],
-      id: 1
-    };
-    let options = {
-      method: 'POST',
-      url: config.harmony.urlShard0,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: JSON.stringify(data)
-    };
-    const response = await axios(options);
-    let amount = 0;
-    let reward = 0;
-    const { result } = response.data;
-    result.forEach(item => {
-      amount += item.amount;
-      reward += item.reward;
-    });
-    const totalAmount = BigNumber(amount).toNumber();
-    return {
-      amount: totalAmount,
-      reward: reward
-    };
-  }
-  catch (error) {
-    logger.error(error);
-    throw error;
-  }
+async function getAmountAndRewardONE(address, validatorAddresses) {
+    try {
+        const data = {
+            jsonrpc: '2.0',
+            method: 'hmy_getDelegationsByDelegator',
+            params: [address],
+            id: 1
+        };
+        let options = {
+            method: 'POST',
+            url: config.harmony.urlShard0,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data)
+        };
+        const response = await axios(options);
+        let amount = 0;
+        let reward = 0;
+        let unclaimReward = 0;
+        const { result } = response.data;
+
+        result.forEach(item => {
+            if (validatorAddresses.indexOf(item.validator_address) != -1) {
+                amount += BigNumber(item.amount).toNumber();
+                unclaimReward += BigNumber(item.reward).toNumber();
+            }
+        });
+
+        let memberAsset = await MemberAsset.findOne({
+            where: {
+                platform: 'ONE',
+                address: address
+            },
+            order: [
+                ['created_at', 'DESC']
+            ]
+        });
+
+        const totalAmount = BigNumber(amount).toNumber() / 1e18;
+        const totalUnclaimRewad = BigNumber(unclaimReward).toNumber() / 1e18;
+
+        if (memberAsset) {
+            let number = 0;
+            let claim = 0;
+            let fromSecondEpoch = Date.parse(memberAsset.createdAt) / 1000;
+            let colectRewardHashes = await getCollectRewardTxsHash(address, fromSecondEpoch);
+
+            if (colectRewardHashes && colectRewardHashes.length > 0) {
+                for (let txHash of colectRewardHashes) {
+                    var txReceipt = await getTransactionReceipt(txHash);
+                    if (txReceipt && txReceipt.status && txReceipt.logs) {
+                        var claimAmountHex = txReceipt.logs[0].data;
+                        claim += (hexToNumber(claimAmountHex) / 1e18);
+                    }
+                }
+            }
+            number = totalUnclaimRewad + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
+            reward = number > 0 ? number : 0;
+        } else {
+            reward = totalUnclaimRewad;
+        }
+
+        return {
+            amount: totalAmount,
+            reward: reward,
+            unclaimReward: totalUnclaimRewad
+        };
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
 }
+
+async function getCollectRewardTxsHash(address, fromSecondEpoch) {
+    try {
+        const data = {
+            jsonrpc: '2.0',
+            method: 'hmyv2_getStakingTransactionsHistory',
+            params: [{
+                "address": address,
+                "pageIndex": 0,
+                "pageSize": 500,
+                "fullTx": true,
+                "txType": "SENT",
+                "order": "DESC"
+            }],
+            id: 1
+        };
+        let options = {
+            method: 'POST',
+            url: config.harmony.urlShard0,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data)
+        };
+
+        const response = await axios(options);
+
+        const { result } = response.data;
+        var txHashes = [];
+        if (result && result.staking_transactions && result.staking_transactions.length > 0) {
+            let txs = result.staking_transactions;
+            for (let idx = 0; idx < txs.length; idx++) {
+                let tx = txs[idx];
+                if (tx.timestamp >= fromSecondEpoch) {
+                    if (tx.type == 'CollectRewards') {
+                        txHashes.push(tx.hash);
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return txHashes;
+    } catch (err) {
+        logger.error(err)
+        return null
+    }
+}
+
+async function getTransactionReceipt(txHash) {
+    try {
+        const data = {
+            jsonrpc: '2.0',
+            method: 'hmyv2_getTransactionReceipt',
+            params: [txHash],
+            id: 1
+        };
+        let options = {
+            method: 'POST',
+            url: config.harmony.urlShard0,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data)
+        };
+
+        const response = await axios(options);
+
+        const { result } = response.data;
+        return result;
+    } catch (err) {
+        logger.error(err)
+        return null
+    }
+}
+
 module.exports = ONE;
