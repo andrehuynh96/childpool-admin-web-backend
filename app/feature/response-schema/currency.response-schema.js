@@ -2,7 +2,7 @@ const objectMapper = require('object-mapper');
 
 const destObject = {
   array: {
-    '[].id': '[].id',  
+    '[].id': '[].id',
     '[].symbol': '[].symbol',
     '[].name': '[].name',
     '[].icon': '[].icon',
@@ -14,22 +14,28 @@ const destObject = {
     '[].order_index': '[].order_index',
     '[].status': '[].status',
     '[].default_flg': '[].default_flg',
+    '[].explore_url': '[].explore_url',
+    '[].transaction_format_link': '[].transaction_format_link',
+    '[].address_format_link': '[].address_format_link',
     '[].created_at': '[].created_at'
   },
   single: {
-    'id': 'id',  
-    'symbol': 'symbol',
-    'name': '[].name',
-    'icon': '[].icon',
-    'sc_token_address': '[].sc_token_address',
-    'decimals': '[].decimals',
-    'platform': '[].platform',
-    'description': '[].description',
-    'type': '[].type',
-    'order_index': '[].order_index',
-    'status': '[].status',
-    'default_flg': '[].default_flg',
-    'created_at': '[].created_at'
+    id: '[].id',
+    symbol: '[].symbol',
+    name: '[].name',
+    icon: '[].icon',
+    sc_token_address: '[].sc_token_address',
+    decimals: '[].decimals',
+    platform: '[].platform',
+    description: '[].description',
+    type: '[].type',
+    order_index: '[].order_index',
+    status: '[].status',
+    default_flg: '[].default_flg',
+    explore_url: '[]explore_url',
+    transaction_format_link: '[].transaction_format_link',
+    address_format_link: '[].address_format_link',
+    created_at: '[].created_at'
   }
 };
 module.exports = srcObject => {
@@ -43,4 +49,4 @@ module.exports = srcObject => {
   else {
     return objectMapper(srcObject, destObject.single);
   }
-};  
+};

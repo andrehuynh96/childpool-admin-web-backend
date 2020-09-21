@@ -63,7 +63,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
-    }
+    },
+    explore_url: {
+      type: DataTypes.STRING(500),
+      allowNull: true
+    },
+    transaction_format_link: {
+      type: DataTypes.STRING(500),
+      allowNull: true
+    },
+    address_format_link: {
+      type: DataTypes.STRING(500),
+      allowNull: true
+    },
   }, {
       underscored: true,
       timestamps: true,
@@ -73,4 +85,4 @@ module.exports = (sequelize, DataTypes) => {
     Model.hasMany(models.wallet_priv_keys, { foreignKey: 'platform' });
   };
   return Model;
-} 
+}
