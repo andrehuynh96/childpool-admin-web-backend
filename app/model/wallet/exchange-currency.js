@@ -74,6 +74,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: false
     },
+    fixed_time: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
   }, {
       underscored: true,
       timestamps: true,
