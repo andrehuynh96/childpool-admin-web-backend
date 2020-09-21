@@ -29,6 +29,7 @@ router.use(require('./ada-pool-notify/ada-pool-notify.route'));
 router.use(require('./member-asset/member-asset.route'));
 router.use(require('./exchange-currency/exchange-currency.route'));
 router.use(require('./exchange-transaction/exchange-transaction.route'));
+router.use(require('./email-tracking/email-tracking.route'));
 
 module.exports = router;
 

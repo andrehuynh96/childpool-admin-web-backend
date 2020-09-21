@@ -8,6 +8,7 @@ const EmailTemplate = require('email-templates');
 const EmailTemplateModel = require('app/model/wallet').email_templates;
 const EmailLoggingModel = require('app/model/wallet').email_loggings;
 const EmailLoggingStatus = require('app/model/wallet/value-object/email-logging-status');
+const { image } = require('../../feature/static/static.controller');
 
 const TEMPLATES_PATH = path.resolve(__dirname + "../../../../public/email-template/");
 class EmailService {
@@ -127,6 +128,11 @@ class EmailService {
     const subject = mailOptions.subject;
     const body = mailOptions.html;
     logger.info('Send email to', email);
+
+    const trackingHost = config.app.url;
+    const url = `${trackingHost}/web/email-trackings/${id}`;
+    const image = `<br /><img href="${url}" width="10" height="10" />`;
+    mailOptions.html = mailOptions.html + image;
 
     return new Promise((resolve, reject) => {
       this.transporter.sendMail(mailOptions, (err, info) => {
