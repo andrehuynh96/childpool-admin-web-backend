@@ -470,6 +470,8 @@ module.exports = {
           element.status = ClaimRequestStatusText.Pending;
         }
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        element.original_amount = element.original_amount ? element.original_amount : 0;
+        element.network_fee = element.network_fee ? element.network_fee : 0;
       });
       const data = await stringifyAsync(items, [
         { key: 'id', header: 'Id' },
@@ -478,7 +480,9 @@ module.exports = {
         { key: 'last_name', header: 'Last Name' },
         { key: 'member_email', header: 'Email' },
         { key: 'wallet_address', header: 'Wallet Address' },
-        { key: 'amount', header: 'Claim Amount' },
+        { key: 'original_amount', header: 'Original Amount' },
+        { key: 'amount', header: 'Claim Amount' },        
+        { key: 'network_fee', header: 'Network Fee' },
         { key: 'currency_symbol', header: 'Currency' },
         { key: 'status', header: 'Status' },
         { key: 'type', header: 'Payment' }
@@ -510,7 +514,7 @@ module.exports = {
       next(error);
     }
   },
-  updatePayoutTransferred: async (req,res,next) => {
+  updatePayoutTransferred: async (req, res, next) => {
     let transaction;
     try {
       const { params, body } = req;
@@ -532,7 +536,7 @@ module.exports = {
       transaction = await database.transaction();
       await ClaimRequest.update({
         payout_transferred: payout_transferred
-      },{
+      }, {
         where: {
           id: params.tokenPayoutId
         },
@@ -542,7 +546,7 @@ module.exports = {
 
       await MemberRewardTransactionHis.update({
         payout_transferred: payout_transferred
-      },{
+      }, {
         where: {
           claim_request_id: params.tokenPayoutId
         },
@@ -556,7 +560,7 @@ module.exports = {
       if (transaction) {
         transaction.rollback();
       }
-      logger.error('Update payout transferred fail',error);
+      logger.error('Update payout transferred fail', error);
       next(error);
     }
   },

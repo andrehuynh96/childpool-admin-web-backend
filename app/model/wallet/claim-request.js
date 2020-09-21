@@ -73,7 +73,15 @@ module.exports = (sequelize, DataTypes) => {
     sent_at: {
       type: DataTypes.DATE,
       allowNull: true,
-    }
+    },
+    original_amount: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+    },
+    network_fee: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+    },
   }, {
       underscored: true,
       timestamps: true,
