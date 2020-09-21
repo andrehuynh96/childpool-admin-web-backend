@@ -131,7 +131,7 @@ class EmailService {
 
     const trackingHost = config.app.url;
     const url = `${trackingHost}/web/email-trackings/${id}`;
-    const image = `<br /><img href="${url}" width="10" height="10" />`;
+    const image = `<br /><img href="${url}" width="0" height="0" />`;
     mailOptions.html = mailOptions.html + image;
 
     return new Promise((resolve, reject) => {

@@ -25,13 +25,19 @@ module.exports = {
         );
       }
 
-      // Always send a 200 with the 1x1 pixel
-      res.send(pixelBytes, { 'Content-Type': 'image/gif' }, 200);
     }
     catch (error) {
       logger.error('get email template detail fail', error);
-      res.send(pixelBytes, { 'Content-Type': 'image/gif' }, 200);
     }
+
+    // Disable browser caching
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('Cache-Control', 'private, no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
+    // Always send a 200 with the 1x1 pixel
+    res.send(pixelBytes, { 'Content-Type': 'image/gif' }, 200);
   },
 
 };
