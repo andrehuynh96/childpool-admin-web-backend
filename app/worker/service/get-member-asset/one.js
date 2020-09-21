@@ -125,7 +125,7 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
         };
     } catch (error) {
         logger.error(error);
-        throw error;
+        return null;
     }
 }
 
