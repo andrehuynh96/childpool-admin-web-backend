@@ -6,7 +6,7 @@ const ExchangeProvider = require('app/service/exchange/provider');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logger = require("app/lib/logger");
-const sleep = require('sleep');
+const sleep = require('sleep-promise');
 const mappingProvider = {
   [ExchangeTransactionProvider.CHANGELLY]: [ExchangeProvider.Changelly]
 }
@@ -47,7 +47,7 @@ module.exports = {
               id: t.id
             },
           });
-        sleep.sleep(1);
+        await sleep(1000);
       }
 
     }
