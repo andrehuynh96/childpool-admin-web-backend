@@ -33,6 +33,7 @@ const config = {
     description: pkg.description,
     buildNumber: process.env.BUILD_NUMBER || '',
     port: parseInt(process.env.PORT || process.env.APP_PORT),
+    url: process.env.APP_URL,
   },
   db: {
     wallet: {
@@ -58,6 +59,7 @@ const config = {
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT),
     secure: process.env.SMTP_SECURE.toLowerCase() === 'true',
+    ignoreTLS: (process.env.SMTP_IGNORE_TLS || '').toLowerCase() === 'true',
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
   },
