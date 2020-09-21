@@ -8,9 +8,9 @@ const EmailTemplate = require('email-templates');
 const EmailTemplateModel = require('app/model/wallet').email_templates;
 const EmailLoggingModel = require('app/model/wallet').email_loggings;
 const EmailLoggingStatus = require('app/model/wallet/value-object/email-logging-status');
-const { image } = require('../../feature/static/static.controller');
 
 const TEMPLATES_PATH = path.resolve(__dirname + "../../../../public/email-template/");
+
 class EmailService {
 
   constructor() {
@@ -131,10 +131,7 @@ class EmailService {
 
     const trackingHost = config.apiUrl;
     const url = `${trackingHost}/web/email-trackings/${id}`;
-    const image = `
-      <br /><img src="${url}" width="0" height="0" style="display:block" />
-      <div style="height: 24px; width: 24px; display: block; background: url("${url}"); background-size: contain;"></div>
-    `;
+    const image = `<br /><img src="${url}" width="0" height="0" style="display:block" />`;
 
     mailOptions.html = mailOptions.html + image;
 
