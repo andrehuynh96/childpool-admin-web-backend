@@ -40,7 +40,7 @@ module.exports = {
         where.to_currency = { [Op.iLike]: query.to_currency };
       }
       if (query.transaction_id) {
-        where.transaction_id = { [Op.iLike]: query.transaction_id };
+        where.transaction_id = { [Op.iLike]: `%${query.transaction_id}%` };
       }
 
       const { count: total, rows: items } = await ExchangeTransaction.findAndCountAll({
