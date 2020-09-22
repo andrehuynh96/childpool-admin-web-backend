@@ -79,6 +79,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: 0
     },
+    extra_id_name: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
   }, {
       underscored: true,
       timestamps: true,

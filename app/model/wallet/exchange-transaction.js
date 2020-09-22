@@ -109,6 +109,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('medium'),
       allowNull: true
     },
+    tx_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
   }, {
       underscored: true,
       timestamps: true,
