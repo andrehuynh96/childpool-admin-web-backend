@@ -133,7 +133,7 @@ module.exports = router;
 *   get:
 *     summary: Get exchange currency statuses
 *     tags:
-*       - Exchange
+*       - Currencies
 *     description:
 *     produces:
 *       - application/json
@@ -182,7 +182,7 @@ module.exports = router;
 *   get:
 *     summary: Get currency details
 *     tags:
-*       - Exchange
+*       - Currencies
 *     description:
 *     parameters:
 *       - name: currencyId
@@ -231,3 +231,86 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+/**
+* @swagger
+* /web/currencies/currencyId:
+*   put:
+*     summary: Update currency setting
+*     tags:
+*       - Currencies
+*     description:
+*     parameters:
+*       - name: currencyId
+*         in: path
+*         type: string
+*         required: true
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                      "symbol":"IRIS",
+                      "platform":"IRIS",
+                      "name": "Iris",
+                      "icon": "https://static.chainservices.info/staking/platforms/iris.png",
+                      "decimals": 18,
+                      "description": "",
+                      "sc_token_address":"",
+                      "order_index": 4,
+                      "status": 1,
+                      "explore_url": "https://www.irisplorer.io",
+                      "transaction_format_link": "https://www.irisplorer.io/#/tx?txHash=",
+                      "address_format_link": "https://www.irisplorer.io/#/address/"
+                    }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": {
+                    "id": 4,
+                    "symbol": "IRIS",
+                    "name": "Iris",
+                    "icon": "https://static.chainservices.info/staking/platforms/iris.png",
+                    "sc_token_address": "",
+                    "decimals": 18,
+                    "platform": "IRIS",
+                    "description": "",
+                    "type": "NATIVE",
+                    "order_index": 4,
+                    "status": 1,
+                    "created_by": 0,
+                    "updated_by": 32,
+                    "default_flg": true,
+                    "explore_url": "https://www.irisplorer.io",
+                    "transaction_format_link": "https://www.irisplorer.io/#/tx?txHash=",
+                    "address_format_link": "https://www.irisplorer.io/#/address/",
+                    "createdAt": "2020-02-27T07:58:29.300Z",
+                    "updatedAt": "2020-09-22T05:00:11.440Z"
+                }
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+/* #end region */

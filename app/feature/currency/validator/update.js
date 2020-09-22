@@ -11,8 +11,8 @@ const schema = Joi.object().keys({
   order_index: Joi.number().integer().allow(null).optional(),
   status: Joi.number().integer().required(),
   explore_url: Joi.string().max(500).allow('').allow(null).optional(),
-  transaction_format_link: Joi.string().max(1000).allow('').allow(null).optional(),
-  address_format_link: Joi.string().max(1000).allow('').allow(null).optional(),
+  transaction_format_link: Joi.string().max(500).allow('').allow(null).optional(),
+  address_format_link: Joi.string().max(500).allow('').allow(null).optional(),
 });
 
 module.exports = schema;

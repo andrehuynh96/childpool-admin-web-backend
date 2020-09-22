@@ -101,7 +101,7 @@ module.exports = {
       }
 
       currency.status = CURRENCY_STATUS_TEXT_CACHE[currency.status];
-      return res.ok(CurrencyMapper(currency));
+      return res.ok(currency);
     }
     catch (error) {
       logger.error('get currency detail fail',error);
@@ -116,15 +116,14 @@ module.exports = {
         updated_by: user.id,
       }, {
         where: {
-          id: params.exchangeCurrencyId,
+          id: params.currencyId,
         },
         returning: true,
       });
-
       if (!numOfItems) {
         return res.notFound(res.__("CURRENCY_NOT_FOUND"), "CURRENCY_NOT_FOUND");
       }
-      return res.ok(CurrencyMapper(items[0]));
+      return res.ok(items[0]);
     }
     catch (error) {
       logger.error('update currency fail',error);
