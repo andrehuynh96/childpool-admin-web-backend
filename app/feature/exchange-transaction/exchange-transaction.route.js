@@ -48,6 +48,9 @@ router.get('/exchange-transactions',
 *       - name: status
 *         in: query
 *         type: string
+*       - name: transaction_id
+*         in: query
+*         type: string
 *     produces:
 *       - application/json
 *     responses:

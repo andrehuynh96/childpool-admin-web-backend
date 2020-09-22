@@ -39,6 +39,9 @@ module.exports = {
       if (query.to_currency) {
         where.to_currency = { [Op.iLike]: query.to_currency };
       }
+      if (query.transaction_id) {
+        where.transaction_id = { [Op.iLike]: `%${query.transaction_id}%` };
+      }
 
       const { count: total, rows: items } = await ExchangeTransaction.findAndCountAll({
         limit: limit,
@@ -140,6 +143,9 @@ module.exports = {
       }
       if (query.to_currency) {
         where.to_currency = { [Op.iLike]: query.to_currency };
+      }
+      if (query.transaction_id) {
+        where.transaction_id = { [Op.iLike]: query.transaction_id };
       }
 
       const { rows: items } = await ExchangeTransaction.findAndCountAll({

@@ -10,6 +10,7 @@ const schema = Joi.object().keys({
   from_currency: Joi.string().allow('').allow(null).max(100).optional(),
   to_currency: Joi.string().allow('').allow(null).max(100).optional(),
   status: Joi.string().valid(Status).allow('').allow(null).optional(),
+  transaction_id: Joi.string().allow('').allow(null).max(100).optional(),
 });
 
 module.exports = schema;
