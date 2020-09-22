@@ -129,7 +129,7 @@ class EmailService {
     const body = mailOptions.html;
     logger.info('Send email to', email);
 
-    const trackingHost = config.apiUrl;
+    const trackingHost = config.webWallet.apiUrl;
     const url = `${trackingHost}/web/email-trackings/${id}`;
     const image = `<br /><img src="${url}" width="0" height="0" style="display:block" />`;
 

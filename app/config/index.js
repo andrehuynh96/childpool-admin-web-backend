@@ -204,6 +204,9 @@ const config = {
   },
   qtum: {
     url: process.env.QTUM_API
+  },
+  webWallet: {
+    apiUrl: process.env.WEB_WALLET_API_URL || "https://dev-staking-wallet-web.chainservices.info",
   }
 };
 
