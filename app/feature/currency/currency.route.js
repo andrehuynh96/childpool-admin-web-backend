@@ -178,7 +178,7 @@ module.exports = router;
 
 /**
 * @swagger
-* /web/currencies/:currencyId:
+* /web/currencies/{{currencyId}}:
 *   get:
 *     summary: Get currency details
 *     tags:
@@ -197,22 +197,27 @@ module.exports = router;
 *         examples:
 *           application/json:
 *             {
-                "data": [
-                    {
-                      "id": 2,
-                      "symbol": "BTC",
-                      "platform": "BTC",
-                      "name": "Bitcoin",
-                      "icon": "https://web-api.changelly.com/api/coins/btc.png",
-                      "order_index": 0,
-                      "status": "ENABLE",
-                      "from_flg": true,
-                      "to_flg": true,
-                      "fix_rate_flg": true,
-                      "created_at": "2020-09-04T07:27:17.601Z",
-                      "updated_at": "2020-09-04T07:27:17.601Z"
-                    }
-                ]
+                "data": {
+                    "id": 4,
+                    "symbol": "IRIS",
+                    "name": "Iris",
+                    "icon": "https://static.chainservices.info/staking/platforms/iris.png",
+                    "sc_token_address": "",
+                    "decimals": 18,
+                    "platform": "IRIS",
+                    "description": "",
+                    "type": "NATIVE",
+                    "order_index": 4,
+                    "status": "ENABLED",
+                    "created_by": 0,
+                    "updated_by": 32,
+                    "default_flg": true,
+                    "explore_url": "https://www.irisplorer.io",
+                    "transaction_format_link": "https://www.irisplorer.io/#/tx?txHash=",
+                    "address_format_link": "https://www.irisplorer.io/#/address/",
+                    "createdAt": "2020-02-27T07:58:29.300Z",
+                    "updatedAt": "2020-09-22T05:00:11.440Z"
+                }
             }
 *       400:
 *         description: Error
@@ -234,7 +239,7 @@ module.exports = router;
 
 /**
 * @swagger
-* /web/currencies/currencyId:
+* /web/currencies/{{currencyId}}:
 *   put:
 *     summary: Update currency setting
 *     tags:

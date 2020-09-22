@@ -123,6 +123,7 @@ module.exports = {
       if (!numOfItems) {
         return res.notFound(res.__("CURRENCY_NOT_FOUND"), "CURRENCY_NOT_FOUND");
       }
+      items[0].status = CURRENCY_STATUS_TEXT_CACHE[items[0].status];
       return res.ok(items[0]);
     }
     catch (error) {
