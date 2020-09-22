@@ -279,4 +279,65 @@ router.get('/exchange-transactions/statuses',
 */
 /* #end region */
 
+router.get('/exchange-transactions/exchange-transactions-csv',
+  authenticate,
+  authority(PermissionKey.VIEW_LIST_EXCHANGE_TRANSACTION),
+  controller.downloadCSV
+);
+/**
+ * @swagger
+ * /web/exchange-transactions/exchange-transactions-csv:
+ *   get:
+ *     summary: search transactions
+ *     tags:
+*       - Exchange
+*     description:
+*     parameters:
+*       - name: email
+*         in: query
+*         type: string
+*       - name: from_date
+*         in: query
+*         type: date
+*       - name: to_date
+*         in: query
+*         type: date
+*       - name: from_currency
+*         in: query
+*         type: string
+*       - name: to_currency
+*         in: query
+*         type: string
+*       - name: status
+*         in: query
+*         type: string
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+ *           application/json:
+ *             {
+                    "data": {
+                    }
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
 module.exports = router;
