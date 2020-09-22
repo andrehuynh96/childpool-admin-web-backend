@@ -808,4 +808,25 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE":"2020-09-09T10:05:08.764Z"
   },
+  "VIEW_LIST_CURRENCY": {
+    "KEY": "VIEW_LIST_CURRENCY",
+    "DESCRIPTION": "View list currency",
+    "GROUP_NAME": "Currencies",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+  },
+  "VIEW_CURRENCY_DETAIL": {
+    "KEY": "VIEW_CURRENCY_DETAIL",
+    "DESCRIPTION": "View currency detail",
+    "GROUP_NAME": "Currencies",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+  },
+  "UPDATE_CURRENCY_DETAIL": {
+    "KEY": "UPDATE_CURRENCY_DETAIL",
+    "DESCRIPTION": "Update currency",
+    "GROUP_NAME": "Currencies",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+  },
 };
