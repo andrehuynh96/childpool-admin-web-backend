@@ -140,4 +140,3 @@ module.exports = {
 ```
 - More commands please look at https://sequelize.readthedocs.io/en/latest/docs/migrations/#the-cli
  jV3z2Hd8Vf8DixXu
- 
