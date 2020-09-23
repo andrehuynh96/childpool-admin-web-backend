@@ -699,6 +699,13 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-09-01T00:00:00.000Z"
   },
+  "EXPORT_CRYPTO_ADDRESSES_CSV": {
+    "KEY": "EXPORT_CRYPTO_ADDRESSES_CSV",
+    "DESCRIPTION": "Download crypto address CSV",
+    "GROUP_NAME": "Crypto address",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-23T00:00:00.000Z"
+  },
 
   "VIEW_LIST_TERM": {
     "KEY": "VIEW_LIST_TERM",
