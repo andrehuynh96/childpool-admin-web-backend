@@ -130,7 +130,8 @@ const config = {
     checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
     checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE,
     checkExchangeStatus: process.env.SCHEDULE_CHECK_EXCHANGE_STATUS,
-    getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET
+    getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET,
+    syncCurrencyWithChangelly: process.env.SCHEDULE_SYNC_CURRENCY_WITH_CHANGELLY
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
