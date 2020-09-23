@@ -38,7 +38,7 @@ module.exports = {
         limit: limit,
         offset: offset,
         where: where,
-        order: [['created_at','DESC']],
+        order: [['order_index','ASC'],['created_at','DESC']],
         raw: true
       });
 
@@ -100,7 +100,6 @@ module.exports = {
         return res.notFound(res.__("CURRENCY_NOT_FOUND"),"CURRENCY_NOT_FOUND",{ field: [currencyId] });
       }
 
-      currency.status = CURRENCY_STATUS_TEXT_CACHE[currency.status];
       return res.ok(currency);
     }
     catch (error) {
@@ -123,7 +122,6 @@ module.exports = {
       if (!numOfItems) {
         return res.notFound(res.__("CURRENCY_NOT_FOUND"), "CURRENCY_NOT_FOUND");
       }
-      items[0].status = CURRENCY_STATUS_TEXT_CACHE[items[0].status];
       return res.ok(items[0]);
     }
     catch (error) {

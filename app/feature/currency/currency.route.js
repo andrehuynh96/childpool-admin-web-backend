@@ -266,6 +266,7 @@ module.exports = router;
                       "description": "",
                       "sc_token_address":"",
                       "order_index": 4,
+                      "default_flg": true,
                       "status": 1,
                       "explore_url": "https://www.irisplorer.io",
                       "transaction_format_link": "https://www.irisplorer.io/#/tx?txHash=",

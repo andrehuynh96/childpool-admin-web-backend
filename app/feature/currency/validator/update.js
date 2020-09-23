@@ -9,6 +9,7 @@ const schema = Joi.object().keys({
   description: Joi.string().max(1000).allow('').allow(null).optional(),
   sc_token_address: Joi.string().max(256).allow('').allow(null).optional(),
   order_index: Joi.number().integer().allow(null).optional(),
+  default_flg: Joi.boolean().required(),
   status: Joi.number().integer().required(),
   explore_url: Joi.string().max(500).allow('').allow(null).optional(),
   transaction_format_link: Joi.string().max(500).allow('').allow(null).optional(),
