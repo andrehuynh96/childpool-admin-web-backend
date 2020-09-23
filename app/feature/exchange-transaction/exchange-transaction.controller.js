@@ -20,7 +20,7 @@ module.exports = {
       }
       if (query.from_date && query.to_date) {
         const fromDate = moment(query.from_date).toDate();
-        const toDate = moment(query.to_date).add(1, 'minute').toDate();
+        const toDate = moment(query.to_date).toDate();
         if (fromDate >= toDate) {
           return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
         }

@@ -35,7 +35,7 @@ module.exports = {
         where.created_at[Op.gte] = fromDate;
       }
       if (query.to_date) {
-        toDate = moment(query.to_date).add(1, 'minute').toDate();
+        toDate = moment(query.to_date).toDate();
         where.created_at[Op.lt] = toDate;
       }
       if (fromDate && toDate && fromDate >= toDate) {
@@ -72,7 +72,7 @@ module.exports = {
         where.payout_transferred[Op.gte] = payoutFromDate;
       }
       if (query.payout_to_date) {
-        payoutToDate = moment(query.payout_to_date).add(1, 'minute').toDate();
+        payoutToDate = moment(query.payout_to_date).toDate();
         where.payout_transferred[Op.lt] = payoutToDate;
       }
 
@@ -402,7 +402,7 @@ module.exports = {
         where.created_at[Op.gte] = fromDate;
       }
       if (query.to_date) {
-        toDate = moment(query.to_date).add(1, 'minute').toDate();
+        toDate = moment(query.to_date).toDate();
         where.created_at[Op.lt] = toDate;
       }
       if (fromDate && toDate && fromDate >= toDate) {
@@ -439,7 +439,7 @@ module.exports = {
         where.payout_transferred[Op.gte] = payoutFromDate;
       }
       if (query.payout_to_date) {
-        payoutToDate = moment(query.payout_to_date).add(1, 'minute').toDate();
+        payoutToDate = moment(query.payout_to_date).toDate();
         where.payout_transferred[Op.lt] = payoutToDate;
       }
 
@@ -481,7 +481,7 @@ module.exports = {
         { key: 'member_email', header: 'Email' },
         { key: 'wallet_address', header: 'Wallet Address' },
         { key: 'original_amount', header: 'Original Amount' },
-        { key: 'amount', header: 'Claim Amount' },        
+        { key: 'amount', header: 'Claim Amount' },
         { key: 'network_fee', header: 'Network Fee' },
         { key: 'currency_symbol', header: 'Currency' },
         { key: 'status', header: 'Status' },

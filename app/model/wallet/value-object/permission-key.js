@@ -756,6 +756,13 @@ module.exports = {
     "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE": "2020-09-04T02:50:08.764Z"
   },
+  "EXPORT_MEMBER_ASSET_CSV": {
+    "KEY": "EXPORT_MEMBER_ASSET_CSV",
+    "DESCRIPTION": "Download member asset CSV",
+    "GROUP_NAME": "Member asset",
+    "ROLES": ["Master", "Admin"],
+    "INITIALIZED_DATE": "2020-09-23T02:50:08.764Z"
+  },
 
   // Exchange - Changelly
   "VIEW_EXCHANGE_CURRENCIES": {
@@ -785,48 +792,48 @@ module.exports = {
     "DESCRIPTION": "Update payout transferred commission payout",
     "GROUP_NAME": "Claim request",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
-    "INITIALIZED_DATE":"2020-09-08T09:50:08.764Z"
+    "INITIALIZED_DATE": "2020-09-08T09:50:08.764Z"
   },
   "AFFILIATE_UPDATE_PAYOUT_TRANSFERRED": {
     "KEY": "AFFILIATE_UPDATE_PAYOUT_TRANSFERRED",
     "DESCRIPTION": "Update payout transferred token payout",
     "GROUP_NAME": "Token payout",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
-    "INITIALIZED_DATE":"2020-09-08T09:50:08.764Z"
+    "INITIALIZED_DATE": "2020-09-08T09:50:08.764Z"
   },
   "VIEW_LIST_EXCHANGE_TRANSACTION": {
     "KEY": "VIEW_LIST_EXCHANGE_TRANSACTION",
     "DESCRIPTION": "Search exchange transaction",
     "GROUP_NAME": "Exchange Transaction",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
-    "INITIALIZED_DATE":"2020-09-09T10:05:08.764Z"
+    "INITIALIZED_DATE": "2020-09-09T10:05:08.764Z"
   },
   "VIEW_EXCHANGE_TRANSACTION_DETAIL": {
     "KEY": "VIEW_EXCHANGE_TRANSACTION_DETAIL",
     "DESCRIPTION": "View exchange transaction detail",
     "GROUP_NAME": "Exchange Transaction",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
-    "INITIALIZED_DATE":"2020-09-09T10:05:08.764Z"
+    "INITIALIZED_DATE": "2020-09-09T10:05:08.764Z"
   },
   "VIEW_LIST_CURRENCY": {
     "KEY": "VIEW_LIST_CURRENCY",
     "DESCRIPTION": "View list currency",
     "GROUP_NAME": "Currencies",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
-    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+    "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
   },
   "VIEW_CURRENCY_DETAIL": {
     "KEY": "VIEW_CURRENCY_DETAIL",
     "DESCRIPTION": "View currency detail",
     "GROUP_NAME": "Currencies",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
-    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+    "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
   },
   "UPDATE_CURRENCY_DETAIL": {
     "KEY": "UPDATE_CURRENCY_DETAIL",
     "DESCRIPTION": "Update currency",
     "GROUP_NAME": "Currencies",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
-    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+    "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
   },
 };

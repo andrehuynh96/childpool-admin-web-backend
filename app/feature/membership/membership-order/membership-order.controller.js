@@ -87,8 +87,8 @@ module.exports = {
       let fromDate, toDate;
       if (query.from && query.to) {
         where.created_at = {};
-        let fromDate = moment(query.from).add(1, 'minute').toDate();
-        let toDate = moment(query.to).add(1, 'minute').toDate();
+        let fromDate = moment(query.from).toDate();
+        let toDate = moment(query.to).toDate();
         where.created_at[Op.gte] = fromDate;
         where.created_at[Op.lt] = toDate;
       }
@@ -478,8 +478,8 @@ module.exports = {
       let fromDate, toDate;
       if (query.from && query.to) {
         where.created_at = {};
-        let fromDate = moment(query.from).add(1, 'minute').toDate();
-        let toDate = moment(query.to).add(1, 'minute').toDate();
+        let fromDate = moment(query.from).toDate();
+        let toDate = moment(query.to).toDate();
         where.created_at[Op.gte] = fromDate;
         where.created_at[Op.lt] = toDate;
       }
