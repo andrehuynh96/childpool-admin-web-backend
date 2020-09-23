@@ -11,6 +11,12 @@ router.get('/member-assets',
   controller.search
 );
 
+router.get('/member-assets-csv',
+  authenticate,
+  authority(PermissionKey.EXPORT_MEMBER_ASSET_CSV),
+  controller.downloadCSV
+);
+
 module.exports = router;
 
 /** *******************************************************************/

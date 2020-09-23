@@ -5,7 +5,9 @@ const Wallet = require('app/model/wallet').wallets;
 const WalletPrivKey = require('app/model/wallet').wallet_priv_keys;
 const moment = require('moment');
 const Sequelize = require('sequelize');
+const stringify = require('csv-stringify');
 const Op = Sequelize.Op;
+
 module.exports = {
   search: async (req, res, next) => {
     try {
@@ -26,7 +28,7 @@ module.exports = {
       }
 
       if (query.to_date) {
-        toDate = moment(query.to_date).add(1, 'minute').toDate();
+        toDate = moment(query.to_date).toDate();
         where.created_at[Op.lt] = toDate;
       }
 
@@ -95,5 +97,106 @@ module.exports = {
       logger.error('search member asset fail', error);
       next(error);
     }
-  }
+  },
+  downloadCSV: async (req, res, next) => {
+    try {
+      const { query } = req;
+      const timezone_offset = query.timezone_offset || 0;
+      const where = {};
+      const memberCond = {};
+      let fromDate, toDate;
+
+      if (query.from_date || query.to_date) {
+        where.created_at = {};
+      }
+      if (query.from_date) {
+        fromDate = moment(query.from_date).toDate();
+        where.created_at[Op.gte] = fromDate;
+      }
+
+      if (query.to_date) {
+        toDate = moment(query.to_date).toDate();
+        where.created_at[Op.lt] = toDate;
+      }
+
+      if (fromDate && toDate && fromDate >= toDate) {
+        return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
+      }
+
+      if (query.email || query.address) {
+        where.address = {};
+      }
+
+      if (query.email) {
+        memberCond.email = { [Op.iLike]: `%${query.email}%` };
+        const members = await Member.findAll({
+          where: memberCond
+        });
+
+        const memberIds = members.map(item => item.id);
+        const wallets = await Wallet.findAll({
+          where: {
+            member_id: memberIds
+          }
+        });
+        const walletIds = wallets.map(item => item.id);
+        const walletPrivKeys = await WalletPrivKey.findAll({
+          where: {
+            wallet_id: walletIds
+          }
+        });
+
+        const addressList = walletPrivKeys.map(item => item.address);
+        where.address[Op.in] = addressList;
+      }
+
+      if (query.address) {
+        where.address[Op.iLike] = `%${query.address}%`;
+      }
+
+      if (query.platform) {
+        where.platform = query.platform;
+      }
+
+      const items = await MemberAssets.findAll({
+        where: where,
+        order: [['created_at', 'DESC']]
+      });
+
+      items.forEach(item => {
+        item.created_at = moment(item.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+      });
+
+      const data = await stringifyAsync(items, [
+        { key: 'created_at', header: 'Date' },
+        { key: 'platform', header: 'Platform' },
+        { key: 'address', header: 'Address' },
+        { key: 'balance', header: 'Balance' },
+        { key: 'amount', header: 'Staked Amount' },
+        { key: 'reward', header: 'Rewards' },
+      ]);
+      res.setHeader('Content-disposition', 'attachment; filename=member-assets.csv');
+      res.set('Content-Type', 'text/csv');
+      res.send(data);
+    }
+    catch (error) {
+      logger.error('search member asset fail', error);
+      next(error);
+    }
+  },
 };
+
+function stringifyAsync(data, columns) {
+  return new Promise(function (resolve, reject) {
+    stringify(data, {
+      header: true,
+      columns: columns
+    }, function (err, data) {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(data);
+    }
+    );
+  });
+}
