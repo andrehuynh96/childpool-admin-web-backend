@@ -170,18 +170,20 @@ module.exports = {
       items.forEach(item => {
         item.created_at = moment(item.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
         const currency = listCrrencies.find(curr => curr.platform === item.platform);
-        item.convertBalance = BigNumber(item.balance).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
-        item.convertAmount = BigNumber(item.amount).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
-        item.convertReward = BigNumber(item.reward).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+        if (currency) {
+          item.balance = BigNumber(item.balance).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+          item.amount = BigNumber(item.amount).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+          item.reward = BigNumber(item.reward).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+        }
       });
 
       const data = await stringifyAsync(items, [
         { key: 'created_at', header: 'Date' },
         { key: 'platform', header: 'Platform' },
         { key: 'address', header: 'Address' },
-        { key: 'convertBalance', header: 'Balance' },
-        { key: 'convertAmount', header: 'Staked Amount' },
-        { key: 'convertReward', header: 'Rewards' },
+        { key: 'balance', header: 'Balance' },
+        { key: 'amount', header: 'Staked Amount' },
+        { key: 'reward', header: 'Rewards' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=member-assets.csv');
       res.set('Content-Type', 'text/csv');
