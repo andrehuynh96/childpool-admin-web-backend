@@ -7,6 +7,9 @@ const moment = require('moment');
 const Sequelize = require('sequelize');
 const stringify = require('csv-stringify');
 const Op = Sequelize.Op;
+const Currencies = require("app/model/wallet").currencies;
+const config = require("../../../app/config");
+const BigNumber = require('bignumber.js');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -163,17 +166,30 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
+      const listCrrenciesStake = await Currencies.findAll({
+        where: {
+          platform: { [Op.in]: (config.stakingPlatform || '').split(',') },
+        }
+      });
+
       items.forEach(item => {
         item.created_at = moment(item.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        listCrrenciesStake.map(currency => {
+          if (item.platform === currency.platform) {
+            item.convertBalance = BigNumber(item.balance).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+            item.convertAmount = BigNumber(item.amount).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+            item.convertReward = BigNumber(item.reward).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+          }
+        });
       });
 
       const data = await stringifyAsync(items, [
         { key: 'created_at', header: 'Date' },
         { key: 'platform', header: 'Platform' },
         { key: 'address', header: 'Address' },
-        { key: 'balance', header: 'Balance' },
-        { key: 'amount', header: 'Staked Amount' },
-        { key: 'reward', header: 'Rewards' },
+        { key: 'convertBalance', header: 'Balance' },
+        { key: 'convertAmount', header: 'Staked Amount' },
+        { key: 'convertReward', header: 'Rewards' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=member-assets.csv');
       res.set('Content-Type', 'text/csv');
