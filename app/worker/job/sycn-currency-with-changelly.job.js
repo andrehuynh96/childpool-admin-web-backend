@@ -3,6 +3,7 @@ const logger = require("app/lib/logger");
 const Changelly = require('../../service/exchange/changelly');
 const SyncCurrencyChangellyServices = require("../service/Sync-currency-with-changelly");
 const config = require('app/config');
+const status = require('../../model/wallet/value-object/exchange-currency-status');
 
 module.exports = {
   execute: async () => {
@@ -10,14 +11,14 @@ module.exports = {
       const getCurrencies = new Changelly().getCurrencies();
       const syncCurrencyServices = new SyncCurrencyChangellyServices();
       const getChangellyData = await getCurrencies;
-      const exchangeCurrenciesDB = await exchangeCurrencies.findAll({ where: { status: 1 } });
+      const exchangeCurrenciesDB = await exchangeCurrencies.findAll({ where: { status: status.ENABLED } });
       const changellyData = getChangellyData.result;
       if (changellyData && exchangeCurrenciesDB) {
 
         for (let i = 0; i < changellyData.length; i++) {
           const changellyTicker = changellyData[i].ticker;
           const changellyPlatform = (changellyData[i].contract_address && changellyData[i].address_url.startsWith("https://etherscan.io")) ? "ETH" : changellyData[i].ticker.toUpperCase();
-          const changellyEnabled = changellyData[i].enabled ? 1 : 0;
+          const changellyEnabled = changellyData[i].enabled ? status.ENABLED : status.DISABLED;
           const changellyFixRate = changellyData[i].fix_rate_enabled;
 
           exchangeCurrenciesDB.map(async (item) => {
