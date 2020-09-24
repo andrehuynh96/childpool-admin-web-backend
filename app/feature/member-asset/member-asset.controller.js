@@ -166,21 +166,13 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
-      const listCrrenciesStake = await Currencies.findAll({
-        where: {
-          platform: { [Op.in]: (config.stakingPlatform || '').split(',') },
-        }
-      });
-
+      const listCrrencies = await Currencies.findAll({});
       items.forEach(item => {
         item.created_at = moment(item.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
-        listCrrenciesStake.map(currency => {
-          if (item.platform === currency.platform) {
-            item.convertBalance = BigNumber(item.balance).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
-            item.convertAmount = BigNumber(item.amount).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
-            item.convertReward = BigNumber(item.reward).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
-          }
-        });
+        const currency = listCrrencies.find(curr => curr.platform === item.platform);
+        item.convertBalance = BigNumber(item.balance).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+        item.convertAmount = BigNumber(item.amount).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+        item.convertReward = BigNumber(item.reward).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
       });
 
       const data = await stringifyAsync(items, [
