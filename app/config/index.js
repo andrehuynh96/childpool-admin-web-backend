@@ -27,7 +27,7 @@ const config = {
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
   sessionSecretKey: process.env.SESSION_SECRET_KEY || 'CHILDPOOL-6672b85fc8d14d26a221253b23f91234',
   sessionExpiredTimeInSeconds: parseInt(process.env.SESSION_EXPIRED_TIME_IN_SECONDS || 7200000),
-  sendMailToAdminFlg: process.env.SEND_EMAIL_TO_ADMIN_FLAG.toLowerCase() === 'true',
+  sendMailToAdminFlg: process.env.SEND_EMAIL_TO_ADMIN_FLAG == 'true',
   app: {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
