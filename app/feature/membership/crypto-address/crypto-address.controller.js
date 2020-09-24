@@ -221,8 +221,6 @@ module.exports = {
     try {
       const { query } = req;
       const timezone_offset = query.timezone_offset || 0;
-      const limit = query.limit ? parseInt(query.limit) : 10;
-      const offset = query.offset ? parseInt(query.offset) : 0;
       const { platform, membership_type_id, email, address, is_reward_address } = query;
       const filters = ['1=1'];
       const filterData = {};
@@ -279,42 +277,38 @@ module.exports = {
 
       let items = [];
       const querySQL = `
-    select
-      w.name as wallet_name,
-      w.member_id,
-      wpk.platform as platform,
-      wpk.address as wallet_address,
-      wpk.created_at,
-      m.email as member_email,
-      m.first_name,
-      m.last_name,
-      m.kyc_level,
-      m.kyc_status,
-      m.membership_type_id
-    from
-      public.wallet_priv_keys wpk
-    join public.wallets w on
-      wpk.wallet_id = w.id
-      and wpk.deleted_flg = false
-    join public.members m on
-      w.member_id = m.id
-      and w.deleted_flg = false
-    where
-      (${filters.join(' and ')})
-    order by
-      wallet_name asc,
-      platform asc,
-      wallet_address asc,
-      member_email asc
-    limit :limit offset :offset
+      select
+        w.name as wallet_name,
+        w.member_id,
+        wpk.platform as platform,
+        wpk.address as wallet_address,
+        wpk.created_at,
+        m.email as member_email,
+        m.first_name,
+        m.last_name,
+        m.kyc_level,
+        m.kyc_status,
+        m.membership_type_id
+      from
+        public.wallet_priv_keys wpk
+      join public.wallets w on
+        wpk.wallet_id = w.id
+        and wpk.deleted_flg = false
+      join public.members m on
+        w.member_id = m.id
+        and w.deleted_flg = false
+      where
+        (${filters.join(' and ')})
+      order by
+        wallet_name asc,
+        platform asc,
+        wallet_address asc,
+        member_email asc
     `;
-      // console.log(querySQL);
       const result = await db.query(querySQL,
         {
           replacements: {
             ...filterData,
-            limit,
-            offset,
           },
         },
         {

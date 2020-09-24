@@ -64,6 +64,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
+    network: {
+      type: DataTypes.STRING(128),
+      allowNull: false,
+    },
     explore_url: {
       type: DataTypes.STRING(500),
       allowNull: true
@@ -77,12 +81,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   Model.associate = (models) => {
     Model.hasMany(models.wallet_priv_keys, { foreignKey: 'platform' });
   };
   return Model;
-}
+};
