@@ -27,6 +27,7 @@ const config = {
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
   sessionSecretKey: process.env.SESSION_SECRET_KEY || 'CHILDPOOL-6672b85fc8d14d26a221253b23f91234',
   sessionExpiredTimeInSeconds: parseInt(process.env.SESSION_EXPIRED_TIME_IN_SECONDS || 7200000),
+  sendMailToAdminFlg: process.env.SEND_EMAIL_TO_ADMIN_FLAG == 'true',
   app: {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
@@ -114,6 +115,7 @@ const config = {
     confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
     adaPoolNotification: process.env.PARTNER_NAME.toLowerCase() + "/ada-pool-check.ejs",
+    apiChangellyUpdate: process.env.PARTNER_NAME.toLowerCase() + "/API-Changelly-update.ejs",
   },
   masterWebsite: {
     urlViewRequest: process.env.MASTER_WEBSITE_URL + '/admin/childpool/detail'
@@ -130,7 +132,8 @@ const config = {
     checkTransactionReward: process.env.SCHEDULE_CHECK_DISTRIBUTE_REWARD,
     checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE,
     checkExchangeStatus: process.env.SCHEDULE_CHECK_EXCHANGE_STATUS,
-    getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET
+    getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET,
+    syncCurrencyWithChangelly: process.env.SCHEDULE_SYNC_CURRENCY_WITH_CHANGELLY
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,

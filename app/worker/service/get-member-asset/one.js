@@ -47,7 +47,7 @@ async function getBalanceONE(address) {
                     chainId: ChainID.HmyTestnet,
                 });
             const response = await hmy.blockchain.getBalance({ address: address });
-            const shardBalance = fromWei(hexToNumber(response.result), Units.one);
+            const shardBalance = hexToNumber(response.result);
             const numBalance = BigNumber(shardBalance).toNumber();
             balance += numBalance;
         }
@@ -94,8 +94,8 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
             ]
         });
 
-        const totalAmount = BigNumber(amount).toNumber() / 1e18;
-        const totalUnclaimRewad = BigNumber(unclaimReward).toNumber() / 1e18;
+        const totalAmount = BigNumber(amount).toNumber();
+        const totalUnclaimRewad = BigNumber(unclaimReward).toNumber();
 
         if (memberAsset) {
             let number = 0;
@@ -108,7 +108,7 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
                     var txReceipt = await getTransactionReceipt(txHash);
                     if (txReceipt && txReceipt.status && txReceipt.logs) {
                         var claimAmountHex = txReceipt.logs[0].data;
-                        claim += (hexToNumber(claimAmountHex) / 1e18);
+                        claim += hexToNumber(claimAmountHex);
                     }
                 }
             }

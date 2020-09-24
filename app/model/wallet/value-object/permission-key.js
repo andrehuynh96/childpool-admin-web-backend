@@ -843,4 +843,11 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
   },
+  "RECEIVE_EMAIL_UPDATE_EXCHANGE": {
+    "KEY": "RECEIVE_EMAIL_UPDATE_EXCHANGE",
+    "DESCRIPTION": "Receive email update exchange",
+    "GROUP_NAME": "Currencies",
+    "ROLES": [ "Admin"],
+    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+  },
 };
