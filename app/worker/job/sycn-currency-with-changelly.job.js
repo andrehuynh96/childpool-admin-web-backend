@@ -10,9 +10,8 @@ module.exports = {
       const getCurrencies = new Changelly().getCurrencies();
       const syncCurrencyServices = new SyncCurrencyChangellyServices();
       const getChangellyData = await getCurrencies;
-      const exchangeCurrenciesDB = await exchangeCurrencies.findAll();
+      const exchangeCurrenciesDB = await exchangeCurrencies.findAll({ where: { status: 1 } });
       const changellyData = getChangellyData.result;
-
       if (changellyData && exchangeCurrenciesDB) {
 
         for (let i = 0; i < changellyData.length; i++) {
