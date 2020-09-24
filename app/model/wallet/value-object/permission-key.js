@@ -793,6 +793,13 @@ module.exports = {
     "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE": "2020-09-08T00:00:00.000Z"
   },
+  "RECEIVE_EMAIL_UPDATE_EXCHANGE": {
+    "KEY": "RECEIVE_EMAIL_UPDATE_EXCHANGE",
+    "DESCRIPTION": "Receive email update exchange",
+    "GROUP_NAME": "Exchange",
+    "ROLES": [ "Admin"],
+    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+  },
 
   "MEMBERSHIP_UPDATE_PAYOUT_TRANSFERRED": {
     "KEY": "MEMBERSHIP_UPDATE_PAYOUT_TRANSFERRED",
@@ -833,21 +840,14 @@ module.exports = {
     "KEY": "VIEW_CURRENCY_DETAIL",
     "DESCRIPTION": "View currency detail",
     "GROUP_NAME": "Currencies",
-    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
   },
   "UPDATE_CURRENCY_DETAIL": {
     "KEY": "UPDATE_CURRENCY_DETAIL",
     "DESCRIPTION": "Update currency",
     "GROUP_NAME": "Currencies",
-    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
-  },
-  "RECEIVE_EMAIL_UPDATE_EXCHANGE": {
-    "KEY": "RECEIVE_EMAIL_UPDATE_EXCHANGE",
-    "DESCRIPTION": "Receive email update exchange",
-    "GROUP_NAME": "Currencies",
-    "ROLES": [ "Admin"],
-    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
   },
 };
