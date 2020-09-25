@@ -31,6 +31,7 @@ module.exports = {
         raw: true,
         order: [['try_batch_num', 'ASC']]
       });
+
       for (let platform of StakingPlatforms) {
         let serviceName = platform.toLowerCase().trim();
         let Service = require(`../service/get-member-asset/${serviceName}.js`);
@@ -48,10 +49,11 @@ module.exports = {
                 platform: item.platform,
                 address: item.address,
                 member_id: item['Wallet.member_id'],
-                balance: data.balance,
-                amount: data.amount,
-                reward: data.reward,
-                unclaim_reward: data.unclaimReward ? data.unclaimReward : 0
+                balance: data.balance,  // balance of account
+                amount: data.amount,  // balance of staking
+                reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
+                unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                tracking: data.opts
               })  
             } else {
               await WalletPrivKeys.update({

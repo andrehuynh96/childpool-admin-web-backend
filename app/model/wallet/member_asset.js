@@ -37,7 +37,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DOUBLE,
       allowNull: false,
       defaultValue: 0
-    }
+    },
+    tracking: {
+      type: DataTypes.JSON,
+      allowNull: true
+    },
   },{
     underscored: true,
     timestamps: true,

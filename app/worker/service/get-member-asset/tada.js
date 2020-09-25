@@ -1,3 +1,5 @@
+require('dotenv').config();
+require('rootpath')();
 const GetMemberAsset = require("./base");
 const logger = require('app/lib/logger');
 const axios = require('axios');
@@ -5,19 +7,67 @@ const config = require('app/config');
 const InfinitoApi = require('node-infinito-api');
 const BigNumber = require('bignumber.js');
 const api = new InfinitoApi(config.infinitoApiOpts);
+const StakingPlatform = require('app/lib/staking-api/staking-platform');
 class ADA extends GetMemberAsset {
   constructor() {
     super();
   }
+  async getValidators(){
+    if(!this.validators){
+      let res = await StakingPlatform.getValidatorInfo('TADA')
+      this.validators = res.data.map(x => x.address)
+    }
+  }
+  async setValidators(addresses){
+    this.validators = addresses
+  }
   async get(address) {
     try {
+      await this.getValidators();
+      const unclaim_reward = await getRewardADA(address, this.validators);
+      if(!unclaim_reward.isPool){
+        return {
+          balance: 0,
+          amount:0,
+          unclaim_reward:0,
+          reward: 0
+        }
+      }      
       const balance = await getBalanceADA(address);
-      const amount = await getAmountADA(address);
-      const reward = await getRewardADA(address);
+      const amount = balance + unclaim_reward.reward;
+
+      // get old 
+      const MemberAsset = require('app/model/wallet').member_assets;
+      let memberAsset = await MemberAsset.findOne({
+        where: {
+          platform: 'TADA',
+          address: address
+        },
+        order: [['created_at', 'DESC']],
+        raw: true    
+      })
+      const claimedRewars = await getClaimedReward(address, memberAsset);
+
+      // first init
+      if(!memberAsset){
+        return {
+          balance,
+          amount,
+          unclaim_reward: unclaim_reward.reward,
+          reward: unclaim_reward.reward,
+          opts: claimedRewars.lastTx
+        }
+      }
+
+      // continue check      
+      const reward = unclaim_reward.reward - (memberAsset.unclaim_reward - claimedRewars.totalClaimedReward)
+
       const result = {
-        balance: balance,
-        amount: amount,
-        reward: reward
+        balance,
+        amount,
+        unclaim_reward: unclaim_reward.reward,
+        reward,
+        opts: claimedRewars.lastTx
       };
       return result;
     } catch (error) {
@@ -32,39 +82,11 @@ async function getBalanceADA(address) {
     const apiCoin = api['ADA'];
     const balanceResult = await apiCoin.getBalance(address);
     const balance = BigNumber(balanceResult.data.balance).toNumber();
-
     return balance;
   }
   catch (error) {
     logger.error(error);
     throw error;
-  }
-}
-
-async function getAmountADA(address) {
-  try {
-    const bestBlock = await getBestBlockADA();
-    if (bestBlock) {
-      const response = await getAdaShelleyDelegationsInfoOfDelegator(bestBlock.hash, address);
-      if (response && response.pool_id) {
-        const adaValidatorURL = `https://js.adapools.org/pools/${response.pool_id}/summary.json`;
-        let { data: { data: { total_stake } } } = await axios.get(adaValidatorURL);
-        if (total_stake) {
-          return BigNumber(total_stake).toNumber();
-        }
-        else {
-          return 0;
-        }
-      }
-      else {
-        return 0;
-      }
-    }
-    return 0;
-  }
-  catch (err) {
-    logger.error(err);
-    throw err;
   }
 }
 
@@ -93,70 +115,55 @@ async function getBestBlockADA() {
   }
 }
 
-async function getAdaShelleyDelegationsInfoOfDelegator(currentBlockHash, delegatorAddress) {
+async function getClaimedReward(delegatorAddress, memberAsset) {
   try {
-    let payload = {
-      addresses: [
-        delegatorAddress
-      ],
-      untilBlock: currentBlockHash
-    };
-    let { data } = await axios.post('https://iohk-mainnet.yoroiwallet.com/api/v2/txs/history', payload);
-    if (data && data.length > 0) {
-
-      let lastTx = data[data.length - 1];
-      let certs = lastTx.certificates.filter(cer => cer.kind == 'StakeDelegation');
-      if (certs && certs.length > 0) {
-        return {
-          pool_id: certs[0].poolKeyHash,
-          amount: BigNumber(lastTx.outputs[0].amount).div(1e6).toNumber(),
-          is_registered: true
+    let lastTx = memberAsset ? memberAsset.tracking : null
+    let totalClaimedReward = 0; 
+    let currentBlockHash = await getBestBlockADA();
+    while(true){     
+      let payload = {
+        addresses: [
+          delegatorAddress
+        ],
+        untilBlock: currentBlockHash.hash
+      };
+      if(lastTx)
+        payload = {
+          ...payload,
+          after: lastTx
         };
-      }
-      else {
-        let listStakedTxs = data.filter(el => {
-          if (el.certificates.length > 0) {
-            let stakedDelegations = el.certificates.filter(cer => cer.kind == 'StakeDelegation');
-            return stakedDelegations.length > 0;
-          } else {
-            return false;
-          }
-        });
-        if (listStakedTxs.length > 0) {
-          let txDelegation = listStakedTxs[listStakedTxs.length - 1];
-          let cert = txDelegation.certificates.filter(el => el.kind == 'StakeDelegation');
-          if (cert.length > 0) {
-            return {
-              pool_id: cert[0].poolKeyHash,
-              is_registered: true
-            };
-          }
+      let { data } = await axios.post('https://iohk-mainnet.yoroiwallet.com/api/v2/txs/history', payload);
 
-        } else {
-          let listRegisterCertificates = data.filter(el => {
-            if (el.certificates.length > 0) {
-              let StakeRegistration = el.certificates.filter(cer => cer.kind == 'StakeRegistration');
-              return StakeRegistration.length > 0;
-            } else {
-              return false;
-            }
-          });
-          if (listRegisterCertificates && listRegisterCertificates.length > 0) {
-            return {
-              is_registered: true
-            };
-          }
-        }
+      //check the same data
+       if(!data || data.length == 0){
+        break;
+      }
+        
+      lastTx = {
+        block: data[data.length -1].block_hash,
+        tx: data[data.length -1].hash
+      }
+      // check reward tx
+      let rewardTxs = data.filter(x => x.withdrawals.length > 0);
+      if(rewardTxs.length > 0){
+        rewardTxs.forEach(x => {
+          x.withdrawals.forEach( y => {
+            totalClaimedReward += BigNumber(y.amount).toNumber();
+          })
+        })
       }
     }
-    return {};
+    return {
+      totalClaimedReward,
+      lastTx
+    }
   } catch (error) {
     logger.error(error);
     throw error;
   }
 }
 
-async function getRewardADA(address) {
+async function getRewardADA(address, validators) {
   try {
     let params = [
       {
@@ -170,15 +177,22 @@ async function getRewardADA(address) {
     ];
     api.extendMethod("chains", params, api);
     const response = await api.chains.getCurrentReward(address);
+    let isPool = false
     if (response && response.data.length > 0) {
       let reward = 0;
       response.data.forEach(item => {
-        reward += item.rewardAccountBalance;
+        if(validators.find( x => x == item.delegation)){
+          reward += item.rewardAccountBalance;
+          isPool = true;
+        }
       });
-      return reward;
+      return {
+        reward,
+        isPool
+      }
     }
     else {
-      return 0;
+      return {};
     }
   }
   catch (error) {
