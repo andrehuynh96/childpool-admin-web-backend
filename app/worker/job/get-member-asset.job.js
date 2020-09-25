@@ -1,11 +1,9 @@
 const logger = require("app/lib/logger");
 const config = require('app/config');
 const WalletPrivKeys = require('app/model/wallet').wallet_priv_keys;
-const Wallet = require('app/model/wallet').wallets;
 const MemberAsset = require('app/model/wallet').member_assets;
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
-const Member = require('app/model/wallet').members;
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -15,21 +13,7 @@ module.exports = {
       const StakingPlatforms = config.stakingPlatform.split(',');
       const day = Math.floor(Date.now() / 86400000);
       const walletPrivKeys = await WalletPrivKeys.findAll({
-        attributes: ['address', 'platform', 'run_batch_day', 'try_batch_num'],
-        include: [
-          {
-            attributes: ['member_id'],
-            as: "Wallet",
-            model: Wallet,
-            required: true,
-            include: [{
-              attributes: ['email'],
-              as: "member",
-              model: Member,
-              required: true
-            }]
-          }
-        ],
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('address')), 'address'], 'platform', 'run_batch_day', 'try_batch_num'],
         where: {
           platform: StakingPlatforms,
           run_batch_day: { [Op.lt]: day },
@@ -38,7 +22,7 @@ module.exports = {
         raw: true,
         order: [['try_batch_num', 'ASC']]
       });
-
+      console.log(walletPrivKeys)
       for (let platform of StakingPlatforms) {
         let serviceName = platform.toLowerCase().trim();
         let Service = require(`../service/get-member-asset/${serviceName}.js`);
