@@ -46,7 +46,8 @@ class ADA extends GetMemberAsset {
         order: [['created_at', 'DESC']],
         raw: true    
       })
-      console.log('memberAsset', memberAsset)
+      const claimedRewars = await getClaimedReward(address, memberAsset);
+
       // first init
       if(!memberAsset){
         return {
@@ -54,12 +55,11 @@ class ADA extends GetMemberAsset {
           amount,
           unclaim_reward: unclaim_reward.reward,
           reward: unclaim_reward.reward,
-          opts: claimedRewars.lastTx ? JSON.stringify(claimedRewars.lastTx) : claimedRewars.lastTx
+          opts: claimedRewars.lastTx
         }
       }
 
-      // continue check
-      const claimedRewars = await getClaimedReward(address, memberAsset);
+      // continue check      
       const reward = unclaim_reward.reward - (memberAsset.unclaim_reward - claimedRewars.totalClaimedReward)
 
       const result = {
@@ -67,9 +67,8 @@ class ADA extends GetMemberAsset {
         amount,
         unclaim_reward: unclaim_reward.reward,
         reward,
-        opts: claimedRewars.lastTx ? JSON.stringify(claimedRewars.lastTx) : claimedRewars.lastTx
+        opts: claimedRewars.lastTx
       };
-      console.log(result)
       return result;
     } catch (error) {
       logger.error(error);
@@ -118,7 +117,7 @@ async function getBestBlockADA() {
 
 async function getClaimedReward(delegatorAddress, memberAsset) {
   try {
-    let lastTx = memberAsset.opts ? JSON.parse(memberAsset.opts) : null
+    let lastTx = memberAsset && memberAsset.opts ? JSON.parse(memberAsset.opts) : null
     let totalClaimedReward = 0; 
     let currentBlockHash = await getBestBlockADA();
     while(true){     
@@ -144,13 +143,12 @@ async function getClaimedReward(delegatorAddress, memberAsset) {
         block: data[data.length -1].block_hash,
         tx: data[data.length -1].hash
       }
-      console.log('lastTx', lastTx)
       // check reward tx
       let rewardTxs = data.filter(x => x.withdrawals.length > 0);
       if(rewardTxs.length > 0){
         rewardTxs.forEach(x => {
           x.withdrawals.forEach( y => {
-            totalReward += BigNumber(y.amount).toNumber();
+            totalClaimedReward += BigNumber(y.amount).toNumber();
           })
         })
       }
@@ -179,7 +177,6 @@ async function getRewardADA(address, validators) {
     ];
     api.extendMethod("chains", params, api);
     const response = await api.chains.getCurrentReward(address);
-    console.log(response.data)
     let isPool = false
     if (response && response.data.length > 0) {
       let reward = 0;

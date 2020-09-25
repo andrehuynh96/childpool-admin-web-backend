@@ -38,9 +38,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
-    option: {
-      type: DataTypes.STRING,
-      allowNull: null
+    tracking: {
+      type: DataTypes.JSON,
+      allowNull: true
     },
   },{
     underscored: true,

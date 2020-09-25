@@ -53,7 +53,7 @@ module.exports = {
                 amount: data.amount,  // balance of staking
                 reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
                 unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
-                option: data.opts
+                tracking: data.opts
               })  
             } else {
               await WalletPrivKeys.update({
