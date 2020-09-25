@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false
     },
+    email: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
     platform: {
       type: DataTypes.STRING(16),
       allowNull: false

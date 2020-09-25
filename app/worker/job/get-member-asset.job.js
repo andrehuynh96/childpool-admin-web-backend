@@ -5,6 +5,7 @@ const Wallet = require('app/model/wallet').wallets;
 const MemberAsset = require('app/model/wallet').member_assets;
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
+const Member = require('app/model/wallet').members;
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -20,7 +21,13 @@ module.exports = {
             attributes: ['member_id'],
             as: "Wallet",
             model: Wallet,
-            required: true
+            required: true,
+            include: [{
+              attributes: ['email'],
+              as: "member",
+              model: Member,
+              required: true
+            }]
           }
         ],
         where: {
@@ -49,6 +56,7 @@ module.exports = {
                 platform: item.platform,
                 address: item.address,
                 member_id: item['Wallet.member_id'],
+                email: item['Wallet.member.email'],
                 balance: data.balance,  // balance of account
                 amount: data.amount,  // balance of staking
                 reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
