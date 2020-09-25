@@ -82,6 +82,32 @@ module.exports = {
         where.platform = query.platform;
       }
 
+      if (query.platform) {
+        if (query.balanceFrom || query.balanceTo) {
+          where.balance = {};
+        }
+        if (query.amountFrom || query.amountTo) {
+          where.amount = {};
+        }
+        const currency = await Currencies.findOne({
+          where: {
+            platform: query.platform
+          }
+        });
+        if (query.balanceFrom) {
+          where.balance[Op.gte] = BigNumber(query.balanceFrom).multipliedBy(10 ** currency.decimals);
+        }
+        if (query.balanceTo) {
+          where.balance[Op.lte] = BigNumber(query.balanceTo).multipliedBy(10 ** currency.decimals);
+        }
+        if (query.amountFrom) {
+          where.amount[Op.gte] = BigNumber(query.amountFrom).multipliedBy(10 ** currency.decimals);
+        }
+        if (query.amountTo) {
+          where.amount[Op.lte] = BigNumber(query.amountTo).multipliedBy(10 ** currency.decimals);
+        }
+      }
+
       const { count: total, rows: items } = await MemberAssets.findAndCountAll({
         limit,
         offset,
@@ -159,6 +185,32 @@ module.exports = {
 
       if (query.platform) {
         where.platform = query.platform;
+      }
+
+      if (query.platform) {
+        if (query.balanceFrom || query.balanceTo) {
+          where.balance = {};
+        }
+        if (query.amountFrom || query.amountTo) {
+          where.amount = {};
+        }
+        const currency = await Currencies.findOne({
+          where: {
+            platform: query.platform
+          }
+        });
+        if (query.balanceFrom) {
+          where.balance[Op.gte] = BigNumber(query.balanceFrom).multipliedBy(10 ** currency.decimals);
+        }
+        if (query.balanceTo) {
+          where.balance[Op.lte] = BigNumber(query.balanceTo).multipliedBy(10 ** currency.decimals);
+        }
+        if (query.amountFrom) {
+          where.amount[Op.gte] = BigNumber(query.amountFrom).multipliedBy(10 ** currency.decimals);
+        }
+        if (query.amountTo) {
+          where.amount[Op.lte] = BigNumber(query.amountTo).multipliedBy(10 ** currency.decimals);
+        }
       }
 
       const items = await MemberAssets.findAll({
