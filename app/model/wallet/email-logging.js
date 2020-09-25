@@ -19,13 +19,21 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     status: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
     num_of_views: {
       type: DataTypes.INTEGER,
       allowNull: false,
       default: 0,
+    },
+    mail_message_id: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    diagnostic_code: {
+      type: DataTypes.TEXT('long'),
+      allowNull: true,
     },
     error_message: {
       type: DataTypes.TEXT('long'),
@@ -38,6 +46,14 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     underscored: true,
     timestamps: true,
+    indexes: [
+      {
+        fields: [
+          'mail_message_id',
+          'email'
+        ],
+      }
+    ],
   });
 
   return Model;
