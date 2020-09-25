@@ -11,7 +11,7 @@ module.exports = {
   execute: async () => {
     let transaction;
     try {
-      const StakingPlatforms = ['TADA']; //config.stakingPlatform.split(',');
+      const StakingPlatforms = config.stakingPlatform.split(',');
       const day = Math.floor(Date.now() / 86400000);
       const walletPrivKeys = await WalletPrivKeys.findAll({
         attributes: ['address', 'platform', 'run_batch_day', 'try_batch_num'],
@@ -52,7 +52,8 @@ module.exports = {
                 balance: data.balance,  // balance of account
                 amount: data.amount,  // balance of staking
                 reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
-                unclaim_reward: data.unclaimReward ? data.unclaimReward : 0 // current unclaim reward 
+                unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                option: data.opts
               })  
             } else {
               await WalletPrivKeys.update({

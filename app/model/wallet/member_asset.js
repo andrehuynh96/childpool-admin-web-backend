@@ -37,7 +37,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DOUBLE,
       allowNull: false,
       defaultValue: 0
-    }
+    },
+    opts: {
+      type: DataTypes.STRING,
+      allowNull: null
+    },
   },{
     underscored: true,
     timestamps: true,

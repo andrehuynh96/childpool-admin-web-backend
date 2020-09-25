@@ -1,3 +1,5 @@
+require('dotenv').config();
+require('rootpath')();
 const GetMemberAsset = require("./base");
 const logger = require('app/lib/logger');
 const axios = require('axios');
@@ -5,27 +7,34 @@ const config = require('app/config');
 const InfinitoApi = require('node-infinito-api');
 const BigNumber = require('bignumber.js');
 const api = new InfinitoApi(config.infinitoApiOpts);
+const StakingPlatform = require('app/lib/staking-api/staking-platform');
+const { address } = require('bitcoinjs-lib');
 class ADA extends GetMemberAsset {
   constructor() {
     super();
-    this.validators = ['237795878bfa5352cca325012e073b344ce337a1dd752cd3d5ea4cdc']
+  }
+  async getValidators(){
+    if(!this.validators){
+      let res = await StakingPlatform.getValidatorInfo('TADA')
+      this.validators = res.data.map(x => x.address)
+    }
+  }
+  async setValidators(addresses){
+    this.validators = addresses
   }
   async get(address) {
     try {
-      // address = 'addr1q85j6k40ezt58dzp67dkelrqpm2e8ghnp664t0r6chc0nltun3lw37skprm0w3zhmp33ql35xeq82s9kvtn9ycq3lcps3hl8hl'
-      // address = 'addr1qxv0jfsyzt9kp6nyp026xqfwr2gglv8cjr0r8fnpd3nqm5lwz8pd3q3kegvtxv3pv2ecggtsvdfntf89qg0qy7g0rvlq52nztn'
-      // address = 'addr1q87q0k3q05gq48veesrz2z0cfgx5ru6fwkhnx3vpwm8va7mm3frj4vwws7cu0fpce6gqev0pca4cn0x9cq7r89wf2h4q9neh4f'
+      await this.getValidators();
       const unclaim_reward = await getRewardADA(address, this.validators);
       if(!unclaim_reward.isPool){
         return {
-          balance,
+          balance: 0,
           amount:0,
           unclaim_reward:0,
           reward: 0
         }
-      }
+      }      
       const balance = await getBalanceADA(address);
-      const totalClaimedReward = await getClaimedReward(address, this.validators);
       const amount = balance + unclaim_reward.reward;
 
       // get old 
@@ -37,13 +46,29 @@ class ADA extends GetMemberAsset {
         order: [['created_at', 'DESC']]    
       })
 
-      const reward = unclaim_reward - (memberAsset.unclaim_reward - totalClaimedReward)
+      // first init
+      if(!memberAsset){
+        return {
+          balance,
+          amount,
+          unclaim_reward: unclaim_reward.reward,
+          reward: unclaim_reward.reward,
+          opts: JSON.stringify(claimedRewars.lastTx)
+        }
+      }
+
+      // continue check
+      const claimedRewars = await getClaimedReward(this.validators, memberAsset);
+      const reward = unclaim_reward - (memberAsset.unclaim_reward - claimedRewars.totalClaimedReward)
+
       const result = {
-        balance:1,
-        amount:1,
-        unclaim_reward:1,
-        reward
+        balance,
+        amount,
+        unclaim_reward: unclaim_reward.reward,
+        reward,
+        opts: JSON.stringify(claimedRewars.lastTx)
       };
+      console.log(result)
       return result;
     } catch (error) {
       logger.error(error);
@@ -90,10 +115,11 @@ async function getBestBlockADA() {
   }
 }
 
-async function getClaimedReward(currentBlockHash, delegatorAddress) {
+async function getClaimedReward(delegatorAddress, memberAsset) {
   try {
-    let lastTx = null
+    let lastTx = JSON.parse(memberAsset.opts)
     let totalClaimedReward = 0; 
+    let currentBlockHash = await getBestBlockADA()
     while(true){     
       let payload = {
         addresses: [
@@ -104,16 +130,12 @@ async function getClaimedReward(currentBlockHash, delegatorAddress) {
       if(lastTx)
         payload = {
           ...payload,
-          after: {
-            block: lastTx.block,
-            tx: lastTx.tx
-          }
+          after: lastTx
         };
       let { data } = await axios.post('https://iohk-mainnet.yoroiwallet.com/api/v2/txs/history', payload);
 
       //check the same data
        if(!data || data.length == 0){
-        // TODO save last tx
         break;
       }
         
@@ -132,7 +154,10 @@ async function getClaimedReward(currentBlockHash, delegatorAddress) {
         })
       }
     }
-    return totalClaimedReward
+    return {
+      totalClaimedReward,
+      lastTx
+    }
   } catch (error) {
     logger.error(error);
     throw error;
@@ -153,6 +178,7 @@ async function getRewardADA(address, validators) {
     ];
     api.extendMethod("chains", params, api);
     const response = await api.chains.getCurrentReward(address);
+    console.log(response.data)
     let isPool = false
     if (response && response.data.length > 0) {
       let reward = 0;
