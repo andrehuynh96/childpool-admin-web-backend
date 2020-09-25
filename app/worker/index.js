@@ -7,11 +7,10 @@ const SyncCurrencyWithChangelly = require("./sycn-currency-with-changelly.schedu
 
 module.exports = {
   start: () => {
-    // UpdateAffiliateSchedule.run();
+    UpdateAffiliateSchedule.run();
     // CheckDistributeRewardSchedule.run();
-    // CheckAdaPoolSizeSchedule.run();
-    // CheckExchangeStatusSchedule.run();
+    CheckAdaPoolSizeSchedule.run();
+    CheckExchangeStatusSchedule.run();
     GetMemberAssetSchedule.run();
-    SyncCurrencyWithChangelly.run();
   }
 };
