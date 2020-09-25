@@ -22,7 +22,6 @@ module.exports = {
         raw: true,
         order: [['try_batch_num', 'ASC']]
       });
-      console.log(walletPrivKeys)
       for (let platform of StakingPlatforms) {
         let serviceName = platform.toLowerCase().trim();
         let Service = require(`../service/get-member-asset/${serviceName}.js`);
