@@ -1,8 +1,6 @@
 const Joi = require('joi');
 
 const schema = Joi.object().keys({
-  symbol: Joi.string().max(128).required(),
-  platform: Joi.string().max(128).required(),
   name: Joi.string().max(128).required(),
   icon: Joi.string().max(256).required(),
   decimals: Joi.number().integer().allow(null).optional(),
