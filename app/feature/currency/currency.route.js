@@ -10,7 +10,7 @@ const router = express.Router();
 router.get(
   '/currencies',
   authenticate,
-  authority(PermissionKey.VIEW_LIST_CURRENCY),
+  // authority(PermissionKey.VIEW_LIST_CURRENCY),
   validator(search,'query'),
   controller.search
 );
