@@ -117,7 +117,7 @@ async function getBestBlockADA() {
 
 async function getClaimedReward(delegatorAddress, memberAsset) {
   try {
-    let lastTx = memberAsset && memberAsset.opts ? JSON.parse(memberAsset.opts) : null
+    let lastTx = memberAsset ? memberAsset.tracking : null
     let totalClaimedReward = 0; 
     let currentBlockHash = await getBestBlockADA();
     while(true){     
