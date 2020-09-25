@@ -94,17 +94,19 @@ module.exports = {
             platform: query.platform
           }
         });
-        if (query.balanceFrom) {
-          where.balance[Op.gte] = BigNumber(query.balanceFrom).multipliedBy(10 ** currency.decimals);
-        }
-        if (query.balanceTo) {
-          where.balance[Op.lte] = BigNumber(query.balanceTo).multipliedBy(10 ** currency.decimals);
-        }
-        if (query.amountFrom) {
-          where.amount[Op.gte] = BigNumber(query.amountFrom).multipliedBy(10 ** currency.decimals);
-        }
-        if (query.amountTo) {
-          where.amount[Op.lte] = BigNumber(query.amountTo).multipliedBy(10 ** currency.decimals);
+        if (currency) {
+          if (query.balanceFrom) {
+            where.balance[Op.gte] = BigNumber(query.balanceFrom).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.balanceTo) {
+            where.balance[Op.lte] = BigNumber(query.balanceTo).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.amountFrom) {
+            where.amount[Op.gte] = BigNumber(query.amountFrom).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.amountTo) {
+            where.amount[Op.lte] = BigNumber(query.amountTo).multipliedBy(10 ** currency.decimals);
+          }
         }
       }
 
@@ -199,17 +201,19 @@ module.exports = {
             platform: query.platform
           }
         });
-        if (query.balanceFrom) {
-          where.balance[Op.gte] = BigNumber(query.balanceFrom).multipliedBy(10 ** currency.decimals);
-        }
-        if (query.balanceTo) {
-          where.balance[Op.lte] = BigNumber(query.balanceTo).multipliedBy(10 ** currency.decimals);
-        }
-        if (query.amountFrom) {
-          where.amount[Op.gte] = BigNumber(query.amountFrom).multipliedBy(10 ** currency.decimals);
-        }
-        if (query.amountTo) {
-          where.amount[Op.lte] = BigNumber(query.amountTo).multipliedBy(10 ** currency.decimals);
+        if (currency) {
+          if (query.balanceFrom) {
+            where.balance[Op.gte] = BigNumber(query.balanceFrom).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.balanceTo) {
+            where.balance[Op.lte] = BigNumber(query.balanceTo).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.amountFrom) {
+            where.amount[Op.gte] = BigNumber(query.amountFrom).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.amountTo) {
+            where.amount[Op.lte] = BigNumber(query.amountTo).multipliedBy(10 ** currency.decimals);
+          }
         }
       }
 
