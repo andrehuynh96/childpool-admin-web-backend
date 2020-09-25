@@ -405,7 +405,8 @@ module.exports = router;
                         "txid": "0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca",
                         "explorer_link": "https://www.blockchain.com/eth/tx/0xd025c7532cadcfc9d87feb46bc469ec05d7c4c1dfeb6ae12b8085163e386dfca",
                         "currency_symbol": "ETH",
-                        "created_at": "2020-05-29T06:15:07.006Z"
+                        "created_at": "2020-05-29T06:15:07.006Z",
+                        "netwrork_fee":"0.1"
                     }
                 }
  *       400:
