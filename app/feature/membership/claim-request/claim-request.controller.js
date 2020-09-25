@@ -487,6 +487,7 @@ module.exports = {
         { key: 'member_email', header: 'Email' },
         { key: 'wallet_address', header: 'Wallet Address' },
         { key: 'amount', header: 'Claim Amount' },
+        { key: 'network_fee', header: 'Network fee' },
         { key: 'currency_symbol', header: 'Currency' },
         { key: 'status', header: 'Status' },
         { key: 'type', header: 'Payment' }
