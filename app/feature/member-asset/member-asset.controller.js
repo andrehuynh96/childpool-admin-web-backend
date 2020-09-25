@@ -7,6 +7,9 @@ const moment = require('moment');
 const Sequelize = require('sequelize');
 const stringify = require('csv-stringify');
 const Op = Sequelize.Op;
+const Currencies = require("app/model/wallet").currencies;
+const config = require("../../../app/config");
+const BigNumber = require('bignumber.js');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -77,6 +80,34 @@ module.exports = {
 
       if (query.platform) {
         where.platform = query.platform;
+      }
+
+      if (query.platform) {
+        if (query.balanceFrom || query.balanceTo) {
+          where.balance = {};
+        }
+        if (query.amountFrom || query.amountTo) {
+          where.amount = {};
+        }
+        const currency = await Currencies.findOne({
+          where: {
+            platform: query.platform
+          }
+        });
+        if (currency) {
+          if (query.balanceFrom) {
+            where.balance[Op.gte] = BigNumber(query.balanceFrom).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.balanceTo) {
+            where.balance[Op.lte] = BigNumber(query.balanceTo).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.amountFrom) {
+            where.amount[Op.gte] = BigNumber(query.amountFrom).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.amountTo) {
+            where.amount[Op.lte] = BigNumber(query.amountTo).multipliedBy(10 ** currency.decimals);
+          }
+        }
       }
 
       const { count: total, rows: items } = await MemberAssets.findAndCountAll({
@@ -158,13 +189,48 @@ module.exports = {
         where.platform = query.platform;
       }
 
+      if (query.platform) {
+        if (query.balanceFrom || query.balanceTo) {
+          where.balance = {};
+        }
+        if (query.amountFrom || query.amountTo) {
+          where.amount = {};
+        }
+        const currency = await Currencies.findOne({
+          where: {
+            platform: query.platform
+          }
+        });
+        if (currency) {
+          if (query.balanceFrom) {
+            where.balance[Op.gte] = BigNumber(query.balanceFrom).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.balanceTo) {
+            where.balance[Op.lte] = BigNumber(query.balanceTo).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.amountFrom) {
+            where.amount[Op.gte] = BigNumber(query.amountFrom).multipliedBy(10 ** currency.decimals);
+          }
+          if (query.amountTo) {
+            where.amount[Op.lte] = BigNumber(query.amountTo).multipliedBy(10 ** currency.decimals);
+          }
+        }
+      }
+
       const items = await MemberAssets.findAll({
         where: where,
         order: [['created_at', 'DESC']]
       });
 
+      const listCrrencies = await Currencies.findAll({});
       items.forEach(item => {
         item.created_at = moment(item.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        const currency = listCrrencies.find(curr => curr.platform === item.platform);
+        if (currency) {
+          item.balance = BigNumber(item.balance).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+          item.amount = BigNumber(item.amount).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+          item.reward = BigNumber(item.reward).div(10 ** currency.decimals).toString(10) + ' ' + currency.platform;
+        }
       });
 
       const data = await stringifyAsync(items, [

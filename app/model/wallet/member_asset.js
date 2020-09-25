@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false
     },
+    email: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
     platform: {
       type: DataTypes.STRING(16),
       allowNull: false
@@ -37,7 +41,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DOUBLE,
       allowNull: false,
       defaultValue: 0
-    }
+    },
+    tracking: {
+      type: DataTypes.JSON,
+      allowNull: true
+    },
   },{
     underscored: true,
     timestamps: true,

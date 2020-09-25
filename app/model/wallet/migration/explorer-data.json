@@ -1,5 +1,4 @@
-module.exports = {
-  explorer: [{
+[{
     "currencySymbol": "BTC",
     "type": "mainnet",
     "decimals": 8,
@@ -206,6 +205,5 @@ module.exports = {
     "url": "https://explorer.cardano.org/",
     "transactionFormatLink": "https://explorer.cardano.org/en/transaction?id={0}",
     "addressFormatLink": "https://explorer.cardano.org/en/address?address={0}"
-  },
+  }
 ]
-};
