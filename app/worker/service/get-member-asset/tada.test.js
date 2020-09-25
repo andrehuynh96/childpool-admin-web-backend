@@ -6,6 +6,11 @@ let expect = require('chai').expect;
 describe('Test ADA get methods', function () {
   this.timeout(60000);
 
+  beforeEach((done) => {
+    require('server')
+    setTimeout(done(), 5000) 
+  })
+
   it('Constructor', async () => {
     let ada = new ADA()
     ada.setValidators(['237795878bfa5352cca325012e073b344ce337a1dd752cd3d5ea4cdc'])

@@ -8,7 +8,6 @@ const InfinitoApi = require('node-infinito-api');
 const BigNumber = require('bignumber.js');
 const api = new InfinitoApi(config.infinitoApiOpts);
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
-const { address } = require('bitcoinjs-lib');
 class ADA extends GetMemberAsset {
   constructor() {
     super();
@@ -38,14 +37,16 @@ class ADA extends GetMemberAsset {
       const amount = balance + unclaim_reward.reward;
 
       // get old 
+      const MemberAsset = require('app/model/wallet').member_assets;
       let memberAsset = await MemberAsset.findOne({
         where: {
           platform: 'TADA',
           address: address
         },
-        order: [['created_at', 'DESC']]    
+        order: [['created_at', 'DESC']],
+        raw: true    
       })
-
+      console.log('memberAsset', memberAsset)
       // first init
       if(!memberAsset){
         return {
@@ -53,20 +54,20 @@ class ADA extends GetMemberAsset {
           amount,
           unclaim_reward: unclaim_reward.reward,
           reward: unclaim_reward.reward,
-          opts: JSON.stringify(claimedRewars.lastTx)
+          opts: claimedRewars.lastTx ? JSON.stringify(claimedRewars.lastTx) : claimedRewars.lastTx
         }
       }
 
       // continue check
-      const claimedRewars = await getClaimedReward(this.validators, memberAsset);
-      const reward = unclaim_reward - (memberAsset.unclaim_reward - claimedRewars.totalClaimedReward)
+      const claimedRewars = await getClaimedReward(address, memberAsset);
+      const reward = unclaim_reward.reward - (memberAsset.unclaim_reward - claimedRewars.totalClaimedReward)
 
       const result = {
         balance,
         amount,
         unclaim_reward: unclaim_reward.reward,
         reward,
-        opts: JSON.stringify(claimedRewars.lastTx)
+        opts: claimedRewars.lastTx ? JSON.stringify(claimedRewars.lastTx) : claimedRewars.lastTx
       };
       console.log(result)
       return result;
@@ -117,15 +118,15 @@ async function getBestBlockADA() {
 
 async function getClaimedReward(delegatorAddress, memberAsset) {
   try {
-    let lastTx = JSON.parse(memberAsset.opts)
+    let lastTx = memberAsset.opts ? JSON.parse(memberAsset.opts) : null
     let totalClaimedReward = 0; 
-    let currentBlockHash = await getBestBlockADA()
+    let currentBlockHash = await getBestBlockADA();
     while(true){     
       let payload = {
         addresses: [
           delegatorAddress
         ],
-        untilBlock: currentBlockHash
+        untilBlock: currentBlockHash.hash
       };
       if(lastTx)
         payload = {
@@ -143,7 +144,7 @@ async function getClaimedReward(delegatorAddress, memberAsset) {
         block: data[data.length -1].block_hash,
         tx: data[data.length -1].hash
       }
-
+      console.log('lastTx', lastTx)
       // check reward tx
       let rewardTxs = data.filter(x => x.withdrawals.length > 0);
       if(rewardTxs.length > 0){

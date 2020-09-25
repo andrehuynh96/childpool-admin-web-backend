@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
-    opts: {
+    option: {
       type: DataTypes.STRING,
       allowNull: null
     },
