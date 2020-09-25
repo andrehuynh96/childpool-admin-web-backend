@@ -38,8 +38,6 @@ module.exports = {
               insertItems.push ({
                 platform: item.platform,
                 address: item.address,
-                member_id: item['Wallet.member_id'],
-                email: item['Wallet.member.email'],
                 balance: data.balance,  // balance of account
                 amount: data.amount,  // balance of staking
                 reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
