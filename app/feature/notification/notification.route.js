@@ -37,10 +37,13 @@ router.get('/notifications',
 *       - name: limit
 *         in: query
 *         type: integer
-*       - name: name
+*       - name: keyword
 *         in: query
 *         type: string
-*       - name: platform
+*       - name: type
+*         in: query
+*         type: string
+*       - name: event
 *         in: query
 *         type: string
 *     produces:
@@ -54,37 +57,37 @@ router.get('/notifications',
                 "data": {
                     "items": [
                         {
-                            "id": 3,
-                            "symbol": "ETH",
-                            "platform": "ETH",
-                            "name": "Ethereum",
-                            "icon": "https://web-api.changelly.com/api/coins/eth.png",
-                            "order_index": 0,
-                            "status": 1,
-                            "from_flg": true,
-                            "to_flg": true,
-                            "fix_rate_flg": true,
-                            "created_at": "2020-09-04T07:27:17.601Z",
-                            "updated_at": "2020-09-04T07:27:17.601Z"
+                            "id": 11,
+                            "title": "FOO title2020-09-28 17:57:52.218975+09",
+                            "content": "FOO content2020-09-28 17:57:52.218975+09",
+                            "description": "やあ！すずきちゃ",
+                            "title_ja": "FOO title JA2020-09-28 17:57:52.218975+09",
+                            "content_ja": "こんにちは2020-09-28 17:57:52.218975+09",
+                            "type": "SYSTEM",
+                            "event": "NEW_INFORMATION",
+                            "sent_all_flg": true,
+                            "actived_flg": true,
+                            "created_at": "2020-09-28T08:57:52.218Z",
+                            "updated_at": "2020-09-28T08:57:52.218Z"
                         },
                         {
-                            "id": 4,
-                            "symbol": "XEM",
-                            "platform": "XEM",
-                            "name": "NEM",
-                            "icon": "https://web-api.changelly.com/api/coins/xem.png",
-                            "order_index": 0,
-                            "status": 1,
-                            "from_flg": true,
-                            "to_flg": true,
-                            "fix_rate_flg": true,
-                            "created_at": "2020-09-04T07:27:17.601Z",
-                            "updated_at": "2020-09-04T07:27:17.601Z"
-                        }
+                            "id": 10,
+                            "title": "FOO title2020-09-28 17:57:51.597363+09",
+                            "content": "FOO content2020-09-28 17:57:51.597363+09",
+                            "description": "やあ！すずきちゃ",
+                            "title_ja": "FOO title JA2020-09-28 17:57:51.597363+09",
+                            "content_ja": "こんにちは2020-09-28 17:57:51.597363+09",
+                            "type": "SYSTEM",
+                            "event": "NEW_INFORMATION",
+                            "sent_all_flg": true,
+                            "actived_flg": true,
+                            "created_at": "2020-09-28T08:57:51.597Z",
+                            "updated_at": "2020-09-28T08:57:51.597Z"
+                        },
                     ],
                     "offset": 0,
-                    "limit": 10,
-                    "total": 6
+                    "limit": 25,
+                    "total": 2
                 }
             }
 *       400:

@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const logger = require('app/lib/logger');
 const Sequelize = require('sequelize');
 const Notification = require('app/model/wallet').notifications;
@@ -13,22 +14,38 @@ module.exports = {
       const { query } = req;
       const limit = query.limit ? parseInt(query.limit) : 10;
       const offset = query.offset ? parseInt(query.offset) : 0;
+      const keyword = _.trim(query.keyword);
       const cond = {};
+      const orCond = [];
 
-      if (query.name) {
-        cond.name = { [Op.iLike]: `%${query.name}%` };
+      if (keyword) {
+        orCond.push({
+          title: { [Op.iLike]: `%${keyword}%` }
+        });
+
+        orCond.push({
+          title_ja: { [Op.iLike]: `%${keyword}%` }
+        });
+
+        orCond.push({
+          content: { [Op.iLike]: `%${keyword}%` }
+        });
+
+        orCond.push({
+          content_ja: { [Op.iLike]: `%${keyword}%` }
+        });
       }
 
-      if (query.symbol) {
-        cond.symbol = { [Op.iLike]: `%${query.symbol}%` };
+      if (orCond.length) {
+        cond[Op.or] = orCond;
       }
 
-      if (query.platform) {
-        cond.platform = query.platform;
+      if (query.type) {
+        cond.type = query.type;
       }
 
-      if (query.status) {
-        cond.status = query.status;
+      if (query.event) {
+        cond.event = query.event;
       }
 
       const { count: total, rows: items } = await Notification.findAndCountAll({
@@ -46,7 +63,7 @@ module.exports = {
       });
     }
     catch (error) {
-      logger.error('get exchange currency list fail', error);
+      logger.error('Search notifications fail', error);
       next(error);
     }
   },
