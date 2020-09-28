@@ -2,15 +2,10 @@ const logger = require('app/lib/logger');
 const Sequelize = require('sequelize');
 const Notification = require('app/model/wallet').notifications;
 const NotificationType = require("app/model/wallet/value-object/notification-type");
-// const NotificationEvent = require("app/model/wallet/value-object/notification-event");
+const NotificationEvent = require("app/model/wallet/value-object/notification-event");
 const mapper = require("app/feature/response-schema/notification.response-schema");
 
 const Op = Sequelize.Op;
-const EXCHANGE_CURRENCY_STATUS_TEXT_CACHE = Object.entries(NotificationType).reduce((result, items) => {
-  result[items[1]] = items[0];
-
-  return result;
-}, {});
 
 module.exports = {
   search: async (req, res, next) => {
@@ -43,15 +38,8 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
-      const result = items.map(item => {
-        return {
-          ...mapper(item),
-          status_text: EXCHANGE_CURRENCY_STATUS_TEXT_CACHE[item.status],
-        };
-      });
-
       return res.ok({
-        items: result,
+        items: mapper(items),
         offset: offset,
         limit: limit,
         total: total
@@ -65,19 +53,17 @@ module.exports = {
   getDetails: async (req, res, next) => {
     try {
       const { params } = req;
-      const exchangeCurrency = await Notification.findOne({
+      const notification = await Notification.findOne({
         where: {
-          id: params.exchangeCurrencyId,
+          id: params.notificationId,
         }
       });
 
-      if (!exchangeCurrency) {
-        return res.badRequest(res.__("EXCHANGE_CURRENCY_NOT_FOUND"), "EXCHANGE_CURRENCY_NOT_FOUND", { fields: ['id'] });
+      if (!notification) {
+        return res.badRequest(res.__("NOTIFICATION_NOT_FOUND"), "NOTIFICATION_NOT_FOUND", { fields: ['id'] });
       }
 
-      exchangeCurrency.statusText = EXCHANGE_CURRENCY_STATUS_TEXT_CACHE[exchangeCurrency.status];
-
-      return res.ok(mapper(exchangeCurrency));
+      return res.ok(mapper(notification));
     }
     catch (error) {
       logger.error('get exchange currency details fail', error);
@@ -92,13 +78,13 @@ module.exports = {
         updated_by: user.id,
       }, {
         where: {
-          id: params.exchangeCurrencyId,
+          id: params.notificationId,
         },
         returning: true,
       });
 
       if (!numOfItems) {
-        return res.badRequest(res.__("EXCHANGE_CURRENCY_NOT_FOUND"), "EXCHANGE_CURRENCY_NOT_FOUND");
+        return res.badRequest(res.__("NOTIFICATION_NOT_FOUND"), "NOTIFICATION_NOT_FOUND");
       }
 
       return res.ok(mapper(items[0]));
@@ -138,6 +124,22 @@ module.exports = {
     }
     catch (error) {
       logger.error('get getNotificationTypes fail', error);
+      next(error);
+    }
+  },
+  getNotificationEvents: async (req, res, next) => {
+    try {
+      const result = Object.entries(NotificationEvent).map(items => {
+        return {
+          value: items[1],
+          label: items[0],
+        };
+      });
+
+      return res.ok(result);
+    }
+    catch (error) {
+      logger.error('get NotificationEvent fail', error);
       next(error);
     }
   },

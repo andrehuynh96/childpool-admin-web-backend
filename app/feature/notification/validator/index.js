@@ -1,6 +1,6 @@
 module.exports = {
   search: require('./search'),
-  exchangeCurrencyIdParam: require('./exchange-currency-id-param'),
+  notificationIdParam: require('./notification-id-param'),
   update: require('./update'),
   create: require('./create'),
 };
