@@ -65,8 +65,23 @@ class Changelly extends Exchange {
     }
   }
 
-  async getTransaction(options) {
-
+  async getTransaction({ currency_from, payin_address, extra_id = '', limit = 100, offset = 0 }) {
+    try {
+      return await this._makeRequest({
+        method: 'getTransactions',
+        params: {
+          currency: currency_from,
+          address: payin_address,
+          extraId: extra_id,
+          limit: limit,
+          offset: offset
+        }
+      })
+    }
+    catch (err) {
+      logger.error(`changelly getTransaction error:`, err);
+      throw err;
+    }
   }
 
   async getStatus({ transaction_id }) {
