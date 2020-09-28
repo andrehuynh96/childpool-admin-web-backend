@@ -13,7 +13,7 @@ const {
 
 const router = express.Router();
 
-/* #region Search exchange currencies */
+/* #region Search notifications */
 router.get('/notifications',
   validator(search, 'query'),
   authenticate,
@@ -25,7 +25,7 @@ router.get('/notifications',
 * @swagger
 * /web/notifications:
 *   get:
-*     summary: Search exchange currencies
+*     summary: Search notifications
 *     tags:
 *       - Notification
 *     description: "Required permission: VIEW_NOTIFICATIONS."
@@ -210,9 +210,6 @@ router.get('/notifications/events',
 */
 /* #endregion */
 
-
-
-
 /* #region Get notification details */
 router.get('/notifications/:notificationId',
   validator(notificationIdParam, 'params'),
@@ -375,15 +372,15 @@ router.put('/notifications/:notificationId',
 *            type: object
 *            example:
 *                  {
-                      "symbol": "BTC",
-                      "platform": "BTC",
-                      "name": "Bitcoin",
-                      "icon": "https://web-api.changelly.com/api/coins/btc.png",
-                      "order_index": 10,
-                      "status": 1,
-                      "from_flg": true,
-                      "to_flg": true,
-                      "fix_rate_flg": true
+                      "title": "Terms and Conditions update",
+                      "content": "In its the majority of standard terms: if YouTube isn’t making money off you, the company can erase your account. The platform’s existing terms of service do not include this language.YouTube is updating their Terms of Service on 10 December 2019. It presents an awful possibility for the future of creators on the platform. It seems they will be able to terminate your channel if it’s “no longer commercially viable.Check it out here: https://t.co/UrVpXmq4k5",
+                      "description": "...",
+                      "title_ja": "利用規約の更新",
+                      "content_ja": "「ほとんどの標準的な条件では、YouTubeがあなたに利益をもたらさない場合、会社はあなたのアカウントを消去することができます。プラットフォームの既存の利用規約にはこの言語は含まれていません。YouTubeは2019年12月10日に利用規約を更新しています。 プラットフォーム上のクリエイターの将来に大きな可能性をもたらします。「商業的に実行できなくなった場合、チャンネルを終了できるようです。こちらをご覧ください: https://t.co/UrVpXmq4k5",
+                      "type": "SYSTEM",
+                      "event": "NEW_INFORMATION",
+                      "actived_flg": false,
+                      "sent_all_flg": true
 *                  }
 *     produces:
 *       - application/json
@@ -393,22 +390,20 @@ router.put('/notifications/:notificationId',
 *         examples:
 *           application/json:
 *             {
-                "data": [
-                    {
-                      "id": 2,
-                      "symbol": "BTC",
-                      "platform": "BTC",
-                      "name": "Bitcoin",
-                      "icon": "https://web-api.changelly.com/api/coins/btc.png",
-                      "order_index": 0,
-                      "status": 1,
-                      "from_flg": true,
-                      "to_flg": true,
-                      "fix_rate_flg": true,
-                      "created_at": "2020-09-04T07:27:17.601Z",
-                      "updated_at": "2020-09-04T07:27:17.601Z"
-                    }
-                ]
+                "data": {
+                    "id": 2,
+                    "title": "Terms and Conditions update",
+                    "content": "In its the majority of standard terms: if YouTube isn’t making money off you, the company can erase your account. The platform’s existing terms of service do not include this language.YouTube is updating their Terms of Service on 10 December 2019. It presents an awful possibility for the future of creators on the platform. It seems they will be able to terminate your channel if it’s “no longer commercially viable.Check it out here: https://t.co/UrVpXmq4k5",
+                    "description": "...",
+                    "title_ja": "利用規約の更新",
+                    "content_ja": "「ほとんどの標準的な条件では、YouTubeがあなたに利益をもたらさない場合、会社はあなたのアカウントを消去することができます。プラットフォームの既存の利用規約にはこの言語は含まれていません。YouTubeは2019年12月10日に利用規約を更新しています。 プラットフォーム上のクリエイターの将来に大きな可能性をもたらします。「商業的に実行できなくなった場合、チャンネルを終了できるようです。こちらをご覧ください: https://t.co/UrVpXmq4k5",
+                    "type": "SYSTEM",
+                    "event": "NEW_INFORMATION",
+                    "sent_all_flg": true,
+                    "actived_flg": false,
+                    "created_at": "2020-09-28T08:52:50.582Z",
+                    "updated_at": "2020-09-28T10:32:37.710Z"
+                }
             }
 *       400:
 *         description: Error
