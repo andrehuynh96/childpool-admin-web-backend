@@ -850,4 +850,18 @@ module.exports = {
     "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
   },
+  "VIEW_LIST_EMAIL_TRACKING": {
+    "KEY": "VIEW_LIST_EMAIL_TRACKING",
+    "DESCRIPTION": "View list email tracking",
+    "GROUP_NAME": "Email Tracking",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T08:05:08.764Z"
+  },
+  "VIEW_EMAIL_TRACKING_DETAIL": {
+    "KEY": "VIEW_EMAIL_TRACKING_DETAIL",
+    "DESCRIPTION": "View email tracking detail",
+    "GROUP_NAME": "Email Tracking",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T08:05:08.764Z"
+  },
 };
