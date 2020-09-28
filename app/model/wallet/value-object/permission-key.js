@@ -797,8 +797,8 @@ module.exports = {
     "KEY": "RECEIVE_EMAIL_UPDATE_EXCHANGE",
     "DESCRIPTION": "Receive email update exchange",
     "GROUP_NAME": "Exchange",
-    "ROLES": [ "Admin"],
-    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+    "ROLES": ["Admin"],
+    "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
   },
 
   "MEMBERSHIP_UPDATE_PAYOUT_TRANSFERRED": {
@@ -864,4 +864,29 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-09-28T08:05:08.764Z"
   },
+
+  // Notifications
+  "VIEW_NOTIFICATIONS": {
+    "KEY": "VIEW_NOTIFICATIONS",
+    "DESCRIPTION": "Search notifications",
+    "GROUP_NAME": "Notifications",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
+  },
+  "CREATE_NOTIFICATION": {
+    "KEY": "CREATE_NOTIFICATION",
+    "DESCRIPTION": "Create a notification",
+    "GROUP_NAME": "Notifications",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
+  },
+  "UPDATE_NOTIFICATION": {
+    "KEY": "UPDATE_NOTIFICATION",
+    "DESCRIPTION": "Update a notification",
+    "GROUP_NAME": "Notifications",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
+  },
+
+
 };
