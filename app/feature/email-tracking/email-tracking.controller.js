@@ -87,7 +87,7 @@ module.exports = {
         }
       });
       if (!emailTracking) {
-        return res.notFound(res.__("EMAIL_TRACKING_NOT_FOUND"),"EMAIL_TRACKING_NOT_FOUND",{field: emailTrackingId });
+        return res.notFound(res.__("EMAIL_TRACKING_NOT_FOUND"),"EMAIL_TRACKING_NOT_FOUND",{ field: emailTrackingId });
       }
       emailTracking.read_flg = emailTracking.num_of_views > 0;
       return res.ok(emailTracking);
