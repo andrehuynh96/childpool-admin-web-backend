@@ -7,6 +7,8 @@ const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const MemberAsset = require('app/model/wallet').member_assets;
 const sleep = require('sleep-promise');
 const { RestClient, GovernanceTxBuilder, Crypto } = require('ontology-ts-sdk');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 class ONT extends GetMemberAsset {
     constructor() {
         super();
@@ -22,6 +24,8 @@ class ONT extends GetMemberAsset {
             let amount = 0;
             let reward = 0;
             let unclaimReward = 0;
+            let date = new Date();
+            date.setHours(0, 0, 0, 0);
 
             var getAddressBalance = await this.rest.getBalance(userAddr);
             if (getAddressBalance && getAddressBalance.Error == 0 && getAddressBalance.Result) {
@@ -51,7 +55,9 @@ class ONT extends GetMemberAsset {
             let memberAsset = await MemberAsset.findOne({
                 where: {
                     platform: 'ONT',
-                    address: address
+                    address: address,
+                    missed_daily: false,
+                    created_at: { [Op.lt]: date }
                 },
                 order: [
                     ['created_at', 'DESC']

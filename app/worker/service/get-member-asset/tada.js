@@ -8,6 +8,8 @@ const InfinitoApi = require('node-infinito-api');
 const BigNumber = require('bignumber.js');
 const api = new InfinitoApi(config.infinitoApiOpts);
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 class ADA extends GetMemberAsset {
   constructor() {
     super();
@@ -35,13 +37,16 @@ class ADA extends GetMemberAsset {
       }      
       const balance = await getBalanceADA(address);
       const amount = balance + unclaim_reward.reward;
-
+      let date = new Date();
+      date.setHours(0, 0, 0, 0);
       // get old 
       const MemberAsset = require('app/model/wallet').member_assets;
       let memberAsset = await MemberAsset.findOne({
         where: {
           platform: 'TADA',
-          address: address
+          address: address,
+          missed_daily: false,
+          created_at: { [Op.lt]: date }
         },
         order: [['created_at', 'DESC']],
         raw: true    

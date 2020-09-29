@@ -6,6 +6,8 @@ const InfinitoApi = require('node-infinito-api');
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const MemberAsset = require('app/model/wallet').member_assets;
 const api = new InfinitoApi(config.infinitoApiOpts);
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 class IRIS extends GetMemberAsset {
   constructor() {
     super();
@@ -17,6 +19,8 @@ class IRIS extends GetMemberAsset {
       let amount = 0;
       let reward = 0;
       let unclaimReward = 0;
+      let date = new Date();
+      date.setHours(0, 0, 0, 0);
 
       const balanceResult = await apiCoin.getBalance(address);
       if (balanceResult && balanceResult.data) {
@@ -44,7 +48,9 @@ class IRIS extends GetMemberAsset {
           let memberAsset = await MemberAsset.findOne({
             where: {
               platform: 'IRIS',
-              address: address
+              address: address,
+              missed_daily: false,
+              created_at: { [Op.lt]: date }
             },
             order: [['created_at', 'DESC']]    
           })
