@@ -1,10 +1,12 @@
 const _ = require('lodash');
 const logger = require('app/lib/logger');
 const Sequelize = require('sequelize');
+const database = require('app/lib/database').db().wallet;
 const Notification = require('app/model/wallet').notifications;
 const NotificationType = require("app/model/wallet/value-object/notification-type");
 const NotificationEvent = require("app/model/wallet/value-object/notification-event");
 const mapper = require("app/feature/response-schema/notification.response-schema");
+const notificationService = require('app/lib/notification');
 
 const Op = Sequelize.Op;
 
@@ -42,6 +44,14 @@ module.exports = {
 
       if (query.type) {
         cond.type = query.type;
+      } else {
+        cond.type = {
+          [Op.in]: [
+            NotificationType.SYSTEM,
+            NotificationType.MARKETING,
+            NotificationType.NEWS
+          ],
+        };
       }
 
       if (query.event) {
@@ -88,8 +98,27 @@ module.exports = {
     }
   },
   update: async (req, res, next) => {
+    let transaction;
+
     try {
       const { params, body, user } = req;
+      let notification = await Notification.findOne({
+        where: {
+          id: params.notificationId,
+        }
+      });
+
+      if (!notification) {
+        return res.badRequest(res.__("NOTIFICATION_NOT_FOUND"), "NOTIFICATION_NOT_FOUND", { fields: ['id'] });
+      }
+
+      if (notification.actived_flg && !body.actived_flg) {
+        return res.forbidden(res.__("NOTIFICATION_HAVE_BEEN_PUBLISHED"), "NOTIFICATION_HAVE_BEEN_PUBLISHED");
+      }
+
+      const isPublished = !notification.actived_flg && body.actived_flg;
+      transaction = await database.transaction();
+      // eslint-disable-next-line no-unused-vars
       const [numOfItems, items] = await Notification.update({
         ...body,
         updated_by: user.id,
@@ -98,20 +127,30 @@ module.exports = {
           id: params.notificationId,
         },
         returning: true,
+        transaction: transaction,
       });
 
-      if (!numOfItems) {
-        return res.badRequest(res.__("NOTIFICATION_NOT_FOUND"), "NOTIFICATION_NOT_FOUND");
+      if (isPublished) {
+        notification = items[0];
+        await notificationService.publish(notification, transaction);
       }
+
+      await transaction.commit();
 
       return res.ok(mapper(items[0]));
     }
     catch (error) {
       logger.error('update exchange currency fail', error);
+      if (transaction) {
+        await transaction.rollback();
+      }
+
       next(error);
     }
   },
   create: async (req, res, next) => {
+    const transaction = await database.transaction();
+
     try {
       const { body, user } = req;
       const data = {
@@ -119,21 +158,32 @@ module.exports = {
         deleted_flg: false,
         created_by: user.id,
       };
-      const notification = await Notification.create(data);
+      const notification = await Notification.create(data, { transaction });
+
+      if (notification.actived_flg) {
+        await notificationService.publish(notification, transaction);
+      }
+      await transaction.commit();
 
       return res.ok(mapper(notification));
     }
     catch (error) {
       logger.error('create notification fail', error);
+      await transaction.rollback();
+
       next(error);
     }
   },
   getNotificationTypes: async (req, res, next) => {
     try {
-      const result = Object.entries(NotificationType).map(items => {
+      const result = [
+        NotificationType.SYSTEM,
+        NotificationType.NEWS,
+        NotificationType.MARKETING,
+      ].map(key => {
         return {
-          value: items[1],
-          label: items[0],
+          value: key,
+          label: NotificationType[key],
         };
       });
 
@@ -146,10 +196,10 @@ module.exports = {
   },
   getNotificationEvents: async (req, res, next) => {
     try {
-      const result = Object.entries(NotificationEvent).map(items => {
+      const result = Object.entries(NotificationEvent).map(item => {
         return {
-          value: items[1],
-          label: items[0],
+          value: item[1],
+          label: item[0],
         };
       });
 

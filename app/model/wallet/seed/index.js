@@ -6,6 +6,7 @@ const config = require("app/config");
     if (config.enableSeed) {
       await Promise.all([require("./user")(), require("./role")()]);
       await Promise.all([require("./role-permission")(), require("./user-role")()]);
+      await require("./member-setting")();
     }
     await require("./root-permission")();
     await require("./term")();
