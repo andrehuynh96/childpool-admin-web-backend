@@ -35,6 +35,32 @@ module.exports = {
             let data = await service.get(item.address);
             logger.info(item.platform,data);
             if (data) {
+              let memberAsset = await MemberAsset.findOne({
+                where: {
+                  platform: item.platform,
+                  address: item.address
+                },
+                order: [['created_at', 'DESC']]    
+              })
+              if (memberAsset) {
+                let number = day - Math.floor(Date.parse(memberAsset.createdAt)/86400000);
+                if (number > 1) {
+                  for (let i = number - 1; i > 0; i --) {
+                    let date = new Date();
+                    date.setDate(date.getDate() - i);
+                    insertItems.push ({
+                      platform: item.platform,
+                      address: item.address,
+                      balance: memberAsset.balance,  // balance of account
+                      amount: memberAsset.amount,  // balance of staking
+                      reward: 0,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
+                      unclaim_reward: 0,// current unclaim reward
+                      createdAt: date,
+                      tracking: {miss_daily: true}
+                    })
+                  }
+                }
+              }  
               insertItems.push ({
                 platform: item.platform,
                 address: item.address,
@@ -42,7 +68,7 @@ module.exports = {
                 amount: data.amount,  // balance of staking
                 reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
                 unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
-                tracking: data.opts
+                tracking: { ...data.opts, miss_daily: false }
               })  
             } else {
               await WalletPrivKeys.update({
@@ -53,7 +79,7 @@ module.exports = {
                 },
                 transaction
               });
-            }
+            } 
           }
           if (insertItems.length > 0) {
             await MemberAsset.bulkCreate(insertItems, { transaction });
