@@ -60,12 +60,13 @@ module.exports = {
         limit,
         offset,
         where: where,
-        order: [['created_at','DESC']]
+        order: [['created_at','DESC']],
+        raw: true
       });
       items.forEach(item => {
         item.read_flg = item.num_of_views > 0;
+        item.status = item.status.toUpperCase();
       });
-
       return res.ok({
         items: items,
         limit: limit,
