@@ -1,6 +1,4 @@
 const express = require('express');
-const validator = require('app/middleware/validator.middleware');
-const requestSchema = require('./toggle-2fa.request-schema');
 const controller = require('./toggle-2fa.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
 const authority = require('app/middleware/authority.middleware');
@@ -12,7 +10,6 @@ router.put(
   '/members/:memberId/toggle-2fa',
   authenticate,
   authority(PermissionKey.REMOVE_2FA),
-  validator(requestSchema),
   controller
 );
 
@@ -34,11 +31,9 @@ module.exports = router;
  *            type: object
  *            required:
  *            - memberId
- *            - isActiveStatus2FA
  *            example:
  *                  {
                         "memberId": "88fda933-0658-49c4-a9c7-4c0021e9a071",
-                        "isActiveStatus2FA":false
  *                  }
  *     produces:
  *       - application/json
