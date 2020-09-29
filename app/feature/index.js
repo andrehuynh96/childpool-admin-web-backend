@@ -31,6 +31,7 @@ router.use(require('./exchange-currency/exchange-currency.route'));
 router.use(require('./exchange-transaction/exchange-transaction.route'));
 router.use(require('./email-tracking/email-tracking.route'));
 router.use(require('./notification/notification.route'));
+router.use(require('./remove-2fa/remove-2fa.route'));
 
 module.exports = router;
 

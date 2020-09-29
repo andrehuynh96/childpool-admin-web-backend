@@ -887,6 +887,11 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
   },
-
-
+  "REMOVE_2FA": {
+    "KEY": "REMOVE_2FA",
+    "DESCRIPTION": "Remove 2FA",
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T08:05:08.764Z"
+  },
 };
