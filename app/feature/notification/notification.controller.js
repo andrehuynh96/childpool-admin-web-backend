@@ -3,6 +3,7 @@ const logger = require('app/lib/logger');
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
 const Notification = require('app/model/wallet').notifications;
+const NotificationDetails = require('app/model/wallet').notification_details;
 const NotificationType = require("app/model/wallet/value-object/notification-type");
 const NotificationEvent = require("app/model/wallet/value-object/notification-event");
 const mapper = require("app/feature/response-schema/notification.response-schema");
@@ -17,7 +18,9 @@ module.exports = {
       const limit = query.limit ? parseInt(query.limit) : 10;
       const offset = query.offset ? parseInt(query.offset) : 0;
       const keyword = _.trim(query.keyword);
-      const cond = {};
+      const cond = {
+        deleted_flg: false,
+      };
       const orCond = [];
 
       if (keyword) {
@@ -83,11 +86,12 @@ module.exports = {
       const notification = await Notification.findOne({
         where: {
           id: params.notificationId,
+          deleted_flg: false,
         }
       });
 
       if (!notification) {
-        return res.badRequest(res.__("NOTIFICATION_NOT_FOUND"), "NOTIFICATION_NOT_FOUND", { fields: ['id'] });
+        return res.notFound(res.__("NOTIFICATION_NOT_FOUND"), "NOTIFICATION_NOT_FOUND", { fields: ['id'] });
       }
 
       return res.ok(mapper(notification));
@@ -105,11 +109,12 @@ module.exports = {
       let notification = await Notification.findOne({
         where: {
           id: params.notificationId,
+          deleted_flg: false,
         }
       });
 
       if (!notification) {
-        return res.badRequest(res.__("NOTIFICATION_NOT_FOUND"), "NOTIFICATION_NOT_FOUND", { fields: ['id'] });
+        return res.notFound(res.__("NOTIFICATION_NOT_FOUND"), "NOTIFICATION_NOT_FOUND", { fields: ['id'] });
       }
 
       if (notification.actived_flg && !body.actived_flg) {
@@ -140,7 +145,7 @@ module.exports = {
       return res.ok(mapper(items[0]));
     }
     catch (error) {
-      logger.error('update exchange currency fail', error);
+      logger.error('Update notification fail', error);
       if (transaction) {
         await transaction.rollback();
       }
@@ -210,5 +215,52 @@ module.exports = {
       next(error);
     }
   },
+  delete: async (req, res, next) => {
+    let transaction;
 
+    try {
+      const { params, user } = req;
+      let notification = await Notification.findOne({
+        where: {
+          id: params.notificationId,
+          deleted_flg: false,
+        }
+      });
+
+      if (!notification) {
+        return res.notFound(res.__("NOTIFICATION_NOT_FOUND"), "NOTIFICATION_NOT_FOUND", { fields: ['id'] });
+      }
+
+      transaction = await database.transaction();
+      await NotificationDetails.update({
+        deleted_flg: true,
+        updated_by: user.id,
+      }, {
+        where: {
+          notification_id: notification.id,
+        },
+        transaction: transaction,
+      });
+      await Notification.update({
+        deleted_flg: true,
+        updated_by: user.id,
+      }, {
+        where: {
+          id: notification.id,
+        },
+        transaction: transaction,
+      });
+      await transaction.commit();
+
+      return res.ok(true);
+    }
+    catch (error) {
+      logger.error('Delete notification fail', error);
+      if (transaction) {
+        await transaction.rollback();
+      }
+
+      next(error);
+    }
+  },
 };

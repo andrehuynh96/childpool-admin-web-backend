@@ -427,4 +427,54 @@ router.put('/notifications/:notificationId',
 */
 /* #endregion */
 
+/* #region Delete notification */
+router.delete('/notifications/:notificationId',
+  validator(notificationIdParam, 'params'),
+  authenticate,
+  authority(PermissionKey.DELETE_NOTIFICATION),
+  controller.delete
+);
+
+/**
+* @swagger
+* /web/notifications/:notificationId:
+*   delete:
+*     summary: Delete notification
+*     tags:
+*       - Notification
+*     description: "Required permission: DELETE_NOTIFICATION."
+*     parameters:
+*       - name: notificationId
+*         in: path
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": true
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+/* #endregion */
+
 module.exports = router;

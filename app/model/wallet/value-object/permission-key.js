@@ -306,6 +306,7 @@ module.exports = {
     "INITIALIZED_DATE": "2020-09-01T00:00:00.000Z"
   },
 
+  // Members
   "MEMBERSHIP_VIEW_MEMBER_LIST": {
     "DESCRIPTION": "View membership member list",
     "GROUP_NAME": "Members",
@@ -334,7 +335,15 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-09-01T00:00:00.000Z"
   },
+  "REMOVE_2FA": {
+    "KEY": "REMOVE_2FA",
+    "DESCRIPTION": "Remove 2FA",
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T08:05:08.764Z"
+  },
 
+  // Membership orders
   "MEMBERSHIP_VIEW_ORDER_LIST": {
     "KEY": "MEMBERSHIP_VIEW_ORDER_LIST",
     "DESCRIPTION": "View membership order list",
@@ -887,11 +896,12 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
   },
-  "REMOVE_2FA": {
-    "KEY": "REMOVE_2FA",
-    "DESCRIPTION": "Remove 2FA",
-    "GROUP_NAME": "Members",
+  "DELETE_NOTIFICATION": {
+    "KEY": "DELETE_NOTIFICATION",
+    "DESCRIPTION": "Delete a notification",
+    "GROUP_NAME": "Notifications",
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
-    "INITIALIZED_DATE": "2020-09-28T08:05:08.764Z"
+    "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
   },
+
 };
