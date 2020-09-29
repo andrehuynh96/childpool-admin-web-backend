@@ -38,6 +38,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.JSON,
       allowNull: true
     },
+    missed_daily: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    }
   },{
     underscored: true,
     timestamps: true,

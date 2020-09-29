@@ -55,8 +55,8 @@ module.exports = {
                       amount: memberAsset.amount,  // balance of staking
                       reward: 0,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
                       unclaim_reward: 0,// current unclaim reward
-                      createdAt: date,
-                      tracking: {miss_daily: true}
+                      missed_daily: true,
+                      createdAt: date
                     })
                   }
                 }
@@ -68,7 +68,7 @@ module.exports = {
                 amount: data.amount,  // balance of staking
                 reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
                 unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
-                tracking: { ...data.opts, miss_daily: false }
+                tracking: data.opts
               })  
             } else {
               await WalletPrivKeys.update({
