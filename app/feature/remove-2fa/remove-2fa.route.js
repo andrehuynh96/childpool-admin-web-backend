@@ -1,5 +1,5 @@
 const express = require('express');
-const controller = require('./toggle-2fa.controller');
+const controller = require('./remove-2fa.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
@@ -7,7 +7,7 @@ const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const router = express.Router();
 
 router.put(
-  '/members/:memberId/toggle-2fa',
+  '/members/:memberId/remove-2fa',
   authenticate,
   authority(PermissionKey.REMOVE_2FA),
   controller
@@ -16,12 +16,12 @@ router.put(
 module.exports = router;
 /**
  * @swagger
- * /members/{memberId}/toggle-2fa:
+ * /members/{memberId}/remove-2fa:
  *   put:
- *     summary: toggle 2fa
+ *     summary: remove 2fa
  *     tags:
  *       - Members
- *     description: update toggle 2fa
+ *     description: update remove 2fa
  *     parameters:
  *       - name: data
  *         in: body

@@ -5,8 +5,7 @@ module.exports = async (req, res, next) => {
   try {
     const { params } = req;
     let [_, response] = await Member.update({
-      twofa_enable_flg: false,
-      twofa_download_key_flg: false
+      twofa_enable_flg: false
     }, {
       where: {
         id: params.memberId,
@@ -14,7 +13,7 @@ module.exports = async (req, res, next) => {
       returning: true
     });
     if (!response || response.length == 0) {
-      return res.serverInternalError();
+      res.notFound('Not Found');
     }
     return res.ok(true);
   }
