@@ -14,19 +14,6 @@ const mappingProvider = {
 module.exports = {
   execute: async () => {
     try {
-      const Service = ExchangeFactory.create(ExchangeProvider.Changelly, {});
-      let result = await Service.getTransaction({
-        currency_from: 'ATOM',
-        payin_address: 'cosmos1ghz39h0zkugxs3tst8mfvsy2g98xdaah83xl0t',
-        extra_id: '1078482349392602',
-        limit: 10,
-        offset: 0
-      });
-
-      console.log('result', result)
-
-      return;
-
       let transactions = await ExchangeTransaction.findAll({
         where: {
           status: {
