@@ -13,6 +13,8 @@ const BigNumber = require('bignumber.js');
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const MemberAsset = require('app/model/wallet').member_assets;
 const axios = require('axios');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 class ONE extends GetMemberAsset {
     constructor() {
         super();
@@ -75,6 +77,8 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
         let amount = 0;
         let reward = 0;
         let unclaimReward = 0;
+        let date = new Date();
+        date.setHours(0, 0, 0, 0);
         const { result } = response.data;
 
         result.forEach(item => {
@@ -87,7 +91,9 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
         let memberAsset = await MemberAsset.findOne({
             where: {
                 platform: 'ONE',
-                address: address
+                address: address,
+                missed_daily: false,
+                created_at: { [Op.lt]: date }
             },
             order: [
                 ['created_at', 'DESC']

@@ -14,6 +14,19 @@ const mappingProvider = {
 module.exports = {
   execute: async () => {
     try {
+      const Service = ExchangeFactory.create(ExchangeProvider.Changelly, {});
+      let result = await Service.getTransaction({
+        currency_from: 'ATOM',
+        payin_address: 'cosmos1ghz39h0zkugxs3tst8mfvsy2g98xdaah83xl0t',
+        extra_id: '1078482349392602',
+        limit: 10,
+        offset: 0
+      });
+
+      console.log('result', result)
+
+      return;
+
       let transactions = await ExchangeTransaction.findAll({
         where: {
           status: {
@@ -84,10 +97,15 @@ async function _syncTransaction({ service, platform, payin_address, extra_id, tr
 
       let item = result.result.find(x => x.id == transaction_id);
       if (item) {
+        let data = {};
+        if (item.payin_hash) {
+          data.tx_id = item.payin_hash;
+        }
         await ExchangeTransaction.update({
+          ...data,
           amount_to: item.amount_to ? parseFloat(item.amount_to) : 0,
           provider_track_url: item.track_url || "",
-          payout_tx_id: item.payout_hash || "",
+          payout_tx_id: item.payout_hash || item.refund_hash,
           network_fee: item.network_fee ? parseFloat(item.network_fee) : 0,
           total_fee: item.total_fee ? parseFloat(item.total_fee) : 0,
           rate: item.rate ? parseFloat(item.rate) : 0,
