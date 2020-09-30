@@ -15,6 +15,7 @@ const MemberAsset = require('app/model/wallet').member_assets;
 const axios = require('axios');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+
 class ONE extends GetMemberAsset {
     constructor() {
         super();
@@ -46,7 +47,7 @@ async function getBalanceONE(address) {
             const hmy = new Harmony(
                 item, {
                     chainType: ChainType.Harmony,
-                    chainId: ChainID.HmyTestnet,
+                    chainId: config.harmony.testnet ? ChainID.HmyTestnet : ChainID.HmyMainnet
                 });
             const response = await hmy.blockchain.getBalance({ address: address });
             const shardBalance = hexToNumber(response.result);
