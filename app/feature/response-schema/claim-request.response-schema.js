@@ -13,6 +13,8 @@ const destObject = {
     '[].currency_symbol': '[].currency_symbol',
     '[].payout_transferred': '[].payout_transferred',
     '[].createdAt': '[].created_at',
+    '[].original_amount': '[].original_amount',
+    '[].network_fee': '[].network_fee',
   },
   single: {
     id: 'id',
@@ -28,6 +30,8 @@ const destObject = {
     currency_symbol: 'currency_symbol',
     payout_transferred: 'payout_transferred',
     createdAt: 'created_at',
+    original_amount: 'original_amount',
+    network_fee: 'network_fee',
   }
 };
 module.exports = srcObject => {

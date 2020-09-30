@@ -11,6 +11,12 @@ router.get('/crypto-addresses',
     controller.search
 );
 
+router.get('/crypto-addresses-csv',
+  authenticate,
+  authority(PermissionKey.EXPORT_CRYPTO_ADDRESSES_CSV),
+  controller.downloadCSV
+);
+
 module.exports = router;
 
 /** *******************************************************************/

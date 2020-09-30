@@ -20,7 +20,7 @@ module.exports = router;
 
 
 
-/*********************************************************************/
+/* ********************************************************************/
 
 /**
  * @swagger
@@ -43,7 +43,7 @@ module.exports = router;
  *            example:
  *               {
                         "g-recaptcha-response":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
-                        "email":"example@gmail.com",
+                        "email":"ngocmy12a06@gmail.com",
                         "password":"Abc@123456"
                   }
  *     produces:
@@ -111,7 +111,7 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /*********************************************************************/
+ /** *******************************************************************/
 /**
  * @swagger
  * /web/login/me:

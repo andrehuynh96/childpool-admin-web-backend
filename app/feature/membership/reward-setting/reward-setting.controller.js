@@ -12,11 +12,15 @@ module.exports = {
 
       const data = {
         membership_commission_usdt_minimum_claim_amount: null,
+        membership_commission_usdt_network_fee: null,
       };
 
       for (let e of results) {
         if (e.key === 'MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT') {
           data.membership_commission_usdt_minimum_claim_amount = Number(e.value);
+        }
+        if (e.key === 'MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE') {
+          data.membership_commission_usdt_network_fee = Number(e.value);
         }
       }
 

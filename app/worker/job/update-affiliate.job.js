@@ -1,13 +1,13 @@
-const AccountContributionAPI = require("../../lib/staking-api/account-contribution")
-const Wallet = require('../../model/wallet').wallets
-const Member = require('../../model/wallet').members
-const WalletPrivateKey = require('../../model/wallet').wallet_priv_keys
+const AccountContributionAPI = require("../../lib/staking-api/account-contribution");
+const Wallet = require('../../model/wallet').wallets;
+const Member = require('../../model/wallet').members;
+const WalletPrivateKey = require('../../model/wallet').wallet_priv_keys;
 const { affiliateApi } = require('app/lib/affiliate-api');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const config = require("app/config");
 const logger = require("app/lib/logger");
-var sleep = require('sleep');
+var sleep = require('sleep-promise');
 
 module.exports = {
   execute: async () => {
@@ -18,21 +18,22 @@ module.exports = {
         let offset = 0;
         let limit = 100;
         let response = [];
+        // eslint-disable-next-line no-constant-condition
         while (true) {
           let fromDate = new Date();
           let qr = await AccountContributionAPI.get(element, limit, offset);
           qr = qr.data;
-          let contributions = qr.items
+          let contributions = qr.items;
           if (!qr.items || qr.items.length <= 0)
             break;
-          let ids = []
+          let ids = [];
           let affiliatePayload = {
             currency_symbol: element,
             from_date: fromDate,
             details: []
-          }
+          };
           let addresses = contributions.map(x => x.address);
-          // find wallet_id 
+          // find wallet_id
           let walletIds = await WalletPrivateKey.findAll({
             attributes: ['id', 'wallet_id'],
             where: {
@@ -113,7 +114,7 @@ module.exports = {
           else {
             offset = qr.offset + qr.limit;
           }
-          sleep.sleep(1);
+          await sleep(1000);
         }
         if (response && response.length > 0) {
           for (let e of response) {
@@ -121,7 +122,7 @@ module.exports = {
             await AccountContributionAPI.set(element, {
               ids: e.ids,
               affiliate_reward_id: e.affiliate_reward_id
-            })
+            });
           }
         }
       }
@@ -130,4 +131,4 @@ module.exports = {
       logger.error(err);
     }
   }
-}
+};
