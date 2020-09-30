@@ -12,22 +12,22 @@ module.exports = (sequelize, DataTypes) => {
     is_receiced_system_notification_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
     is_receiced_activity_notification_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
     is_receiced_news_notification_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
     is_receiced_marketing_notification_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
   }, {
     underscored: true,
