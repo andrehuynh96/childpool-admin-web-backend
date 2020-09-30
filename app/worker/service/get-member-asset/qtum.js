@@ -24,11 +24,12 @@ class QTUM extends GetMemberAsset {
       date.setHours(0, 0, 0, 0);
 
       let result = await api.get(`/address/${address}`);
+      const validatorAddresses = await StakingPlatform.getValidatorAddresses('QTUM');
       if (result.data) {
         balance = BigNumber(result.data.balance).toNumber();
-        amount = BigNumber(result.data.mature).toNumber();
+        amount = result.data.superStaker &&  validatorAddresses.indexOf(result.data.superStaker) != -1 ? BigNumber(result.data.mature).toNumber() : 0;
       }
-      const validatorAddresses = await StakingPlatform.getValidatorAddresses('QTUM');
+      
       if (validatorAddresses.length > 0) { 
         let addressTransactions = await api.get(`/address/${address}/txs`);
         if (addressTransactions.data && addressTransactions.data.totalCount > 0) {
@@ -66,7 +67,6 @@ class QTUM extends GetMemberAsset {
             }
             break;
           }
-          console.log('txs: ', txs);
           if (txs.length > 0) {
             for (let e of txs) {
               if (!memberAsset) {
