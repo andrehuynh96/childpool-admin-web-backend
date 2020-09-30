@@ -206,6 +206,7 @@ const config = {
         urlShard1: process.env.URL_HARMONY_SHARD_1,
         urlShard2: process.env.URL_HARMONY_SHARD_2,
         urlShard3: process.env.URL_HARMONY_SHARD_3,
+        testnet: process.env.HARMONY_TESTNET == "1"
     },
     qtum: {
         url: process.env.QTUM_API

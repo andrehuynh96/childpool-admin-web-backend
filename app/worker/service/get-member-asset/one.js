@@ -46,7 +46,7 @@ async function getBalanceONE(address) {
             const hmy = new Harmony(
                 item, {
                     chainType: ChainType.Harmony,
-                    chainId: ChainID.HmyTestnet,
+                    chainId: config.harmony.testnet ? ChainID.HmyTestnet : ChainID.HmyMainnet
                 });
             const response = await hmy.blockchain.getBalance({ address: address });
             const shardBalance = hexToNumber(response.result);
