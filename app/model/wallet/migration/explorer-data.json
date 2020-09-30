@@ -57,7 +57,7 @@
   {
     "currencySymbol": "NEO",
     "type": "mainnet",
-    "decimals": 1,
+    "decimals": 0,
     "url": "https://neoscan.io",
     "transactionFormatLink": "https://neoscan.io/transaction/{0}",
     "addressFormatLink": "https://neoscan.io/address/{0}"
@@ -73,7 +73,7 @@
   {
     "currencySymbol": "BNB",
     "type": "mainnet",
-    "decimals": 6,
+    "decimals": 8,
     "url": "https://explorer.binance.org",
     "transactionFormatLink": "https://explorer.binance.org/tx/{0}",
     "addressFormatLink": "https://explorer.binance.org/address/{0}"
@@ -177,8 +177,8 @@
   {
     "currencySymbol": "EOS",
     "type": "mainnet",
-    "decimals": 6,
-    "url": "https://tezblock.io",
+    "decimals": 4,
+    "url": "https://eosflare.io",
     "transactionFormatLink": "https://eosflare.io/tx/{0}",
     "addressFormatLink": "https://eosflare.io/key/{0}"
   },
@@ -193,7 +193,7 @@
   {
     "currencySymbol": "GAS",
     "type": "mainnet",
-    "decimals": 1,
+    "decimals": 8,
     "url": "https://neoscan.io",
     "transactionFormatLink": "https://neoscan.io/transaction/{0}",
     "addressFormatLink": "https://neoscan.io/address/{0}"
