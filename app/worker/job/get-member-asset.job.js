@@ -1,6 +1,7 @@
 const logger = require("app/lib/logger");
 const config = require('app/config');
 const WalletPrivKeys = require('app/model/wallet').wallet_priv_keys;
+const Wallet = require('app/model/wallet').wallets;
 const MemberAsset = require('app/model/wallet').member_assets;
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
@@ -11,24 +12,32 @@ module.exports = {
     let transaction;
     try {
       const StakingPlatforms = config.stakingPlatform.split(',');
-      const dayOfYear = Math.floor((Date.now() - Date.parse(new Date().getFullYear(), 0, 0)) / 86400000);
+      const day = Math.floor(Date.now() / 86400000);
       const walletPrivKeys = await WalletPrivKeys.findAll({
         attributes: ['address', 'platform', 'run_batch_day', 'try_batch_num'],
+        include: [
+          {
+            attributes: ['member_id'],
+            as: "Wallet",
+            model: Wallet,
+            required: true
+          }
+        ],
         where: {
           platform: StakingPlatforms,
-          run_batch_day: { [Op.lt]: dayOfYear },
+          run_batch_day: { [Op.lt]: day },
           deleted_flg: false
         },
         raw: true,
         order: [['try_batch_num', 'ASC']]
       });
       for (let platform of StakingPlatforms) {
-        let serviceName = platform.toLowerCase();
+        let serviceName = platform.toLowerCase().trim();
         let Service = require(`../service/get-member-asset/${serviceName}.js`);
         let service = new Service();
         let insertItems = [];
         if (service) {
-          let items = walletPrivKeys.filter(e => e.platform == platform);
+          let items = walletPrivKeys.filter(e => e.platform.toUpperCase().trim() == platform.toUpperCase().trim());
           transaction = await database.transaction();
           for (let item of items) {
             logger.info('Waiting for',item.platform,'response');
@@ -38,9 +47,11 @@ module.exports = {
               insertItems.push ({
                 platform: item.platform,
                 address: item.address,
+                member_id: item['Wallet.member_id'],
                 balance: data.balance,
                 amount: data.amount,
-                reward: data.reward
+                reward: data.reward,
+                unclaim_reward: data.unclaimReward ? data.unclaimReward : 0
               })  
             } else {
               await WalletPrivKeys.update({
@@ -56,7 +67,7 @@ module.exports = {
           if (insertItems.length > 0) {
             await MemberAsset.bulkCreate(insertItems, { transaction });
             await WalletPrivKeys.update({
-              run_batch_day: dayOfYear,
+              run_batch_day: day,
               try_batch_num: 0
             }, {
               where: {

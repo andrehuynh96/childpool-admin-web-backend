@@ -12,22 +12,35 @@ const REWARD_PAYOUT_MIN_PROPERTIES_MAPPING = {
   'claim_affiliate_reward_xtz': 'CLAIM_AFFILIATE_REWARD_XTZ',
 };
 
+const REWARD_NETWORK_FEE_PROPERTIES_MAPPING = {
+  'claim_affiliate_reward_atom_network_fee': 'CLAIM_AFFILIATE_REWARD_ATOM_NETWORK_FEE',
+  'claim_affiliate_reward_iris_network_fee': 'CLAIM_AFFILIATE_REWARD_IRIS_NETWORK_FEE',
+  'claim_affiliate_reward_ong_network_fee': 'CLAIM_AFFILIATE_REWARD_ONG_NETWORK_FEE',
+  'claim_affiliate_reward_one_network_fee': 'CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE',
+  'claim_affiliate_reward_xtz_network_fee': 'CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE',
+};
+
 module.exports = {
   get: async (req, res, next) => {
     try {
+      const rewardMapping = {
+        ...REWARD_NETWORK_FEE_PROPERTIES_MAPPING,
+        ...REWARD_PAYOUT_MIN_PROPERTIES_MAPPING
+      };
+
       const settings = await Setting.findAll({
         where: {
           key: {
-            [Op.in]: Object.values(REWARD_PAYOUT_MIN_PROPERTIES_MAPPING),
+            [Op.in]: Object.values(rewardMapping),
           }
         }
       });
       const data = {};
 
-      Object.keys(REWARD_PAYOUT_MIN_PROPERTIES_MAPPING).forEach(propertyName => {
+      Object.keys(rewardMapping).forEach(propertyName => {
         data[propertyName] = 0;
 
-        const setting = settings.find(item => item.key === REWARD_PAYOUT_MIN_PROPERTIES_MAPPING[propertyName]);
+        const setting = settings.find(item => item.key === rewardMapping[propertyName]);
         if (setting && setting.value) {
           try {
             data[propertyName] = parseFloat(setting.value);
@@ -47,9 +60,14 @@ module.exports = {
   update: async (req, res, next) => {
     let transaction = await database.transaction();
 
+    const rewardMapping = {
+      ...REWARD_NETWORK_FEE_PROPERTIES_MAPPING,
+      ...REWARD_PAYOUT_MIN_PROPERTIES_MAPPING
+    };
+
     try {
       for (let propertyName of Object.keys(req.body)) {
-        const key = REWARD_PAYOUT_MIN_PROPERTIES_MAPPING[propertyName];
+        const key = rewardMapping[propertyName];
         // eslint-disable-next-line no-unused-vars
         const [numOfItems, setting] = await Setting.update({
           value: req.body[propertyName],

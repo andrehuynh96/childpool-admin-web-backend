@@ -6,7 +6,7 @@ const router = express.Router();
 router.get(
 	'/staking-currencies',
     authenticate,
-	controller.getStakingCurrencyList
+	controller.getStakingPlatforms
 );
 
 module.exports = router;

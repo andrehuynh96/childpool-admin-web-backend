@@ -73,11 +73,19 @@ module.exports = (sequelize, DataTypes) => {
     sent_at: {
       type: DataTypes.DATE,
       allowNull: true,
+    },
+    original_amount: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
+    network_fee: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
     }
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   ClaimRequest.associate = (models) => {
     ClaimRequest.belongsTo(models.members, {
