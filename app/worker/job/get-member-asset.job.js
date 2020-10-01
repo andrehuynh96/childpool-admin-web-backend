@@ -4,7 +4,6 @@ const WalletPrivKeys = require('app/model/wallet').wallet_priv_keys;
 const MemberAsset = require('app/model/wallet').member_assets;
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
-// const Op = Sequelize.Op;
 
 module.exports = {
   execute: async () => {
@@ -13,14 +12,12 @@ module.exports = {
       const StakingPlatforms = config.stakingPlatform.split(',');
       const day = Math.floor(Date.now() / 86400000);
       const walletPrivKeys = await WalletPrivKeys.findAll({
-        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('address')), 'address'], 'platform', 'run_batch_day', 'try_batch_num'],
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('address')), 'address'], 'platform'],
         where: {
           platform: StakingPlatforms,
-          // run_batch_day: { [Op.lt]: day },
           deleted_flg: false
         },
-        raw: true,
-        order: [['try_batch_num', 'ASC']]
+        raw: true
       });
       for (let platform of StakingPlatforms) {
         let serviceName = platform.toLowerCase().trim();
@@ -103,27 +100,10 @@ module.exports = {
                   tracking: data.opts
                 })
               }
-            } else {
-              await WalletPrivKeys.update({
-                try_batch_num: parseInt(item.try_batch_num) + 1
-              },{
-                where: {
-                  address: item.address
-                },
-                transaction
-              });
-            } 
+            }
           }
           if (insertItems.length > 0) {
             await MemberAsset.bulkCreate(insertItems, { transaction });
-            await WalletPrivKeys.update({
-              run_batch_day: day,
-              try_batch_num: 0
-            }, {
-              where: {
-                address: insertItems.map(e => e.address)
-              }, transaction
-            });
           }
           await transaction.commit();
         }
