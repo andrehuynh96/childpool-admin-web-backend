@@ -6,13 +6,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: DataTypes.UUIDV4(),
     },
-    member_id: {
-      type: DataTypes.UUID,
-      allowNull: false
-    },
     platform: {
       type: DataTypes.STRING(16),
       allowNull: false
+    },
+    member_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
     },
     address: {
       type: DataTypes.STRING(128),
@@ -37,6 +37,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DOUBLE,
       allowNull: false,
       defaultValue: 0
+    },
+    tracking: {
+      type: DataTypes.JSON,
+      allowNull: true
+    },
+    missed_daily: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   },{
     underscored: true,
