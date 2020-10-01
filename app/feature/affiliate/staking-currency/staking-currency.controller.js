@@ -20,7 +20,9 @@ module.exports = {
       });
 
       currencies.forEach(item => {
+        item.full_name = item.name;
         item.currency_symbol = item.symbol;
+        item.name = item.currency_symbol;
       });
 
       return res.ok(currencyMapper(currencies));
