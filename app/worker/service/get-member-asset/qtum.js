@@ -5,6 +5,8 @@ const config = require('app/config');
 const BigNumber = require('bignumber.js');
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const MemberAsset = require('app/model/wallet').member_assets;
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 class QTUM extends GetMemberAsset {
   constructor() {
     super();
@@ -18,19 +20,25 @@ class QTUM extends GetMemberAsset {
       let balance = 0;
       let amount = 0;
       let reward = 0;
+      let date = new Date();
+      date.setHours(0, 0, 0, 0);
+
       let result = await api.get(`/address/${address}`);
+      const validatorAddresses = await StakingPlatform.getValidatorAddresses('QTUM');
       if (result.data) {
         balance = BigNumber(result.data.balance).toNumber();
-        amount = BigNumber(result.data.mature).toNumber();
+        amount = result.data.superStaker &&  validatorAddresses.indexOf(result.data.superStaker) != -1 ? BigNumber(result.data.mature).toNumber() : 0;
       }
-      const validatorAddresses = await StakingPlatform.getValidatorAddresses('QTUM');
+      
       if (validatorAddresses.length > 0) { 
         let addressTransactions = await api.get(`/address/${address}/txs`);
         if (addressTransactions.data && addressTransactions.data.totalCount > 0) {
           let memberAsset = await MemberAsset.findOne({
             where: {
               platform: 'QTUM',
-              address: address
+              address: address,
+              missed_daily: false,
+              created_at: { [Op.lt]: date }
             },
             order: [['created_at', 'DESC']]    
           })
@@ -59,7 +67,6 @@ class QTUM extends GetMemberAsset {
             }
             break;
           }
-          console.log('txs: ', txs);
           if (txs.length > 0) {
             for (let e of txs) {
               if (!memberAsset) {
