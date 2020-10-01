@@ -92,6 +92,16 @@ module.exports = {
                     transaction
                   });
                 }
+              } else {
+                insertItems.push ({
+                  platform: item.platform,
+                  address: item.address,
+                  balance: data.balance,  // balance of account
+                  amount: data.amount,  // balance of staking
+                  reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
+                  unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                  tracking: data.opts
+                })
               }
             } else {
               await WalletPrivKeys.update({
