@@ -15,7 +15,6 @@ class ONE extends GetMemberAsset {
     async get(address) {
         try {
             const balance = await getBalanceONE(address);
-            console.log(balance);
             const validatorAddresses = await StakingPlatform.getValidatorAddresses('ONE');
             const { amount, reward, unclaimReward } = await getAmountAndRewardONE(address, validatorAddresses);
 
