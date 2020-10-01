@@ -153,7 +153,7 @@
   {
     "currencySymbol": "ONT",
     "type": "mainnet",
-    "decimals": 9,
+    "decimals": 0,
     "url": "https://explorer.ont.io/home",
     "transactionFormatLink": "https://explorer.ont.io/transaction/{0}",
     "addressFormatLink": "https://explorer.ont.io/address/{0}/ONT/10/1"
