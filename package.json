@@ -19,8 +19,6 @@
   "license": "ISC",
   "dependencies": {
     "@cityofzion/neon-core": "^4.8.0",
-    "@harmony-js/core": "^0.1.45",
-    "@harmony-js/utils": "^0.1.45",
     "address-rfc2822": "^2.0.5",
     "aws-sdk": "^2.722.0",
     "axios": "^0.19.2",
