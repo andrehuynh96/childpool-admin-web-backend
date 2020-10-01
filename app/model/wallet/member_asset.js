@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     member_id: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: true
     },
     platform: {
       type: DataTypes.STRING(16),
