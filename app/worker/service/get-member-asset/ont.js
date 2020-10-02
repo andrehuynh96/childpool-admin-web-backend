@@ -32,17 +32,19 @@ class ONT extends GetMemberAsset {
                 balance = BigNumber(getAddressBalance.Result.ont).toNumber();
             }
 
-            //todo: to be updated
             let peerPubkeys = await StakingPlatform.getValidatorAddresses('ONT');
-            let validatorPeerPubkey = peerPubkeys[0];
             let address_unbound_ong = config.ONT.addressUnboundOng; // "AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK";
             let address_staking_ont = config.ONT.addressStakingOnt; // "AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV";
 
-
-            const authorizeInfo = await GovernanceTxBuilder.getAuthorizeInfo(validatorPeerPubkey, userAddr, this.network);
-            if (authorizeInfo) {
-                const { consensusPos, freezePos, newPos } = authorizeInfo;
-                amount = consensusPos + freezePos + newPos;
+            if (peerPubkeys && peerPubkeys.length && peerPubkeys.length > 0) {
+                for (let index = 0; index < peerPubkeys.length; index++) {
+                    const validatorPeerPubkey = peerPubkeys[index];
+                    const authorizeInfo = await GovernanceTxBuilder.getAuthorizeInfo(validatorPeerPubkey, userAddr, this.network);
+                    if (authorizeInfo) {
+                        const { consensusPos, freezePos, newPos } = authorizeInfo;
+                        amount += consensusPos + freezePos + newPos;
+                    }
+                }
             }
 
             // GET unclaimReward
@@ -57,7 +59,9 @@ class ONT extends GetMemberAsset {
                     platform: 'ONT',
                     address: address,
                     missed_daily: false,
-                    created_at: { [Op.lt]: date }
+                    created_at: {
+                        [Op.lt]: date
+                    }
                 },
                 order: [
                     ['created_at', 'DESC']
