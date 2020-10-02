@@ -12,22 +12,9 @@ class NotificationService {
 
   async publish(notification, transaction) {
     logger.info(`Send notification "${notification.title}"`);
-    const memberSettingCond = {};
-
-    switch (notification.type) {
-      case NotificationType.SYSTEM:
-        memberSettingCond.is_receiced_system_notification_flg = true;
-        break;
-
-      case NotificationType.NEWS:
-        memberSettingCond.is_receiced_news_notification_flg = true;
-        break;
-
-      case NotificationType.MARKETING:
-        memberSettingCond.is_receiced_marketing_notification_flg = true;
-        break;
-    }
-
+    const memberSettingCond = {
+      is_allow_message_flg: true,
+    };
     const memberList = await Member.findAll({
       include: [
         {

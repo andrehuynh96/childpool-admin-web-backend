@@ -22,6 +22,7 @@ module.exports = async () => {
         is_receiced_activity_notification_flg: true,
         is_receiced_news_notification_flg: true,
         is_receiced_marketing_notification_flg: true,
+        is_allow_message_flg: true,
       });
     }
   });
