@@ -62,9 +62,13 @@ class ATOM extends GetMemberAsset {
             if(histories && histories.data && histories.data.txs && histories.data.txs.length>0){
               let txs=histories.data.txs;
               for (let tx of txs) {
-                if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.createdAt)) {
-                  claim = claim + BigNumber(tx.amount).toNumber() * 1e6;
-                  logger.info('claim: ', claim);
+                if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.createdAt) && tx.actions.length > 0) {
+                  for (let action of tx.actions) {
+                    if (action.type = 'get_reward' && validatorAddresses.indexOf(item.validator_address) != -1) {
+                      claim = claim + BigNumber(action.amount).toNumber() * 1e6;
+                      logger.info('claim: ', claim);
+                    }
+                  }
                 }
               }
             }
