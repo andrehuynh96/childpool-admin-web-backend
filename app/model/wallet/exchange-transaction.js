@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     member_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     },
     from_currency: {
       type: DataTypes.STRING(16),
@@ -138,6 +138,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     tx_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    device_code: {
       type: DataTypes.STRING(256),
       allowNull: true
     },
