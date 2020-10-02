@@ -63,7 +63,7 @@ module.exports = {
   getCurrencyStatuses: async (req, res, next) => {
     try {
       const result = Object.keys(CurrencyStatus)
-        .filter(key => key !== 'DISABLED')
+        .filter(key => !(key === 'DISABLED' || key === 'COMMING_SOON'))
         .map(key => {
           return {
             value: CurrencyStatus[key],
