@@ -62,12 +62,15 @@ module.exports = {
   },
   getCurrencyStatuses: async (req, res, next) => {
     try {
-      const result = Object.entries(CurrencyStatus).map(items => {
-        return {
-          value: items[1],
-          label: items[0],
-        };
-      });
+      const result = Object.keys(CurrencyStatus)
+        .filter(key => key !== 'DISABLED')
+        .map(key => {
+          return {
+            value: CurrencyStatus[key],
+            label: key,
+          };
+        });
+
       return res.ok(result);
     }
     catch (error) {
