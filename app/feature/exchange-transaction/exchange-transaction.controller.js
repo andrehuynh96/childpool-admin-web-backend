@@ -94,7 +94,6 @@ module.exports = {
             attributes: ['email'],
             as: "Member",
             model: Member,
-            required: true
           }
         ],
         where: {
