@@ -1,14 +1,6 @@
 const GetMemberAsset = require("./base");
 const logger = require('app/lib/logger');
-const {
-    ChainID,
-    ChainType,
-    hexToNumber,
-    fromWei,
-    Units,
-} = require('@harmony-js/utils');
 const config = require('app/config');
-const { Harmony } = require('@harmony-js/core');
 const BigNumber = require('bignumber.js');
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const MemberAsset = require('app/model/wallet').member_assets;
@@ -44,14 +36,22 @@ async function getBalanceONE(address) {
     const shards = Object.values(config.harmony);
     for (let item of shards) {
         if (item != null) {
-            const hmy = new Harmony(
-                item, {
-                    chainType: ChainType.Harmony,
-                    chainId: config.harmony.testnet ? ChainID.HmyTestnet : ChainID.HmyMainnet
-                });
-            const response = await hmy.blockchain.getBalance({ address: address });
-            const shardBalance = hexToNumber(response.result);
-            const numBalance = BigNumber(shardBalance).toNumber();
+            const data = {
+                jsonrpc: '2.0',
+                method: 'hmyv2_getBalance',
+                params: [address],
+                id: 1
+            } 
+            let options = {
+                method: 'POST',
+                url: item,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(data)
+            };
+            const response = await axios(options);   
+            const numBalance = BigNumber(response.data.result).toNumber();
             balance += numBalance;
         }
     }
@@ -115,7 +115,7 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
                     var txReceipt = await getTransactionReceipt(txHash);
                     if (txReceipt && txReceipt.status && txReceipt.logs) {
                         var claimAmountHex = txReceipt.logs[0].data;
-                        claim += hexToNumber(claimAmountHex);
+                        claim += parseInt(claimAmountHex, 16);
                     }
                 }
             }
