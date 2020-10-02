@@ -8,8 +8,8 @@ const Sequelize = require('sequelize');
 const stringify = require('csv-stringify');
 const Op = Sequelize.Op;
 const Currencies = require("app/model/wallet").currencies;
-const config = require("../../../app/config");
 const BigNumber = require('bignumber.js');
+const blockchainHelpper = require('app/lib/blockchain-helpper');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -79,7 +79,7 @@ module.exports = {
       }
 
       if (query.platform) {
-        where.platform = query.platform;
+        where.platform = blockchainHelpper.getFilterPlatform(query.platform);
       }
 
       if (query.platform) {
@@ -91,8 +91,8 @@ module.exports = {
         }
         const currency = await Currencies.findOne({
           where: {
-            platform: query.platform
-          }
+            platform: (query.platform === 'TADA' || query.platform === 'ADA') ? 'TADA' : query.platform
+          },
         });
         if (currency) {
           if (query.balanceFrom) {
@@ -186,7 +186,7 @@ module.exports = {
       }
 
       if (query.platform) {
-        where.platform = query.platform;
+        where.platform = blockchainHelpper.getFilterPlatform(query.platform);
       }
 
       if (query.platform) {
@@ -198,7 +198,7 @@ module.exports = {
         }
         const currency = await Currencies.findOne({
           where: {
-            platform: query.platform
+            platform: (query.platform === 'TADA' || query.platform === 'ADA') ? 'TADA' : query.platform
           }
         });
         if (currency) {
