@@ -57,6 +57,7 @@ module.exports = {
         current = await AdaPoolNotifyCfg.update({
           size: body.size,
           emails: body.emails,
+          is_enabled:body.is_enabled,
           updated_by: req.user.id,
         }, {
           where: {
@@ -71,6 +72,7 @@ module.exports = {
       current = await AdaPoolNotifyCfg.create({
         size: body.size,
         emails: body.emails,
+        is_enabled:body.is_enabled,
         created_by: req.user.id,
       });
 
