@@ -33,7 +33,7 @@ class ATOM extends GetMemberAsset {
         if (amountResult && amountResult.data.length > 0) {
           amountResult.data.forEach(item => {
             if (validatorAddresses.indexOf(item.validator_address) != -1) {
-              amount += BigNumber(item.shares).toNumber() * 1e6;
+              amount += BigNumber(item.shares).toNumber();
             }
           });
         }
