@@ -529,7 +529,7 @@ module.exports = {
         element.status_string = MembershipOrderStatusEnum[element.status];
       });
       let data = await stringifyAsync(items, [
-        { key: 'id', header: 'Order' },
+        { key: 'order_no', header: 'Order' },
         { key: 'time_requested', header: 'Date Time' },
         { key: 'first_name', header: 'First Name' },
         { key: 'last_name', header: 'Last Name' },
