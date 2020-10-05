@@ -103,7 +103,7 @@ module.exports = {
             }
           }
           if (insertItems.length > 0) {
-            await MemberAsset.bulkCreate(insertItems, { transaction })
+            await MemberAsset.bulkCreate(insertItems, { transaction });
           }
           await transaction.commit();
         }

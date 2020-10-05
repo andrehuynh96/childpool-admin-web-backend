@@ -11,7 +11,7 @@ router.get(
   '/currencies',
   authenticate,
   // authority(PermissionKey.VIEW_LIST_CURRENCY),
-  validator(search,'query'),
+  validator(search, 'query'),
   controller.search
 );
 
@@ -23,6 +23,11 @@ router.get('/currencies/statuses',
 router.get('/currencies/platforms',
   authenticate,
   controller.getPlatforms
+);
+
+router.get('/currencies/staking-platforms',
+  authenticate,
+  controller.getStakingPlatforms
 );
 
 router.get(

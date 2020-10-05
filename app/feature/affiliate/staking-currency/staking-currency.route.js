@@ -4,9 +4,9 @@ const controller = require('./staking-currency.controller');
 const router = express.Router();
 
 router.get(
-	'/staking-currencies',
-    authenticate,
-	controller.getStakingPlatforms
+  '/staking-currencies',
+  authenticate,
+  controller.getStakingCurrencies
 );
 
 module.exports = router;

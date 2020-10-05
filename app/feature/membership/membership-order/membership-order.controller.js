@@ -507,7 +507,12 @@ module.exports = {
               as: "MembershipType",
               model: MembershipType,
               required: true
-            }
+            },
+            {
+              attributes: ['id', 'currency_symbol', 'wallet_address'],
+              as: "ReceivingAddress",
+              model: ReceivingAddress
+            },
           ],
           where: where,
           order: [['created_at', 'DESC']]
@@ -519,19 +524,20 @@ module.exports = {
         element.first_name = element.Member.first_name;
         element.last_name = element.Member.last_name;
         element.time_requested = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
-        element.time_approved_at = element.approved_at ? moment(element.approved_at).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm') : '';
+        element.receiving_addresses = element.ReceivingAddress ? element.ReceivingAddress['wallet_address'] : '';
+        element.membership_type = element.MembershipType ? element.MembershipType['name'] : '';
         element.status_string = MembershipOrderStatusEnum[element.status];
-        element.amount_string = `${element.amount} ${element.currency_symbol}`;
       });
       let data = await stringifyAsync(items, [
-        { key: 'id', header: 'No.' },
-        { key: 'time_requested', header: 'Requested' },
+        { key: 'id', header: 'Order' },
+        { key: 'time_requested', header: 'Date Time' },
         { key: 'first_name', header: 'First Name' },
         { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
-        { key: 'amount_string', header: 'Amount' },
+        { key: 'membership_type', header: 'Membership' },
+        { key: 'payment_type', header: 'Payment' },
+        { key: 'receiving_addresses', header: 'Receiving Address' },
         { key: 'status_string', header: 'Status' },
-        { key: 'time_approved_at', header: 'Payout Transfered' },
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=orders.csv');
       res.set('Content-Type', 'text/csv');

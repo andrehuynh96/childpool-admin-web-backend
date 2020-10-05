@@ -5,6 +5,8 @@ const destObject = {
     '[].id': '[].id',
     '[].symbol': '[].symbol',
     '[].name': '[].name',
+    '[].currency_symbol': '[].currency_symbol',
+    '[].full_name': '[].full_name',
     '[].icon': '[].icon',
     '[].sc_token_address': '[].sc_token_address',
     '[].decimals': '[].decimals',
@@ -22,7 +24,9 @@ const destObject = {
   single: {
     id: '[].id',
     symbol: '[].symbol',
+    currency_symbol: '[].currency_symbol',
     name: '[].name',
+    full_name: '[].full_name',
     icon: '[].icon',
     sc_token_address: '[].sc_token_address',
     decimals: '[].decimals',

@@ -20,6 +20,7 @@ const destObject = {
     '[].kyc_status': '[].kyc_status',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
+    '[].twofa_enable_flg': '[].twofa_enable_flg',
   },
   single: {
     id: 'id',
@@ -40,6 +41,7 @@ const destObject = {
     kyc_status: 'kyc_status',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
+    twofa_enable_flg: 'twofa_enable_flg',
   }
 };
 module.exports = srcObject => {

@@ -4,7 +4,7 @@ const destObject = {
   array: {
     '[].id': '[].id',
     '[].member_id': '[].member_id',
-    '[].Member.email': '[].email',
+    '[].Member.email': '[].email?',
     '[].from_currency': '[].from_currency',
     '[].to_currency': '[].to_currency',
     '[].request_recipient_address': '[].request_recipient_address',
@@ -16,6 +16,11 @@ const destObject = {
     '[].status': '[].status',
     '[].transaction_date': '[].transaction_date',
     '[].provider': '[].provider',
+    '[].provider_track_url': '[].provider_track_url',
+    '[].payout_tx_id': '[].payout_tx_id',
+    '[].total_fee': '[].total_fee',
+    '[].amount_from': '[].amount_from',
+    '[].rate': '[].rate',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
   },
@@ -34,6 +39,11 @@ const destObject = {
     status: 'status',
     transaction_date: 'transaction_date',
     provider: 'provider',
+    provider_track_url: 'provider_track_url',
+    payout_tx_id: 'payout_tx_id',
+    total_fee: 'total_fee',
+    amount_from: 'amount_from',
+    rate: 'rate',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
   }
@@ -44,7 +54,13 @@ module.exports = srcObject => {
     if (!srcObject || srcObject.length === 0) {
       return [];
     }
-
+    srcObject.forEach(item => {
+      if (!item.Member) {
+        item.Member = {
+          email: ''
+        };
+      }
+    });
     return objectMapper(srcObject, destObject.array);
   }
   else {
