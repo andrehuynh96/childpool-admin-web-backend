@@ -19,6 +19,7 @@ const destObject = {
     '[].explore_url': '[].explore_url',
     '[].transaction_format_link': '[].transaction_format_link',
     '[].address_format_link': '[].address_format_link',
+    '[].web_site_url': '[].web_site_url',
     '[].created_at': '[].created_at'
   },
   single: {
@@ -39,6 +40,7 @@ const destObject = {
     explore_url: '[]explore_url',
     transaction_format_link: '[].transaction_format_link',
     address_format_link: '[].address_format_link',
+    web_site_url: '[]web_site_url',
     created_at: '[].created_at'
   }
 };
