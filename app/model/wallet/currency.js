@@ -80,6 +80,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(500),
       allowNull: true
     },
+    web_site_url: {
+      type: DataTypes.STRING(500),
+      allowNull: true
+    },
   }, {
     underscored: true,
     timestamps: true,
