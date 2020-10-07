@@ -12,8 +12,24 @@ class IRIS extends GetMemberAsset {
   constructor() {
     super();
   }
+
+  async getValidators(apiCoin){
+    this.validatorAddresses = ['iva1543nj4z07vjqztvu3358fr2z2hcp0qtmceank5']//await StakingPlatform.getValidatorAddresses('IRIS');
+    this.validatorRatio = []
+    for(let i of this.validatorAddresses){
+      let validatorData = await apiCoin.getValidator(i)
+      if (validatorData && validatorData.data && validatorData.data.tokens) {
+        this.validatorRatio.push({
+          operator_address: validatorData.data.operator_address,
+          tokens: validatorData.data.tokens,
+          shares: validatorData.data.delegator_shares
+        })
+      }
+    }
+  }
+
   async get(address) {
-    try {  
+    try {      
       const apiCoin = api['IRIS'];
       let balance = 0;
       let amount = 0;
@@ -22,24 +38,29 @@ class IRIS extends GetMemberAsset {
       let date = new Date();
       date.setHours(0, 0, 0, 0);
 
+      if(!this.validatorAddresses){
+        await this.getValidators(apiCoin)
+      }
+     
       const balanceResult = await apiCoin.getBalance(address);
       if (balanceResult && balanceResult.data) {
         balance = BigNumber(balanceResult.data.balance).toNumber() * 1e18;
       }
-      const validatorAddresses = await StakingPlatform.getValidatorAddresses('IRIS');
-      if (validatorAddresses.length > 0) {
+     
+      if (this.validatorAddresses.length > 0) {
         const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
         if (amountResult && amountResult.data.length > 0) {
           amountResult.data.forEach(item => {
-            if (validatorAddresses.indexOf(item.validator_addr) != -1) {
-              amount += BigNumber(item.shares).toNumber() * 1e18;
+            if (this.validatorAddresses.indexOf(item.validator_addr) != -1) {
+              let ratio = this.validatorRatio.find(x=>x.operator_address == item.validator_addr)
+              amount += BigNumber(item.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber() * 1e18;
             }
           });
         }
         const rewardResult = await apiCoin.getRewards(address);
         if (rewardResult && rewardResult.data.total.length > 0) {
           for (let e of rewardResult.data.delegations) {
-            if (validatorAddresses.indexOf(e.validator) != -1) {
+            if (this.validatorAddresses.indexOf(e.validator) != -1) {
               for (let r of e.reward) {
                 unclaimReward = unclaimReward + BigNumber(r.amount).toNumber();
               }
@@ -63,7 +84,7 @@ class IRIS extends GetMemberAsset {
               for (let tx of txs) {
                 if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.createdAt) && tx.validator_addresses.length > 0) {
                   for (let validator of tx.validator_addresses) {
-                    if (validatorAddresses.indexOf(validator.validator_address) != -1) {
+                    if (this.validatorAddresses.indexOf(validator.validator_address) != -1) {
                       claim = claim + BigNumber(validator.amount).toNumber() * 1e18;
                       logger.info('claim: ', claim);
                     }

@@ -13,6 +13,22 @@ class ATOM extends GetMemberAsset {
   constructor() {
     super();
   }
+
+  async getValidators(apiCoin){
+    this.validatorAddresses = await StakingPlatform.getValidatorAddresses('ATOM');
+    this.validatorRatio = []
+    for(let i of this.validatorAddresses){
+      let validatorData = await apiCoin.getValidator(i)
+      if (validatorData && validatorData.data && validatorData.data.tokens) {
+        this.validatorRatio.push({
+          operator_address: validatorData.data.operator_address,
+          tokens: validatorData.data.tokens,
+          shares: validatorData.data.delegator_shares
+        })
+      }
+    }
+  }
+
   async get(address) {
     try {
       const apiCoin = api['ATOM'];
@@ -23,24 +39,29 @@ class ATOM extends GetMemberAsset {
       let date = new Date();
       date.setHours(0, 0, 0, 0);
       
+      if(!this.validatorAddresses){
+        await this.getValidators(apiCoin)
+      }
+      
       const balanceResult = await apiCoin.getBalance(address);
       if (balanceResult && balanceResult.data) {
         balance = BigNumber(balanceResult.data.balance).toNumber() * 1e6;
       }
-      const validatorAddresses = await StakingPlatform.getValidatorAddresses('ATOM');
-      if (validatorAddresses.length > 0) { 
+
+      if (this.validatorAddresses.length > 0) { 
         const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
         if (amountResult && amountResult.data.length > 0) {
           amountResult.data.forEach(item => {
-            if (validatorAddresses.indexOf(item.validator_address) != -1) {
-              amount += BigNumber(item.shares).toNumber();
+            if (this.validatorAddresses.indexOf(item.validator_address) != -1) {
+              let ratio = this.validatorRatio.find(x=>x.operator_address == item.validator_address)
+              amount += BigNumber(item.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber();
             }
           });
         }
         const rewardResult = await apiCoin.getRewards(address);
         if (rewardResult && rewardResult.data.total.length > 0) {
           for (let e of rewardResult.data.rewards) {
-            if (validatorAddresses.indexOf(e.validator_address) != -1) {
+            if (this.validatorAddresses.indexOf(e.validator_address) != -1) {
               for (let r of e.reward) {
                 unclaimReward = unclaimReward + BigNumber(r.amount).toNumber();
               }
@@ -64,7 +85,7 @@ class ATOM extends GetMemberAsset {
               for (let tx of txs) {
                 if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.createdAt) && tx.actions.length > 0) {
                   for (let action of tx.actions) {
-                    if (action.type = 'get_reward' && validatorAddresses.indexOf(item.validator_address) != -1) {
+                    if (action.type = 'get_reward' && this.validatorAddresses.indexOf(item.validator_address) != -1) {
                       claim = claim + BigNumber(action.amount).toNumber() * 1e6;
                       logger.info('claim: ', claim);
                     }
