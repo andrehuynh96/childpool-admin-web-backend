@@ -33,8 +33,8 @@ class ONT extends GetMemberAsset {
             }
 
             let peerPubkeys = await StakingPlatform.getValidatorAddresses('ONT');
-            let address_unbound_ong = config.ONT.addressUnboundOng; // "AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK";
-            let address_staking_ont = config.ONT.addressStakingOnt; // "AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV";
+            let address_unbound_ong = config.ONT.addressUnboundOng; // "AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV";
+            let address_staking_ont = config.ONT.addressStakingOnt; // "AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK";
 
             if (peerPubkeys && peerPubkeys.length && peerPubkeys.length > 0) {
                 for (let index = 0; index < peerPubkeys.length; index++) {
@@ -47,10 +47,23 @@ class ONT extends GetMemberAsset {
                 }
             }
 
-            // GET unclaimReward
+            // GET unclaimReward            
+            let myValidatorStakingRate = 0;
             const splitFee = await GovernanceTxBuilder.getSplitFeeAddress(userAddr, this.network);
-            if (splitFee) {
-                unclaimReward = BigNumber(splitFee.amount).toNumber();
+            if (splitFee && amount > 0) {
+                //unclaimReward = BigNumber(splitFee.amount).toNumber();
+                let totalUnclaimReward = BigNumber(splitFee.amount).toNumber();
+                const peerMap = await GovernanceTxBuilder.getPeerPoolMap(this.network);
+                var totalSakingAmount = 0;
+                for (var nodePubKey in peerMap) {
+                    let authorizeInfo = await GovernanceTxBuilder.getAuthorizeInfo(nodePubKey, userAddr, this.network)
+                    if (authorizeInfo) {
+                        const { consensusPos, freezePos, newPos } = authorizeInfo;
+                        totalSakingAmount += (consensusPos + freezePos + newPos);
+                    }
+                }
+                myValidatorStakingRate = amount / totalSakingAmount;
+                unclaimReward = totalUnclaimReward * myValidatorStakingRate;
             }
 
             // Calculate daily reward
@@ -72,7 +85,7 @@ class ONT extends GetMemberAsset {
                 let number = 0;
                 let fromSecondEpoch = Date.parse(memberAsset.createdAt) / 1000;
                 let claimInOng = await getClaimAmount(this.parserNetwork, address, address_unbound_ong, address_staking_ont, fromSecondEpoch);
-                let claim = claimInOng * 1e9;
+                let claim = (claimInOng * 1e9) * myValidatorStakingRate;
                 number = unclaimReward + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
                 reward = number > 0 ? number : 0;
             } else {
@@ -95,7 +108,7 @@ class ONT extends GetMemberAsset {
 async function getClaimAmount(parserUrl, address, address_unbound_ong, address_staking_ont, fromSecondEpoch) {
     try {
         let doFetch = true;
-        let pageNumFetch = 53;
+        let pageNumFetch = 1;
         let pageSizeFetch = 20;
         let claim = 0;
 
@@ -112,25 +125,21 @@ async function getClaimAmount(parserUrl, address, address_unbound_ong, address_s
             const response = await axios(options);
             if (response && response.status == 200 && response.data && response.data.result) {
                 doFetch = (pageSizeFetch * pageNumFetch) < response.data.result.total;
+
                 for (let idx = 0; idx < response.data.result.records.length; idx++) {
                     let tx = response.data.result.records[idx];
+
                     if (tx.tx_time >= fromSecondEpoch) {
                         let fromAddr = tx.transfers[0].from_address;
-                        if (fromAddr == address_unbound_ong) {
-                            for (let i = 1; i < tx.transfers.length; i++) {
-                                let _fromAddr = tx.transfers[i].from_address;
-                                let _asset_name = tx.transfers[i].asset_name;
-                                let _amount = tx.transfers[i].amount;
-                                if (_fromAddr == address_staking_ont && _asset_name == "ong") {
-                                    claim += BigNumber(_amount).toNumber();
-                                }
-                            }
+                        let amount = tx.transfers[0].amount;
+                        if (fromAddr == address_staking_ont) {
+                            claim += BigNumber(amount).toNumber();
                         }
-
                     } else {
                         doFetch = false;
                         break;
                     }
+
                 }
 
                 pageNumFetch++;
