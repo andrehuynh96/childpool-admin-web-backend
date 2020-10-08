@@ -14,7 +14,7 @@ class IRIS extends GetMemberAsset {
   }
 
   async getValidators(apiCoin){
-    this.validatorAddresses = ['iva1543nj4z07vjqztvu3358fr2z2hcp0qtmceank5']//await StakingPlatform.getValidatorAddresses('IRIS');
+    this.validatorAddresses = await StakingPlatform.getValidatorAddresses('IRIS');
     this.validatorRatio = []
     for(let i of this.validatorAddresses){
       let validatorData = await apiCoin.getValidator(i)
