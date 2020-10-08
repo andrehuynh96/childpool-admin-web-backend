@@ -8,6 +8,7 @@ const uuidV4 = require('uuid/v4');
 const EmailTemplate = require('email-templates');
 const EmailTemplateModel = require('app/model/wallet').email_templates;
 const EmailLoggingModel = require('app/model/wallet').email_loggings;
+const BlacklistEmailModel = require('app/model/wallet').blacklist_emails;
 const EmailLoggingStatus = require('app/model/wallet/value-object/email-logging-status');
 
 const TEMPLATES_PATH = path.resolve(__dirname + "../../../../public/email-template/");
@@ -133,6 +134,15 @@ class EmailService {
     const subject = mailOptions.subject;
     const body = mailOptions.html;
     logger.info('Send email to', email);
+    const isInBlacklist = await BlacklistEmailModel.findOne({
+      where: {
+        email: email.trim().toLowerCase(),
+      },
+    });
+    if (isInBlacklist) {
+      logger.warn(`Email ${email} is in blacklist.`);
+      return;
+    }
 
     const trackingHost = config.webWallet.apiUrl;
     const url = `${trackingHost}/web/email-trackings/${id}`;
