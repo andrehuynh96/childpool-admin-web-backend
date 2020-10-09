@@ -1,5 +1,4 @@
-[
-  {
+[{
     "currencySymbol": "BTC",
     "type": "mainnet",
     "decimals": 8,
@@ -209,10 +208,11 @@
   {
     "currencySymbol": "QTUM",
     "type": "mainnet",
-    "decimals": 6,
+    "decimals": 8,
     "url": "https://explorer.qtum.org",
     "transactionFormatLink": "https://explorer.qtum.org/tx/{0}",
-    "addressFormatLink": "https://explorer.qtum.org/address/{0}","web_site_url":"https://qtum.org/"
+    "addressFormatLink": "https://explorer.qtum.org/address/{0}",
+    "web_site_url": "https://qtum.org/"
   },
   {
     "currencySymbol": "GAS",
@@ -220,7 +220,8 @@
     "decimals": 8,
     "url": "https://neoscan.io",
     "transactionFormatLink": "https://neoscan.io/transaction/{0}",
-    "addressFormatLink": "https://neoscan.io/address/{0}","web_site_url":"https://neo.org/"
+    "addressFormatLink": "https://neoscan.io/address/{0}",
+    "web_site_url": "https://neo.org/"
   },
   {
     "currencySymbol": "TADA",
