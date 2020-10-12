@@ -32,7 +32,7 @@ class ADA extends GetMemberAsset {
         return {
           balance,
           amount:0,
-          unclaim_reward:0,
+          unclaimReward:0,
           reward: 0
         }
       }           
@@ -58,7 +58,7 @@ class ADA extends GetMemberAsset {
         return {
           balance,
           amount,
-          unclaim_reward: unclaim_reward.reward,
+          unclaimReward: unclaim_reward.reward,
           reward: unclaim_reward.reward,
           opts: claimedRewars.lastTx
         }
@@ -70,7 +70,7 @@ class ADA extends GetMemberAsset {
       const result = {
         balance,
         amount,
-        unclaim_reward: unclaim_reward.reward,
+        unclaimReward: unclaim_reward.reward,
         reward,
         opts: claimedRewars.lastTx
       };
