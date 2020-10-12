@@ -62,7 +62,7 @@ module.exports = {
                     balance: data.balance,  // balance of account
                     amount: data.amount,  // balance of staking
                     reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
-                    unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                    unclaim_reward: data.unclaim_reward ? data.unclaim_reward : 0, // current unclaim reward 
                     tracking: data.opts
                   }) 
                 } else if (number == 1) {
@@ -72,7 +72,7 @@ module.exports = {
                     balance: data.balance,  // balance of account
                     amount: data.amount,  // balance of staking
                     reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
-                    unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                    unclaim_reward: data.unclaim_reward ? data.unclaim_reward : 0, // current unclaim reward 
                     tracking: data.opts
                   })
                 } else if (number == 0) {
@@ -80,7 +80,7 @@ module.exports = {
                     balance: data.balance,  // balance of account
                     amount: data.amount,  // balance of staking
                     reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
-                    unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                    unclaim_reward: data.unclaim_reward ? data.unclaim_reward : 0, // current unclaim reward 
                     tracking: data.opts
                   },{
                     where: {
@@ -96,7 +96,7 @@ module.exports = {
                   balance: data.balance,  // balance of account
                   amount: data.amount,  // balance of staking
                   reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
-                  unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                  unclaim_reward: data.unclaim_reward ? data.unclaim_reward : 0, // current unclaim reward 
                   tracking: data.opts
                 })
               }
