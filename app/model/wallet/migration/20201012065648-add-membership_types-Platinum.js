@@ -14,7 +14,7 @@ module.exports = {
             const updateMembershipOrderSQL = `UPDATE membership_orders SET membership_type_id = (SELECT id FROM membership_types WHERE name = 'Platinum') WHERE status = 'Pending' `;
             await queryInterface.sequelize.query(updateMembershipOrderSQL, {}, {});
 
-            const updateMemberSQL = `UPDATE members SET membership_type_id = (SELECT id FROM membership_types WHERE name = 'Platinum') WHERE membership_type_id = (SELECT id FROM membership_types WHERE name = 'Gold');UPDATE members SET membership_type_id = (SELECT id FROM membership_types WHERE name = 'Gold') WHERE membership_type_id = (SELECT id FROM membership_types WHERE name = 'Silver') AND kyc_id = '3' AND kyc_level = 'LEVEL_2' AND kyc_status = 'Approved' `;
+            const updateMemberSQL = `UPDATE members SET membership_type_id = (SELECT id FROM membership_types WHERE name = 'Platinum') WHERE membership_type_id = (SELECT id FROM membership_types WHERE name = 'Gold');UPDATE members SET membership_type_id = (SELECT id FROM membership_types WHERE name = 'Gold') WHERE membership_type_id = (SELECT id FROM membership_types WHERE name = 'Silver') AND kyc_id = '3' AND kyc_level = 'LEVEL_2' AND kyc_status = 'Approved' AND referrer_code IS NOT NULL`;
             await queryInterface.sequelize.query(updateMemberSQL, {}, {});
 
             return Promise.resolve();
