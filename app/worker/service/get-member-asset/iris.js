@@ -149,7 +149,7 @@ const getHistories= async (address, memberAsset)=>{
       offset += limit
       if(response.data && response.data.txs.length > 0){
         for(let tx of response.data.txs){
-          if(tx.block_height > lastBlockHeight)
+          if(parseInt(tx.block_height) > parseInt(lastBlockHeight))
             txs.push(tx)
           else
             break;
