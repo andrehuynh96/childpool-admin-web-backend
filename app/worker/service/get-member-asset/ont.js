@@ -83,7 +83,7 @@ class ONT extends GetMemberAsset {
 
             if (memberAsset) {
                 let number = 0;
-                let fromSecondEpoch = Date.parse(memberAsset.createdAt) / 1000;
+                let fromSecondEpoch = Date.parse(memberAsset.updatedAt) / 1000;
                 let claimInOng = await getClaimAmount(this.parserNetwork, address, address_unbound_ong, address_staking_ont, fromSecondEpoch);
                 let claim = (claimInOng * 1e9) * myValidatorStakingRate;
                 number = unclaimReward + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
