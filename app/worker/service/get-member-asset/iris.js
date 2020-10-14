@@ -36,8 +36,9 @@ class IRIS extends GetMemberAsset {
       let reward = 0;
       let unclaimReward = 0;
       let date = new Date();
+      let opts = null
       date.setHours(0, 0, 0, 0);
-
+      
       if(!this.validatorAddresses){
         await this.getValidators(apiCoin)
       }
@@ -78,9 +79,9 @@ class IRIS extends GetMemberAsset {
           if (memberAsset) {
             let number = 0;
             let claim = 0;
-            let histories = await getHistories(address);
-            if(histories && histories.data && histories.data.txs && histories.data.txs.length>0){
-              let txs=histories.data.txs;
+            let data = await getHistories(address, memberAsset);
+            if(data.txs.length>0){
+              let txs = data.txs
               for (let tx of txs) {
                 if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.createdAt) && tx.validator_addresses.length > 0) {
                   for (let validator of tx.validator_addresses) {
@@ -90,6 +91,12 @@ class IRIS extends GetMemberAsset {
                     }
                   }   
                 }
+              }
+              opts = {
+                offset: data.offset,
+                limit: data.limit,
+                last_tx: data.txs[0].tx_hash,
+                last_block_height: data.txs[0].block_height
               }
             }
             number = unclaimReward + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
@@ -103,7 +110,8 @@ class IRIS extends GetMemberAsset {
         balance: balance,
         amount: amount,
         reward: reward,
-        unclaimReward: unclaimReward
+        unclaimReward: unclaimReward,
+        opts: opts
       };
     } catch (error) {
       logger.error(error);
@@ -112,19 +120,49 @@ class IRIS extends GetMemberAsset {
   }
 }
 
-const getHistories=async (address)=>{
+const getHistories= async (address, memberAsset)=>{
   try {
+    let track = memberAsset ? memberAsset.tracking : null
     let params = [
       {
         name: "getAllTransactionHistory",
         method: "GET",
-        url: `/chains/v1/IRIS/addr/${address}/txs?offset=0&limit=50`
+        url: `/chains/v1/IRIS/addr/{addr}/txs?offset={offset}&limit=50`,
+        "params": [
+          "addr",
+          "offset"
+        ]
       }
     ];
 
     api.extendMethod("chains", params, api);
-    const response = await api.chains.getAllTransactionHistory();
-    return response;
+
+    let offset = track ? track.offset : 0
+    let limit = 50
+    let total = 0
+    let txs = []
+    let lastBlockHeight = track ? track.last_block_height: 0
+
+    do{
+      let response = await api.chains.getAllTransactionHistory(address, offset);
+      total = response.data.total_count
+      offset += limit
+      if(response.data && response.data.txs.length > 0){
+        for(let tx of response.data.txs){
+          if(parseInt(tx.block_height) > parseInt(lastBlockHeight))
+            txs.push(tx)
+          else
+            break;
+        }
+      }
+    }
+    while (offset < total)
+
+    return {
+      offset: offset - limit,
+      limit,
+      txs
+    };
   }catch(err){
     logger.error(err)
     return null

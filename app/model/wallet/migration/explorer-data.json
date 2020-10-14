@@ -231,5 +231,24 @@
     "transactionFormatLink": "https://explorer.cardano.org/en/transaction?id={0}",
     "addressFormatLink": "https://explorer.cardano.org/en/address?address={0}",
     "web_site_url": "https://www.cardano.org/"
+  },
+  {
+    "currencySymbol": "CENNZ",
+    "type": "mainnet",
+    "decimals": 4,
+    "url": null,
+    "transactionFormatLink": null,
+    "addressFormatLink": null,
+    "web_site_url": "https://centrality.ai/"
+  },
+  {
+    "currencySymbol": "CPAY",
+    "type": "mainnet",
+    "decimals": 4,
+    "url": null,
+    "transactionFormatLink": null,
+    "addressFormatLink": null,
+    "web_site_url": null
   }
+
 ]
