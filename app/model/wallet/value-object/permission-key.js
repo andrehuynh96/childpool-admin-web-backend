@@ -334,6 +334,13 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-09-01T00:00:00.000Z"
   },
+  "REMOVE_2FA": {
+    "KEY": "REMOVE_2FA",
+    "DESCRIPTION": "Remove 2FA",
+    "GROUP_NAME": "Members",
+    "ROLES": ["Master", "Admin"],
+    "INITIALIZED_DATE": "2020-09-28T08:05:08.764Z"
+  },
 
   "MEMBERSHIP_VIEW_ORDER_LIST": {
     "KEY": "MEMBERSHIP_VIEW_ORDER_LIST",
@@ -797,8 +804,8 @@ module.exports = {
     "KEY": "RECEIVE_EMAIL_UPDATE_EXCHANGE",
     "DESCRIPTION": "Receive email update exchange",
     "GROUP_NAME": "Exchange",
-    "ROLES": [ "Admin"],
-    "INITIALIZED_DATE":"2020-09-21T08:05:08.764Z"
+    "ROLES": ["Admin"],
+    "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
   },
 
   "MEMBERSHIP_UPDATE_PAYOUT_TRANSFERRED": {
@@ -850,4 +857,49 @@ module.exports = {
     "ROLES": ["Master", "Admin"],
     "INITIALIZED_DATE": "2020-09-21T08:05:08.764Z"
   },
+  "VIEW_LIST_EMAIL_TRACKING": {
+    "KEY": "VIEW_LIST_EMAIL_TRACKING",
+    "DESCRIPTION": "View list email tracking",
+    "GROUP_NAME": "Email Tracking",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T08:05:08.764Z"
+  },
+  "VIEW_EMAIL_TRACKING_DETAIL": {
+    "KEY": "VIEW_EMAIL_TRACKING_DETAIL",
+    "DESCRIPTION": "View email tracking detail",
+    "GROUP_NAME": "Email Tracking",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T08:05:08.764Z"
+  },
+
+  // Notifications
+  "VIEW_NOTIFICATIONS": {
+    "KEY": "VIEW_NOTIFICATIONS",
+    "DESCRIPTION": "Search notifications",
+    "GROUP_NAME": "Notifications",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
+  },
+  "CREATE_NOTIFICATION": {
+    "KEY": "CREATE_NOTIFICATION",
+    "DESCRIPTION": "Create a notification",
+    "GROUP_NAME": "Notifications",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
+  },
+  "UPDATE_NOTIFICATION": {
+    "KEY": "UPDATE_NOTIFICATION",
+    "DESCRIPTION": "Update a notification",
+    "GROUP_NAME": "Notifications",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
+  },
+  "DELETE_NOTIFICATION": {
+    "KEY": "DELETE_NOTIFICATION",
+    "DESCRIPTION": "Delete a notification",
+    "GROUP_NAME": "Notifications",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
+  },
+
 };

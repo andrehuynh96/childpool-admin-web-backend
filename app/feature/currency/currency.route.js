@@ -11,7 +11,7 @@ router.get(
   '/currencies',
   authenticate,
   // authority(PermissionKey.VIEW_LIST_CURRENCY),
-  validator(search,'query'),
+  validator(search, 'query'),
   controller.search
 );
 
@@ -23,6 +23,11 @@ router.get('/currencies/statuses',
 router.get('/currencies/platforms',
   authenticate,
   controller.getPlatforms
+);
+
+router.get('/currencies/staking-platforms',
+  authenticate,
+  controller.getStakingPlatforms
 );
 
 router.get(
@@ -100,6 +105,7 @@ module.exports = router;
                             "explore_url": null,
                             "transaction_format_link": null,
                             "address_format_link": null,
+                            "web_site_url": null,
                             "createdAt": "2020-02-27T07:58:29.300Z",
                             "updatedAt": "2020-02-27T07:58:29.300Z"
                         }
@@ -215,6 +221,7 @@ module.exports = router;
                     "explore_url": "https://www.irisplorer.io",
                     "transaction_format_link": "https://www.irisplorer.io/#/tx?txHash=",
                     "address_format_link": "https://www.irisplorer.io/#/address/",
+                    "web_site_url": "https://www.abc.io",
                     "createdAt": "2020-02-27T07:58:29.300Z",
                     "updatedAt": "2020-09-22T05:00:11.440Z"
                 }
@@ -270,7 +277,8 @@ module.exports = router;
                       "status": 1,
                       "explore_url": "https://www.irisplorer.io",
                       "transaction_format_link": "https://www.irisplorer.io/#/tx?txHash=",
-                      "address_format_link": "https://www.irisplorer.io/#/address/"
+                      "address_format_link": "https://www.irisplorer.io/#/address/",
+                      "web_site_url": "https://www.abc.io"
                     }
 *     produces:
 *       - application/json
@@ -298,6 +306,7 @@ module.exports = router;
                     "explore_url": "https://www.irisplorer.io",
                     "transaction_format_link": "https://www.irisplorer.io/#/tx?txHash=",
                     "address_format_link": "https://www.irisplorer.io/#/address/",
+                    "web_site_url": "https://www.abc.io",
                     "createdAt": "2020-02-27T07:58:29.300Z",
                     "updatedAt": "2020-09-22T05:00:11.440Z"
                 }

@@ -10,10 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(16),
       allowNull: false
     },
-    member_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-    },
     address: {
       type: DataTypes.STRING(128),
       allowNull: false

@@ -5,6 +5,8 @@ const destObject = {
     '[].id': '[].id',
     '[].symbol': '[].symbol',
     '[].name': '[].name',
+    '[].currency_symbol': '[].currency_symbol',
+    '[].full_name': '[].full_name',
     '[].icon': '[].icon',
     '[].sc_token_address': '[].sc_token_address',
     '[].decimals': '[].decimals',
@@ -17,12 +19,15 @@ const destObject = {
     '[].explore_url': '[].explore_url',
     '[].transaction_format_link': '[].transaction_format_link',
     '[].address_format_link': '[].address_format_link',
+    '[].web_site_url': '[].web_site_url',
     '[].created_at': '[].created_at'
   },
   single: {
     id: '[].id',
     symbol: '[].symbol',
+    currency_symbol: '[].currency_symbol',
     name: '[].name',
+    full_name: '[].full_name',
     icon: '[].icon',
     sc_token_address: '[].sc_token_address',
     decimals: '[].decimals',
@@ -35,6 +40,7 @@ const destObject = {
     explore_url: '[]explore_url',
     transaction_format_link: '[].transaction_format_link',
     address_format_link: '[].address_format_link',
+    web_site_url: '[]web_site_url',
     created_at: '[].created_at'
   }
 };

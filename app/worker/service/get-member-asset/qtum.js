@@ -4,9 +4,6 @@ const axios = require('axios');
 const config = require('app/config');
 const BigNumber = require('bignumber.js');
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
-const MemberAsset = require('app/model/wallet').member_assets;
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 class QTUM extends GetMemberAsset {
   constructor() {
     super();
@@ -33,15 +30,6 @@ class QTUM extends GetMemberAsset {
       if (validatorAddresses.length > 0) { 
         let addressTransactions = await api.get(`/address/${address}/txs`);
         if (addressTransactions.data && addressTransactions.data.totalCount > 0) {
-          let memberAsset = await MemberAsset.findOne({
-            where: {
-              platform: 'QTUM',
-              address: address,
-              missed_daily: false,
-              created_at: { [Op.lt]: date }
-            },
-            order: [['created_at', 'DESC']]    
-          })
           let total = addressTransactions.data.totalCount;
           let offset = 0;
           let limit = 20;
@@ -49,13 +37,13 @@ class QTUM extends GetMemberAsset {
           while (true) { 
             let res = await api.get(`/address/${address}/basic-txs?offset=${offset}&limit=${limit}`);
             if (res.data && res.data.transactions.length > 0) {
-              if (memberAsset && res.data.transactions[0].timestamp < Date.parse(memberAsset.createdAt) / 1000) {
+              if (res.data.transactions[0].timestamp < Date.parse(date) / 1000) {
                 break;
               }
               for (let tx of res.data.transactions) {
                 let txDetail = await api.get(`/tx/${tx.id}`);
                 if (validatorAddresses.indexOf(txDetail.data.inputs[0].address) != -1 && tx.type == 'block-reward') {
-                  tx.reward = Math.abs(BigNumber(tx.amount));
+                  tx.reward = Math.abs(BigNumber(tx.amount).toNumber());
                   txs.push(tx);
                 }
               }
@@ -69,9 +57,7 @@ class QTUM extends GetMemberAsset {
           }
           if (txs.length > 0) {
             for (let e of txs) {
-              if (!memberAsset) {
-                reward = reward + e.reward
-              }else if (e.timestamp >= Date.parse(memberAsset.createdAt) / 1000) {
+              if (e.timestamp >= Date.parse(date) / 1000) {
                 reward = reward + e.reward;
               }
             }

@@ -7,7 +7,9 @@ const cache = redis.client();
 
 module.exports = {
   getToken: async () => {
-    let token = await cache.getAsync(redisResource.stakingApi.token);
+    let token = null
+    if(cache)
+      token = await cache.getAsync(redisResource.stakingApi.token);
     if (token) {
       return token;
     }
@@ -19,8 +21,8 @@ module.exports = {
         grant_type: "client_credentials"
       }
     );
-
-    await cache.setAsync(redisResource.stakingApi.token, result.data.data.access_token, "EX", 3600);
+    if(cache)
+      await cache.setAsync(redisResource.stakingApi.token, result.data.data.access_token, "EX", 3600);
     return result.data.data.access_token;
   }
 }

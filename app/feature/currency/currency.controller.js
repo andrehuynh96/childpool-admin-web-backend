@@ -1,6 +1,8 @@
+const _ = require("lodash");
+const config = require("app/config");
 const logger = require('app/lib/logger');
 const Currency = require("app/model/wallet").currencies;
-const CurrencyMapper = require("app/feature/response-schema/currency.response-schema");
+const currencyMapper = require("app/feature/response-schema/currency.response-schema");
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const CurrencyStatus = require("app/model/wallet/value-object/currency-status");
@@ -38,12 +40,12 @@ module.exports = {
         limit: limit,
         offset: offset,
         where: where,
-        order: [['order_index','ASC'],['created_at','DESC']],
+        order: [['order_index', 'ASC'], ['created_at', 'DESC']],
         raw: true
       });
 
       items.forEach(item => {
-          item.status = CURRENCY_STATUS_TEXT_CACHE[item.status];
+        item.status = CURRENCY_STATUS_TEXT_CACHE[item.status];
       });
 
       return res.ok({
@@ -58,22 +60,25 @@ module.exports = {
       next(err);
     }
   },
-  getCurrencyStatuses: async (req,res,next) => {
+  getCurrencyStatuses: async (req, res, next) => {
     try {
-      const result = Object.entries(CurrencyStatus).map(items => {
-        return {
-          value: items[1],
-          label: items[0],
-        };
-      });
+      const result = Object.keys(CurrencyStatus)
+        .filter(key => !(key === 'DISABLED' || key === 'COMMING_SOON'))
+        .map(key => {
+          return {
+            value: CurrencyStatus[key],
+            label: key,
+          };
+        });
+
       return res.ok(result);
     }
     catch (error) {
-      logger.error('get currency status fail',error);
+      logger.error('get currency status fail', error);
       next(error);
     }
   },
-  getPlatforms: async (req,res,next) => {
+  getPlatforms: async (req, res, next) => {
     try {
       const result = await Currency.findAll({
         attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('platform')), 'platform']],
@@ -83,11 +88,11 @@ module.exports = {
       return res.ok(result);
     }
     catch (error) {
-      logger.error('get currency status fail',error);
+      logger.error('get currency status fail', error);
       next(error);
     }
   },
-  getDetails: async (req,res,next) => {
+  getDetails: async (req, res, next) => {
     try {
       const currencyId = req.params.currencyId;
       const currency = await Currency.findOne({
@@ -97,17 +102,17 @@ module.exports = {
       });
 
       if (!currency) {
-        return res.notFound(res.__("CURRENCY_NOT_FOUND"),"CURRENCY_NOT_FOUND",{ field: [currencyId] });
+        return res.notFound(res.__("CURRENCY_NOT_FOUND"), "CURRENCY_NOT_FOUND", { field: [currencyId] });
       }
 
       return res.ok(currency);
     }
     catch (error) {
-      logger.error('get currency detail fail',error);
+      logger.error('get currency detail fail', error);
       next(error);
     }
   },
-  update: async(req,res,next) => {
+  update: async (req, res, next) => {
     try {
       const { body, params, user } = req;
       const [numOfItems, items] = await Currency.update({
@@ -125,8 +130,35 @@ module.exports = {
       return res.ok(items[0]);
     }
     catch (error) {
-      logger.error('update currency fail',error);
+      logger.error('update currency fail', error);
       next(error);
     }
-  }
+  },
+  getStakingPlatforms: async (req, res, next) => {
+    try {
+      const currencySymbols = config.stakingPlatform.split(',').map(item => _.trim(item));
+      const currencies = await Currency.findAll({
+        where: {
+          symbol: {
+            [Op.in]: currencySymbols,
+          },
+        },
+        order: [['order_index', 'ASC'], ['created_at', 'DESC']],
+      });
+
+      currencies.forEach(item => {
+        item.full_name = item.name;
+        item.currency_symbol = item.symbol;
+        item.name = item.currency_symbol;
+      });
+
+      return res.ok(currencyMapper(currencies));
+    }
+    catch (error) {
+      logger.error("get staking platform list fail", error);
+      next(error);
+    }
+  },
+
+
 };

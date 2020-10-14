@@ -27,16 +27,16 @@ class ADA extends GetMemberAsset {
     try {
       await this.getValidators();
       const unclaim_reward = await getRewardADA(address, this.validators);
+      const balance = await getBalanceADA(address);
       if(!unclaim_reward.isPool){
         return {
-          balance: 0,
+          balance,
           amount:0,
-          unclaim_reward:0,
+          unclaimReward:0,
           reward: 0
         }
-      }      
-      const balance = await getBalanceADA(address);
-      const amount = balance + unclaim_reward.reward;
+      }           
+      const amount = balance;
       let date = new Date();
       date.setHours(0, 0, 0, 0);
       // get old 
@@ -58,7 +58,7 @@ class ADA extends GetMemberAsset {
         return {
           balance,
           amount,
-          unclaim_reward: unclaim_reward.reward,
+          unclaimReward: unclaim_reward.reward,
           reward: unclaim_reward.reward,
           opts: claimedRewars.lastTx
         }
@@ -70,7 +70,7 @@ class ADA extends GetMemberAsset {
       const result = {
         balance,
         amount,
-        unclaim_reward: unclaim_reward.reward,
+        unclaimReward: unclaim_reward.reward,
         reward,
         opts: claimedRewars.lastTx
       };
