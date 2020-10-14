@@ -12,6 +12,7 @@ module.exports = {
             const updateSQL = `
                 update currencies set decimals=0 where symbol = 'ONT';
                 update currencies set decimals=8 where symbol = 'QTUM';
+                update currencies set decimals=6 where symbol = 'USDT';
                 `;
             await queryInterface.sequelize.query(updateSQL, {}, {});
 
