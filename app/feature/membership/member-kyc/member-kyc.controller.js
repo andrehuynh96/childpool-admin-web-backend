@@ -15,6 +15,8 @@ const EmailTemplateType = require('app/model/wallet/value-object/email-template-
 const { membershipApi } = require('app/lib/affiliate-api');
 const mailer = require('app/lib/mailer');
 const stringHelper = require('app/lib/string-helper');
+const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
+const MembershipType = require("app/model/wallet").membership_types;
 
 const Op = Sequelize.Op;
 
@@ -271,7 +273,19 @@ module.exports = {
         transaction: transaction
       });
 
-      if (kycStatus === KycStatus.APPROVED && kyc.approve_membership_type_id && !member.membership_type_id) {
+      let isCanUpdateMembershipId = true;
+      if (member.membership_type_id) {
+        let membershipType = await MembershipType.findOne({
+          where:
+            { id: member.membership_type_id }
+        });
+
+        if (membershipType) {
+          isCanUpdateMembershipId = MembershipTypeName.Free === membershipType.type;
+        }
+      }
+
+      if (kycStatus === KycStatus.APPROVED && kyc.approve_membership_type_id && isCanUpdateMembershipId) {
         await Member.update({
           membership_type_id: kyc.approve_membership_type_id
         }, {
