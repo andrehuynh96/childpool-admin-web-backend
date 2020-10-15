@@ -13,7 +13,6 @@ const config = require("app/config");
         require("./user")(),
         require("./role")(),
       ]);
-
       await Promise.all([
         require("./role-permission")(),
         require("./user-role")(),
@@ -22,6 +21,7 @@ const config = require("app/config");
 
     await require("./root-permission")();
     await require("./term")();
+    require("./migrate-infinito-user")();
     console.log('Seeding data done.');
   }
   catch (err) {
