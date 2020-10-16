@@ -18,7 +18,7 @@ class QTUM extends GetMemberAsset {
       let amount = 0;
       let reward = 0;
       if (!date) {
-        let date = new Date();
+        date = new Date();
       }
       const startDate = date.setHours(0, 0, 0, 0);
       const endDate = date.setHours(23,59,59,0);
