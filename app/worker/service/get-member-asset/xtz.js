@@ -9,8 +9,11 @@ class XTZ extends GetMemberAsset {
   constructor() {
     super();
   }
-  async get(address) {
+  async get(address,date) {
     try {
+      if (!date) {
+        date = new Date();
+      }
       let network = config.tezos.tezosServerUrl;
       let path = `${network}/chains/main/blocks/head/context/contracts/${address}`;
       let validatorAddresses = await StakingPlatform.getValidatorAddresses('XTZ');
@@ -20,8 +23,8 @@ class XTZ extends GetMemberAsset {
       if (result.data) {
           balance = BigNumber(result.data.balance).toNumber();
           amount = result.data.delegate && validatorAddresses.indexOf(result.data.delegate) != -1 ? balance : 0;
-      } 
-      let resultPayment = await tezosReward.getTezosReward(address);
+      }
+      let resultPayment = await tezosReward.getTezosReward(address,date);
       let reward = resultPayment.data ? resultPayment.data.amount : 0;
       return {
         balance: balance,

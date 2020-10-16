@@ -4,10 +4,10 @@ const config = require('app/config');
 const logger = require("app/lib/logger");
 
 module.exports = {
-  getTezosReward: async (address) => {
+  getTezosReward: async (address,date) => {
     try {
       let accessToken = await getToken();
-      let result = await axios.get(`${config.stakingApi.url}/tezos-rewards/${address}`, {
+      let result = await axios.get(`${config.stakingApi.url}/tezos-rewards?address=${address}&date=${date}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
