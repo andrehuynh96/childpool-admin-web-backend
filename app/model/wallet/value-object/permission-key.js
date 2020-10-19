@@ -916,4 +916,12 @@ module.exports = {
     "INITIALIZED_DATE": "2020-10-19T00:00:00.000Z"
   },
 
+  // Claim MS Point
+  "VIEW_CLAIM_MS_POINT_HISTORIES": {
+    "KEY": "VIEW_CLAIM_MS_POINT_HISTORIES",
+    "DESCRIPTION": "View claim MS point histories",
+    "GROUP_NAME": "MS point",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-19T00:00:00.000Z"
+  },
 };
