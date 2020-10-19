@@ -10,13 +10,13 @@ const router = express.Router();
 
 router.get('/claim-points/settings',
   authenticate,
-  authority(PermissionKey.VIEW_CLAIM_POINT_SETTINGS),
+  authority(PermissionKey.VIEW_CLAIM_MS_POINT_SETTINGS),
   controller.get
 );
 
 router.put('/claim-points/settings',
   authenticate,
-  authority(PermissionKey.UPDATE_CLAIM_POINT_SETTINGS),
+  authority(PermissionKey.UPDATE_CLAIM_MS_POINT_SETTINGS),
   validator(update),
   controller.update
 );
