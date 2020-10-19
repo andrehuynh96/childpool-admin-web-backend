@@ -20,5 +20,100 @@ router.put('/claim-points/settings',
   validator(update),
   controller.update
 );
+
+/**
+ * @swagger
+ * /web/membership/claim-points/settings:
+ *   get:
+ *     summary: get claim ms point setting
+ *     tags:
+ *       - Claim Point
+ *     description:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": {
+                        "Bank": "Bank",
+                        "Crypto": "Crypto"
+                    }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+* @swagger
+* /web/membership/claim-points/settings:
+*   put:
+*     summary: update claim ms point setting
+*     tags:
+*       - Claim Point
+*     description: update claim ms point setting
+*     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON to update.
+*         schema:
+*            type: object
+*            required:
+*            - claimPoints
+*            - delayTime
+*            example:
+*                  {
+                        "claimPoints": {
+                            "Silver": 1,
+                            "Gold": 5,
+                            "Platinum": 10
+                        },
+                        "delayTime": "86400"
+                    }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
 module.exports = router;
 
