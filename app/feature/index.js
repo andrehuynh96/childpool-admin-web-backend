@@ -32,6 +32,7 @@ router.use(require('./exchange-transaction/exchange-transaction.route'));
 router.use(require('./email-tracking/email-tracking.route'));
 router.use(require('./notification/notification.route'));
 router.use(require('./remove-2fa/remove-2fa.route'));
+router.use(require('./claim-point/claim-point.route'));
 
 module.exports = router;
 
