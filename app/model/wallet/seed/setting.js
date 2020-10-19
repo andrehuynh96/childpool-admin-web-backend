@@ -2,12 +2,6 @@ const Model = require("app/model/wallet").settings;
 
 const SETTINGS = [
   {
-    "key": "MS_POINT_CLAIM_POINTS",
-    "value": "1",
-    "type": "number",
-    "property": "ms_point_claim_points"
-  },
-  {
     "key": "MS_POINT_DELAY_TIME_IN_SECONDS",
     "value": "86400",
     "type": "number",
