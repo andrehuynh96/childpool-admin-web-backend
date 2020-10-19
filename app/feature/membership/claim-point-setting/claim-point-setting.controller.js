@@ -5,12 +5,12 @@ const database = require('app/lib/database').db().wallet;
 module.exports = {
   get: async (req, res, next) => {
     try {
-      const settings = await Setting.findOne({
+      const setting = await Setting.findOne({
         where: {
           key: 'MS_POINT_DELAY_TIME_IN_SECONDS'
         }
       });
-      const delayTime = settings.value;
+      const delayTime = setting.value;
       const membershipTypes = await MembershipType.findAll({
         attributes: ['name','claim_points'],
         where: {
