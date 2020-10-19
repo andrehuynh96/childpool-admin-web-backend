@@ -135,7 +135,7 @@
   },
   {
     "currencySymbol": "USDT",
-    "decimals": 8,
+    "decimals": 6,
     "type": "mainnet",
     "url": "https://omniexplorer.info/",
     "transactionFormatLink": "https://omniexplorer.info/tx/{0}",
@@ -249,6 +249,23 @@
     "transactionFormatLink": null,
     "addressFormatLink": null,
     "web_site_url": null
+  },
+  {
+    "currencySymbol": "XQC",
+    "type": "mainnet",
+    "decimals": 8,
+    "url": "https://blockexplorer.quras.io",
+    "transactionFormatLink": "https://blockexplorer.quras.io/#/txs/{0}",
+    "addressFormatLink": "https://blockexplorer.quras.io/#/addresses/{0}",
+    "web_site_url": "https://quras.io/"
+  },
+  {
+    "currencySymbol": "XQG",
+    "type": "mainnet",
+    "decimals": 8,
+    "url": "https://blockexplorer.quras.io",
+    "transactionFormatLink": "https://blockexplorer.quras.io/#/txs/{0}",
+    "addressFormatLink": "https://blockexplorer.quras.io/#/addresses/{0}",
+    "web_site_url": "https://quras.io/"
   }
-
 ]
