@@ -107,7 +107,7 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
         if (memberAsset) {
             let number = 0;
             let claim = 0;
-            let fromSecondEpoch = Date.parse(memberAsset.createdAt) / 1000;
+            let fromSecondEpoch = Date.parse(memberAsset.updatedAt) / 1000;
             let colectRewardHashes = await getCollectRewardTxsHash(address, fromSecondEpoch);
 
             if (colectRewardHashes && colectRewardHashes.length > 0) {
