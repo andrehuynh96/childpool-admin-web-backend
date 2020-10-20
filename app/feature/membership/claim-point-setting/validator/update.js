@@ -1,5 +1,3 @@
-const { Schemas } = require("aws-sdk");
-
 const Joi = require('joi');
 
 const schema = Joi.object().keys({
