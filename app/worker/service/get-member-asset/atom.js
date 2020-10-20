@@ -14,10 +14,10 @@ class ATOM extends GetMemberAsset {
     super();
   }
 
-  async getValidators(apiCoin){
+  async getValidators(apiCoin) {
     this.validatorAddresses = await StakingPlatform.getValidatorAddresses('ATOM');
     this.validatorRatio = []
-    for(let i of this.validatorAddresses){
+    for (let i of this.validatorAddresses) {
       let validatorData = await apiCoin.getValidator(i)
       if (validatorData && validatorData.data && validatorData.data.tokens) {
         this.validatorRatio.push({
@@ -35,25 +35,25 @@ class ATOM extends GetMemberAsset {
       let balance = 0;
       let amount = 0;
       let reward = 0;
-      let unclaimReward =0;
+      let unclaimReward = 0;
       let date = new Date();
       date.setHours(0, 0, 0, 0);
 
-      if(!this.validatorAddresses){
+      if (!this.validatorAddresses) {
         await this.getValidators(apiCoin)
       }
-      
+
       const balanceResult = await apiCoin.getBalance(address);
       if (balanceResult && balanceResult.data) {
         balance = BigNumber(balanceResult.data.balance).toNumber() * 1e6;
       }
 
-      if (this.validatorAddresses.length > 0) { 
+      if (this.validatorAddresses.length > 0) {
         const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
         if (amountResult && amountResult.data.length > 0) {
           amountResult.data.forEach(item => {
             if (this.validatorAddresses.indexOf(item.validator_address) != -1) {
-              let ratio = this.validatorRatio.find(x=>x.operator_address == item.validator_address)
+              let ratio = this.validatorRatio.find(x => x.operator_address == item.validator_address)
               amount += BigNumber(item.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber();
             }
           });
@@ -74,17 +74,17 @@ class ATOM extends GetMemberAsset {
               missed_daily: false,
               created_at: { [Op.lt]: date }
             },
-            order: [['created_at', 'DESC']]    
+            order: [['created_at', 'DESC']]
           })
           if (memberAsset) {
             let number = 0;
             let claim = 0;
-            let txs = await getHistories(address, memberAsset);           
-            if(txs.length>0){
+            let txs = await getHistories(address, memberAsset);
+            if (txs.length > 0) {
               for (let tx of txs) {
-                if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.actions.length > 0) {
+                if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.actions && tx.actions.length > 0) {
                   for (let action of tx.actions) {
-                    if (action.type = 'get_reward' && this.validatorAddresses.indexOf(item.validator_address) != -1) {
+                    if (action.type = 'get_reward' && this.validatorAddresses.indexOf(action.validator_address) != -1) {
                       claim = claim + BigNumber(action.amount).toNumber() * 1e6;
                       logger.info('claim: ', claim);
                     }
@@ -99,7 +99,7 @@ class ATOM extends GetMemberAsset {
           }
         }
       }
-      
+
       return {
         balance: balance,
         amount: amount,
@@ -113,7 +113,7 @@ class ATOM extends GetMemberAsset {
   }
 }
 
-const getHistories= async (address, memberAsset)=>{
+const getHistories = async (address, memberAsset) => {
   try {
     let params = [
       {
@@ -134,28 +134,29 @@ const getHistories= async (address, memberAsset)=>{
     let total = 0
     let txs = []
 
-    do{
+    do {
       let response = await api.chains.getAllTransactionHistory(address, offset);
-      if(!response || !response.data || response.data.txs.length <= 0)
+      console.log('ATOM response getAllTransactionHistory', response)
+      if (!response || !response.data || response.data.txs.length <= 0)
         return txs
       total = response.data.total_count
       offset += limit
       let br = false
-      for(let tx of response.data.txs){
-        if(Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt))
+      for (let tx of response.data.txs) {
+        if (Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt))
           txs.push(tx)
-        else{
+        else {
           br = true
           break
-        }           
+        }
       }
-      if(br)
+      if (br)
         break;
     }
     while (offset < total)
 
     return txs
-  }catch(err){
+  } catch (err) {
     logger.error(err)
     return null
   }
