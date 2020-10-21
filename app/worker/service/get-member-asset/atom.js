@@ -37,7 +37,6 @@ class ATOM extends GetMemberAsset {
       let reward = 0;
       let unclaimReward = 0;
       let date = new Date();
-      let opts = null
       date.setHours(0, 0, 0, 0);
 
       if (!this.validatorAddresses) {
@@ -60,7 +59,7 @@ class ATOM extends GetMemberAsset {
           });
         }
         const rewardResult = await apiCoin.getRewards(address);
-        if (rewardResult && rewardResult.data.total.length > 0) {
+        if (rewardResult && rewardResult.data.rewards && rewardResult.data.rewards.length > 0) {
           for (let e of rewardResult.data.rewards) {
             if (this.validatorAddresses.indexOf(e.validator_address) != -1) {
               for (let r of e.reward) {
@@ -80,24 +79,17 @@ class ATOM extends GetMemberAsset {
           if (memberAsset) {
             let number = 0;
             let claim = 0;
-            let data = await getHistories(address, memberAsset);
-            if (data.txs.length > 0) {
-              let txs = data.txs
+            let txs = await getHistories(address, memberAsset);
+            if (txs.length > 0) {
               for (let tx of txs) {
-                if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.createdAt) && tx.actions.length > 0) {
+                if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.actions && tx.actions.length > 0) {
                   for (let action of tx.actions) {
-                    if (action.type = 'get_reward' && this.validatorAddresses.indexOf(item.validator_address) != -1) {
+                    if (action.type = 'get_reward' && this.validatorAddresses.indexOf(action.validator_address) != -1) {
                       claim = claim + BigNumber(action.amount).toNumber() * 1e6;
                       logger.info('claim: ', claim);
                     }
                   }
                 }
-              }
-              opts = {
-                offset: data.offset,
-                limit: data.limit,
-                last_tx: data.txs[0].tx_hash,
-                last_block_height: data.txs[0].block_height
               }
             }
             number = unclaimReward + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
@@ -113,7 +105,6 @@ class ATOM extends GetMemberAsset {
         amount: amount,
         reward: reward,
         unclaimReward: unclaimReward,
-        opts: opts
       };
     } catch (error) {
       logger.error(error);
@@ -124,7 +115,6 @@ class ATOM extends GetMemberAsset {
 
 const getHistories = async (address, memberAsset) => {
   try {
-    let track = memberAsset ? memberAsset.tracking : null
     let params = [
       {
         name: "getAllTransactionHistory",
@@ -139,32 +129,33 @@ const getHistories = async (address, memberAsset) => {
 
     api.extendMethod("chains", params, api);
 
-    let offset = track ? track.offset : 0
+    let offset = 0
     let limit = 50
     let total = 0
     let txs = []
-    let lastBlockHeight = track ? track.last_block_height : 0
 
     do {
       let response = await api.chains.getAllTransactionHistory(address, offset);
+      console.log('ATOM response getAllTransactionHistory', response)
+      if (!response || !response.data || response.data.txs.length <= 0)
+        return txs
       total = response.data.total_count
       offset += limit
-      if (response.data && response.data.txs.length > 0) {
-        for (let tx of response.data.txs) {
-          if (parseInt(tx.block_height) > parseInt(lastBlockHeight))
-            txs.push(tx)
-          else
-            break;
+      let br = false
+      for (let tx of response.data.txs) {
+        if (Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt))
+          txs.push(tx)
+        else {
+          br = true
+          break
         }
       }
+      if (br)
+        break;
     }
     while (offset < total)
 
-    return {
-      offset: offset - limit,
-      limit,
-      txs
-    };
+    return txs
   } catch (err) {
     logger.error(err)
     return null

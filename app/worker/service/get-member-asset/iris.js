@@ -13,10 +13,10 @@ class IRIS extends GetMemberAsset {
     super();
   }
 
-  async getValidators(apiCoin){
+  async getValidators(apiCoin) {
     this.validatorAddresses = await StakingPlatform.getValidatorAddresses('IRIS');
     this.validatorRatio = []
-    for(let i of this.validatorAddresses){
+    for (let i of this.validatorAddresses) {
       let validatorData = await apiCoin.getValidator(i)
       if (validatorData && validatorData.data && validatorData.data.tokens) {
         this.validatorRatio.push({
@@ -29,31 +29,30 @@ class IRIS extends GetMemberAsset {
   }
 
   async get(address) {
-    try {      
+    try {
       const apiCoin = api['IRIS'];
       let balance = 0;
       let amount = 0;
       let reward = 0;
       let unclaimReward = 0;
       let date = new Date();
-      let opts = null
       date.setHours(0, 0, 0, 0);
-      
-      if(!this.validatorAddresses){
+
+      if (!this.validatorAddresses) {
         await this.getValidators(apiCoin)
       }
-     
+
       const balanceResult = await apiCoin.getBalance(address);
       if (balanceResult && balanceResult.data) {
         balance = BigNumber(balanceResult.data.balance).toNumber() * 1e18;
       }
-     
+
       if (this.validatorAddresses.length > 0) {
         const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
         if (amountResult && amountResult.data.length > 0) {
           amountResult.data.forEach(item => {
             if (this.validatorAddresses.indexOf(item.validator_addr) != -1) {
-              let ratio = this.validatorRatio.find(x=>x.operator_address == item.validator_addr)
+              let ratio = this.validatorRatio.find(x => x.operator_address == item.validator_addr)
               amount += BigNumber(item.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber() * 1e18;
             }
           });
@@ -74,29 +73,22 @@ class IRIS extends GetMemberAsset {
               missed_daily: false,
               created_at: { [Op.lt]: date }
             },
-            order: [['created_at', 'DESC']]    
+            order: [['created_at', 'DESC']]
           })
           if (memberAsset) {
             let number = 0;
             let claim = 0;
-            let data = await getHistories(address, memberAsset);
-            if(data.txs.length>0){
-              let txs = data.txs
+            let txs = await getHistories(address, memberAsset);
+            if (txs.length > 0) {
               for (let tx of txs) {
-                if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.createdAt) && tx.validator_addresses.length > 0) {
+                if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.validator_addresses && tx.validator_addresses.length > 0) {
                   for (let validator of tx.validator_addresses) {
                     if (this.validatorAddresses.indexOf(validator.validator_address) != -1) {
                       claim = claim + BigNumber(validator.amount).toNumber() * 1e18;
                       logger.info('claim: ', claim);
                     }
-                  }   
+                  }
                 }
-              }
-              opts = {
-                offset: data.offset,
-                limit: data.limit,
-                last_tx: data.txs[0].tx_hash,
-                last_block_height: data.txs[0].block_height
               }
             }
             number = unclaimReward + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
@@ -110,8 +102,7 @@ class IRIS extends GetMemberAsset {
         balance: balance,
         amount: amount,
         reward: reward,
-        unclaimReward: unclaimReward,
-        opts: opts
+        unclaimReward: unclaimReward
       };
     } catch (error) {
       logger.error(error);
@@ -120,9 +111,8 @@ class IRIS extends GetMemberAsset {
   }
 }
 
-const getHistories= async (address, memberAsset)=>{
+const getHistories = async (address, memberAsset) => {
   try {
-    let track = memberAsset ? memberAsset.tracking : null
     let params = [
       {
         name: "getAllTransactionHistory",
@@ -137,33 +127,33 @@ const getHistories= async (address, memberAsset)=>{
 
     api.extendMethod("chains", params, api);
 
-    let offset = track ? track.offset : 0
+    let offset = 0
     let limit = 50
     let total = 0
     let txs = []
-    let lastBlockHeight = track ? track.last_block_height: 0
 
-    do{
+    do {
       let response = await api.chains.getAllTransactionHistory(address, offset);
+      if (!response || !response.data || response.data.txs.length <= 0)
+        return txs
       total = response.data.total_count
       offset += limit
-      if(response.data && response.data.txs.length > 0){
-        for(let tx of response.data.txs){
-          if(parseInt(tx.block_height) > parseInt(lastBlockHeight))
-            txs.push(tx)
-          else
-            break;
+      let br = false
+      for (let tx of response.data.txs) {
+        if (Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt))
+          txs.push(tx)
+        else {
+          br = true
+          break
         }
       }
+      if (br)
+        break;
     }
     while (offset < total)
 
-    return {
-      offset: offset - limit,
-      limit,
-      txs
-    };
-  }catch(err){
+    return txs
+  } catch (err) {
     logger.error(err)
     return null
   }
