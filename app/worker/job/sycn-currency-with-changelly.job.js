@@ -11,40 +11,81 @@ module.exports = {
       const getCurrencies = new Changelly().getCurrencies();
       const syncCurrencyServices = new SyncCurrencyChangellyServices();
       const getChangellyData = await getCurrencies;
-      const exchangeCurrenciesDB = await exchangeCurrencies.findAll({ where: { status: status.ENABLED } });
-      const changellyData = getChangellyData.result;
+      const exchangeCurrenciesDB = await exchangeCurrencies.findAll({
+        where: {
+          status: status.ENABLED
+        }
+      });
+      const curreciesDisableByJob = await exchangeCurrencies.findAll({
+        where: {
+          turn_off_by_job_flg: true
+        }
+      });
+      let changellyData = getChangellyData.result;
       if (changellyData && exchangeCurrenciesDB) {
+        changellyData = changellyData.map(x => {
+          return {
+            ...x,
+            symbol: x.ticker.toUpperCase(),
+            platform: (x.contract_address && x.address_url.startsWith("https://etherscan.io")) ? "ETH" : x.ticker.toUpperCase()
+          }
+        });
 
-        for (let i = 0; i < changellyData.length; i++) {
-          const changellyTicker = changellyData[i].ticker;
-          const changellyPlatform = (changellyData[i].contract_address && changellyData[i].address_url.startsWith("https://etherscan.io")) ? "ETH" : changellyData[i].ticker.toUpperCase();
-          const changellyEnabled = changellyData[i].enabled ? status.ENABLED : status.DISABLED;
-          const changellyFixRate = changellyData[i].fix_rate_enabled;
 
-          exchangeCurrenciesDB.map(async (item) => {
-            if (changellyTicker.toUpperCase() === item.symbol.toUpperCase() && changellyPlatform === item.platform.toUpperCase()) {
-              if (changellyEnabled !== item.status || changellyFixRate !== item.fix_rate_flg) {
-                let update = {};
-                if (changellyEnabled !== item.status) update = { ...update, status: changellyEnabled };
-                if (changellyFixRate !== item.fix_rate_flg) update = { ...update, fix_rate_flg: changellyFixRate };
-                await exchangeCurrencies.update(update, {
-                  where: {
-                    symbol: item.symbol
-                  }
-                });
-                // sent email
-                if (config.sendMailToAdminFlg) {
-                  const data = { ...update, symbol: item.symbol, flatForm: changellyPlatform };
-                  syncCurrencyServices.sendMail(data);
+        for (let e of exchangeCurrenciesDB) {
+          let item = changellyData.find(x => x.symbol == e.symbol.toUpperCase() && x.platform == e.platform.toUpperCase());
+          if (!item) {
+            continue;
+          }
+          const changellyStatus = item.enabled ? status.ENABLED : status.DISABLED;
+
+          if (e.status != changellyStatus || item.fix_rate_enabled != e.fix_rate_flg) {
+            await exchangeCurrencies.update({
+              status: changellyStatus,
+              fix_rate_flg: item.fix_rate_enabled,
+              turn_off_by_job_flg: true
+            }, {
+                where: {
+                  symbol: e.symbol
                 }
-                // log
-                logger.info('Status/FixRate change: coin/token - ', item.symbol);
-                if (changellyEnabled !== item.status) logger.info('Status: ', "Changlelly: " + changellyEnabled + " - DB: " + item.status);
-                if (changellyFixRate !== item.fix_rate_flg) logger.info('FixRate:', "Changlelly: " + changellyFixRate + " - DB: " + item.fix_rate_flg);
-              }
+              });
+            if (config.sendMailToAdminFlg) {
+              const data = {
+                status: changellyStatus ? "ENABLED" : "DISABLED",
+                fix_rate_flg: item.fix_rate_enabled ? "ENABLED" : "DISABLED",
+                symbol: e.symbol,
+                flatForm: e.platform
+              };
+              syncCurrencyServices.sendMail(data);
             }
-          });
+          }
+        }
 
+        for (let e of curreciesDisableByJob) {
+          let item = changellyData.find(x => x.symbol == e.symbol.toUpperCase() && x.platform == e.platform.toUpperCase());
+          if (!item) {
+            continue;
+          }
+          const changellyStatus = item.enabled ? status.ENABLED : status.DISABLED;
+
+          if (e.status != changellyStatus || item.fix_rate_enabled != e.fix_rate_flg) {
+            if (config.sendMailToAdminFlg) {
+              const data = {
+                status: changellyStatus ? "ENABLED" : "DISABLED",
+                fix_rate_flg: item.fix_rate_enabled ? "ENABLED" : "DISABLED",
+                symbol: e.symbol,
+                flatForm: e.platform
+              };
+              syncCurrencyServices.sendMail(data, false);
+            }
+            await exchangeCurrencies.update({
+              turn_off_by_job_flg: false
+            }, {
+                where: {
+                  symbol: e.symbol
+                }
+              });
+          }
         }
       }
     }
