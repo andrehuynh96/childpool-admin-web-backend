@@ -7,7 +7,7 @@ const schema = Joi.object().keys({
     Joi.object().keys({
       id: Joi.string().required(),
       name: Joi.string().required(),
-      price: Joi.number().required(),
+      price: Joi.number().min(0).required(),
       is_enabled: Joi.boolean().required(),
     })
   )
