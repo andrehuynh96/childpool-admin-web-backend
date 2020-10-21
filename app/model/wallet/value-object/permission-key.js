@@ -924,4 +924,23 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-10-19T00:00:00.000Z"
   },
+
+  // Loggings
+  "VIEW_LOGGINGS": {
+    "KEY": "VIEW_LOGGINGS",
+    "DESCRIPTION": "View loggings",
+    "GROUP_NAME": "Logging",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-21T00:00:00.000Z"
+  },
+  "DELETE_LOGGING": {
+    "KEY": "DELETE_LOGGING",
+    "DESCRIPTION": "Delete a logging",
+    "GROUP_NAME": "Logging",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-21T00:00:00.000Z"
+  },
+
+
+
 };
