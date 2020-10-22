@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const _ = require('lodash');
 const config = require('app/config');
 const logger = require('app/lib/logger');
 const path = require("path");
@@ -129,10 +130,21 @@ class EmailService {
   }
 
   async sendMail(mailOptions) {
+    if (_.isArray(mailOptions.to)) {
+      const emails = mailOptions.to.map(item => item.trim().toLowerCase());
+      for (const item of emails) {
+        await this.sendMail({
+          ...mailOptions,
+          to: item,
+        });
+      }
+
+      return;
+    }
+
     const id = uuidV4();
     const email = mailOptions.to;
     const subject = mailOptions.subject;
-    const body = mailOptions.html;
     logger.info('Send email to', email);
     const isInBlacklist = await BlacklistEmailModel.findOne({
       where: {

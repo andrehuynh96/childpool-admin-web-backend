@@ -13,12 +13,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('medium'),
       allowNull: false,
     },
+    wallet_address: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,
     indexes: [
       {
-        name: 'logging_type_01',
+        name: 'logging_type_wallet_address_01',
         fields: [
           {
             attribute: 'created_at',
@@ -26,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
           },
           {
             attribute: 'type',
+            order: 'DESC',
+          },
+          {
+            attribute: 'wallet_address',
             order: 'DESC',
           },
         ]
