@@ -35,13 +35,19 @@ router.get('/loggings',
 *       - name: limit
 *         in: query
 *         type: integer
+*       - name: from_date
+*         in: query
+*         type: string
+*       - name: to_date
+*         in: query
+*         type: string
 *       - name: keyword
 *         in: query
 *         type: string
-*       - name: type
+*       - name: wallet_address
 *         in: query
 *         type: string
-*       - name: event
+*       - name: type
 *         in: query
 *         type: string
 *     produces:
