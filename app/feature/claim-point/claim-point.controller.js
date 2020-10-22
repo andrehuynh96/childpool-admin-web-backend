@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const moment = require('moment');
 const logger = require('app/lib/logger');
-const ClaimPoint = require("app/model/wallet").claim_points;
+const PointHistory = require("app/model/wallet").point_histories;
 const Member = require("app/model/wallet").members;
 const SystemType = require("app/model/wallet/value-object/system-type");
 const ClaimPointStatus = require("app/model/wallet/value-object/claim-point-status");
@@ -45,7 +45,7 @@ module.exports = {
         memberCond.email = { [Op.iLike]: `%${query.email}%` };
       }
 
-      const { count: total, rows: items } = await ClaimPoint.findAndCountAll({
+      const { count: total, rows: items } = await PointHistory.findAndCountAll({
         limit,
         offset,
         include: [
