@@ -7,6 +7,7 @@ const schema = Joi.object().keys({
   type: Joi.string().allow('').allow(null).max(100).optional(),
   from_date: Joi.date().iso().allow('').allow(null).optional(),
   to_date: Joi.date().iso().allow('').allow(null).optional(),
+  wallet_address: Joi.string().allow('').allow(null).max(500).optional(),
 });
 
 module.exports = schema;

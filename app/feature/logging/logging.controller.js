@@ -53,6 +53,11 @@ module.exports = {
         cond.type = query.type;
       }
 
+      const walletAddress = _.trim(query.wallet_address);
+      if (walletAddress) {
+        cond.wallet_address = { [Op.iLike]: `%${walletAddress}%` };
+      }
+
       const { count: total, rows: items } = await Logging.findAndCountAll({
         limit,
         offset,

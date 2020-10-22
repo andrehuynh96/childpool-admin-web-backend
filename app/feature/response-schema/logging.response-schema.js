@@ -5,6 +5,7 @@ const destObject = {
     '[].id': '[].id',
     '[].type': '[].type',
     '[].message': '[].message',
+    '[].wallet_address': '[].wallet_address?',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
   },
@@ -12,6 +13,7 @@ const destObject = {
     id: 'id',
     type: 'type',
     message: 'message',
+    wallet_address: 'wallet_address?',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
   }

@@ -55,33 +55,13 @@ router.get('/loggings',
                 "data": {
                     "items": [
                         {
-                            "id": 11,
-                            "title": "FOO title2020-09-28 17:57:52.218975+09",
-                            "content": "FOO content2020-09-28 17:57:52.218975+09",
-                            "description": "やあ！すずきちゃ",
-                            "title_ja": "FOO title JA2020-09-28 17:57:52.218975+09",
-                            "content_ja": "こんにちは2020-09-28 17:57:52.218975+09",
-                            "type": "SYSTEM",
-                            "event": "NEW_INFORMATION",
-                            "sent_all_flg": true,
-                            "actived_flg": true,
-                            "created_at": "2020-09-28T08:57:52.218Z",
-                            "updated_at": "2020-09-28T08:57:52.218Z"
-                        },
-                        {
-                            "id": 10,
-                            "title": "FOO title2020-09-28 17:57:51.597363+09",
-                            "content": "FOO content2020-09-28 17:57:51.597363+09",
-                            "description": "やあ！すずきちゃ",
-                            "title_ja": "FOO title JA2020-09-28 17:57:51.597363+09",
-                            "content_ja": "こんにちは2020-09-28 17:57:51.597363+09",
-                            "type": "SYSTEM",
-                            "event": "NEW_INFORMATION",
-                            "sent_all_flg": true,
-                            "actived_flg": true,
-                            "created_at": "2020-09-28T08:57:51.597Z",
-                            "updated_at": "2020-09-28T08:57:51.597Z"
-                        },
+                            "id": "3",
+                            "type": "DAILY_REWARD",
+                            "message": "Love Medicine is Louise Erdrichs debut novel, first published in 1984. Erdrich revised and expanded the novel in subsequent 1993 and 2009 editions. The book follows the lives of five interconnected Ojibwe families living on fictional reservations in Minnesota and North Dakota.",
+                            "wallet_address": "AGBnd6d8LwsmJpnuYphRVKvQZ8kJJtbBiH",
+                            "created_at": "2020-08-28T06:58:42.000Z",
+                            "updated_at": "2020-08-28T06:58:42.000Z"
+                        }
                     ],
                     "offset": 0,
                     "limit": 25,
@@ -137,15 +117,12 @@ router.get('/loggings/:loggingId',
 *           application/json:
 *             {
                 "data": {
-                    "id": 2,
-                    "title": "Terms and Conditions update",
-                    "content": "In its the majority of standard terms: if YouTube isn’t making money off you, the company can erase your account. The platform’s existing terms of service do not include this language.YouTube is updating their Terms of Service on 10 December 2019. It presents an awful possibility for the future of creators on the platform. It seems they will be able to terminate your channel if it’s “no longer commercially viable.Check it out here: https://t.co/UrVpXmq4k5",
-                    "type": "SYSTEM",
-                    "event": "NEW_INFORMATION",
-                    "sent_all_flg": true,
-                    "actived_flg": false,
-                    "created_at": "2020-09-28T08:52:50.582Z",
-                    "updated_at": "2020-09-28T08:52:50.582Z"
+                  "id": "1",
+                  "type": "DAILY_REWARD",
+                  "message": "Love Medicine is Louise Erdrichs debut novel, first published in 1984. Erdrich revised and expanded the novel in subsequent 1993 and 2009 editions. The book follows the lives of five interconnected Ojibwe families living on fictional reservations in Minnesota and North Dakota.",
+                  "wallet_address": null,
+                  "created_at": "2020-08-28T06:58:42.000Z",
+                  "updated_at": "2020-08-28T06:58:42.000Z"
                 }
             }
 *       400:
