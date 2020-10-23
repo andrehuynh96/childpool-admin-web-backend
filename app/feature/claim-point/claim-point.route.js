@@ -131,6 +131,130 @@ router.get(
   validator(search, 'query'),
   controller.search
 );
+
+/* #region  get claim points status */
+/**
+ * @swagger
+ * /web/claim-point-statuses:
+ *   get:
+ *     summary: get claim point status
+ *     tags:
+ *       - Claim Point
+ *     description:
+ *     parameters:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data": [
+                      {
+                          "label": "PENDING",
+                          "value": "PENDING"
+                      },
+                      {
+                          "label": "APPROVED",
+                          "value": "APPROVED"
+                      },
+                      {
+                          "label": "CANCELED",
+                          "value": "CANCELED"
+                      }
+                  ]
+              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+router.get(
+  '/claim-point-statuses',
+  authenticate,
+  controller.getStatuses
+);
+/* #endregion */
+
+
+/* #region  get claim points actions */
+/**
+ * @swagger
+ * /web/claim-point-actions:
+ *   get:
+ *     summary: get claim point action
+ *     tags:
+ *       - Claim Point
+ *     description:
+ *     parameters:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                "data": [
+                    {
+                        "label": "CLAIM",
+                        "value": "CLAIM"
+                    },
+                    {
+                        "label": "STAKING",
+                        "value": "STAKING"
+                    },
+                    {
+                        "label": "UPGRADE_MEMBERSHIP",
+                        "value": "UPGRADE_MEMBERSHIP"
+                    },
+                    {
+                        "label": "EXCHANGE",
+                        "value": "EXCHANGE"
+                    },
+                    {
+                        "label": "SWAP_TO_TOKEN",
+                        "value": "SWAP_TO_TOKEN"
+                    }
+                ]
+            }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+router.get(
+  '/claim-point-actions',
+  authenticate,
+  controller.getActions
+);
 /* #endregion */
 
 module.exports = router;
