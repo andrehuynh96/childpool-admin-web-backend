@@ -1,10 +1,11 @@
 const Sequelize = require('sequelize');
 const moment = require('moment');
 const logger = require('app/lib/logger');
-const ClaimPoint = require("app/model/wallet").claim_points;
+const PointHistory = require("app/model/wallet").point_histories;
 const Member = require("app/model/wallet").members;
 const SystemType = require("app/model/wallet/value-object/system-type");
-const ClaimPointStatus = require("app/model/wallet/value-object/claim-point-status");
+const PointStatus = require("app/model/wallet/value-object/point-status");
+const PointAction = require("app/model/wallet/value-object/point-action");
 const mapper = require("app/feature/response-schema/claim-point.response-schema");
 
 const Op = Sequelize.Op;
@@ -16,7 +17,6 @@ module.exports = {
       const limit = parseInt(query.limit);
       const offset = parseInt(query.offset);
       const where = {
-        status: ClaimPointStatus.Claim,
         system_type: SystemType.MEMBERSHIP,
       };
       let fromDate, toDate;
@@ -36,6 +36,12 @@ module.exports = {
       if (fromDate && toDate && fromDate >= toDate) {
         return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['from_date', 'to_date'] });
       }
+      if (query.status) {
+        where.status = query.status;
+      }
+      if (query.action) {
+        where.action = query.action;
+      }
 
       const memberCond = {
         deleted_flg: false
@@ -45,7 +51,7 @@ module.exports = {
         memberCond.email = { [Op.iLike]: `%${query.email}%` };
       }
 
-      const { count: total, rows: items } = await ClaimPoint.findAndCountAll({
+      const { count: total, rows: items } = await PointHistory.findAndCountAll({
         limit,
         offset,
         include: [
@@ -69,7 +75,37 @@ module.exports = {
       });
     }
     catch (error) {
-      logger.info('get claim point list fail', error);
+      logger.error('get claim point list fail', error);
+      next(error);
+    }
+  },
+  getStatuses: async(req,res,next)=> {
+    try {
+      const statuses = Object.entries(PointStatus);
+      const dropdownList = statuses.map(item => {
+        return {
+          label: item[0],
+          value: item[1]
+        };
+      });
+      return res.ok(dropdownList);
+    } catch (error) {
+      logger.error('get point status list fail', error);
+      next(error);
+    }
+  },
+  getActions: async(req,res,next) => {
+    try {
+      const statuses = Object.entries(PointAction);
+      const dropdownList = statuses.map(item => {
+        return {
+          label: item[0],
+          value: item[1]
+        };
+      });
+      return res.ok(dropdownList);
+    } catch (error) {
+      logger.error('get point action list fail', error);
       next(error);
     }
   },
