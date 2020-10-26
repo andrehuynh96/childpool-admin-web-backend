@@ -9,6 +9,8 @@ const sleep = require('sleep-promise');
 const { RestClient, GovernanceTxBuilder, Crypto } = require('ontology-ts-sdk');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const dbLogger = require('app/lib/logger/db');
+
 class ONT extends GetMemberAsset {
     constructor() {
         super();
@@ -47,7 +49,7 @@ class ONT extends GetMemberAsset {
                 }
             }
 
-            // GET unclaimReward            
+            // GET unclaimReward
             let myValidatorStakingRate = 0;
             const splitFee = await GovernanceTxBuilder.getSplitFeeAddress(userAddr, this.network);
             if (splitFee && amount > 0) {
@@ -99,6 +101,7 @@ class ONT extends GetMemberAsset {
                 unclaimReward: unclaimReward
             };
         } catch (error) {
+            await dbLogger(error,address);
             logger.error(error);
             return null;
         }
@@ -152,6 +155,7 @@ async function getClaimAmount(parserUrl, address, address_unbound_ong, address_s
         }
         return claim;
     } catch (err) {
+        await dbLogger(err,address);
         logger.error(err)
         return 0
     }

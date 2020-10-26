@@ -7,7 +7,7 @@ module.exports = {
   getTezosReward: async (address) => {
     try {
       let accessToken = await getToken();
-      let result = await axios.get(`${config.stakingApi.url}/tezos-rewards/${address}`, {
+      let result = await axios.get(`${config.stakingApi.url}/tezos-rewards/?address=${address}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }

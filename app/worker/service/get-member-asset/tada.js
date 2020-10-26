@@ -10,6 +10,8 @@ const api = new InfinitoApi(config.infinitoApiOpts);
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const dbLogger = require('app/lib/logger/db');
+
 class ADA extends GetMemberAsset {
   constructor() {
     super();
@@ -35,11 +37,11 @@ class ADA extends GetMemberAsset {
           unclaimReward:0,
           reward: 0
         }
-      }           
+      }
       const amount = balance;
       let date = new Date();
       date.setHours(0, 0, 0, 0);
-      // get old 
+      // get old
       const MemberAsset = require('app/model/wallet').member_assets;
       let memberAsset = await MemberAsset.findOne({
         where: {
@@ -49,7 +51,7 @@ class ADA extends GetMemberAsset {
           created_at: { [Op.lt]: date }
         },
         order: [['created_at', 'DESC']],
-        raw: true    
+        raw: true
       })
       const claimedRewars = await getClaimedReward(address, memberAsset);
 
@@ -64,7 +66,7 @@ class ADA extends GetMemberAsset {
         }
       }
 
-      // continue check      
+      // continue check
       const reward = unclaim_reward.reward - (memberAsset.unclaim_reward - claimedRewars.totalClaimedReward)
 
       const result = {
@@ -76,6 +78,7 @@ class ADA extends GetMemberAsset {
       };
       return result;
     } catch (error) {
+      await dbLogger(error,address);
       logger.error(error);
       return null;
     }
@@ -90,6 +93,7 @@ async function getBalanceADA(address) {
     return balance;
   }
   catch (error) {
+    await dbLogger(error,address);
     logger.error(error);
     throw error;
   }
@@ -115,6 +119,7 @@ async function getBestBlockADA() {
     }
   }
   catch (err) {
+    await dbLogger(err);
     logger.error(err);
     throw err;
   }
@@ -123,9 +128,9 @@ async function getBestBlockADA() {
 async function getClaimedReward(delegatorAddress, memberAsset) {
   try {
     let lastTx = memberAsset ? memberAsset.tracking : null
-    let totalClaimedReward = 0; 
+    let totalClaimedReward = 0;
     let currentBlockHash = await getBestBlockADA();
-    while(true){     
+    while(true){
       let payload = {
         addresses: [
           delegatorAddress
@@ -143,7 +148,7 @@ async function getClaimedReward(delegatorAddress, memberAsset) {
        if(!data || data.length == 0){
         break;
       }
-        
+
       lastTx = {
         block: data[data.length -1].block_hash,
         tx: data[data.length -1].hash
@@ -163,6 +168,7 @@ async function getClaimedReward(delegatorAddress, memberAsset) {
       lastTx
     }
   } catch (error) {
+    await dbLogger(error);
     logger.error(error);
     throw error;
   }
@@ -201,6 +207,7 @@ async function getRewardADA(address, validators) {
     }
   }
   catch (error) {
+    await dbLogger(error);
     logger.error(error);
     throw error;
   }

@@ -4,6 +4,7 @@ const axios = require('axios');
 const config = require('app/config');
 const BigNumber = require('bignumber.js');
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
+const dbLogger = require('app/lib/logger/db');
 class QTUM extends GetMemberAsset {
   constructor() {
     super();
@@ -26,15 +27,15 @@ class QTUM extends GetMemberAsset {
         balance = BigNumber(result.data.balance).toNumber();
         amount = result.data.superStaker &&  validatorAddresses.indexOf(result.data.superStaker) != -1 ? BigNumber(result.data.mature).toNumber() : 0;
       }
-      
-      if (validatorAddresses.length > 0) { 
+
+      if (validatorAddresses.length > 0) {
         let addressTransactions = await api.get(`/address/${address}/txs`);
         if (addressTransactions.data && addressTransactions.data.totalCount > 0) {
           let total = addressTransactions.data.totalCount;
           let offset = 0;
           let limit = 20;
           let txs = [];
-          while (true) { 
+          while (true) {
             let res = await api.get(`/address/${address}/basic-txs?offset=${offset}&limit=${limit}`);
             if (res.data && res.data.transactions.length > 0) {
               if (res.data.transactions[0].timestamp < Date.parse(date) / 1000) {
@@ -70,6 +71,7 @@ class QTUM extends GetMemberAsset {
         reward: reward
       };
     } catch (error) {
+      await dbLogger(error,address);
       logger.error(error);
       return null;
     }
