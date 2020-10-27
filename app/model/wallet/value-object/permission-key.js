@@ -941,6 +941,41 @@ module.exports = {
     "INITIALIZED_DATE": "2020-10-21T00:00:00.000Z"
   },
 
-
+  // Questionnaire
+  "SEARCH_QUESTIONS": {
+    "KEY": "SEARCH_QUESTIONS",
+    "DESCRIPTION": "Search questions",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
+  "VIEW_QUESTION_DETAILS": {
+    "KEY": "VIEW_QUESTION_DETAILS",
+    "DESCRIPTION": "View question details",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
+  "CREATE_QUESTION": {
+    "KEY": "CREATE_QUESTION",
+    "DESCRIPTION": "Create a question",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
+  "UPDATE_QUESTION": {
+    "KEY": "UPDATE_QUESTION",
+    "DESCRIPTION": "Update a question",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
+  "DELETE_QUESTION": {
+    "KEY": "DELETE_QUESTION",
+    "DESCRIPTION": "Delete a question",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
 
 };

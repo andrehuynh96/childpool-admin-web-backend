@@ -34,6 +34,7 @@ router.use(require('./notification/notification.route'));
 router.use(require('./remove-2fa/remove-2fa.route'));
 router.use(require('./claim-point/claim-point.route'));
 router.use(require('./logging/logging.route'));
+router.use(require('./questionnaire/questionnaire.route'));
 
 module.exports = router;
 

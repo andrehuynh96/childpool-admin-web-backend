@@ -27,12 +27,5 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
   });
 
-  QuestionAnswer.associate = (models) => {
-    QuestionAnswer.belongsTo(models.questions, {
-      as: 'Question',
-      foreignKey: 'question_id',
-    });
-  };
-
   return QuestionAnswer;
 };

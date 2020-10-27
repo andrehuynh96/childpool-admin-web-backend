@@ -1,5 +1,5 @@
 const QuestionType = require("./value-object/question-type");
-const QuestionCategoryType = require("./value-object/question-category-type");
+const QuestionCategory = require("./value-object/question-category");
 
 module.exports = (sequelize, DataTypes) => {
   const Question = sequelize.define("questions", {
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     category_type: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      defaultValue: QuestionCategoryType.ANSWER_NOW,
+      defaultValue: QuestionCategory.ANSWER_NOW,
     },
     points: {
       type: DataTypes.INTEGER,
@@ -58,6 +58,13 @@ module.exports = (sequelize, DataTypes) => {
     underscored: true,
     timestamps: true,
   });
+
+  Question.associate = (models) => {
+    Question.hasMany(models.question_answers, {
+      as: "Answers",
+      foreignKey: 'question_id',
+    });
+  };
 
   return Question;
 };
