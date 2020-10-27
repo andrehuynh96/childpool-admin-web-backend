@@ -7,7 +7,7 @@ const { forEach } = require('p-iteration');
 const moment = require('moment');
 
 const Op = Sequelize.Op;
-const START_SPRINT_DATE = moment("2020-10-12T00:00:00.000Z");
+const START_SPRINT_DATE = moment("2020-10-26T00:00:00.000Z");
 
 module.exports = async () => {
   const models = [];
