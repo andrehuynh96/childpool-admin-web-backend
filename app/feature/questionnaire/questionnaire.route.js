@@ -323,12 +323,32 @@ router.post('/questions/',
 *            example:
 *                  {
                       "title": "Terms and Conditions update",
-                      "content": "In its the majority of standard terms: if YouTube isn’t making money off you, the company can erase your account. The platform’s existing terms of service do not include this language.YouTube is updating their Terms of Service on 10 December 2019. It presents an awful possibility for the future of creators on the platform. It seems they will be able to terminate your channel if it’s “no longer commercially viable.Check it out here: https://t.co/UrVpXmq4k5",
-                      "description": "",
-                      "type": "SYSTEM",
-                      "event": "NEW_INFORMATION",
-                      "actived_flg": false,
-                      "sent_all_flg": true
+                      "title_ja": "In its the majority of standard terms: if YouTube isn’t making money off you, the company can erase your account. The platform’s existing terms of service do not include this language.YouTube is updating their Terms of Service on 10 December 2019. It presents an awful possibility for the future of creators on the platform. It seems they will be able to terminate your channel if it’s “no longer commercially viable.Check it out here: https://t.co/UrVpXmq4k5",
+                      "question_type": "SINGLE_SELECTION",
+                      "points": 1,
+                      "actived_flg": true,
+                      "answers": [
+                          {
+                              "text": "A lot",
+                              "text_ja": "",
+                              "is_correct_flg": true
+                          },
+                          {
+                              "text": "Some",
+                              "text_ja": "",
+                              "is_correct_flg": false
+                          },
+                          {
+                              "text": "Not much",
+                              "text_ja": "",
+                              "is_correct_flg": false
+                          },
+                          {
+                              "text": "Just hearing about it now in this survey",
+                              "text_ja": "",
+                              "is_correct_flg": false
+                          }
+                      ]
 *                  }
 *     produces:
 *       - application/json
@@ -339,15 +359,55 @@ router.post('/questions/',
 *           application/json:
 *             {
                 "data": {
-                    "id": 2,
+                    "id": 12,
                     "title": "Terms and Conditions update",
-                    "content": "In its the majority of standard terms: if YouTube isn’t making money off you, the company can erase your account. The platform’s existing terms of service do not include this language.YouTube is updating their Terms of Service on 10 December 2019. It presents an awful possibility for the future of creators on the platform. It seems they will be able to terminate your channel if it’s “no longer commercially viable.Check it out here: https://t.co/UrVpXmq4k5",
-                    "type": "SYSTEM",
-                    "event": "NEW_INFORMATION",
-                    "sent_all_flg": true,
-                    "actived_flg": false,
-                    "created_at": "2020-09-28T08:52:50.582Z",
-                    "updated_at": "2020-09-28T08:52:50.582Z"
+                    "title_ja": "In its the majority of standard terms: if YouTube isn’t making money off you, the company can erase your account. The platform’s existing terms of service do not include this language.YouTube is updating their Terms of Service on 10 December 2019. It presents an awful possibility for the future of creators on the platform. It seems they will be able to terminate your channel if it’s “no longer commercially viable.Check it out here: https://t.co/UrVpXmq4k5",
+                    "question_type": "SINGLE_SELECTION",
+                    "category_type": "ANSWER_NOW",
+                    "content_ja": null,
+                    "points": 1,
+                    "forecast_key": null,
+                    "actived_flg": true,
+                    "answers": [
+                        {
+                            "id": 35,
+                            "text": "A lot",
+                            "text_ja": "",
+                            "is_correct_flg": true,
+                            "question_id": 12,
+                            "updatedAt": "2020-10-27T08:58:58.009Z",
+                            "createdAt": "2020-10-27T08:58:58.009Z"
+                        },
+                        {
+                            "id": 36,
+                            "text": "Some",
+                            "text_ja": "",
+                            "is_correct_flg": false,
+                            "question_id": 12,
+                            "updatedAt": "2020-10-27T08:58:58.009Z",
+                            "createdAt": "2020-10-27T08:58:58.009Z"
+                        },
+                        {
+                            "id": 37,
+                            "text": "Not much",
+                            "text_ja": "",
+                            "is_correct_flg": false,
+                            "question_id": 12,
+                            "updatedAt": "2020-10-27T08:58:58.009Z",
+                            "createdAt": "2020-10-27T08:58:58.009Z"
+                        },
+                        {
+                            "id": 38,
+                            "text": "Just hearing about it now in this survey",
+                            "text_ja": "",
+                            "is_correct_flg": false,
+                            "question_id": 12,
+                            "updatedAt": "2020-10-27T08:58:58.009Z",
+                            "createdAt": "2020-10-27T08:58:58.009Z"
+                        }
+                    ],
+                    "created_at": "2020-10-27T08:58:57.797Z",
+                    "updated_at": "2020-10-27T08:58:57.797Z"
                 }
             }
 *       400:

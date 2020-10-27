@@ -37,11 +37,11 @@ module.exports = {
       }
 
       if (query.question_type) {
-        cond.type = query.question_type;
+        cond.question_type = query.question_type;
       }
 
       if (query.category_type) {
-        cond.event = query.category_type;
+        cond.category_type = query.category_type;
       }
 
       const { count: total, rows: items } = await Question.findAndCountAll({
@@ -145,16 +145,27 @@ module.exports = {
     try {
       const { body, user } = req;
       const data = {
-        ...body,
+        title: body.title,
+        title_ja: body.title_ja,
+        question_type: body.question_type,
+        category_type: QuestionCategory.ANSWER_NOW,
+        points: body.points,
+        actived_flg: body.actived_flg,
         deleted_flg: false,
         created_by: user.id,
+        Answers: body.answers || [],
       };
-      const question = await Question.create(data, { transaction });
+      const question = await Question.create(data, {
+        include: [
+          {
+            model: QuestionAnswer,
+            as: 'Answers'
+          },
+        ],
+        transaction
+      });
 
-      // if (question.actived_flg) {
-      //   await questionService.publish(question, transaction);
-      // }
-      // await transaction.commit();
+      await transaction.commit();
 
       return res.ok(mapper(question));
     }

@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('long'),
       allowNull: false
     },
-    text_jp: {
+    text_ja: {
       type: DataTypes.TEXT('long'),
       allowNull: true,
     },

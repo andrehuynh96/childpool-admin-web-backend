@@ -1,15 +1,19 @@
 const Joi = require('joi');
+const QuestionType = require("app/model/wallet/value-object/question-type");
+
+const answerSchema = Joi.object().keys({
+  text: Joi.string().max(2000).required(),
+  text_ja: Joi.string().allow(null).allow('').max(2000).optional(),
+  is_correct_flg: Joi.boolean().required(),
+});
 
 const schema = Joi.object().keys({
-  title: Joi.string().max(5000).required(),
-  description: Joi.string().max(5000).allow('').allow(null).optional(),
-  content: Joi.string().required(),
-  title_ja: Joi.string().max(5000).optional(),
-  content_ja: Joi.string().optional(),
-  type: Joi.string().max(32).required(),
-  event: Joi.string().max(32).required(),
+  title: Joi.string().required(),
+  title_ja: Joi.string().allow(null).allow('').optional(),
+  question_type: Joi.string().valid(Object.values(QuestionType)).max(32).required(),
+  points: Joi.number().min(1).required(),
   actived_flg: Joi.boolean().required(),
-  sent_all_flg: Joi.boolean().required(),
+  answers: Joi.array().optional().items(answerSchema),
 });
 
 module.exports = schema;
