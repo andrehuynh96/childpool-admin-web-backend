@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const { forEach } = require('p-iteration');
 const logger = require('app/lib/logger');
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
@@ -91,54 +92,6 @@ module.exports = {
       next(error);
     }
   },
-  update: async (req, res, next) => {
-    let transaction;
-
-    try {
-      const { params, body, user } = req;
-      let question = await Question.findOne({
-        where: {
-          id: params.questionId,
-          deleted_flg: false,
-        }
-      });
-
-      if (!question) {
-        return res.notFound(res.__("QUESTION_NOT_FOUND"), "QUESTION_NOT_FOUND", { fields: ['id'] });
-      }
-
-      // const isPublished = !question.actived_flg && body.actived_flg;
-      // transaction = await database.transaction();
-      // // eslint-disable-next-line no-unused-vars
-      // const [numOfItems, items] = await Question.update({
-      //   ...body,
-      //   updated_by: user.id,
-      // }, {
-      //   where: {
-      //     id: params.questionId,
-      //   },
-      //   returning: true,
-      //   transaction: transaction,
-      // });
-
-      // if (isPublished) {
-      //   question = items[0];
-      //   await questionService.publish(question, transaction);
-      // }
-
-      // await transaction.commit();
-
-      return res.ok(true);
-    }
-    catch (error) {
-      logger.error('Update question fail', error);
-      if (transaction) {
-        await transaction.rollback();
-      }
-
-      next(error);
-    }
-  },
   create: async (req, res, next) => {
     const transaction = await database.transaction();
 
@@ -205,6 +158,105 @@ module.exports = {
     }
     catch (error) {
       logger.error('get QuestionCategory fail', error);
+      next(error);
+    }
+  },
+  update: async (req, res, next) => {
+    let transaction;
+
+    try {
+      const { params, body, user } = req;
+      const question = await Question.findOne({
+        include: [
+          {
+            as: "Answers",
+            model: QuestionAnswer,
+            required: true,
+          }
+        ],
+        where: {
+          id: params.questionId,
+          deleted_flg: false,
+        },
+      });
+
+      if (!question) {
+        return res.notFound(res.__("QUESTION_NOT_FOUND"), "QUESTION_NOT_FOUND");
+      }
+
+      transaction = await database.transaction();
+      await Question.update({
+        title: body.title,
+        title_ja: body.title_ja,
+        question_type: body.question_type,
+        points: body.points,
+        actived_flg: body.actived_flg,
+        updated_by: user.id,
+      }, {
+        where: {
+          id: question.id,
+        },
+        returning: true,
+        transaction: transaction,
+      });
+
+      const questionAnswerCache = _.keyBy(question.Answers, item => item.id);
+      const updateQuestionAnswers = [];
+      const insertQuestionAnswers = [];
+      const questionAnswerIdCache = {};
+
+      body.answers.forEach(item => {
+        if (!item.id) {
+          insertQuestionAnswers.push({
+            text: item.text,
+            text_ja: item.text_ja,
+            is_correct_flg: item.is_correct_flg,
+            question_id: question.id,
+          });
+
+          return;
+        }
+
+        questionAnswerIdCache[item.id] = item;
+        const questionAnswer = questionAnswerCache[item.id];
+        if (questionAnswer) {
+          questionAnswer.text = item.text;
+          questionAnswer.text_ja = item.text_ja;
+          questionAnswer.is_correct_flg = item.is_correct_flg;
+
+          updateQuestionAnswers.push(questionAnswer);
+        }
+      });
+
+      const removeQuestionAnswerIdList = [];
+      question.Answers.forEach(item => {
+        if (!questionAnswerIdCache[item.id]) {
+          removeQuestionAnswerIdList.push(item.id);
+        }
+      });
+
+      await forEach(updateQuestionAnswers, async (instance) => {
+        await instance.save({ transaction });
+      });
+      await QuestionAnswer.bulkCreate(insertQuestionAnswers, { transaction });
+      await QuestionAnswer.destroy({
+        where: {
+          id: {
+            [Op.in]: removeQuestionAnswerIdList,
+          },
+        }
+
+      }, { transaction });
+      await transaction.commit();
+
+      return res.ok(true);
+    }
+    catch (error) {
+      logger.error('Update question fail', error);
+      if (transaction) {
+        await transaction.rollback();
+      }
+
       next(error);
     }
   },
