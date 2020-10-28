@@ -36,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       default: false,
     },
+    claim_points: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,

@@ -114,6 +114,7 @@ const config = {
     confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
     adaPoolNotification: process.env.PARTNER_NAME.toLowerCase() + "/ada-pool-check.ejs",
+    updateExchangeCurrency: process.env.PARTNER_NAME.toLowerCase() + "/update-exchange-currency.ejs",
     apiChangellyUpdate: process.env.PARTNER_NAME.toLowerCase() + "/API-Changelly-update.ejs",
   },
   masterWebsite: {
@@ -184,6 +185,7 @@ const config = {
   patchData: {
     isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
     patchIsEnabledSyncMembershipType: process.env.PATCH_IS_ENABLED_SYNC_MEMBERSHIP_TYPE === 'true',
+    patchIsEnabledSyncClients: process.env.PATCH_IS_ENABLED_SYNC_CLIENTS === 'true'
   },
   exchange: {
     changelly: {
