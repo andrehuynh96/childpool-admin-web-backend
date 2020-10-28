@@ -9,5 +9,6 @@ module.exports = {
     cron.schedule(config.schedule.checkExchangeStatus, async () => {
       await runWithLockFile(CheckExchangeStatusJob, LOCK_FILE, "check exchange status");
     });
-  }
+  },
+  lockFile: () => LOCK_FILE
 }

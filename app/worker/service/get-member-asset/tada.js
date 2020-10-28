@@ -10,19 +10,20 @@ const api = new InfinitoApi(config.infinitoApiOpts);
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const logHangout = require("app/lib/logger/hangout");
 const dbLogger = require('app/lib/logger/db');
 
 class ADA extends GetMemberAsset {
   constructor() {
     super();
   }
-  async getValidators(){
-    if(!this.validators){
+  async getValidators() {
+    if (!this.validators) {
       let res = await StakingPlatform.getValidatorInfo('TADA')
       this.validators = res.data.map(x => x.address)
     }
   }
-  async setValidators(addresses){
+  async setValidators(addresses) {
     this.validators = addresses
   }
   async get(address) {
@@ -30,11 +31,11 @@ class ADA extends GetMemberAsset {
       await this.getValidators();
       const unclaim_reward = await getRewardADA(address, this.validators);
       const balance = await getBalanceADA(address);
-      if(!unclaim_reward.isPool){
+      if (!unclaim_reward.isPool) {
         return {
           balance,
-          amount:0,
-          unclaimReward:0,
+          amount: 0,
+          unclaimReward: 0,
           reward: 0
         }
       }
@@ -56,7 +57,7 @@ class ADA extends GetMemberAsset {
       const claimedRewars = await getClaimedReward(address, memberAsset);
 
       // first init
-      if(!memberAsset){
+      if (!memberAsset) {
         return {
           balance,
           amount,
@@ -80,6 +81,7 @@ class ADA extends GetMemberAsset {
     } catch (error) {
       await dbLogger(error,address);
       logger.error(error);
+      logHangout.write(JSON.stringify(error));
       return null;
     }
   }
@@ -95,6 +97,7 @@ async function getBalanceADA(address) {
   catch (error) {
     await dbLogger(error,address);
     logger.error(error);
+    logHangout.write(JSON.stringify(error));
     throw error;
   }
 }
@@ -121,6 +124,7 @@ async function getBestBlockADA() {
   catch (err) {
     await dbLogger(err);
     logger.error(err);
+    logHangout.write(JSON.stringify(err));
     throw err;
   }
 }
@@ -130,14 +134,14 @@ async function getClaimedReward(delegatorAddress, memberAsset) {
     let lastTx = memberAsset ? memberAsset.tracking : null
     let totalClaimedReward = 0;
     let currentBlockHash = await getBestBlockADA();
-    while(true){
+    while (true) {
       let payload = {
         addresses: [
           delegatorAddress
         ],
         untilBlock: currentBlockHash.hash
       };
-      if(lastTx)
+      if (lastTx)
         payload = {
           ...payload,
           after: lastTx
@@ -145,19 +149,19 @@ async function getClaimedReward(delegatorAddress, memberAsset) {
       let { data } = await axios.post('https://iohk-mainnet.yoroiwallet.com/api/v2/txs/history', payload);
 
       //check the same data
-       if(!data || data.length == 0){
+      if (!data || data.length == 0) {
         break;
       }
 
       lastTx = {
-        block: data[data.length -1].block_hash,
-        tx: data[data.length -1].hash
+        block: data[data.length - 1].block_hash,
+        tx: data[data.length - 1].hash
       }
       // check reward tx
       let rewardTxs = data.filter(x => x.withdrawals.length > 0);
-      if(rewardTxs.length > 0){
+      if (rewardTxs.length > 0) {
         rewardTxs.forEach(x => {
-          x.withdrawals.forEach( y => {
+          x.withdrawals.forEach(y => {
             totalClaimedReward += BigNumber(y.amount).toNumber();
           })
         })
@@ -170,6 +174,7 @@ async function getClaimedReward(delegatorAddress, memberAsset) {
   } catch (error) {
     await dbLogger(error);
     logger.error(error);
+    logHangout.write(JSON.stringify(error));
     throw error;
   }
 }
@@ -192,7 +197,7 @@ async function getRewardADA(address, validators) {
     if (response && response.data.length > 0) {
       let reward = 0;
       response.data.forEach(item => {
-        if(validators.find( x => x == item.delegation)){
+        if (validators.find(x => x == item.delegation)) {
           reward += item.rewardAccountBalance;
           isPool = true;
         }
@@ -209,6 +214,7 @@ async function getRewardADA(address, validators) {
   catch (error) {
     await dbLogger(error);
     logger.error(error);
+    logHangout.write(JSON.stringify(error));
     throw error;
   }
 }

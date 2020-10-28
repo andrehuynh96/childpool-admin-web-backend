@@ -9,6 +9,7 @@ const api = new InfinitoApi(config.infinitoApiOpts);
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const dbLogger = require('app/lib/logger/db');
+const logHangout = require("app/lib/logger/hangout");
 
 class ATOM extends GetMemberAsset {
   constructor() {
@@ -138,7 +139,6 @@ const getHistories = async (address, memberAsset) => {
 
     do {
       let response = await api.chains.getAllTransactionHistory(address, offset);
-      console.log('ATOM response getAllTransactionHistory', response)
       if (!response || !response.data || response.data.txs.length <= 0)
         return txs
       total = response.data.total_count
@@ -159,6 +159,8 @@ const getHistories = async (address, memberAsset) => {
 
     return txs
   } catch (err) {
+    logger.error(err);
+    logHangout.write(JSON.stringify(err));
     await dbLogger(err);
     logger.error(err)
     return null

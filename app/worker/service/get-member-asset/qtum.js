@@ -5,6 +5,8 @@ const config = require('app/config');
 const BigNumber = require('bignumber.js');
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const dbLogger = require('app/lib/logger/db');
+const logHangout = require("app/lib/logger/hangout");
+
 class QTUM extends GetMemberAsset {
   constructor() {
     super();
@@ -25,7 +27,7 @@ class QTUM extends GetMemberAsset {
       const validatorAddresses = await StakingPlatform.getValidatorAddresses('QTUM');
       if (result.data) {
         balance = BigNumber(result.data.balance).toNumber();
-        amount = result.data.superStaker &&  validatorAddresses.indexOf(result.data.superStaker) != -1 ? BigNumber(result.data.mature).toNumber() : 0;
+        amount = result.data.superStaker && validatorAddresses.indexOf(result.data.superStaker) != -1 ? BigNumber(result.data.mature).toNumber() : 0;
       }
 
       if (validatorAddresses.length > 0) {
@@ -73,6 +75,7 @@ class QTUM extends GetMemberAsset {
     } catch (error) {
       await dbLogger(error,address);
       logger.error(error);
+      logHangout.write(JSON.stringify(error));
       return null;
     }
   }
