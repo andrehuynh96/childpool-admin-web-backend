@@ -413,6 +413,31 @@ module.exports = {
 
             return res.status(result.httpCode).send(result.data);
           }
+          else {
+            const goldMembership = await MembershipType.findOne({
+              where: {
+                name: { [Op.iLike]: 'Gold' }
+              }
+            });
+            await Member.update({
+              membership_type_id: goldMembership.id,
+              membership_type_id_bk: member.membership_type_id
+            },
+            {
+              where: {
+                id: memberId
+              },
+              transaction: transaction
+            });
+            member.referral_code = referrerCode;
+            result = await membershipApi.updateMembershipType(member,goldMembership);
+
+            if (result.httpCode !== 200) {
+              await transaction.rollback();
+
+              return res.status(result.httpCode).send(result.data);
+            }
+          }
         }
 
         await transaction.commit();

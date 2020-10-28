@@ -273,37 +273,6 @@ module.exports = {
         transaction: transaction
       });
 
-      let isCanUpdateMembershipId = true;
-      if (member.membership_type_id) {
-        let membershipType = await MembershipType.findOne({
-          where:
-            { id: member.membership_type_id }
-        });
-
-        if (membershipType) {
-          isCanUpdateMembershipId = MembershipTypeName.Free === membershipType.type;
-        }
-      }
-
-      if (kycStatus === KycStatus.APPROVED && kyc.approve_membership_type_id && isCanUpdateMembershipId) {
-        await Member.update({
-          membership_type_id: kyc.approve_membership_type_id
-        }, {
-          where: {
-            id: member.id
-          },
-          returning: true,
-          transaction: transaction
-        });
-
-        const result = await membershipApi.updateMembershipType(member, { membership_type_id: kyc.approve_membership_type_id });
-
-        if (result.httpCode !== 200) {
-          await transaction.rollback();
-          return res.status(result.httpCode).send(result.data);
-        }
-      }
-
       // Send email to user
       let templateName = null;
       switch (kycStatus) {
