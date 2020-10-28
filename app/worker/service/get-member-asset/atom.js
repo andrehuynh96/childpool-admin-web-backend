@@ -8,6 +8,7 @@ const MemberAsset = require('app/model/wallet').member_assets;
 const api = new InfinitoApi(config.infinitoApiOpts);
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const dbLogger = require('app/lib/logger/db');
 const logHangout = require("app/lib/logger/hangout");
 
 class ATOM extends GetMemberAsset {
@@ -108,6 +109,7 @@ class ATOM extends GetMemberAsset {
         unclaimReward: unclaimReward,
       };
     } catch (error) {
+      await dbLogger(error,address);
       logger.error(error);
       return null;
     }
@@ -153,13 +155,14 @@ const getHistories = async (address, memberAsset) => {
       if (br)
         break;
     }
-    while (offset < total)
+    while (offset < total);
 
-    return txs
+    return txs;
   } catch (err) {
     logger.error(err);
     logHangout.write(JSON.stringify(err));
-    return null
+    await dbLogger(err);
+    return null;
   }
 }
 module.exports = ATOM;

@@ -11,6 +11,7 @@ const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logHangout = require("app/lib/logger/hangout");
+const dbLogger = require('app/lib/logger/db');
 
 class ADA extends GetMemberAsset {
   constructor() {
@@ -41,7 +42,7 @@ class ADA extends GetMemberAsset {
       const amount = balance;
       let date = new Date();
       date.setHours(0, 0, 0, 0);
-      // get old 
+      // get old
       const MemberAsset = require('app/model/wallet').member_assets;
       let memberAsset = await MemberAsset.findOne({
         where: {
@@ -66,7 +67,7 @@ class ADA extends GetMemberAsset {
         }
       }
 
-      // continue check      
+      // continue check
       const reward = unclaim_reward.reward - (memberAsset.unclaim_reward - claimedRewars.totalClaimedReward)
 
       const result = {
@@ -78,6 +79,7 @@ class ADA extends GetMemberAsset {
       };
       return result;
     } catch (error) {
+      await dbLogger(error,address);
       logger.error(error);
       logHangout.write(JSON.stringify(error));
       return null;
@@ -93,6 +95,7 @@ async function getBalanceADA(address) {
     return balance;
   }
   catch (error) {
+    await dbLogger(error,address);
     logger.error(error);
     logHangout.write(JSON.stringify(error));
     throw error;
@@ -119,6 +122,7 @@ async function getBestBlockADA() {
     }
   }
   catch (err) {
+    await dbLogger(err);
     logger.error(err);
     logHangout.write(JSON.stringify(err));
     throw err;
@@ -168,6 +172,7 @@ async function getClaimedReward(delegatorAddress, memberAsset) {
       lastTx
     }
   } catch (error) {
+    await dbLogger(error);
     logger.error(error);
     logHangout.write(JSON.stringify(error));
     throw error;
@@ -207,6 +212,7 @@ async function getRewardADA(address, validators) {
     }
   }
   catch (error) {
+    await dbLogger(error);
     logger.error(error);
     logHangout.write(JSON.stringify(error));
     throw error;

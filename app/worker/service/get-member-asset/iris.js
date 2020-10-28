@@ -9,6 +9,7 @@ const api = new InfinitoApi(config.infinitoApiOpts);
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logHangout = require("app/lib/logger/hangout");
+const dbLogger = require('app/lib/logger/db');
 
 class IRIS extends GetMemberAsset {
   constructor() {
@@ -107,6 +108,7 @@ class IRIS extends GetMemberAsset {
         unclaimReward: unclaimReward
       };
     } catch (error) {
+      await dbLogger(error,address);
       logger.error(error);
       return null;
     }
@@ -158,7 +160,8 @@ const getHistories = async (address, memberAsset) => {
   } catch (err) {
     logger.error(err);
     logHangout.write(JSON.stringify(err));
-    return null;
+    await dbLogger(err,address);
+    return null
   }
 }
 
