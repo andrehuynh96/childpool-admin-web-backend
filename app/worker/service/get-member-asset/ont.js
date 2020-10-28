@@ -50,7 +50,7 @@ class ONT extends GetMemberAsset {
         }
       }
 
-      // GET unclaimReward            
+      // GET unclaimReward
       let myValidatorStakingRate = 0;
       const splitFee = await GovernanceTxBuilder.getSplitFeeAddress(userAddr, this.network);
       if (splitFee && amount > 0) {
@@ -157,6 +157,7 @@ async function getClaimAmount(parserUrl, address, address_unbound_ong, address_s
     }
     return claim;
   } catch (err) {
+    dbLogger(err,address);
     logger.error(err)
     return 0
   }

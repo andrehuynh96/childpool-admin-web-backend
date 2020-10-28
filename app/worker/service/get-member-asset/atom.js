@@ -155,15 +155,14 @@ const getHistories = async (address, memberAsset) => {
       if (br)
         break;
     }
-    while (offset < total)
+    while (offset < total);
 
-    return txs
+    return txs;
   } catch (err) {
     logger.error(err);
     logHangout.write(JSON.stringify(err));
     await dbLogger(err);
-    logger.error(err)
-    return null
+    return null;
   }
 }
 module.exports = ATOM;

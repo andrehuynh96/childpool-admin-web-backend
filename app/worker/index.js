@@ -13,7 +13,7 @@ module.exports = {
     CheckAdaPoolSizeSchedule.run();
     CheckExchangeStatusSchedule.run();
     GetMemberAssetSchedule.run();
-    // SyncCurrencyWithChangelly.run();
+    SyncCurrencyWithChangelly.run();
   }
 };
 
