@@ -9,5 +9,6 @@ module.exports = {
     cron.schedule(config.schedule.checkTransactionReward, async () => {
       await runWithLockFile(UpdateAffiliateJob, UPDATE_AFFILIATE_LOCK_FILE, "update affiliate");
     });
-  }
+  },
+  lockFile: () => UPDATE_AFFILIATE_LOCK_FILE
 }

@@ -7,7 +7,8 @@ const GET_MEMBER_ASSET_LOCK_FILE = 'get_member_asset.lock';
 module.exports = {
   run: () => {
     cron.schedule(config.schedule.getMemberAsset, async () => {
-      await runWithLockFile(getMemberAsset, GET_MEMBER_ASSET_LOCK_FILE, "get member asset");
+      await runWithLockFile(getMemberAsset, GET_MEMBER_ASSET_LOCK_FILE, "get member asset", true);
     });
-  }
+  },
+  lockFile: () => GET_MEMBER_ASSET_LOCK_FILE
 };
