@@ -9,5 +9,6 @@ module.exports = {
     cron.schedule(config.schedule.syncCurrencyWithChangelly, async () => {
       await runWithLockFile(syncCurrencyWithChangellyJob, SYNC_CURRENCY_WITH_CHANGELLY_LOCK_FILE, "sync currency with changelly");
     });
-  }
+  },
+  lockFile: () => SYNC_CURRENCY_WITH_CHANGELLY_LOCK_FILE
 };
