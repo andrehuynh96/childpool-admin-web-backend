@@ -977,5 +977,12 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
   },
-
+  // Member login
+  "VIEW_MEMBER_LOGIN": {
+    "KEY": "VIEW_MEMBER_LOGIN",
+    "DESCRIPTION": "Tracking member login",
+    "GROUP_NAME": "Member Login",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-29T00:00:00.000Z"
+  },
 };
