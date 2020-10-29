@@ -95,7 +95,7 @@ module.exports = {
       ] : [];
 
       let order = [];
-      const order_by  = query.order_by ;
+      const order_by = query.order_by;
       if (order_by) {
         for (let sort of order_by.split(',')) {
           if (sort.includes('-')) {
@@ -203,10 +203,10 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
 
-      if (member.deleted_flg){
+      if (member.deleted_flg) {
         member.status = MemberOrderStatusFillter.Deactivated;
       }
-      else if ( member.member_sts === MemberStatus.UNACTIVATED) {
+      else if (member.member_sts === MemberStatus.UNACTIVATED) {
         member.status = MemberOrderStatusFillter.Unactivated;
       }
       else if (membershipOrder && membershipOrder.status == 'Approved') {
@@ -413,21 +413,20 @@ module.exports = {
 
             return res.status(result.httpCode).send(result.data);
           }
-          else {
-            const goldMembership = await MembershipType.findOne({
-              where: {
-                name: { [Op.iLike]: 'Gold' }
-              }
-            });
-            const silverMembership = await MembershipType.findOne({
-              where: {
-                name: { [Op.iLike]: 'Silver' }
-              }
-            });
-            await Member.update({
-              membership_type_id: goldMembership.id,
-              membership_type_id_bk: member.membership_type_id
-            },
+          const goldMembership = await MembershipType.findOne({
+            where: {
+              name: 'Gold'
+            }
+          });
+          const silverMembership = await MembershipType.findOne({
+            where: {
+              name: 'Gold'
+            }
+          });
+          await Member.update({
+            membership_type_id: goldMembership.id,
+            membership_type_id_bk: member.membership_type_id
+          },
             {
               where: {
                 id: memberId,
@@ -435,14 +434,13 @@ module.exports = {
               },
               transaction: transaction
             });
-            member.referral_code = referrerCode;
-            result = await membershipApi.updateMembershipType(member,goldMembership);
+          member.referral_code = referrerCode;
+          result = await membershipApi.updateMembershipType(member, goldMembership);
 
-            if (result.httpCode !== 200) {
-              await transaction.rollback();
+          if (result.httpCode !== 200) {
+            await transaction.rollback();
 
-              return res.status(result.httpCode).send(result.data);
-            }
+            return res.status(result.httpCode).send(result.data);
           }
         }
 
@@ -678,7 +676,7 @@ module.exports = {
       ] : [];
 
       let order = [];
-      const order_by  = query.orderBy ;
+      const order_by = query.orderBy;
       if (order_by) {
         for (let sort of order_by.split(',')) {
           if (sort.includes('-')) {
