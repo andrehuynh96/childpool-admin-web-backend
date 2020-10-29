@@ -420,12 +420,11 @@ module.exports = {
           });
           const silverMembership = await MembershipType.findOne({
             where: {
-              name: 'Gold'
+              name: 'Silver'
             }
           });
           await Member.update({
-            membership_type_id: goldMembership.id,
-            membership_type_id_bk: member.membership_type_id
+            membership_type_id: goldMembership.id
           },
             {
               where: {

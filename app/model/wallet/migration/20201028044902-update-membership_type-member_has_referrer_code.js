@@ -14,6 +14,7 @@ module.exports = {
             const updateSQL = `UPDATE members
             SET (membership_type_id,membership_type_id_bk2)=((SELECT id FROM membership_types WHERE name='Gold'),membership_type_id)
             WHERE membership_type_id=(SELECT id FROM membership_types WHERE name='Silver')
+                AND referrer_code IS NOT NULL
                 AND kyc_id='2'`;
             await queryInterface.sequelize.query(updateSQL, {}, {});
           })
