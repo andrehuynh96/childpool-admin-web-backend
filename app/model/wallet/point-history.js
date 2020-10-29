@@ -36,37 +36,50 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: SystemType.MEMBERSHIP
     },
+    object_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+    },
     tx_id: {
       type: DataTypes.STRING(256),
       allowNull: true,
+    },
+    platform: {
+      type: DataTypes.STRING(32),
+      allowNull: true,
+    },
+    source_amount: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: 0
     },
     description: {
       type: DataTypes.TEXT('medium'),
       allowNull: true,
     },
   }, {
-      underscored: true,
-      timestamps: true,
-      indexes: [
-        {
-          name: 'point_historis_amount_01',
-          fields: [
-            {
-              attribute: 'created_at',
-              order: 'DESC',
-            },
-            {
-              attribute: 'member_id',
-              order: 'DESC',
-            },
-            {
-              attribute: 'currency_symbol',
-              order: 'ASC',
-            },
-            'amount']
-        },
-      ],
-    });
+    underscored: true,
+    timestamps: true,
+    indexes: [
+      {
+        name: 'point_historis_amount_01',
+        fields: [
+          {
+            attribute: 'created_at',
+            order: 'DESC',
+          },
+          {
+            attribute: 'member_id',
+            order: 'DESC',
+          },
+          {
+            attribute: 'currency_symbol',
+            order: 'ASC',
+          },
+          'amount']
+      },
+    ],
+  });
 
   Model.associate = (models) => {
     Model.belongsTo(models.members, {
