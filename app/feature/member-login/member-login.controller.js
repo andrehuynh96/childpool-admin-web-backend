@@ -77,7 +77,6 @@ module.exports = {
         items: resultOfMonth
       };
 
-      const allMemberLoginWeek = [];
       const dayOfStartWeek = moment(startWeek).format('YYYY-MM-DD');
       const dayOfWeek = [];
       uniqDayOfMonth.forEach(item => {
