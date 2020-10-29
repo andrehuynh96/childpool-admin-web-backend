@@ -419,13 +419,19 @@ module.exports = {
                 name: { [Op.iLike]: 'Gold' }
               }
             });
+            const silverMembership = await MembershipType.findOne({
+              where: {
+                name: { [Op.iLike]: 'Silver' }
+              }
+            });
             await Member.update({
               membership_type_id: goldMembership.id,
               membership_type_id_bk: member.membership_type_id
             },
             {
               where: {
-                id: memberId
+                id: memberId,
+                membership_type_id: silverMembership.id
               },
               transaction: transaction
             });
