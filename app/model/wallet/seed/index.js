@@ -3,7 +3,7 @@ const config = require("app/config");
 (async () => {
   try {
     await Promise.all([
-      // require("./permission")(),
+      require("./permission")(),
       require("./email-template")(),
       require("./member-setting")(),
     ]);
