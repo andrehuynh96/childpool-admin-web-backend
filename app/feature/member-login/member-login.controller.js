@@ -52,7 +52,10 @@ module.exports = {
       const totalWeek = loginsWeek.length;
       const totalDay = loginsDay.length;
 
-      const allMemberLoginMonth = await MemberActivityLog.count({
+      const allMemberLoginMonth = await MemberActivityLog.findAll({
+        attributes: [
+          [Sequelize.fn('date_trunc', 'day', Sequelize.col('created_at')), 'day'],
+          [Sequelize.literal(`COUNT('member_id')`), 'count']],
         where: {
           created_at: {
             [Op.gte]: startMonth,
@@ -60,38 +63,39 @@ module.exports = {
           },
           action: ActionType.LOGIN
         },
-        group: ['created_at']
+        group: ['day'],
+        raw: true
       });
-
-      allMemberLoginMonth.forEach(item => {
-        item.created_at = moment(item.created_at).format('YYYY-MM-DD');
-      });
-
-      const dayOfMonth = allMemberLoginMonth.map(item => item.created_at);
-      const uniqDayOfMonth = _.uniq(dayOfMonth).sort();
-
-      const resultOfMonth = countLoginEachTimes(allMemberLoginMonth,uniqDayOfMonth);
 
       const month = {
         totalMonth: totalMonth,
-        items: resultOfMonth
+        items: allMemberLoginMonth
       };
 
-      const dayOfStartWeek = moment(startWeek).format('YYYY-MM-DD');
-      const dayOfWeek = [];
-      uniqDayOfMonth.forEach(item => {
-        if (item >= dayOfStartWeek) {
-          dayOfWeek.push(item);
-        }
+      const allMemberLoginWeek = await MemberActivityLog.findAll({
+        attributes: [
+          [Sequelize.fn('date_trunc', 'day', Sequelize.col('created_at')), 'day'],
+          [Sequelize.literal(`COUNT('member_id')`), 'count']],
+        where: {
+          created_at: {
+            [Op.gte]: startWeek,
+            [Op.lt]: endMonth
+          },
+          action: ActionType.LOGIN
+        },
+        group: ['day'],
+        raw: true
       });
 
-      const resultOfWeek = countLoginEachTimes(allMemberLoginMonth,dayOfWeek);
       const week = {
-        totalWeek: totalWeek,
-        resultOfWeek: resultOfWeek
+        totalMonth: totalMonth,
+        items: allMemberLoginWeek
       };
 
-      const allMemberLoginDay = await MemberActivityLog.count({
+      const allMemberLoginDay = await MemberActivityLog.findAll({
+        attributes: [
+          [Sequelize.fn('date_trunc', 'hour', Sequelize.col('created_at')), 'hour'],
+          [Sequelize.literal(`COUNT('member_id')`), 'count']],
         where: {
           created_at: {
             [Op.gte]: startDay,
@@ -99,21 +103,14 @@ module.exports = {
           },
           action: ActionType.LOGIN
         },
-        group: ['created_at']
+        group: ['hour'],
+        raw: true
       });
-
-      allMemberLoginDay.forEach(item => {
-        item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:00');
-      });
-      const hourOfDay = allMemberLoginDay.map(item => item.created_at);
-      const uniqHourOfDay = _.uniq(hourOfDay).sort();
-
-      const resultOfDay = countLoginEachTimes(allMemberLoginDay,uniqHourOfDay);
-
       const day = {
         totalDay: totalDay,
-        items: resultOfDay
+        items: allMemberLoginDay
       };
+
 
       return res.ok({
         month: month,
@@ -127,15 +124,3 @@ module.exports = {
   }
 };
 
-function countLoginEachTimes(allLogin,times) {
-  const result = {};
-  times.forEach(item => {
-    result[item] = 0;
-    allLogin.forEach(x => {
-      if (x.created_at === item) {
-        result[item] += parseInt(x.count);
-      }
-    });
-  });
-  return result;
-}
