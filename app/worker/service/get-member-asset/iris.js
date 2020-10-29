@@ -8,6 +8,9 @@ const MemberAsset = require('app/model/wallet').member_assets;
 const api = new InfinitoApi(config.infinitoApiOpts);
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const logHangout = require("app/lib/logger/hangout");
+const dbLogger = require('app/lib/logger/db');
+
 class IRIS extends GetMemberAsset {
   constructor() {
     super();
@@ -105,6 +108,7 @@ class IRIS extends GetMemberAsset {
         unclaimReward: unclaimReward
       };
     } catch (error) {
+      await dbLogger(error,address);
       logger.error(error);
       return null;
     }
@@ -127,10 +131,10 @@ const getHistories = async (address, memberAsset) => {
 
     api.extendMethod("chains", params, api);
 
-    let offset = 0
-    let limit = 50
-    let total = 0
-    let txs = []
+    let offset = 0;
+    let limit = 50;
+    let total = 0;
+    let txs = [];
 
     do {
       let response = await api.chains.getAllTransactionHistory(address, offset);
@@ -152,9 +156,11 @@ const getHistories = async (address, memberAsset) => {
     }
     while (offset < total)
 
-    return txs
+    return txs;
   } catch (err) {
-    logger.error(err)
+    logger.error(err);
+    logHangout.write(JSON.stringify(err));
+    await dbLogger(err,address);
     return null
   }
 }

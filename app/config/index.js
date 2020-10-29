@@ -214,7 +214,8 @@ const config = {
   },
   webWallet: {
     apiUrl: process.env.WEB_WALLET_API_URL || "https://dev-staking-wallet-web.chainservices.info",
-  }
+  },
+  hangoutAlertChannel: process.env.HANGOUT_ALERT_CHANEL || ""
 };
 
 module.exports = config;

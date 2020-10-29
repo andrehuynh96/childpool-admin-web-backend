@@ -4,10 +4,12 @@ const WalletPrivKeys = require('app/model/wallet').wallet_priv_keys;
 const MemberAsset = require('app/model/wallet').member_assets;
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
+const dbLogger = require('app/lib/logger/db');
 
 module.exports = {
   execute: async () => {
     let transaction;
+    let logAddress;
     try {
       const StakingPlatforms = config.stakingPlatform.split(',');
       const day = Math.floor(Date.now() / 86400000);
@@ -28,6 +30,7 @@ module.exports = {
           let items = walletPrivKeys.filter(e => e.platform.toUpperCase().trim() == platform.toUpperCase().trim());
           transaction = await database.transaction();
           for (let item of items) {
+            logAddress = item.address;
             logger.info('Waiting for',item.platform,'response');
             let data = await service.get(item.address);
             logger.info(item.platform,data);
@@ -37,7 +40,7 @@ module.exports = {
                   platform: item.platform,
                   address: item.address
                 },
-                order: [['created_at', 'DESC']]    
+                order: [['created_at', 'DESC']]
               })
               if (memberAsset) {
                 let number = day - Math.floor(Date.parse(memberAsset.createdAt)/86400000);
@@ -50,7 +53,7 @@ module.exports = {
                       address: item.address,
                       balance: memberAsset.balance,  // balance of account
                       amount: memberAsset.amount,  // balance of staking
-                      reward: 0,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
+                      reward: 0,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
                       unclaim_reward: 0,// current unclaim reward
                       missed_daily: true,
                       createdAt: date
@@ -61,26 +64,26 @@ module.exports = {
                     address: item.address,
                     balance: data.balance,  // balance of account
                     amount: data.amount,  // balance of staking
-                    reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
-                    unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                    reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
+                    unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward
                     tracking: data.opts
-                  }) 
+                  })
                 } else if (number == 1) {
                   insertItems.push ({
                     platform: item.platform,
                     address: item.address,
                     balance: data.balance,  // balance of account
                     amount: data.amount,  // balance of staking
-                    reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
-                    unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                    reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
+                    unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward
                     tracking: data.opts
                   })
                 } else if (number == 0) {
                   await MemberAsset.update({
                     balance: data.balance,  // balance of account
                     amount: data.amount,  // balance of staking
-                    reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
-                    unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                    reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
+                    unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward
                     tracking: data.opts
                   },{
                     where: {
@@ -95,8 +98,8 @@ module.exports = {
                   address: item.address,
                   balance: data.balance,  // balance of account
                   amount: data.amount,  // balance of staking
-                  reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward  
-                  unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward 
+                  reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
+                  unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward
                   tracking: data.opts
                 })
               }
@@ -111,6 +114,7 @@ module.exports = {
       return true;
     }
     catch (err) {
+      await dbLogger(err,logAddress);
       logger.error("get balance and amount job error:", err);
       if (transaction)
         await transaction.rollback();
