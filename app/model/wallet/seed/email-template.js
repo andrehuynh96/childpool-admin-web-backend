@@ -126,6 +126,33 @@ module.exports = async () => {
       option_name: 'Poor image quality',
       display_order: 2,
     },
+    {
+      name: EmailTemplateTypes.MS_POINT_NOTIFICATION_ADD_POINT_STAKING,
+      display_name: null,
+      locale: DEFAULT_LOCALE,
+      subject: "Bonus Point Staking",
+      template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './point-notification/staking.ejs'), 'utf-8'),
+      group_name: EmailTemplateGroupNames.POINT_NOTIFICATION,
+      display_order: 2,
+    },
+    {
+      name: EmailTemplateTypes.MS_POINT_NOTIFICATION_ADD_POINT_EXCHANGE,
+      display_name: null,
+      locale: DEFAULT_LOCALE,
+      subject: "Bonus Point Exchange",
+      template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './point-notification/exchange.ejs'), 'utf-8'),
+      group_name: EmailTemplateGroupNames.POINT_NOTIFICATION,
+      display_order: 2,
+    },
+    {
+      name: EmailTemplateTypes.MS_POINT_NOTIFICATION_ADD_POINT_UPGRADE_MEMBERSHIP,
+      display_name: null,
+      locale: DEFAULT_LOCALE,
+      subject: "Bonus Point Upgrade Membership",
+      template: fs.readFileSync(path.join(EMAIL_TEMPLATE_PATH, './point-notification/upgrade-membership.ejs'), 'utf-8'),
+      group_name: EmailTemplateGroupNames.POINT_NOTIFICATION,
+      display_order: 2,
+    },
   ];
 
   await forEach(WEB_WALLET_EMAIL_NAMES, async (name) => {
