@@ -10,10 +10,10 @@ module.exports = {
   get: async (req, res, next) => {
     try {
       const endMonth = moment.utc().endOf('day');
-      const startMonth = moment(endMonth).subtract(29,'day').startOf('day');
-      const startWeek = moment(endMonth).subtract(6,'day').startOf('day');
+      const startMonth = moment(endMonth).subtract(30,'day').startOf('day');
+      const startWeek = moment(endMonth).subtract(7,'day').startOf('day');
       const startDay = moment(endMonth).subtract(24,'hour');
-      const startThreeMonth = moment(endMonth).subtract(89,'day').startOf('day');
+      const startThreeMonth = moment(endMonth).subtract(90,'day').startOf('day');
 
       const loginsMonth = await MemberActivityLog.findAll({
         attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('member_id')), 'member_id']],
