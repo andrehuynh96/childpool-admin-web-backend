@@ -179,6 +179,32 @@ module.exports = {
       next();
     }
   },
+  updateModeSettings: async (req, res, next) => {
+    let transaction;
+    try {
+      transaction = await database.transaction();
+      const { ms_point_mode } = req.body;
+      await Setting.update({
+        value: ms_point_mode
+      }, {
+        where: {
+          key: 'MS_POINT_MODE'
+        },
+        returning: true,
+        transaction: transaction
+      });
+      await transaction.commit();
+
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        transaction.rollback();
+      }
+      logger.info('update ms point settings fail', error);
+      next();
+    }
+  },
   updateClaimingSettings: async (req, res, next) => {
     let transaction;
     try {
