@@ -9,11 +9,40 @@ const Op = Sequelize.Op;
 module.exports = {
   get: async (req, res, next) => {
     try {
-      const endMonth = moment.utc().endOf('day');
-      const startMonth = moment(endMonth).subtract(30,'day').startOf('day');
-      const startWeek = moment(endMonth).subtract(7,'day').startOf('day');
-      const startDay = moment(endMonth).subtract(24,'hour');
-      const startThreeMonth = moment(endMonth).subtract(90,'day').startOf('day');
+      const today = moment.utc();
+      const startDay = today.clone().subtract(24,'hour').startOf('hour');
+      const endDay = today.clone().startOf('hour');
+
+      const startWeek = today.clone().subtract(7,'day').startOf('day');
+      const endWeek = today.clone();
+
+      const startMonth = today.clone().subtract(30,'day').startOf('day');
+      const endMonth = today.clone();
+
+      const startThreeMonth = today.clone().subtract(90,'day').startOf('day');
+      const endThreeMonth = today.clone();
+
+      const loginsDay = await MemberActivityLog.findAll({
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('member_id')), 'member_id']],
+        where: {
+          created_at: {
+            [Op.gte]: startDay,
+            [Op.lt]: endDay
+          },
+          action: ActionType.LOGIN
+        },
+      });
+
+      const loginsWeek = await MemberActivityLog.findAll({
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('member_id')), 'member_id']],
+        where: {
+          created_at: {
+            [Op.gte]: startWeek,
+            [Op.lt]: endWeek
+          },
+          action: ActionType.LOGIN
+        },
+      });
 
       const loginsMonth = await MemberActivityLog.findAll({
         attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('member_id')), 'member_id']],
@@ -26,38 +55,17 @@ module.exports = {
         },
       });
 
-      const loginsWeek = await MemberActivityLog.findAll({
-        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('member_id')), 'member_id']],
-        where: {
-          created_at: {
-            [Op.gte]: startWeek,
-            [Op.lt]: endMonth
-          },
-          action: ActionType.LOGIN
-        },
-      });
-
-      const loginsDay = await MemberActivityLog.findAll({
-        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('member_id')), 'member_id']],
-        where: {
-          created_at: {
-            [Op.gte]: startDay,
-            [Op.lt]: endMonth
-          },
-          action: ActionType.LOGIN
-        },
-      });
-
       const logins90Day = await MemberActivityLog.findAll({
         attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('member_id')), 'member_id']],
         where: {
           created_at: {
             [Op.gte]: startThreeMonth,
-            [Op.lt]: endMonth
+            [Op.lt]: today
           },
           action: ActionType.LOGIN
         },
       });
+
       const totalThreeMonth = logins90Day.length;
       const totalMonth = loginsMonth.length;
       const totalWeek = loginsWeek.length;
