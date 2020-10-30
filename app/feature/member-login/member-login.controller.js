@@ -10,9 +10,10 @@ module.exports = {
   get: async (req, res, next) => {
     try {
       const endMonth = moment.utc().endOf('day');
-      const startMonth = moment(endMonth).subtract(29,'day').startOf('day');
-      const startWeek = moment(endMonth).subtract(6,'day').startOf('day');
+      const startMonth = moment(endMonth).subtract(30,'day').startOf('day');
+      const startWeek = moment(endMonth).subtract(7,'day').startOf('day');
       const startDay = moment(endMonth).subtract(24,'hour');
+      const startThreeMonth = moment(endMonth).subtract(90,'day').startOf('day');
 
       const loginsMonth = await MemberActivityLog.findAll({
         attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('member_id')), 'member_id']],
@@ -47,6 +48,17 @@ module.exports = {
         },
       });
 
+      const logins90Day = await MemberActivityLog.findAll({
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('member_id')), 'member_id']],
+        where: {
+          created_at: {
+            [Op.gte]: startThreeMonth,
+            [Op.lt]: endMonth
+          },
+          action: ActionType.LOGIN
+        },
+      });
+      const totalThreeMonth = logins90Day.length;
       const totalMonth = loginsMonth.length;
       const totalWeek = loginsWeek.length;
       const totalDay = loginsDay.length;
@@ -54,6 +66,7 @@ module.exports = {
 
 
       return res.ok({
+        three_month: totalThreeMonth,
         month: totalMonth,
         week: totalWeek,
         day: totalDay
