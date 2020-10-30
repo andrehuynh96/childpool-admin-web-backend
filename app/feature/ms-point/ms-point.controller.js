@@ -119,16 +119,16 @@ module.exports = {
     try {
       const phases = [
         {
-          label: 'phase_1',
-          value: 'Phase 1'
+          value: 'phase_1',
+          label: 'Phase 1'
         },
         {
-          label: 'phase_3',
-          value: 'Phase 3'
+          value: 'phase_3',
+          label: 'Phase 3'
         },
         {
-          label: 'phase_4',
-          value: 'Phase 4'
+          value: 'phase_4',
+          label: 'Phase 4'
         },
       ];
 
