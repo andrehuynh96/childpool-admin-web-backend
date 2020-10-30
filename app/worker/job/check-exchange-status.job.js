@@ -7,6 +7,9 @@ const Member = require('app/model/wallet').members;
 const Setting = require('app/model/wallet').settings;
 const PointHistory = require('app/model/wallet').point_histories;
 const MembershipType = require('app/model/wallet').membership_types;
+const EmailTemplate = require('app/model/wallet').email_templates;
+const NotificationService = require('app/lib/notification');
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
 const PointStatus = require("app/model/wallet/value-object/point-status");
 const PointAction = require("app/model/wallet/value-object/point-action");
 const database = require('app/lib/database').db().wallet;
@@ -72,7 +75,7 @@ module.exports = {
           await _addPointToUser({
             member_id: response.member_id,
             object_id: response.id,
-            amount_usd: response.estimate_amount_usd || 0
+            amount_usd: response.estimate_amount_usd ? parseFloat(response.estimate_amount_usd) : 0
           });
         }
         await sleep(1000);
@@ -182,15 +185,16 @@ async function _addPointToUser({ member_id, object_id, amount_usd }) {
             "MS_POINT_EXCHANGE_MININUM_VALUE_IN_USDT"
           ]
         }
-      }
+      },
+      raw: true
     });
 
-    let enable = setting.findOne(x => x.key == "MS_POINT_EXCHANGE_IS_ENABLED");
+    let enable = setting.find(x => x.key == "MS_POINT_EXCHANGE_IS_ENABLED");
     if (!enable || Boolean(enable.value) == false) {
       return;
     }
 
-    let minimun = setting.findOne(x => x.key == "MS_POINT_EXCHANGE_MININUM_VALUE_IN_USDT");
+    let minimun = setting.find(x => x.key == "MS_POINT_EXCHANGE_MININUM_VALUE_IN_USDT");
     if (!minimun) {
       return;
     }
@@ -199,7 +203,7 @@ async function _addPointToUser({ member_id, object_id, amount_usd }) {
       return;
     }
 
-    let exchangeTransaction = await exchangeTransaction.findOne({
+    let exchangeTransaction = await ExchangeTransaction.findOne({
       where: {
         id: object_id
       }
@@ -230,9 +234,9 @@ async function _addPointToUser({ member_id, object_id, amount_usd }) {
 
     _sendNotification({
       member_id: member_id,
-      amount: exchangeTransaction.amount_expected_from,
+      point: membershipType.exchange_points,
       platform: exchangeTransaction.from_currency,
-      point: membershipType.exchange_points
+      amount: exchangeTransaction.amount_expected_from
     });
 
     return;
@@ -247,9 +251,51 @@ async function _addPointToUser({ member_id, object_id, amount_usd }) {
 
 async function _sendNotification({ member_id, point, platform, amount }) {
   try {
+    let member = await Member.findOne({
+      where: {
+        id: member_id
+      }
+    });
 
+    let data = {
+      sent_all_flg: false,
+      actived_flg: true,
+      deleted_flg: false
+    };
+    let templates = await _findEmailTemplate(EmailTemplateType.MS_POINT_NOTIFICATION_ADD_POINT_EXCHANGE);
+
+    for (let t of templates) {
+      let content = NotificationService.buildNotificationContent(t.template, {
+        firstName: member.first_name,
+        lastName: member.last_name,
+        point: point,
+        point_unit: 'MS_POINT',
+        amount: amount,
+        platform: platform
+      });
+      if (t.language.toLowerCase() == 'ja') {
+        data.title_ja = t.subject;
+        data.content_ja = content;
+      }
+      else {
+        data.title = t.subject;
+        data.content = content;
+      }
+    }
+
+    await NotificationService.createNotificationMember(data, member_id);
   }
   catch (err) {
     logger.error(`point tracking _sendNotification::`, err);
   }
 }
+
+async function _findEmailTemplate(templateName) {
+  let templates = await EmailTemplate.findAll({
+    where: {
+      name: templateName
+    }
+  });
+
+  return templates;
+} 
