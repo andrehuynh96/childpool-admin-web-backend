@@ -1,6 +1,5 @@
 const { Temporalize } = require('sequelize-temporalize');
 const Status = require("./value-object/fiat-transaction-status");
-const Provider = require("./value-object/fiat-provider");
 
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define("fiat_transactions", {
@@ -114,8 +113,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     provider: {
       type: DataTypes.STRING(16),
-      allowNull: false,
-      defaultValue: Provider.SENDWYRE
+      allowNull: false
     },
     message: {
       type: DataTypes.TEXT('long'),
@@ -153,4 +151,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return Model;
-}
+} 

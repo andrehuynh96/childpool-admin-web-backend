@@ -30,6 +30,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL,
       allowNull: true
     },
+    estimate_amount_usd: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: 0
+    },
     request_extra_id: {
       type: DataTypes.TEXT('medium'),
       allowNull: true
@@ -146,9 +151,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   Temporalize({
     model: Model,

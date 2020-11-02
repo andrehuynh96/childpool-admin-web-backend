@@ -261,50 +261,26 @@ module.exports = {
     }
   },
   delete: async (req, res, next) => {
-    let transaction;
-
     try {
       const { params, user } = req;
-      let question = await Question.findOne({
+      const [numOfItems, items] = await Question.update({
+        deleted_flg: true,
+        updated_by: user.id,
+      }, {
         where: {
           id: params.questionId,
           deleted_flg: false,
-        }
+        },
       });
 
-      if (!question) {
-        return res.notFound(res.__("QUESTION_NOT_FOUND"), "QUESTION_NOT_FOUND", { fields: ['id'] });
+      if (!numOfItems) {
+        return res.notFound(res.__("QUESTION_NOT_FOUND"), "QUESTION_NOT_FOUND");
       }
-
-      // transaction = await database.transaction();
-      // await QuestionDetails.update({
-      //   deleted_flg: true,
-      //   updated_by: user.id,
-      // }, {
-      //   where: {
-      //     question_id: question.id,
-      //   },
-      //   transaction: transaction,
-      // });
-      // await Question.update({
-      //   deleted_flg: true,
-      //   updated_by: user.id,
-      // }, {
-      //   where: {
-      //     id: question.id,
-      //   },
-      //   transaction: transaction,
-      // });
-      // await transaction.commit();
 
       return res.ok(true);
     }
     catch (error) {
       logger.error('Delete question fail', error);
-      if (transaction) {
-        await transaction.rollback();
-      }
-
       next(error);
     }
   },

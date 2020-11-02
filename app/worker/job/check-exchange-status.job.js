@@ -3,6 +3,16 @@ const ExchangeTransactionStatus = require("app/model/wallet/value-object/exchang
 const ExchangeTransactionProvider = require("app/model/wallet/value-object/exchange-provider");
 const ExchangeFactory = require('app/service/exchange/factory');
 const ExchangeProvider = require('app/service/exchange/provider');
+const Member = require('app/model/wallet').members;
+const Setting = require('app/model/wallet').settings;
+const PointHistory = require('app/model/wallet').point_histories;
+const MembershipType = require('app/model/wallet').membership_types;
+const EmailTemplate = require('app/model/wallet').email_templates;
+const NotificationService = require('app/lib/notification');
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
+const PointStatus = require("app/model/wallet/value-object/point-status");
+const PointAction = require("app/model/wallet/value-object/point-action");
+const database = require('app/lib/database').db().wallet;
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logger = require("app/lib/logger");
@@ -14,7 +24,6 @@ const mappingProvider = {
 module.exports = {
   execute: async () => {
     try {
-
       let transactions = await ExchangeTransaction.findAll({
         where: {
           status: {
@@ -41,13 +50,15 @@ module.exports = {
           continue;
         }
 
-        await ExchangeTransaction.update({
+        let [_, response] = await ExchangeTransaction.update({
           status: tStatusResult.result.toUpperCase()
         }, {
-            where: {
-              id: t.id
-            },
-          });
+          where: {
+            id: t.id
+          },
+          returning: true,
+          plain: true
+        });
 
         if (tStatusResult.result.toUpperCase() == ExchangeTransactionStatus.FINISHED ||
           tStatusResult.result.toUpperCase() == ExchangeTransactionStatus.FAILED ||
@@ -59,6 +70,14 @@ module.exports = {
             payin_address: t.payin_address,
             transaction_id: t.transaction_id,
           })
+
+        if (tStatusResult.result.toUpperCase() == ExchangeTransactionStatus.FINISHED) {
+          await _addPointToUser({
+            member_id: response.member_id,
+            object_id: response.id,
+            amount_usd: response.estimate_amount_usd ? parseFloat(response.estimate_amount_usd) : 0
+          });
+        }
         await sleep(1000);
       }
     }
@@ -100,10 +119,10 @@ async function _syncTransaction({ service, platform, payin_address, extra_id, tr
           amount_from: item.amount_from ? parseFloat(item.amount_from) : 0,
           provider_fee: item.changelly_fee ? parseFloat(item.changelly_fee) : 0
         }, {
-            where: {
-              transaction_id: transaction_id
-            },
-          });
+          where: {
+            transaction_id: transaction_id
+          },
+        });
       }
 
       if (item || result.result.length < limit) {
@@ -121,3 +140,162 @@ async function _syncTransaction({ service, platform, payin_address, extra_id, tr
     logger.error(err);
   }
 }
+
+async function _addPointToUser({ member_id, object_id, amount_usd }) {
+  let transaction;
+  try {
+    let member = await Member.findOne({
+      where: {
+        id: member_id
+      }
+    });
+    if (!member || !member.membership_type_id) {
+      return;
+    }
+
+    let membershipType = await MembershipType.findOne({
+      where: {
+        id: member.membership_type_id,
+        deleted_flg: false
+      }
+    });
+    if (!membershipType) {
+      return;
+    }
+
+    let history = await PointHistory.findOne({
+      where: {
+        member_id: member_id,
+        action: PointAction.EXCHANGE,
+        object_id: object_id,
+        status: {
+          [Op.ne]: PointStatus.CANCELED
+        }
+      }
+    });
+    if (history) {
+      return;
+    }
+
+    let setting = await Setting.findAll({
+      where: {
+        key: {
+          [Op.in]: [
+            "MS_POINT_EXCHANGE_IS_ENABLED",
+            "MS_POINT_EXCHANGE_MININUM_VALUE_IN_USDT"
+          ]
+        }
+      },
+      raw: true
+    });
+
+    let enable = setting.find(x => x.key == "MS_POINT_EXCHANGE_IS_ENABLED");
+    if (!enable || Boolean(enable.value) == false) {
+      return;
+    }
+
+    let minimun = setting.find(x => x.key == "MS_POINT_EXCHANGE_MININUM_VALUE_IN_USDT");
+    if (!minimun) {
+      return;
+    }
+    minimun = parseFloat(minimun.value);
+    if (amount_usd < minimun) {
+      return;
+    }
+
+    let exchangeTransaction = await ExchangeTransaction.findOne({
+      where: {
+        id: object_id
+      }
+    })
+
+    transaction = await database.transaction();
+    await PointHistory.create({
+      member_id: member_id,
+      amount: membershipType.exchange_points || 0,
+      currency_symbol: "MS_POINT",
+      status: PointStatus.APPROVED,
+      action: PointAction.EXCHANGE,
+      platform: exchangeTransaction.from_currency,
+      source_amount: exchangeTransaction.amount_expected_from,
+      tx_id: exchangeTransaction.tx_id,
+      object_id: object_id
+    }, transaction);
+
+    await Member.increment({
+      points: parseInt(membershipType.exchange_points || 0)
+    }, {
+      where: {
+        id: member_id
+      },
+      transaction
+    })
+    transaction.commit();
+
+    _sendNotification({
+      member_id: member_id,
+      point: membershipType.exchange_points,
+      platform: exchangeTransaction.from_currency,
+      amount: exchangeTransaction.amount_expected_from
+    });
+
+    return;
+  }
+  catch (err) {
+    logger.error('_addPointToUser::', err);
+    if (transaction) {
+      transaction.rollback();
+    }
+  }
+}
+
+async function _sendNotification({ member_id, point, platform, amount }) {
+  try {
+    let member = await Member.findOne({
+      where: {
+        id: member_id
+      }
+    });
+
+    let data = {
+      sent_all_flg: false,
+      actived_flg: true,
+      deleted_flg: false
+    };
+    let templates = await _findEmailTemplate(EmailTemplateType.MS_POINT_NOTIFICATION_ADD_POINT_EXCHANGE);
+
+    for (let t of templates) {
+      let content = NotificationService.buildNotificationContent(t.template, {
+        firstName: member.first_name,
+        lastName: member.last_name,
+        point: point,
+        point_unit: 'MS_POINT',
+        amount: amount,
+        platform: platform
+      });
+      if (t.language.toLowerCase() == 'ja') {
+        data.title_ja = t.subject;
+        data.content_ja = content;
+      }
+      else {
+        data.title = t.subject;
+        data.content = content;
+      }
+    }
+
+    await NotificationService.createNotificationMember(data, member_id);
+  }
+  catch (err) {
+    logger.error(`point tracking _sendNotification::`, err);
+  }
+}
+
+async function _findEmailTemplate(templateName) {
+  let templates = await EmailTemplate.findAll({
+    where: {
+      name: templateName
+    }
+  });
+
+  return templates;
+} 

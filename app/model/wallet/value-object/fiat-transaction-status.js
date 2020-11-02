@@ -4,4 +4,4 @@ module.exports = {
   PROCESSING: "PROCESSING",
   COMPLETE: 'COMPLETE',
   FAILED: 'FAILED',
-};
+}

@@ -119,16 +119,16 @@ module.exports = {
     try {
       const phases = [
         {
-          label: 'phase_1',
-          value: 'Phase 1'
+          value: 'phase_1',
+          label: 'Phase 1'
         },
         {
-          label: 'phase_3',
-          value: 'Phase 3'
+          value: 'phase_3',
+          label: 'Phase 3'
         },
         {
-          label: 'phase_4',
-          value: 'Phase 4'
+          value: 'phase_4',
+          label: 'Phase 4'
         },
       ];
 
@@ -176,6 +176,32 @@ module.exports = {
     }
     catch (error) {
       logger.info('get ms point settings fail', error);
+      next();
+    }
+  },
+  updateModeSettings: async (req, res, next) => {
+    let transaction;
+    try {
+      transaction = await database.transaction();
+      const { ms_point_mode } = req.body;
+      await Setting.update({
+        value: ms_point_mode
+      }, {
+        where: {
+          key: 'MS_POINT_MODE'
+        },
+        returning: true,
+        transaction: transaction
+      });
+      await transaction.commit();
+
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        transaction.rollback();
+      }
+      logger.info('update ms point settings fail', error);
       next();
     }
   },
@@ -375,7 +401,7 @@ const getPropertyValue = (settings, propertyName, defaultValue) => {
         return Number(value);
 
       case 'boolean':
-        return Boolean(value);
+        return value === 'true';
     }
 
     return value;

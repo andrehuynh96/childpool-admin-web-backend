@@ -6,6 +6,7 @@ const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require("app/middleware/validator.middleware");
 const {
   search,
+  updateModeSettings,
   updateClaimingSettings,
   updateStakingSettings,
   updateExchangeSettings,
@@ -412,6 +413,78 @@ router.get(
   authenticate,
   authority(PermissionKey.VIEW_MS_POINT_SETTINGS),
   controller.getSettings
+);
+/* #endregion */
+
+
+/* #region Update MS points settings for claiming*/
+/**
+ * @swagger
+ * /web/ms-point/settings/claiming':
+ *   put:
+ *     summary: Update MS points settings for claiming
+ *     tags:
+ *       - MS Point
+ *     description:
+ *     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                      "ms_point_delay_time_in_seconds": 12,
+                      "membership_types": [
+                          {
+                              "id": "f345042c-8e60-4357-98bc-41ea1136ebd0",
+                              "claim_points": 2
+                          },
+                          {
+                              "id": "8600c494-91f4-4186-abd8-4197c72c0f43",
+                              "claim_points": 6
+                          },
+                          {
+                              "id": "6f272abb-d8a1-4a5d-a9d3-16718a8d0975",
+                              "claim_points": 12
+                          }
+                      ]
+*                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                "data": true
+            }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+router.put(
+  '/ms-point/settings/mode',
+  authenticate,
+  authority(PermissionKey.UPDATE_MS_POINT_SETTINGS),
+  validator(updateModeSettings),
+  controller.updateModeSettings
 );
 /* #endregion */
 
