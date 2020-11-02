@@ -4,7 +4,7 @@ const destObject = {
   array: {
     '[].id': '[].id',
     '[].member_id': '[].member_id',
-    '[].Member.email': '[].email?',
+    '[].member_email': '[].member_email',
     '[].from_currency': '[].from_currency',
     '[].to_cryptocurrency': '[].to_cryptocurrency',
     '[].payment_method': '[].payment_method',
@@ -20,7 +20,7 @@ const destObject = {
   single: {
     id: 'id',
     member_id: 'member_id',
-    '[].Member.email': 'email',
+    member_email: 'member_email',
     from_currency: 'from_currency',
     to_cryptocurrency: 'to_cryptocurrency',
     payment_method: 'payment_method',
@@ -37,17 +37,11 @@ const destObject = {
 
 module.exports = srcObject => {
   if (Array.isArray(srcObject)) {
-    if (!srcObject || srcObject.length === 0) {
+    if (!srcObject || srcObject.length == 0) {
       return [];
+    } else {
+      return objectMapper(srcObject, destObject.array);
     }
-    srcObject.forEach(item => {
-      if (!item.Member) {
-        item.Member = {
-          email: ''
-        };
-      }
-    });
-    return objectMapper(srcObject, destObject.array);
   }
   else {
     return objectMapper(srcObject, destObject.single);

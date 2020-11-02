@@ -54,6 +54,9 @@ module.exports = {
         where: where,
         order: [['created_at', 'DESC']]
       });
+      items.forEach(item => {
+        item.member_email = item.Member.email ? item.Member.email : '';
+      });
       return res.ok({
         items: fiatTransactionsMapper(items),
         limit: limit,
@@ -132,7 +135,7 @@ module.exports = {
 
       const timezone_offset = query.timezone_offset || 0;
       items.forEach(item => {
-        item.member_email = item.Member.email;
+        item.member_email = item.Member.email ? item.Member.email : '';
         item.created_at = moment(item.created_at).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
       });
 
