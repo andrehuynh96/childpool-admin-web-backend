@@ -401,7 +401,7 @@ const getPropertyValue = (settings, propertyName, defaultValue) => {
         return Number(value);
 
       case 'boolean':
-        return Boolean(value);
+        return value === 'true';
     }
 
     return value;
