@@ -11,7 +11,7 @@ module.exports = {
     try {
       const today = moment.utc();
       const startDay = today.clone().subtract(24,'hour').startOf('hour');
-      const endDay = today.clone().startOf('hour');
+      const endDay = today.clone();
 
       const startWeek = today.clone().subtract(7,'day').startOf('day');
       const endWeek = today.clone();
@@ -60,7 +60,7 @@ module.exports = {
         where: {
           created_at: {
             [Op.gte]: startThreeMonth,
-            [Op.lt]: today
+            [Op.lt]: endThreeMonth
           },
           action: ActionType.LOGIN
         },
