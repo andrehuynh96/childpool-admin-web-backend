@@ -8,16 +8,17 @@ const MemberAsset = require('app/model/wallet').member_assets;
 const api = new InfinitoApi(config.infinitoApiOpts);
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const logHangout = require("app/lib/logger/hangout");
 
 class ATOM extends GetMemberAsset {
   constructor() {
     super();
   }
 
-  async getValidators(apiCoin){
+  async getValidators(apiCoin) {
     this.validatorAddresses = await StakingPlatform.getValidatorAddresses('ATOM');
     this.validatorRatio = []
-    for(let i of this.validatorAddresses){
+    for (let i of this.validatorAddresses) {
       let validatorData = await apiCoin.getValidator(i)
       if (validatorData && validatorData.data && validatorData.data.tokens) {
         this.validatorRatio.push({
@@ -35,32 +36,31 @@ class ATOM extends GetMemberAsset {
       let balance = 0;
       let amount = 0;
       let reward = 0;
-      let unclaimReward =0;
+      let unclaimReward = 0;
       let date = new Date();
-      let opts = null
       date.setHours(0, 0, 0, 0);
 
-      if(!this.validatorAddresses){
+      if (!this.validatorAddresses) {
         await this.getValidators(apiCoin)
       }
-      
+
       const balanceResult = await apiCoin.getBalance(address);
       if (balanceResult && balanceResult.data) {
         balance = BigNumber(balanceResult.data.balance).toNumber() * 1e6;
       }
 
-      if (this.validatorAddresses.length > 0) { 
+      if (this.validatorAddresses.length > 0) {
         const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
         if (amountResult && amountResult.data.length > 0) {
           amountResult.data.forEach(item => {
             if (this.validatorAddresses.indexOf(item.validator_address) != -1) {
-              let ratio = this.validatorRatio.find(x=>x.operator_address == item.validator_address)
+              let ratio = this.validatorRatio.find(x => x.operator_address == item.validator_address)
               amount += BigNumber(item.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber();
             }
           });
         }
         const rewardResult = await apiCoin.getRewards(address);
-        if (rewardResult && rewardResult.data.total.length > 0) {
+        if (rewardResult && rewardResult.data.rewards && rewardResult.data.rewards.length > 0) {
           for (let e of rewardResult.data.rewards) {
             if (this.validatorAddresses.indexOf(e.validator_address) != -1) {
               for (let r of e.reward) {
@@ -75,29 +75,22 @@ class ATOM extends GetMemberAsset {
               missed_daily: false,
               created_at: { [Op.lt]: date }
             },
-            order: [['created_at', 'DESC']]    
+            order: [['created_at', 'DESC']]
           })
           if (memberAsset) {
             let number = 0;
             let claim = 0;
-            let data = await getHistories(address, memberAsset);           
-            if(data.txs.length>0){
-              let txs = data.txs
+            let txs = await getHistories(address, memberAsset);
+            if (txs.length > 0) {
               for (let tx of txs) {
-                if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.createdAt) && tx.actions.length > 0) {
+                if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.actions && tx.actions.length > 0) {
                   for (let action of tx.actions) {
-                    if (action.type = 'get_reward' && this.validatorAddresses.indexOf(item.validator_address) != -1) {
+                    if (action.type = 'get_reward' && this.validatorAddresses.indexOf(action.validator_address) != -1) {
                       claim = claim + BigNumber(action.amount).toNumber() * 1e6;
                       logger.info('claim: ', claim);
                     }
                   }
                 }
-              }
-              opts = {
-                offset: data.offset,
-                limit: data.limit,
-                last_tx: data.txs[0].tx_hash,
-                last_block_height: data.txs[0].block_height
               }
             }
             number = unclaimReward + claim - BigNumber(memberAsset.unclaim_reward).toNumber();
@@ -107,13 +100,12 @@ class ATOM extends GetMemberAsset {
           }
         }
       }
-      
+
       return {
         balance: balance,
         amount: amount,
         reward: reward,
         unclaimReward: unclaimReward,
-        opts: opts
       };
     } catch (error) {
       logger.error(error);
@@ -122,9 +114,8 @@ class ATOM extends GetMemberAsset {
   }
 }
 
-const getHistories= async (address, memberAsset)=>{
+const getHistories = async (address, memberAsset) => {
   try {
-    let track = memberAsset ? memberAsset.tracking : null
     let params = [
       {
         name: "getAllTransactionHistory",
@@ -139,34 +130,35 @@ const getHistories= async (address, memberAsset)=>{
 
     api.extendMethod("chains", params, api);
 
-    let offset = track ? track.offset : 0
+    let offset = 0
     let limit = 50
     let total = 0
     let txs = []
-    let lastBlockHeight = track ? track.last_block_height: 0
 
-    do{
+    do {
       let response = await api.chains.getAllTransactionHistory(address, offset);
+      if (!response || !response.data || response.data.txs.length <= 0)
+        return txs
       total = response.data.total_count
       offset += limit
-      if(response.data && response.data.txs.length > 0){
-        for(let tx of response.data.txs){
-          if(parseInt(tx.block_height) > parseInt(lastBlockHeight))
-            txs.push(tx)
-          else
-            break;
+      let br = false
+      for (let tx of response.data.txs) {
+        if (Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt))
+          txs.push(tx)
+        else {
+          br = true
+          break
         }
       }
+      if (br)
+        break;
     }
     while (offset < total)
 
-    return {
-      offset: offset - limit,
-      limit,
-      txs
-    };
-  }catch(err){
-    logger.error(err)
+    return txs
+  } catch (err) {
+    logger.error(err);
+    logHangout.write(JSON.stringify(err));
     return null
   }
 }

@@ -4,14 +4,49 @@ const CheckAdaPoolSizeSchedule = require("./check-ada-pool-size.schedule")
 const CheckExchangeStatusSchedule = require("./check-exchange-status.schedule")
 const GetMemberAssetSchedule = require("./get-member-asset.schedule");
 const SyncCurrencyWithChangelly = require("./sycn-currency-with-changelly.schedule");
+const fs = require('fs');
 
 module.exports = {
-  start: () => {
+  start: async () => {
+    await _removeLockFile();
     UpdateAffiliateSchedule.run();
-    // CheckDistributeRewardSchedule.run();
     CheckAdaPoolSizeSchedule.run();
     CheckExchangeStatusSchedule.run();
     GetMemberAssetSchedule.run();
     SyncCurrencyWithChangelly.run();
   }
 };
+
+async function _removeLockFile() {
+  try {
+    let files = [
+      UpdateAffiliateSchedule.lockFile(),
+      CheckAdaPoolSizeSchedule.lockFile(),
+      CheckExchangeStatusSchedule.lockFile(),
+      GetMemberAssetSchedule.lockFile(),
+      SyncCurrencyWithChangelly.lockFile(),
+    ];
+    for (let f of files) {
+      if (f) {
+        await _remove(f);
+      }
+    }
+  }
+  catch (err) {
+    console.log('_removeLockFile Error:::', err)
+  }
+}
+
+async function _remove(f) {
+  return new Promise((resolve, reject) => {
+    fs.unlink(f, function (err) {
+      if (err) {
+        console.log(err);
+      }
+      else {
+        console.log(`Deleted ${f}.`);
+      }
+      resolve(true);
+    });
+  })
+}

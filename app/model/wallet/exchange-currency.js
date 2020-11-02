@@ -83,6 +83,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(256),
       allowNull: true
     },
+    turn_off_by_job_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
   }, {
       underscored: true,
       timestamps: true,

@@ -114,6 +114,7 @@ const config = {
     confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
     adaPoolNotification: process.env.PARTNER_NAME.toLowerCase() + "/ada-pool-check.ejs",
+    updateExchangeCurrency: process.env.PARTNER_NAME.toLowerCase() + "/update-exchange-currency.ejs",
     apiChangellyUpdate: process.env.PARTNER_NAME.toLowerCase() + "/API-Changelly-update.ejs",
   },
   masterWebsite: {
@@ -213,7 +214,8 @@ const config = {
   },
   webWallet: {
     apiUrl: process.env.WEB_WALLET_API_URL || "https://dev-staking-wallet-web.chainservices.info",
-  }
+  },
+  hangoutAlertChannel: process.env.HANGOUT_ALERT_CHANEL || ""
 };
 
 module.exports = config;

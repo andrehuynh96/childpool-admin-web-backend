@@ -1,142 +1,158 @@
 <!doctype html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width" />
-    <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> -->
-    <title>Email IP</title>
-    <style>
-      img {
-        border: none;
-        -ms-interpolation-mode: bicubic;
-        max-width: 100%;
-      }
-      a{
-        text-decoration: none !important;
-      }
-      body{
-        font-family: sans-serif;
-        -webkit-font-smoothing: antialiased;
-        font-size: 14px;
-        line-height: 1.4;
-        margin: 0;
-        padding: 0;
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%;
-        background: #fff;
-        color: #3C4B64;
-      }
 
-      table {
-        border-collapse: separate;
-        mso-table-lspace: 0pt;
-        mso-table-rspace: 0pt;
-        width: 100%;
-      }
-      table tr{
-        clear: both;
-      }
-      table td {
-        font-family: sans-serif;
-        font-size: 14px;
-        vertical-align: top;
-      }
+<head>
+  <meta name="viewport" content="width=device-width" />
+  <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> -->
+  <title>Email IP</title>
+  <style>
+    img {
+      border: none;
+      -ms-interpolation-mode: bicubic;
+      max-width: 100%;
+    }
 
-      /* -------------------------------------
+    a {
+      text-decoration: none !important;
+    }
+
+    body {
+      font-family: sans-serif;
+      -webkit-font-smoothing: antialiased;
+      font-size: 14px;
+      line-height: 1.4;
+      margin: 0;
+      padding: 0;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+      background: #fff;
+      color: #3C4B64;
+    }
+
+    table {
+      border-collapse: separate;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+      width: 100%;
+    }
+
+    table tr {
+      clear: both;
+    }
+
+    table td {
+      font-family: sans-serif;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    /* -------------------------------------
           BODY & CONTAINER
       ------------------------------------- */
 
-      /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
-      .container {
-        display: block;
-        margin: 0 auto !important;
-        /* makes it centered */
-        max-width: 580px;
-        width: 580px;
-        border: 1px solid #D7DBE0;
-        border-radius: 4px;
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
-        text-align: center;
-        padding: 50px;
-      }
+    /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+    .container {
+      display: block;
+      margin: 0 auto !important;
+      /* makes it centered */
+      max-width: 580px;
+      width: 580px;
+      border: 1px solid #D7DBE0;
+      border-radius: 4px;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      text-align: center;
+      padding: 50px;
+    }
 
-      /* -------------------------------------
+    /* -------------------------------------
           HEADER, FOOTER, MAIN
       ------------------------------------- */
-      .main {
-        width: 100%;
-      }
+    .main {
+      width: 100%;
+    }
 
-      p, ul, ol {
-        font-family: sans-serif;
-        font-size: 14px;
-        font-weight: normal;
-        padding-left: 0;
-        margin: 0;
-        line-height: 21px;
-      }
-      ul li,
-      ol li {
-        list-style-position: inside;
-        margin-left: 5px;
-      }
-      a {
-        color: #3498db;
-        text-decoration: underline;
-      }
-      .span{
-        width: 100px;
-      }
-      /* -------------------------------------
+    p,
+    ul,
+    ol {
+      font-family: sans-serif;
+      font-size: 14px;
+      font-weight: normal;
+      padding-left: 0;
+      margin: 0;
+      line-height: 21px;
+    }
+
+    ul li,
+    ol li {
+      list-style-position: inside;
+      margin-left: 5px;
+    }
+
+    a {
+      color: #3498db;
+      text-decoration: underline;
+    }
+
+    .span {
+      width: 100px;
+    }
+
+    /* -------------------------------------
           RESPONSIVE AND MOBILE FRIENDLY STYLES
       ------------------------------------- */
-      @media only screen and (max-width: 620px) {
-        .container{
-          width: 100%;
-          max-width: 100%;
-          padding: 0;
-        }
-        .content{
-          padding: 30px;
-        }
-        .span{
-          width: auto;
-        }
+    @media only screen and (max-width: 620px) {
+      .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
       }
-    </style>
-  </head>
-  <body>
-    <table border="0" cellpadding="0" cellspacing="0" class="body">
-      <tr>
-        <td class="container">
-          <div class="content">
-            <table class="main">
-              <tr>
-                <td style="text-align: center">
-                  <p style="font-size: 24px;text-align: center;font-weight: 500;margin-bottom: 15px; line-height: 30px">API Changelly update</p>
-                </td>
-              </tr>
-              <tr>
-                <table>
-                  <tr>
-                    <td style="text-align: center" colspan="2">
-                      <p style="font-weight: bold; margin-top: 30px">Flatform <%=flatForm%> - Symbol: <%=symbol%></p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="text-align: center" colspan="2">
-                      <p style="font-weight: bold; margin-top: 20px">status: <%=status%></p>
-                      <p style="font-weight: bold; margin-top: 20px">Fix rate: <%=fix_rate_flg%></p>
-                      <p style="font-weight: bold; margin-top: 20px">DB update success</p>
-                    </td>
-                  </tr>
-                </table>
-              </tr>
-            </table>
-          </div>
-        </td>
-      </tr>
 
-    </table>
-  </body>
+      .content {
+        padding: 30px;
+      }
+
+      .span {
+        width: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <table border="0" cellpadding="0" cellspacing="0" class="body">
+    <tr>
+      <td class="container">
+        <div class="content">
+          <table class="main">
+            <tr>
+              <td style="text-align: center">
+                <p style="font-size: 24px;text-align: center;font-weight: 500;margin-bottom: 15px; line-height: 30px">
+                  API Changelly update</p>
+              </td>
+            </tr>
+            <tr>
+              <table>
+                <tr>
+                  <td style="text-align: center" colspan="2">
+                    <p style="font-weight: bold; margin-top: 30px">Flatform <%=flatForm%> - Symbol: <%=symbol%></p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align: center" colspan="2">
+                    <p style="font-weight: bold; margin-top: 20px">status: <%=status%></p>
+                    <p style="font-weight: bold; margin-top: 20px">Fix rate: <%=fix_rate_flg%></p>
+                    <p style="font-weight: bold; margin-top: 20px">Please go to Childpool admin and update it</p>
+                  </td>
+                </tr>
+              </table>
+            </tr>
+          </table>
+        </div>
+      </td>
+    </tr>
+
+  </table>
+</body>
+
 </html>
