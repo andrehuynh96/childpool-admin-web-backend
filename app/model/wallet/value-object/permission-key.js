@@ -985,4 +985,26 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-10-29T00:00:00.000Z"
   },
+  // Fiat Transaction
+  "VIEW_LIST_FIAT_TRANSACTION": {
+    "KEY": "VIEW_LIST_FIAT_TRANSACTION",
+    "DESCRIPTION": "Search list fiat transaction",
+    "GROUP_NAME": "Fiat Transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
+  "VIEW_FIAT_TRANSACTION_DETAIL": {
+    "KEY": "VIEW_FIAT_TRANSACTION_DETAIL",
+    "DESCRIPTION": "View fiat transaction detail",
+    "GROUP_NAME": "Fiat Transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
+  "EXPORT_FIAT_TRANSACTION_CSV": {
+    "KEY": "EXPORT_FIAT_TRANSACTION_CSV",
+    "DESCRIPTION": "Export list fiat transaction csv",
+    "GROUP_NAME": "Fiat Transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
 };

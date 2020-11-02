@@ -36,7 +36,7 @@ router.use(require('./ms-point/ms-point.route'));
 router.use(require('./logging/logging.route'));
 router.use(require('./questionnaire/questionnaire.route'));
 router.use(require('./member-login/member-login.route'));
-
+router.use(require('./fiat-transaction/fiat-transaction.route'));
 module.exports = router;
 
 /** ********************************************************************/
