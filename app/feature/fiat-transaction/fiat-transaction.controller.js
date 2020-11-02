@@ -68,7 +68,16 @@ module.exports = {
   },
   getDetails: async(req, res, next) => {
     try {
-      return res.ok(true);
+      const { id } = req.params;
+      const fiatTransaction = await FiatTransaction.findOne({
+        where: {
+          id: id
+        }
+      });
+      if (!fiatTransaction) {
+        return res.notFound(res.__("FIAT_TRANSACTION_NOT_FOUND"),"FIAT_TRANSACTION_NOT_FOUND", { field: ['id'] });
+      }
+      return res.ok(fiatTransaction);
     }
     catch (error) {
       logger.error('search fiat transaction fail',error);
