@@ -1,7 +1,7 @@
 {
   "name": "staking-childpool-admin-web-backend",
-  "version": "1.6.0",
-  "description": "v1.14.0-ms-rc",
+  "version": "1.7.0",
+  "description": "v1.15.0-ms-rc",
   "main": "index.js",
   "scripts": {
     "test": "mocha test"
