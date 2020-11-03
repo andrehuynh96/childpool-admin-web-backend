@@ -73,13 +73,20 @@ module.exports = {
     try {
       const { id } = req.params;
       const fiatTransaction = await FiatTransaction.findOne({
+        include: {
+          attributes: ['email'],
+          as: "Member",
+          model: Member,
+        },
         where: {
           id: id
         }
       });
+
       if (!fiatTransaction) {
         return res.notFound(res.__("FIAT_TRANSACTION_NOT_FOUND"),"FIAT_TRANSACTION_NOT_FOUND", { field: ['id'] });
       }
+
       return res.ok(fiatTransaction);
     }
     catch (error) {
