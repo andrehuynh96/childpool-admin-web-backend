@@ -173,7 +173,7 @@ module.exports = {
         { key: 'status', header: 'Status' },
         { key: 'transaction_id', header: 'Transaction Id' }
       ]);
-      res.setHeader('Content-disposition', 'attachment; filename=exchange-transaction.csv');
+      res.setHeader('Content-disposition', 'attachment; filename=changelly-transaction.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
     }
