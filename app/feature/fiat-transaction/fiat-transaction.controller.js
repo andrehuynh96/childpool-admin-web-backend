@@ -99,8 +99,6 @@ module.exports = {
       const { query } = req;
       const where = {};
       const memberCond = {};
-      const limit = query.limit ? parseInt(req.query.limit) : 10;
-      const offset = query.offset ? parseInt(req.query.offset) : 0;
       const include = {
         attributes: ['email'],
         as: "Member",
@@ -132,9 +130,7 @@ module.exports = {
         where.payment_method = query.payment_method;
       }
 
-      const { count: total, rows: items } = await FiatTransaction.findAndCountAll({
-        limit: limit,
-        offset: offset,
+      const { rows: items } = await FiatTransaction.findAndCountAll({
         include: [ include ],
         where: where,
         order: [['created_at', 'DESC']]
@@ -158,7 +154,7 @@ module.exports = {
         { key: 'status', header: 'Status' },
         { key: 'provider', header: 'Provider' }
       ]);
-      res.setHeader('Content-disposition', 'attachment; filename=exchange-transaction.csv');
+      res.setHeader('Content-disposition', 'attachment; filename=wyre-transaction.csv');
       res.set('Content-Type', 'text/csv');
       res.send(data);
     }

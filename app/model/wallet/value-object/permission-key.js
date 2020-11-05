@@ -1007,4 +1007,19 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
   },
+  // Nexo
+  "VIEW_LIST_NEXO_MEMBER": {
+    "KEY": "VIEW_LIST_NEXO_MEMBER",
+    "DESCRIPTION": "Search Nexo members",
+    "GROUP_NAME": "Nexo",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
+  "EXPORT_LIST_NEXO_MEMBER_CSV": {
+    "KEY": "EXPORT_LIST_NEXO_MEMBER_CSV",
+    "DESCRIPTION": "Export Nexo members to csv",
+    "GROUP_NAME": "Nexo",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
 };
