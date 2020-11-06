@@ -1,20 +1,20 @@
 const _ = require('lodash');
-const SimpleAes = require('simple-aes-256');
+const CryptoJS = require("crypto-js");
 const config = require('app/config');
 
 const secret = config.crypto.secret;
 
 const cryptoHelper = {
   encrypt(text) {
-    const result = SimpleAes.encrypt(secret, text);
+    const cipherText = CryptoJS.AES.encrypt(text, secret).toString();
 
-    return Buffer.from(result).toString('base64');
+    return cipherText;
   },
-  decrypt(encryptedText) {
-    const encryptedBlock = Buffer.from(encryptedText, 'base64');
-    const decrypted = SimpleAes.decrypt(secret, encryptedBlock);
+  decrypt(cipherText) {
+    const bytes = CryptoJS.AES.decrypt(cipherText, secret);
+    const originalText = bytes.toString(CryptoJS.enc.Utf8);
 
-    return decrypted.toString();
+    return originalText;
   },
 
 };
