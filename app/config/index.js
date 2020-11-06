@@ -221,6 +221,9 @@ const config = {
     wyre: {
       url: process.env.WYRE_URL
     }
+  },
+  crypto: {
+    secret: process.env.CRYPTO_SECRET,
   }
 };
 

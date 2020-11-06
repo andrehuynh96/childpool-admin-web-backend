@@ -70,6 +70,7 @@
     "sequelize-cli": "^5.5.1",
     "sequelize-temporal": "^1.0.8",
     "sequelize-temporalize": "^4.1.0",
+    "simple-aes-256": "^3.0.1",
     "sleep-promise": "^8.0.1",
     "speakeasy": "^2.0.0",
     "stream-to-array": "^2.3.0",
