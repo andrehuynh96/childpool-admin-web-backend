@@ -15,6 +15,8 @@ const EmailTemplateType = require('app/model/wallet/value-object/email-template-
 const { membershipApi } = require('app/lib/affiliate-api');
 const mailer = require('app/lib/mailer');
 const stringHelper = require('app/lib/string-helper');
+const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
+const MembershipType = require("app/model/wallet").membership_types;
 
 const Op = Sequelize.Op;
 
@@ -270,25 +272,6 @@ module.exports = {
         returning: true,
         transaction: transaction
       });
-
-      if (kycStatus === KycStatus.APPROVED && kyc.approve_membership_type_id && !member.membership_type_id) {
-        await Member.update({
-          membership_type_id: kyc.approve_membership_type_id
-        }, {
-          where: {
-            id: member.id
-          },
-          returning: true,
-          transaction: transaction
-        });
-
-        const result = await membershipApi.updateMembershipType(member, { membership_type_id: kyc.approve_membership_type_id });
-
-        if (result.httpCode !== 200) {
-          await transaction.rollback();
-          return res.status(result.httpCode).send(result.data);
-        }
-      }
 
       // Send email to user
       let templateName = null;

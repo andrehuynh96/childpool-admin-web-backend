@@ -36,6 +36,26 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       default: false,
     },
+    // Points which user will claim on web walet or mobile app
+    claim_points: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    // The point will be given when staking each coin once
+    staking_points: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    // Points will be awarded when upgrading your membership
+    upgrade_membership_points: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    // Points will be awarded when using the Exchange function
+    exchange_points: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,

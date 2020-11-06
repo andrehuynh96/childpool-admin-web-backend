@@ -104,12 +104,13 @@ module.exports = {
       const [numOfItems, items] = await ExchangeCurrency.update({
         ...body,
         updated_by: user.id,
+        turn_off_by_job_flg: false
       }, {
-        where: {
-          id: params.exchangeCurrencyId,
-        },
-        returning: true,
-      });
+          where: {
+            id: params.exchangeCurrencyId,
+          },
+          returning: true,
+        });
 
       if (!numOfItems) {
         return res.badRequest(res.__("EXCHANGE_CURRENCY_NOT_FOUND"), "EXCHANGE_CURRENCY_NOT_FOUND");

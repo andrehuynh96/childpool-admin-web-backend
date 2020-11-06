@@ -902,4 +902,124 @@ module.exports = {
     "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
   },
 
+  // MS Point
+  "VIEW_CLAIM_MS_POINT_HISTORIES": {
+    "KEY": "VIEW_CLAIM_MS_POINT_HISTORIES",
+    "DESCRIPTION": "View claim MS point histories",
+    "GROUP_NAME": "MS Point",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-19T00:00:00.000Z"
+  },
+  "VIEW_MS_POINT_SETTINGS": {
+    "KEY": "VIEW_MS_POINT_SETTINGS",
+    "DESCRIPTION": "View MS point settings",
+    "GROUP_NAME": "MS Point",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-29T00:00:00.000Z"
+  },
+  "UPDATE_MS_POINT_SETTINGS": {
+    "KEY": "UPDATE_MS_POINT_SETTINGS",
+    "DESCRIPTION": "Update MS point settings",
+    "GROUP_NAME": "MS Point",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-29T00:00:00.000Z"
+  },
+
+  // Loggings
+  "VIEW_LOGGINGS": {
+    "KEY": "VIEW_LOGGINGS",
+    "DESCRIPTION": "View loggings",
+    "GROUP_NAME": "Logging",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-21T00:00:00.000Z"
+  },
+  "DELETE_LOGGING": {
+    "KEY": "DELETE_LOGGING",
+    "DESCRIPTION": "Delete a logging",
+    "GROUP_NAME": "Logging",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-21T00:00:00.000Z"
+  },
+
+  // Questionnaire
+  "SEARCH_QUESTIONS": {
+    "KEY": "SEARCH_QUESTIONS",
+    "DESCRIPTION": "Search questions",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
+  "VIEW_QUESTION_DETAILS": {
+    "KEY": "VIEW_QUESTION_DETAILS",
+    "DESCRIPTION": "View question details",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
+  "CREATE_QUESTION": {
+    "KEY": "CREATE_QUESTION",
+    "DESCRIPTION": "Create a question",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
+  "UPDATE_QUESTION": {
+    "KEY": "UPDATE_QUESTION",
+    "DESCRIPTION": "Update a question",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
+  "DELETE_QUESTION": {
+    "KEY": "DELETE_QUESTION",
+    "DESCRIPTION": "Delete a question",
+    "GROUP_NAME": "Questionnaire",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-27T00:00:00.000Z"
+  },
+  // Member login
+  "VIEW_MEMBER_LOGIN": {
+    "KEY": "VIEW_MEMBER_LOGIN",
+    "DESCRIPTION": "Tracking member login",
+    "GROUP_NAME": "Member Login",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-29T00:00:00.000Z"
+  },
+  // Fiat Transaction
+  "VIEW_LIST_FIAT_TRANSACTION": {
+    "KEY": "VIEW_LIST_FIAT_TRANSACTION",
+    "DESCRIPTION": "Search list fiat transaction",
+    "GROUP_NAME": "Fiat Transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
+  "VIEW_FIAT_TRANSACTION_DETAIL": {
+    "KEY": "VIEW_FIAT_TRANSACTION_DETAIL",
+    "DESCRIPTION": "View fiat transaction detail",
+    "GROUP_NAME": "Fiat Transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
+  "EXPORT_FIAT_TRANSACTION_CSV": {
+    "KEY": "EXPORT_FIAT_TRANSACTION_CSV",
+    "DESCRIPTION": "Export list fiat transaction csv",
+    "GROUP_NAME": "Fiat Transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
+  // Nexo
+  "VIEW_LIST_NEXO_MEMBER": {
+    "KEY": "VIEW_LIST_NEXO_MEMBER",
+    "DESCRIPTION": "Search Nexo members",
+    "GROUP_NAME": "Nexo",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
+  "EXPORT_LIST_NEXO_MEMBER_CSV": {
+    "KEY": "EXPORT_LIST_NEXO_MEMBER_CSV",
+    "DESCRIPTION": "Export Nexo members to csv",
+    "GROUP_NAME": "Nexo",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
 };

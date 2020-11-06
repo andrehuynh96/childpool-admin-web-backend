@@ -8,7 +8,7 @@ const axios = require('axios');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logHangout = require("app/lib/logger/hangout");
-
+const dbLogger = require('app/lib/logger/db');
 class ONE extends GetMemberAsset {
   constructor() {
     super();
@@ -19,15 +19,17 @@ class ONE extends GetMemberAsset {
       const validatorAddresses = await StakingPlatform.getValidatorAddresses('ONE');
       const { amount, reward, unclaimReward } = await getAmountAndRewardONE(address, validatorAddresses);
 
-      return {
-        balance: balance,
-        amount: amount,
-        reward: reward,
-        unclaimReward: unclaimReward
-      };
-    } catch (error) {
-      logger.error(error);
-      return null;
+            return {
+                balance: balance,
+                amount: amount,
+                reward: reward,
+                unclaimReward: unclaimReward
+            };
+        } catch (error) {
+          await dbLogger(error,address);
+            logger.error(error);
+            return null;
+        }
     }
   }
 }
@@ -126,15 +128,16 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
       reward = totalUnclaimRewad;
     }
 
-    return {
-      amount: totalAmount,
-      reward: reward,
-      unclaimReward: totalUnclaimRewad
-    };
-  } catch (error) {
-    logger.error(error);
-    return null;
-  }
+        return {
+            amount: totalAmount,
+            reward: reward,
+            unclaimReward: totalUnclaimRewad
+        };
+    } catch (error) {
+        await dbLogger(error,address);
+        logger.error(error);
+        return null;
+    }
 }
 
 async function getCollectRewardTxsHash(address, fromSecondEpoch) {
@@ -181,10 +184,10 @@ async function getCollectRewardTxsHash(address, fromSecondEpoch) {
 
     return txHashes;
   } catch (err) {
-    logger.error(err);
     logHangout.write(JSON.stringify(err));
-    return null;
-  }
+        await dbLogger(err);
+        logger.error(err)
+        return null
 }
 
 async function getTransactionReceipt(txHash) {
@@ -206,12 +209,13 @@ async function getTransactionReceipt(txHash) {
 
     const response = await axios(options);
 
-    const { result } = response.data;
-    return result;
-  } catch (err) {
-    logger.error(err)
-    return null
-  }
+        const { result } = response.data;
+        return result;
+    } catch (err) {
+        await dbLogger(err);
+        logger.error(err)
+        return null
+    }
 }
 
 module.exports = ONE;

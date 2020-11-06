@@ -4,6 +4,7 @@ const axios = require('axios');
 const config = require('app/config');
 const BigNumber = require('bignumber.js');
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
+const dbLogger = require('app/lib/logger/db');
 const logHangout = require("app/lib/logger/hangout");
 
 class QTUM extends GetMemberAsset {
@@ -72,6 +73,7 @@ class QTUM extends GetMemberAsset {
         reward: reward
       };
     } catch (error) {
+      await dbLogger(error,address);
       logger.error(error);
       logHangout.write(JSON.stringify(error));
       return null;

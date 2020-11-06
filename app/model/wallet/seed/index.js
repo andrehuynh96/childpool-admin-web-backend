@@ -22,6 +22,7 @@ const config = require("app/config");
 
     await require("./root-permission")();
     await require("./term")();
+    await require("./setting")();
     console.log('Seeding data done.');
   }
   catch (err) {

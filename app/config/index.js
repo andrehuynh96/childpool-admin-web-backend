@@ -114,6 +114,7 @@ const config = {
     confirmRequest: process.env.PARTNER_NAME.toLowerCase() + "/confirm-request.ejs",
     viewRequest: process.env.PARTNER_NAME.toLowerCase() + "/view-request.ejs",
     adaPoolNotification: process.env.PARTNER_NAME.toLowerCase() + "/ada-pool-check.ejs",
+    updateExchangeCurrency: process.env.PARTNER_NAME.toLowerCase() + "/update-exchange-currency.ejs",
     apiChangellyUpdate: process.env.PARTNER_NAME.toLowerCase() + "/API-Changelly-update.ejs",
   },
   masterWebsite: {
@@ -132,7 +133,8 @@ const config = {
     checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE,
     checkExchangeStatus: process.env.SCHEDULE_CHECK_EXCHANGE_STATUS,
     getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET,
-    syncCurrencyWithChangelly: process.env.SCHEDULE_SYNC_CURRENCY_WITH_CHANGELLY
+    syncCurrencyWithChangelly: process.env.SCHEDULE_SYNC_CURRENCY_WITH_CHANGELLY,
+    checkStatusFiatTransaction: process.env.SCHEDULE_CHECK_STATUS_FIAT_TRANSACTION
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
@@ -184,6 +186,7 @@ const config = {
   patchData: {
     isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
     patchIsEnabledSyncMembershipType: process.env.PATCH_IS_ENABLED_SYNC_MEMBERSHIP_TYPE === 'true',
+    patchIsEnabledSyncClients: process.env.PATCH_IS_ENABLED_SYNC_CLIENTS === 'true'
   },
   exchange: {
     changelly: {
@@ -213,7 +216,12 @@ const config = {
   webWallet: {
     apiUrl: process.env.WEB_WALLET_API_URL || "https://dev-staking-wallet-web.chainservices.info",
   },
-  hangoutAlertChannel: process.env.HANGOUT_ALERT_CHANEL || ""
+  hangoutAlertChannel: process.env.HANGOUT_ALERT_CHANEL || "",
+  fiat: {
+    wyre: {
+      url: process.env.WYRE_URL
+    }
+  }
 };
 
 module.exports = config;
