@@ -19,7 +19,7 @@ class ADA extends GetMemberAsset {
   async getValidators() {
     if (!this.validators) {
       let res = await StakingPlatform.getValidatorInfo('TADA')
-      this.validators = res.data.map(x => x.address)
+      this.validators = res.data.map(x => x.address);
     }
   }
   async setValidators(addresses) {
