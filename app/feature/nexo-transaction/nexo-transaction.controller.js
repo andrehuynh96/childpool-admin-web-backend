@@ -65,8 +65,8 @@ module.exports = {
       items.forEach(item => {
         item.status = NEXO_TX_STATUS_TEXT_CACHE[item.status];
         item.type = NEXO_TX_TYPE_TEXT_CACHE[item.type];
+        item.email = item['NexoMember.email'];
       });
-
       return res.ok({
         items: items,
         offset: offset,
