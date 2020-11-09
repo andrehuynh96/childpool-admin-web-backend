@@ -32,7 +32,7 @@ const config = {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
     description: pkg.description,
-    buildNumber: process.env.BUILD_NUMBER || '',
+    buildNumber: process.env.BUILD_NUMBER || process.env.CI_JOB_ID || '',
     port: parseInt(process.env.PORT || process.env.APP_PORT),
   },
   db: {
