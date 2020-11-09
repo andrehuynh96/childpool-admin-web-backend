@@ -1022,4 +1022,18 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
   },
+  "VIEW_LIST_NEXO_TRANSACTION": {
+    "KEY": "VIEW_LIST_NEXO_TRANSACTION",
+    "DESCRIPTION": "View list Nexo transaction",
+    "GROUP_NAME": "Nexo transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
+  "VIEW_NEXO_TRANSACTION_DETAIL": {
+    "KEY": "VIEW_NEXO_TRANSACTION_DETAIL",
+    "DESCRIPTION": "View Nexo transaction details",
+    "GROUP_NAME": "Nexo transaction",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
+  },
 };

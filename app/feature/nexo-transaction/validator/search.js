@@ -8,6 +8,8 @@ const schema = Joi.object().keys({
   tx_id: Joi.string().allow('').allow(null).optional(),
   address: Joi.string().allow(null).allow('').optional(),
   email: Joi.string().allow(null).allow('').optional(),
+  from_date: Joi.date().allow('').allow(null).optional(),
+  to_date: Joi.date().allow('').allow(null).optional(),
 });
 
 module.exports = schema;
