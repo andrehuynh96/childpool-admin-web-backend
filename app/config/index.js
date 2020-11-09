@@ -224,7 +224,12 @@ const config = {
   },
   crypto: {
     secret: process.env.CRYPTO_SECRET,
-  }
+  },
+  hangoutError: {
+    isEnabled: process.env.HANGOUT_ERROR_IS_ENABLED === 'true',
+    logLevel: process.env.HANGOUT_ERROR_LOG_LEVEL || 'error',
+    webhookUrl: process.env.HANGOUT_ERROR_CHANEL_WEBHOOK_URL,
+  },
 };
 
 module.exports = config;
