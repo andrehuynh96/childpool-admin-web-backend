@@ -8,16 +8,6 @@ const Op = Sequelize.Op;
 const NexoTxStatus = require("app/model/wallet/value-object/nexo-transaction-status");
 const NexoTxType = require("app/model/wallet/value-object/nexo-transaction-type");
 
-const NEXO_TX_STATUS_TEXT_CACHE = Object.entries(NexoTxStatus).reduce((result, items) => {
-  result[items[1]] = items[0];
-  return result;
-}, {});
-
-const NEXO_TX_TYPE_TEXT_CACHE = Object.entries(NexoTxType).reduce((result, items) => {
-  result[items[1]] = items[0];
-  return result;
-}, {});
-
 module.exports = {
   search: async (req, res, next) => {
     try {
@@ -63,8 +53,6 @@ module.exports = {
       });
 
       items.forEach(item => {
-        item.status = NEXO_TX_STATUS_TEXT_CACHE[item.status];
-        item.type = NEXO_TX_TYPE_TEXT_CACHE[item.type];
         item.email = item['NexoMember.email'];
       });
       return res.ok({
