@@ -20,6 +20,7 @@ const SystemType = require("app/model/wallet/value-object/system-type");
 const path = require('path');
 const { readFileCSV } = require('app/lib/stream');
 const { forEachSeries } = require('p-iteration');
+const cryptoHelper = require('app/lib/crypto-helper');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -496,7 +497,7 @@ module.exports = {
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
       res.set('Content-Type', 'text/csv');
-      res.send(data);
+      res.send(cryptoHelper.encrypt(data));
     }
     catch (error) {
       logger.info('download csv fail', error);

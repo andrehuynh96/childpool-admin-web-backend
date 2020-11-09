@@ -30,6 +30,7 @@
     "connect-redis": "^4.0.4",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
+    "crypto-js": "^4.0.0",
     "csv-parse": "^4.11.1",
     "csv-stringify": "^5.5.0",
     "dotenv": "^8.2.0",
