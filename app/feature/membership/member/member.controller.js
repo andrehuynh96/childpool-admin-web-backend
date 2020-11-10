@@ -428,17 +428,20 @@ module.exports = {
             {
               where: {
                 id: memberId,
-                membership_type_id: silverMembership.id
+                membership_type_id: silverMembership.id,
+                kyc_id: '2'
               },
               transaction: transaction
             });
           member.referral_code = referrerCode;
-          result = await membershipApi.updateMembershipType(member, goldMembership);
+          if (member.membership_type_id === silverMembership.id && member.kyc_id == '2' ) {
+            result = await membershipApi.updateMembershipType(member, goldMembership);
 
-          if (result.httpCode !== 200) {
-            await transaction.rollback();
+            if (result.httpCode !== 200) {
+              await transaction.rollback();
 
-            return res.status(result.httpCode).send(result.data);
+              return res.status(result.httpCode).send(result.data);
+            }
           }
         }
 

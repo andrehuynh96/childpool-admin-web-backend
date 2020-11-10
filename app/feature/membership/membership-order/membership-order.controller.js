@@ -23,6 +23,7 @@ const PaymentType = require('app/model/wallet/value-object/claim-request-payment
 const EmailTemplate = require('app/model/wallet').email_templates;
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
 const stringHelper = require('app/lib/string-helper');
+const PointService = require('app/lib/point');
 
 const Op = Sequelize.Op;
 const MembershipOrderStatusEnum = {
@@ -73,7 +74,7 @@ module.exports = {
       else {
         if (query.is_crypto && query.currency_symbol) {
           if (query.currency_symbol == 'BTC') {
-            where.currency_symbol = { [Op.in]: ['BTC','BTCSW'] };
+            where.currency_symbol = { [Op.in]: ['BTC', 'BTCSW'] };
           }
           else {
             where.currency_symbol = query.currency_symbol;
@@ -324,7 +325,10 @@ module.exports = {
 
       await _sendEmail(order.Member.email, emailPayload, EmailTemplateType.MEMBERSHIP_ORDER_APPROVED);
       await transaction.commit();
-
+      PointService.upgradeMembership({
+        member_id: order.member_id,
+        membership_type_id: order.membership_type_id
+      });
       return res.ok(true);
     }
     catch (err) {
@@ -463,7 +467,7 @@ module.exports = {
       else {
         if (query.is_crypto && query.currency_symbol) {
           if (query.currency_symbol == 'BTC') {
-            where.currency_symbol = { [Op.in]: ['BTC','BTCSW'] };
+            where.currency_symbol = { [Op.in]: ['BTC', 'BTCSW'] };
           }
           else {
             where.currency_symbol = query.currency_symbol;
