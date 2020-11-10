@@ -5,7 +5,6 @@ const redisResource = require("app/resource/redis");
 const redis = require("app/lib/redis");
 const cache = redis.client();
 const queryString = require('query-string');
-const loggerHelper = require("app/lib/logger/logger-helper");
 
 const API_URL = config.affiliate.url;
 
