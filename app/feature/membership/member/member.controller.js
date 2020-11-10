@@ -429,7 +429,8 @@ module.exports = {
             {
               where: {
                 id: memberId,
-                membership_type_id: silverMembership.id
+                membership_type_id: silverMembership.id,
+                kyc_id: '2'
               },
               transaction: transaction
             });
