@@ -31,7 +31,7 @@ function _verifyCosmosAddress(address) {
     let result = bech32.decode(address.toLowerCase());
     return result.prefix == "cosmos";
   } catch (e) {
-    logger.error(e);
+    logger.info(e);
     return false;
   }
 }
@@ -41,7 +41,7 @@ function _verifyIrisAddress(address) {
     let result = bech32.decode(address.toLowerCase());
     return result.prefix == "iaa";
   } catch (e) {
-    logger.error(e);
+    logger.info(e);
     return false;
   }
 }
@@ -50,12 +50,12 @@ function _verifyOntAddress(address) {
   try {
     return NeonCore.wallet.isAddress(address);
   } catch (e) {
-    logger.error(e);
+    logger.info(e);
     return false;
   }
 }
 
-function _verifyBtcSegwitAddress (address, testnet = false) {
+function _verifyBtcSegwitAddress(address, testnet = false) {
   try {
     let network = testnet ? Bitcoinjs.networks.testnet : Bitcoinjs.networks.bitcoin;
     Bitcoinjs.address.toOutputScript(address, network);

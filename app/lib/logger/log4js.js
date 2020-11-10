@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const config = require("app/config");
 const log4js = require("log4js");
 
@@ -68,5 +69,40 @@ log4js.configure({
 });
 
 const instance = log4js.getLogger("Logger");
+
+const mapParams = (args) => {
+  const params = _.toArray(args).map(item => {
+    if (!item.isAxiosError) {
+      return item;
+    }
+
+    // Remove some properties on axios response
+    const response = item.response;
+
+    return {
+      message: item.message,
+      stack: item.stack,
+      response: {
+        status: response.status,
+        statusText: response.statusText,
+        data: response.data,
+      }
+    };
+  });
+
+  return params;
+};
+const methods = ['error', 'warn', 'info', 'debug', 'trace', 'fatal', 'mark'];
+
+methods.forEach(method => {
+  const originalFunctionName = `original` + _.upperFirst(method);
+  instance[originalFunctionName] = instance[method];
+
+  instance[method] = function () {
+    const params = mapParams(arguments);
+
+    instance[originalFunctionName].apply(instance, params);
+  };
+});
 
 module.exports = instance;
