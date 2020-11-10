@@ -434,7 +434,7 @@ module.exports = {
               transaction: transaction
             });
           member.referral_code = referrerCode;
-          if (member.membership_type_id === silverMembership.id) {
+          if (member.membership_type_id === silverMembership.id && member.kyc_id == '2' ) {
             result = await membershipApi.updateMembershipType(member, goldMembership);
 
             if (result.httpCode !== 200) {
