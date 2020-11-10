@@ -33,7 +33,7 @@ module.exports = {
 
       let setting = await Setting.findOne({
         where: {
-          key: config.setting.MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED
+          key: "MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED"
         }
       });
       if (!setting || Boolean(setting.value) == false) {
