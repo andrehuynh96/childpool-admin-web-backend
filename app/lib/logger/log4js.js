@@ -72,7 +72,7 @@ const instance = log4js.getLogger("Logger");
 
 const mapParams = (args) => {
   const params = _.toArray(args).map(item => {
-    if (!item.isAxiosError) {
+    if (!item || !item.isAxiosError) {
       return item;
     }
 
