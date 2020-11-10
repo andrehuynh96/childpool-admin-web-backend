@@ -19,7 +19,7 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger.error("get list partner tx memo fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get list partner tx memo fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   },
@@ -40,7 +40,7 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger.error("create partner tx memo fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create partner tx memo fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   },
@@ -56,8 +56,8 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger.error("get list partner tx memo history fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get list partner tx memo history fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   }
-}
+};
