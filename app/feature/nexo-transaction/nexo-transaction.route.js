@@ -3,12 +3,21 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./nexo-transaction.controller');
 const validator = require('app/middleware/validator.middleware');
 const { search } = require('./validator');
+const PermissionKey = require('app/model/wallet/value-object/permission-key');
+const authority = require('app/middleware/authority.middleware');
 const router = express.Router();
 
 router.get('/nexo-transaction',
   authenticate,
+  authority(PermissionKey.VIEW_LIST_NEXO_TRANSACTION),
   validator(search, 'query'),
   controller.search
+);
+
+router.get('/nexo-transaction/:id/details',
+  authenticate,
+  authority(PermissionKey.VIEW_NEXO_TRANSACTION_DETAIL),
+  controller.getDetail
 );
 
 router.get('/nexo-transaction/statuses',
