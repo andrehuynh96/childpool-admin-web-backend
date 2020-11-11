@@ -19,17 +19,16 @@ class ONE extends GetMemberAsset {
       const validatorAddresses = await StakingPlatform.getValidatorAddresses('ONE');
       const { amount, reward, unclaimReward } = await getAmountAndRewardONE(address, validatorAddresses);
 
-            return {
-                balance: balance,
-                amount: amount,
-                reward: reward,
-                unclaimReward: unclaimReward
-            };
-        } catch (error) {
-          await dbLogger(error,address);
-            logger.error(error);
-            return null;
-        }
+      return {
+        balance: balance,
+        amount: amount,
+        reward: reward,
+        unclaimReward: unclaimReward
+      };
+    } catch (error) {
+      await dbLogger(error, address);
+      logger.error(error);
+      return null;
     }
   }
 }
@@ -128,16 +127,16 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
       reward = totalUnclaimRewad;
     }
 
-        return {
-            amount: totalAmount,
-            reward: reward,
-            unclaimReward: totalUnclaimRewad
-        };
-    } catch (error) {
-        await dbLogger(error,address);
-        logger.error(error);
-        return null;
-    }
+    return {
+      amount: totalAmount,
+      reward: reward,
+      unclaimReward: totalUnclaimRewad
+    };
+  } catch (error) {
+    await dbLogger(error, address);
+    logger.error(error);
+    return null;
+  }
 }
 
 async function getCollectRewardTxsHash(address, fromSecondEpoch) {
@@ -185,9 +184,10 @@ async function getCollectRewardTxsHash(address, fromSecondEpoch) {
     return txHashes;
   } catch (err) {
     logHangout.write(JSON.stringify(err));
-        await dbLogger(err);
-        logger.error(err)
-        return null
+    await dbLogger(err);
+    logger.error(err)
+    return null
+  }
 }
 
 async function getTransactionReceipt(txHash) {
@@ -209,13 +209,13 @@ async function getTransactionReceipt(txHash) {
 
     const response = await axios(options);
 
-        const { result } = response.data;
-        return result;
-    } catch (err) {
-        await dbLogger(err);
-        logger.error(err)
-        return null
-    }
+    const { result } = response.data;
+    return result;
+  } catch (err) {
+    await dbLogger(err);
+    logger.error(err)
+    return null
+  }
 }
 
 module.exports = ONE;
