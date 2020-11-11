@@ -497,7 +497,8 @@ module.exports = {
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=claim-request.csv');
       res.set('Content-Type', 'text/csv');
-      res.send(cryptoHelper.encrypt(data));
+      // res.send(cryptoHelper.encrypt(data));
+      res.send(data);
     }
     catch (error) {
       logger.info('download csv fail', error);
