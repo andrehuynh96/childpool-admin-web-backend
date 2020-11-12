@@ -33,6 +33,7 @@ class CheckAdaPoolNotifyCfg {
         }
       }
     }
+
     if (warningPools.length > 0) {
       let models = [];
       warningPools.forEach(pool => {
@@ -48,7 +49,9 @@ class CheckAdaPoolNotifyCfg {
         models, {
         returning: true
       });
-      await this.sendMail(cfg.emails, warningPools);
+
+      const emails = cfg.emails.split(',').map(item => (item || '').trim()).filter(item => !!item);
+      await this.sendMail(emails, warningPools);
       return true;
     }
     return false;

@@ -91,3 +91,4 @@ out
 .vscode/settings.json
 .vscode/keybindings.json
 .vscode/launch.json
+*.lock
