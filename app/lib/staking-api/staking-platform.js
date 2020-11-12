@@ -16,7 +16,7 @@ module.exports = {
       return result.data ? result.data.data.filter(e => e.symbol.toUpperCase() == platform.toUpperCase()).map(e => e.validator_address) : [];
     }
     catch (err) {
-      logger[err.canLogAxiosError ? 'error' : 'info']("get list API key fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("getValidatorAddresses fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   },
@@ -32,7 +32,7 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger[err.canLogAxiosError ? 'error' : 'info']("get list API key fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("getValidatorInfo fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   }
