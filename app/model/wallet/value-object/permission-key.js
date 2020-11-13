@@ -1036,4 +1036,34 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-11-02T00:00:00.000Z"
   },
+
+  // Survey
+  "VIEW_LIST_SURVEY": {
+    "KEY": "VIEW_LIST_SURVEY",
+    "DESCRIPTION": "Search surveys",
+    "GROUP_NAME": "Surveys",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-13T00:00:00.000Z"
+  },
+  "VIEW_SURVEY_DETAIL": {
+    "KEY": "VIEW_SURVEY_DETAIL",
+    "DESCRIPTION": "View survey details",
+    "GROUP_NAME": "Surveys",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-13T00:00:00.000Z"
+  },
+  "CREATE_SURVEY": {
+    "KEY": "CREATE_SURVEY",
+    "DESCRIPTION": "Create new survey",
+    "GROUP_NAME": "Surveys",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-13T00:00:00.000Z"
+  },
+  "UPDATE_SURVEY": {
+    "KEY": "UPDATE_SURVEY",
+    "DESCRIPTION": "Update survey",
+    "GROUP_NAME": "Surveys",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-13T00:00:00.000Z"
+  },
 };
