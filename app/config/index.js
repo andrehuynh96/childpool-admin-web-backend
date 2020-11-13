@@ -230,6 +230,7 @@ const config = {
     logLevel: process.env.HANGOUT_ERROR_LOG_LEVEL || 'error',
     webhookUrl: process.env.HANGOUT_ERROR_CHANEL_WEBHOOK_URL,
   },
+  whitelistReCaptcha: process.env.CDN_FILE_EXT ? process.env.WHITELIST_RECAPTCHA.split(',') : [],
 };
 
 module.exports = config;
