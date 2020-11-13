@@ -133,8 +133,9 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
       unclaimReward: totalUnclaimRewad
     };
   } catch (error) {
+    logger[error.canLogAxiosError ? 'error' : 'info'](error);
     await dbLogger(error, address);
-    logger.error(error);
+
     return null;
   }
 }

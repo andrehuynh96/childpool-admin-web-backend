@@ -159,7 +159,7 @@ const getHistories = async (address, memberAsset) => {
 
     return txs;
   } catch (err) {
-    logger.error(err);
+    logger[err.canLogAxiosError ? 'error' : 'info'](err);
     logHangout.write(JSON.stringify(err));
     await dbLogger(err);
     return null;
