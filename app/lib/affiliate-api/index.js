@@ -440,7 +440,7 @@ class MembershipApi extends AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("Update Membership Type:", err.response.data );
+      logger.error("Update Membership Type:", err.response.data);
 
       return { httpCode: err.response.status, data: err.response.data };
     }

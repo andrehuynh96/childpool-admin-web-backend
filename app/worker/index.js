@@ -10,7 +10,6 @@ module.exports = {
   start: async () => {
     await _removeLockFile();
     UpdateAffiliateSchedule.run();
-    // CheckDistributeRewardSchedule.run();
     CheckAdaPoolSizeSchedule.run();
     CheckExchangeStatusSchedule.run();
     GetMemberAssetSchedule.run();

@@ -902,4 +902,45 @@ module.exports = {
     "INITIALIZED_DATE": "2020-09-28T00:00:00.000Z"
   },
 
+  // Claim MS Point
+  "VIEW_CLAIM_MS_POINT_HISTORIES": {
+    "KEY": "VIEW_CLAIM_MS_POINT_HISTORIES",
+    "DESCRIPTION": "View claim MS point histories",
+    "GROUP_NAME": "MS Point",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-19T00:00:00.000Z"
+  },
+  "VIEW_CLAIM_MS_POINT_SETTINGS": {
+    "KEY": "VIEW_CLAIM_MS_POINT_SETTINGS",
+    "DESCRIPTION": "View claim ms point settings",
+    "GROUP_NAME": "MS Point",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-19T00:00:00.000Z"
+  },
+  "UPDATE_CLAIM_MS_POINT_SETTINGS": {
+    "KEY": "UPDATE_CLAIM_MS_POINT_SETTINGS",
+    "DESCRIPTION": "Update claim ms point settings",
+    "GROUP_NAME": "MS Point",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-19T00:00:00.000Z"
+  },
+
+  // Loggings
+  "VIEW_LOGGINGS": {
+    "KEY": "VIEW_LOGGINGS",
+    "DESCRIPTION": "View loggings",
+    "GROUP_NAME": "Logging",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-21T00:00:00.000Z"
+  },
+  "DELETE_LOGGING": {
+    "KEY": "DELETE_LOGGING",
+    "DESCRIPTION": "Delete a logging",
+    "GROUP_NAME": "Logging",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-10-21T00:00:00.000Z"
+  },
+
+
+
 };
