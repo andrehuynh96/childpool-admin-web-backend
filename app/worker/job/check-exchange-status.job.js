@@ -270,7 +270,7 @@ async function _sendNotification({ member_id, point, platform, amount }) {
         lastName: member.last_name,
         point: point,
         point_unit: 'MS_POINT',
-        amount: amount,
+        amount: parseFloat(amount),
         platform: platform
       });
       if (t.language.toLowerCase() == 'ja') {
