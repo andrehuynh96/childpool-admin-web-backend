@@ -72,7 +72,7 @@ module.exports = {
           {
             as: "Answers",
             model: QuestionAnswer,
-            required: true,
+            required: false,
           }
         ],
         where: {
@@ -172,7 +172,7 @@ module.exports = {
           {
             as: "Answers",
             model: QuestionAnswer,
-            required: true,
+            required: false,
           }
         ],
         where: {
