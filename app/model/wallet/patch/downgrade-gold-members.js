@@ -37,12 +37,16 @@ module.exports = async () => {
     return;
   }
 
+  const cond = {
+    membership_type_id: goldMembershipType.id,
+    kyc_level: "LEVEL_1",
+  };
+  cond[Op.or] = [
+    { referrer_code: null },
+    { referrer_code: "" },
+  ];
   const members = await Member.findAll({
-    where: {
-      membership_type_id: goldMembershipType.id,
-      kyc_level: "LEVEL_1",
-      referrer_code: null,
-    },
+    where: cond,
     order: [['created_at', 'ASC']]
   });
 
@@ -67,7 +71,6 @@ module.exports = async () => {
           },
           transaction: transaction
         });
-
 
       await transaction.commit();
     } catch (error) {
