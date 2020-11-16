@@ -107,7 +107,6 @@ module.exports = {
       } else {
         order.push(['created_at', 'DESC']);
       }
-
       const { count: total, rows: items } = await Member.findAndCountAll({
         limit,
         offset,
@@ -853,7 +852,7 @@ async function _createMemberCond(query) {
     memberCond.email = { [Op.iLike]: `%${query.email}%` };
   }
 
-  memberCond.source = { [Op.ne]: 'Infinito' };
+  memberCond.source = { [Op.is]: null };
   return memberCond;
 }
 
