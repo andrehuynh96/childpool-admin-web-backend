@@ -18,19 +18,19 @@ const SETTINGS = [
   },
   {
     "key": "MS_POINT_STAKING_IS_ENABLED",
-    "value": "true",
+    "value": "false",
     "type": "boolean",
     "property": "ms_point_staking_is_enabled"
   },
   {
     "key": "MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED",
-    "value": "true",
+    "value": "false",
     "type": "boolean",
     "property": "ms_point_upgrading_membership_is_enabled"
   },
   {
     "key": "MS_POINT_EXCHANGE_IS_ENABLED",
-    "value": "true",
+    "value": "false",
     "type": "boolean",
     "property": "ms_point_exchange_is_enabled"
   },
