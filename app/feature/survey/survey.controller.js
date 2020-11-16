@@ -139,13 +139,14 @@ module.exports = {
     let transaction;
     try {
       const { body: { survey, questions } , params : { id } } = req;
-      const surveyAvailable = await Survey.findOne({
+      const availableSurvey = await Survey.findOne({
         where: {
-          id: id
+          id: id,
+          deleted_flg: false
         }
       });
 
-      if (!surveyAvailable) {
+      if (!availableSurvey) {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
       transaction = await database.transaction();
@@ -204,17 +205,17 @@ module.exports = {
     let transaction;
     try {
       const { params: { id } } = req;
-      const surveyAvailable = await Survey.findOne({
+      const availableSurvey = await Survey.findOne({
         where: {
-          id: id
+          id: id,
+          deleted_flg: false
         }
       });
 
-      if (!surveyAvailable) {
+      if (!availableSurvey) {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
       transaction = await database.transaction();
-      console.log(surveyAvailable.id);
       await Survey.update({
         deleted_flg: true
       },{
