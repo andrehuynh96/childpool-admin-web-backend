@@ -103,6 +103,7 @@ module.exports = {
         question_type: body.question_type,
         category_type: QuestionCategory.ANSWER_NOW,
         points: body.points,
+        estimate_time: body.estimate_time,
         actived_flg: body.actived_flg,
         deleted_flg: false,
         created_by: user.id,
@@ -190,6 +191,7 @@ module.exports = {
         title_ja: body.title_ja,
         question_type: body.question_type,
         points: body.points,
+        estimate_time: body.estimate_time,
         actived_flg: body.actived_flg,
         updated_by: user.id,
       }, {
