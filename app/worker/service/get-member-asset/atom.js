@@ -84,9 +84,9 @@ class ATOM extends GetMemberAsset {
             let txs = await getHistories(address, memberAsset);
             if (txs.length > 0) {
               for (let tx of txs) {
-                if (tx.tx_type = 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.actions && tx.actions.length > 0) {
+                if (tx.tx_type === 'get_reward' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.actions && tx.actions.length > 0) {
                   for (let action of tx.actions) {
-                    if (action.type = 'get_reward' && this.validatorAddresses.indexOf(action.validator_address) != -1) {
+                    if (action.type === 'get_reward' && this.validatorAddresses.indexOf(action.validator_address) != -1) {
                       claim = claim + BigNumber(action.amount).toNumber() * 1e6;
                       logger.info('claim: ', claim);
                     }
