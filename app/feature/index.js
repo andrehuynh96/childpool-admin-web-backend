@@ -39,7 +39,7 @@ router.use(require('./member-login/member-login.route'));
 router.use(require('./fiat-transaction/fiat-transaction.route'));
 router.use(require('./nexo-member/nexo-member.route'));
 router.use(require('./nexo-transaction/nexo-transaction.route'));
-
+router.use(require('./survey/survey.route'));
 
 module.exports = router;
 
