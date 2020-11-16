@@ -14,5 +14,18 @@ router.get('/surveys',
   controller.search
 );
 
+router.get('/surveys/:id',
+  authenticate,
+  authority(PermissionKey.VIEW_SURVEY_DETAIL),
+  controller.details
+);
+
+router.post('/surveys',
+  authenticate,
+  validator(create),
+  authority(PermissionKey.CREATE_SURVEY),
+  controller.createSurvey
+);
+
 
 module.exports = router;

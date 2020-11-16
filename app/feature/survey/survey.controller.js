@@ -5,6 +5,9 @@ const Survey = require('app/model/wallet').surveys;
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const moment = require('moment');
+const questionMapper = require("app/feature/response-schema/question.response-schema");
+const database = require('app/lib/database').db().wallet;
+const QuestionSubType = require('app/model/wallet/value-object/question-sub-type');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -50,14 +53,14 @@ module.exports = {
   },
   details: async (req, res, next) => {
     try {
-      const { surveyId } = req.params;
+      const { id } = req.params;
       const survey = await Survey.findOne({
         where: {
-          id: surveyId
+          id: id
         }
       });
       if (!survey) {
-        return res.notFound(res.__("SURVEY_NOT_FOUND"),"SURVEY_NOT_FOUND", { field: ['surveyId'] });
+        return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
 
       const questions = await Question.findAll({
@@ -65,22 +68,77 @@ module.exports = {
           {
             as: "Answers",
             model: QuestionAnswer,
-            required: true,
           }
         ],
         where: {
-          survey_id: surveyId,
+          survey_id: id,
           deleted_flg: false,
         }
       });
 
       return res.ok({
         survey: survey,
-        questions: questions
+        questions: questionMapper(questions)
       });
     } catch (error) {
       logger.error('Get survey detail fail', error);
       next(error);
     }
-  }
+  },
+  createSurvey: async (req, res, next) => {
+    let transaction;
+    try {
+      const { survey, questions } = req.body;
+      survey.created_by = req.user.id;
+      survey.updated_by = req.user.id;
+
+      transaction = await database.transaction();
+      const surveyRes = await Survey.create(survey,{
+        transaction: transaction
+      });
+
+      if (questions && questions.length > 0) {
+        for (let item of questions) {
+          const questionData = { ...item };
+          questionData.points = 0;
+          questionData.created_by = req.user.id;
+          questionData.updated_by = req.user.id;
+          questionData.survey_id = surveyRes.id;
+          questionData.sub_type = QuestionSubType.SURVEY;
+
+          const questionRes = await Question.create(questionData,{
+            transaction: transaction
+          });
+
+          if (item.answers && item.answers.length > 0) {
+            item.answers.forEach(x => {
+              x.question_id = questionRes.id;
+            });
+
+            await QuestionAnswer.bulkCreate(item.answers,{
+              transaction: transaction
+            });
+          }
+        }
+      }
+      await transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
+      logger.error('Create survey detail fail', error);
+      next(error);
+    }
+  },
+  updateSurvey: async (req, res, next) => {
+    try {
+      return res.ok(true);
+    }
+    catch (error) {
+      logger.error('Update survey detail fail', error);
+      next(error);
+    }
+  },
 };
