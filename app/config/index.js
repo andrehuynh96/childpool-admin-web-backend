@@ -133,7 +133,8 @@ const config = {
     checkAdaPoolSize: process.env.SCHEDULE_CHECK_ADA_POOL_SIZE,
     checkExchangeStatus: process.env.SCHEDULE_CHECK_EXCHANGE_STATUS,
     getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET,
-    syncCurrencyWithChangelly: process.env.SCHEDULE_SYNC_CURRENCY_WITH_CHANGELLY
+    syncCurrencyWithChangelly: process.env.SCHEDULE_SYNC_CURRENCY_WITH_CHANGELLY,
+    checkStatusFiatTransaction: process.env.SCHEDULE_CHECK_STATUS_FIAT_TRANSACTION
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
@@ -215,7 +216,12 @@ const config = {
   webWallet: {
     apiUrl: process.env.WEB_WALLET_API_URL || "https://dev-staking-wallet-web.chainservices.info",
   },
-  hangoutAlertChannel: process.env.HANGOUT_ALERT_CHANEL || ""
+  hangoutAlertChannel: process.env.HANGOUT_ALERT_CHANEL || "",
+  fiat: {
+    wyre: {
+      url: process.env.WYRE_URL
+    }
+  }
 };
 
 module.exports = config;

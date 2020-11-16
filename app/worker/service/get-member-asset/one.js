@@ -8,7 +8,7 @@ const axios = require('axios');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logHangout = require("app/lib/logger/hangout");
-
+const dbLogger = require('app/lib/logger/db');
 class ONE extends GetMemberAsset {
   constructor() {
     super();
@@ -26,11 +26,13 @@ class ONE extends GetMemberAsset {
         unclaimReward: unclaimReward
       };
     } catch (error) {
+      await dbLogger(error, address);
       logger.error(error);
       return null;
     }
   }
 }
+
 
 async function getBalanceONE(address) {
   let balance = 0;
@@ -132,6 +134,7 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
       unclaimReward: totalUnclaimRewad
     };
   } catch (error) {
+    await dbLogger(error, address);
     logger.error(error);
     return null;
   }
@@ -181,9 +184,10 @@ async function getCollectRewardTxsHash(address, fromSecondEpoch) {
 
     return txHashes;
   } catch (err) {
-    logger.error(err);
     logHangout.write(JSON.stringify(err));
-    return null;
+    await dbLogger(err);
+    logger.error(err)
+    return null
   }
 }
 
@@ -209,6 +213,7 @@ async function getTransactionReceipt(txHash) {
     const { result } = response.data;
     return result;
   } catch (err) {
+    await dbLogger(err);
     logger.error(err)
     return null
   }

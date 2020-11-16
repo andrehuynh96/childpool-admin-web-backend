@@ -9,6 +9,7 @@ const api = new InfinitoApi(config.infinitoApiOpts);
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logHangout = require("app/lib/logger/hangout");
+const dbLogger = require('app/lib/logger/db');
 
 class IRIS extends GetMemberAsset {
   constructor() {
@@ -83,7 +84,7 @@ class IRIS extends GetMemberAsset {
             let txs = await getHistories(address, memberAsset);
             if (txs.length > 0) {
               for (let tx of txs) {
-                if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.validator_addresses && tx.validator_addresses.length > 0) {
+                if (tx.tx_type == 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.validator_addresses && tx.validator_addresses.length > 0) {
                   for (let validator of tx.validator_addresses) {
                     if (this.validatorAddresses.indexOf(validator.validator_address) != -1) {
                       claim = claim + BigNumber(validator.amount).toNumber() * 1e18;
@@ -107,6 +108,7 @@ class IRIS extends GetMemberAsset {
         unclaimReward: unclaimReward
       };
     } catch (error) {
+      await dbLogger(error,address);
       logger.error(error);
       return null;
     }
@@ -158,7 +160,8 @@ const getHistories = async (address, memberAsset) => {
   } catch (err) {
     logger.error(err);
     logHangout.write(JSON.stringify(err));
-    return null;
+    await dbLogger(err,address);
+    return null
   }
 }
 

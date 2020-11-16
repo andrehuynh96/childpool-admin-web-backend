@@ -32,9 +32,12 @@ router.use(require('./exchange-transaction/exchange-transaction.route'));
 router.use(require('./email-tracking/email-tracking.route'));
 router.use(require('./notification/notification.route'));
 router.use(require('./remove-2fa/remove-2fa.route'));
-router.use(require('./claim-point/claim-point.route'));
+router.use(require('./ms-point/ms-point.route'));
 router.use(require('./logging/logging.route'));
-
+router.use(require('./questionnaire/questionnaire.route'));
+router.use(require('./member-login/member-login.route'));
+router.use(require('./fiat-transaction/fiat-transaction.route'));
+router.use(require('./nexo-member/nexo-member.route'));
 module.exports = router;
 
 /** ********************************************************************/

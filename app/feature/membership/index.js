@@ -15,5 +15,5 @@ router.use(require("./member-kyc/member-kyc.route"));
 router.use(require("./reward-setting/reward-setting.route"));
 router.use(require("./fiat-rate/fiat-rate.route"));
 router.use(require("./crypto-address/crypto-address.route"));
-router.use(require("./claim-point-setting/claim-point-setting.route"));
+
 module.exports = router;

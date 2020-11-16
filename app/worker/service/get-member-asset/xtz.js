@@ -6,6 +6,7 @@ const BigNumber = require('bignumber.js');
 const tezosReward = require('app/lib/staking-api/tezos-reward');
 const StakingPlatform = require('app/lib/staking-api/staking-platform');
 const logHangout = require("app/lib/logger/hangout");
+const dbLogger = require('app/lib/logger/db');
 
 class XTZ extends GetMemberAsset {
   constructor() {
@@ -31,6 +32,7 @@ class XTZ extends GetMemberAsset {
         reward: reward
       };
     } catch (error) {
+      await dbLogger(error,address);
       logger.error(error);
       logHangout.write(JSON.stringify(error));
       return null;
