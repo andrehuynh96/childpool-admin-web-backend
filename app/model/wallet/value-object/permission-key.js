@@ -1066,4 +1066,11 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-11-13T00:00:00.000Z"
   },
+  "DELETE_SURVEY": {
+    "KEY": "DELETE_SURVEY",
+    "DESCRIPTION": "Delete survey",
+    "GROUP_NAME": "Surveys",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-11-13T00:00:00.000Z"
+  },
 };

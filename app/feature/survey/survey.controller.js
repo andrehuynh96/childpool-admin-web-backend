@@ -15,7 +15,9 @@ module.exports = {
       const { query } = req;
       const limit = query.limit ? parseInt(req.query.limit) : 10;
       const offset = query.offset ? parseInt(req.query.offset) : 0;
-      const where = {};
+      const where = {
+        deleted_flg: false
+      };
 
       if (query.name) {
         where.name = { [Op.iLike]: `%${query.name}%` };
@@ -56,7 +58,8 @@ module.exports = {
       const { id } = req.params;
       const survey = await Survey.findOne({
         where: {
-          id: id
+          id: id,
+          deleted_flg: false
         }
       });
       if (!survey) {
@@ -105,7 +108,7 @@ module.exports = {
           questionData.updated_by = req.user.id;
           questionData.survey_id = surveyRes.id;
           questionData.sub_type = QuestionSubType.SURVEY;
-
+          questionData.deleted_flg = false;
           const questionRes = await Question.create(questionData,{
             transaction: transaction
           });
@@ -133,11 +136,111 @@ module.exports = {
     }
   },
   updateSurvey: async (req, res, next) => {
+    let transaction;
     try {
+      const { body: { survey, questions } , params : { id } } = req;
+      const surveyAvailable = await Survey.findOne({
+        where: {
+          id: id
+        }
+      });
+
+      if (!surveyAvailable) {
+        return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
+      }
+      transaction = await database.transaction();
+      await Survey.update(survey,{
+        where: {
+          id: id
+        },
+        transaction: transaction
+      });
+
+      if (questions && questions.length > 0) {
+        for (let item of questions) {
+          await Question.update({
+            title: item.title,
+            title_ja : item.title_ja ? item.title_ja : '',
+            question_type: item.question_type,
+            actived_flg: item.actived_flg,
+            updated_by: req.user.id
+          },{
+            where: {
+              survey_id: id,
+              id: item.id,
+              deleted_flg: false
+            },
+            transaction: transaction
+          });
+
+          if (item.answers && item.answers.length > 0) {
+            for (let answer of  item.answers) {
+              await QuestionAnswer.update({
+                text: answer.text,
+                text_js: answer.text_js ? answer.text_js : '',
+                is_correct_flg: answer.is_correct_flg
+              },{
+                where: {
+                  id: answer.id
+                },
+                transaction: transaction
+              });
+            }
+          }
+        }
+      }
+      await transaction.commit();
       return res.ok(true);
     }
     catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
       logger.error('Update survey detail fail', error);
+      next(error);
+    }
+  },
+  deleteSurvey: async(req, res, next) => {
+    let transaction;
+    try {
+      const { params: { id } } = req;
+      const surveyAvailable = await Survey.findOne({
+        where: {
+          id: id
+        }
+      });
+
+      if (!surveyAvailable) {
+        return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
+      }
+      transaction = await database.transaction();
+      console.log(surveyAvailable.id);
+      await Survey.update({
+        deleted_flg: true
+      },{
+        where: {
+          id: id
+        },
+        transaction: transaction
+      });
+
+      await Question.update({
+        deleted_flg: true
+      },{
+        where: {
+          survey_id: id
+        },
+        transaction: transaction
+      });
+
+      await transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
+      logger.error('Delete survey detail fail', error);
       next(error);
     }
   },
