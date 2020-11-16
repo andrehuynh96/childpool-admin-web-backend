@@ -74,7 +74,7 @@
     "sequelize-temporalize": "^4.1.0",
     "sleep-promise": "^8.0.1",
     "speakeasy": "^2.0.0",
-    "staking-logging": "^0.1.7",
+    "staking-logging": "^0.1.8",
     "stream-to-array": "^2.3.0",
     "swagger-jsdoc": "^3.5.0",
     "swagger-ui-express": "^4.1.3",
