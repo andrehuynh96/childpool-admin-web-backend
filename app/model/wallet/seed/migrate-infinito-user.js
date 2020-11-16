@@ -36,7 +36,7 @@ async function _createMember(user) {
       fullname: user.full_name,
       first_name: user.first_name,
       last_name: user.last_name,
-      phone: user.phone,
+      phone: user.phone || "",
       member_sts: user.active == 1 ? MemberStatus.ACTIVATED : MemberStatus.UNACTIVATED,
       referral_code: '',
       infinito_id: user.id,
