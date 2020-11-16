@@ -21,7 +21,7 @@ const config = require("app/config");
 
     await require("./root-permission")();
     await require("./term")();
-    require("./migrate-infinito-user")();
+    // require("./migrate-infinito-user")();
     await require("./setting")();
     console.log('Seeding data done.');
   }
