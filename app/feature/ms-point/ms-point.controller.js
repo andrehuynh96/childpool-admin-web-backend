@@ -11,6 +11,7 @@ const PointStatus = require("app/model/wallet/value-object/point-status");
 const PointAction = require("app/model/wallet/value-object/point-action");
 const mapper = require("app/feature/response-schema/claim-point.response-schema");
 const membershipTypeMapper = require("app/feature/response-schema/membership-type.response-schema");
+const MsPointPhaseType = require("app/model/wallet/value-object/ms-point-phase-type");
 
 const database = require('app/lib/database').db().wallet;
 
@@ -117,22 +118,14 @@ module.exports = {
   },
   getPhases: async (req, res, next) => {
     try {
-      const phases = [
-        {
-          value: 'phase_1',
-          label: 'Phase 1'
-        },
-        {
-          value: 'phase_3',
-          label: 'Phase 3'
-        },
-        {
-          value: 'phase_4',
-          label: 'Phase 4'
-        },
-      ];
+      const result = Object.entries(MsPointPhaseType).map(items => {
+        return {
+          label: items[0],
+          value: items[1]
+        };
+      });
 
-      return res.ok(phases);
+      return res.ok(result);
     } catch (error) {
       logger.error('get phase list fail', error);
       next(error);
