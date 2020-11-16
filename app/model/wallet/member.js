@@ -158,6 +158,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: true,
     },
+    source: {
+      type: DataTypes.STRING(64),
+      allowNull: true
+    }
   }, {
     underscored: true,
     timestamps: true,
