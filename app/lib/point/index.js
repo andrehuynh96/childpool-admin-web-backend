@@ -36,7 +36,8 @@ module.exports = {
           key: "MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED"
         }
       });
-      if (!setting || Boolean(setting.value) == false) {
+
+      if (!setting || setting.value !== 'true') {
         return;
       }
 
@@ -144,4 +145,4 @@ async function _findEmailTemplate(templateName) {
   });
 
   return templates;
-} 
+}

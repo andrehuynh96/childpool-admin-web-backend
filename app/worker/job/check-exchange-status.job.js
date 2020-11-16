@@ -190,7 +190,7 @@ async function _addPointToUser({ member_id, object_id, amount_usd }) {
     });
 
     let enable = setting.find(x => x.key == "MS_POINT_EXCHANGE_IS_ENABLED");
-    if (!enable || Boolean(enable.value) == false) {
+    if (!enable || enable.value !== 'true') {
       return;
     }
 
@@ -298,4 +298,4 @@ async function _findEmailTemplate(templateName) {
   });
 
   return templates;
-} 
+}
