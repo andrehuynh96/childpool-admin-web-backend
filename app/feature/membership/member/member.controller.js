@@ -853,6 +853,7 @@ async function _createMemberCond(query) {
     memberCond.email = { [Op.iLike]: `%${query.email}%` };
   }
 
+  memberCond.source = { [Op.ne]: 'Infinito' };
   return memberCond;
 }
 
