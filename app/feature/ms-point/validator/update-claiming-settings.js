@@ -6,6 +6,7 @@ const claimPointSchema = Joi.object().keys({
 });
 
 const schema = Joi.object().keys({
+  ms_point_claiming_is_enabled: Joi.boolean().required(),
   ms_point_delay_time_in_seconds: Joi.number().min(1).required(),
   membership_types: Joi.array().required().items(claimPointSchema),
 });
