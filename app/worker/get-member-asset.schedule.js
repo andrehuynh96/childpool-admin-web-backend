@@ -12,6 +12,4 @@ module.exports = {
   },
   lockFile: () => GET_MEMBER_ASSET_LOCK_FILE
 };
-=======
-};
 
