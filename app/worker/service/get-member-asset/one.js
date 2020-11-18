@@ -33,6 +33,7 @@ class ONE extends GetMemberAsset {
   }
 }
 
+
 async function getBalanceONE(address) {
   let balance = 0;
   const shards = Object.values(config.harmony);
@@ -133,8 +134,9 @@ async function getAmountAndRewardONE(address, validatorAddresses) {
       unclaimReward: totalUnclaimRewad
     };
   } catch (error) {
+    logger[error.canLogAxiosError ? 'error' : 'info'](error);
     await dbLogger(error, address);
-    logger.error(error);
+
     return null;
   }
 }

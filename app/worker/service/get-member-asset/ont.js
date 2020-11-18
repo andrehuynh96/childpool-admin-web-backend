@@ -102,10 +102,10 @@ class ONT extends GetMemberAsset {
         unclaimReward: unclaimReward
       };
     } catch (error) {
-      logger.error(error);
+      logger[error.canLogAxiosError ? 'error' : 'info'](error);
       logHangout.write(JSON.stringify(error));
-            await dbLogger(error,address);
-            return null;
+      await dbLogger(error,address);
+      return null;
     }
   }
 }
@@ -157,8 +157,8 @@ async function getClaimAmount(parserUrl, address, address_unbound_ong, address_s
     }
     return claim;
   } catch (err) {
+    logger[err.canLogAxiosError ? 'error' : 'info'](err);
     dbLogger(err,address);
-    logger.error(err);
     return 0;
   }
 }

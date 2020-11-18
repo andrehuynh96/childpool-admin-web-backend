@@ -84,7 +84,7 @@ class IRIS extends GetMemberAsset {
             let txs = await getHistories(address, memberAsset);
             if (txs.length > 0) {
               for (let tx of txs) {
-                if (tx.tx_type = 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.validator_addresses && tx.validator_addresses.length > 0) {
+                if (tx.tx_type === 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.validator_addresses && tx.validator_addresses.length > 0) {
                   for (let validator of tx.validator_addresses) {
                     if (this.validatorAddresses.indexOf(validator.validator_address) != -1) {
                       claim = claim + BigNumber(validator.amount).toNumber() * 1e18;
@@ -158,7 +158,7 @@ const getHistories = async (address, memberAsset) => {
 
     return txs;
   } catch (err) {
-    logger.error(err);
+    logger[err.canLogAxiosError ? 'error' : 'info'](err);
     logHangout.write(JSON.stringify(err));
     await dbLogger(err,address);
     return null

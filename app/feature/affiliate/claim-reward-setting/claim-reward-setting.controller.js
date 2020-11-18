@@ -73,12 +73,12 @@ module.exports = {
           value: req.body[propertyName],
           updated_by: req.user.id
         }, {
-          where: {
-            key,
-          },
-          returning: true,
-          transaction: transaction
-        });
+            where: {
+              key,
+            },
+            returning: true,
+            transaction: transaction
+          });
 
         if (!numOfItems) {
           await Setting.create({
@@ -89,8 +89,8 @@ module.exports = {
             created_by: req.user.id,
             updated_by: req.user.id,
           }, {
-            transaction: transaction
-          });
+              transaction: transaction
+            });
         }
       }
 

@@ -107,7 +107,6 @@ module.exports = {
       } else {
         order.push(['created_at', 'DESC']);
       }
-
       const { count: total, rows: items } = await Member.findAndCountAll({
         limit,
         offset,
@@ -434,7 +433,7 @@ module.exports = {
               transaction: transaction
             });
           member.referral_code = referrerCode;
-          if (member.membership_type_id === silverMembership.id && member.kyc_id == '2' ) {
+          if (member.membership_type_id === silverMembership.id && member.kyc_id == '2') {
             result = await membershipApi.updateMembershipType(member, goldMembership);
 
             if (result.httpCode !== 200) {
@@ -853,6 +852,7 @@ async function _createMemberCond(query) {
     memberCond.email = { [Op.iLike]: `%${query.email}%` };
   }
 
+  memberCond.source = { [Op.is]: null };
   return memberCond;
 }
 
