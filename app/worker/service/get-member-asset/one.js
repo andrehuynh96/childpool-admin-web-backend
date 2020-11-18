@@ -33,6 +33,7 @@ class ONE extends GetMemberAsset {
   }
 }
 
+
 async function getBalanceONE(address) {
   let balance = 0;
   const shards = Object.values(config.harmony);
