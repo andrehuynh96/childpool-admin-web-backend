@@ -135,6 +135,7 @@ module.exports = {
     try {
       const keys = [
         'MS_POINT_DELAY_TIME_IN_SECONDS',
+        'MS_POINT_CLAIMING_IS_ENABLED',
         'MS_POINT_MODE',
         'MS_POINT_STAKING_IS_ENABLED',
         'MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED',
@@ -158,9 +159,10 @@ module.exports = {
       const result = {
         ms_point_mode: getPropertyValue(settings, 'ms_point_mode', 'phase_1'),
         ms_point_delay_time_in_seconds: getPropertyValue(settings, 'ms_point_delay_time_in_seconds', '86400'),
-        ms_point_staking_is_enabled: getPropertyValue(settings, 'ms_point_staking_is_enabled', 'true'),
-        ms_point_upgrading_membership_is_enabled: getPropertyValue(settings, 'ms_point_upgrading_membership_is_enabled', 'true'),
-        ms_point_exchange_is_enabled: getPropertyValue(settings, 'ms_point_exchange_is_enabled', 'true'),
+        ms_point_claiming_is_enabled: getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false'),
+        ms_point_staking_is_enabled: getPropertyValue(settings, 'ms_point_staking_is_enabled', 'false'),
+        ms_point_upgrading_membership_is_enabled: getPropertyValue(settings, 'ms_point_upgrading_membership_is_enabled', 'false'),
+        ms_point_exchange_is_enabled: getPropertyValue(settings, 'ms_point_exchange_is_enabled', 'false'),
         ms_point_exchange_mininum_value_in_usdt: getPropertyValue(settings, 'ms_point_exchange_mininum_value_in_usdt', null),
         membership_types: membershipTypeMapper(membershipTypes),
       };
@@ -202,12 +204,26 @@ module.exports = {
     let transaction;
     try {
       transaction = await database.transaction();
-      const { ms_point_delay_time_in_seconds, membership_types } = req.body;
+      const {
+        ms_point_claiming_is_enabled,
+        ms_point_delay_time_in_seconds,
+        membership_types,
+      } = req.body;
+
       await Setting.update({
         value: ms_point_delay_time_in_seconds
       }, {
         where: {
           key: 'MS_POINT_DELAY_TIME_IN_SECONDS'
+        },
+        returning: true,
+        transaction: transaction
+      });
+      await Setting.update({
+        value: ms_point_claiming_is_enabled
+      }, {
+        where: {
+          key: 'MS_POINT_CLAIMING_IS_ENABLED'
         },
         returning: true,
         transaction: transaction
