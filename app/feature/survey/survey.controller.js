@@ -96,32 +96,13 @@ module.exports = {
       survey.updated_by = req.user.id;
 
       transaction = await database.transaction();
-      const surveyRes = await Survey.create(survey,{
+      const surveyRes = await Survey.create(survey, {
         transaction: transaction
       });
 
       if (questions && questions.length > 0) {
         for (let item of questions) {
-          const questionData = { ...item };
-          questionData.points = 0;
-          questionData.created_by = req.user.id;
-          questionData.updated_by = req.user.id;
-          questionData.survey_id = surveyRes.id;
-          questionData.sub_type = QuestionSubType.SURVEY;
-          questionData.deleted_flg = false;
-          const questionRes = await Question.create(questionData,{
-            transaction: transaction
-          });
-
-          if (item.answers && item.answers.length > 0) {
-            item.answers.forEach(x => {
-              x.question_id = questionRes.id;
-            });
-
-            await QuestionAnswer.bulkCreate(item.answers,{
-              transaction: transaction
-            });
-          }
+          await createQuestionAndAnswers(surveyRes.id, item, transaction,req.user.id);
         }
       }
       await transaction.commit();
@@ -138,7 +119,7 @@ module.exports = {
   updateSurvey: async (req, res, next) => {
     let transaction;
     try {
-      const { body: { survey, questions } , params : { id } } = req;
+      const { body: { survey, questions }, params: { id } } = req;
       const availableSurvey = await Survey.findOne({
         where: {
           id: id,
@@ -150,7 +131,7 @@ module.exports = {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
       transaction = await database.transaction();
-      await Survey.update(survey,{
+      await Survey.update(survey, {
         where: {
           id: id
         },
@@ -158,38 +139,21 @@ module.exports = {
       });
 
       if (questions && questions.length > 0) {
-        for (let item of questions) {
-          await Question.update({
-            title: item.title,
-            title_ja : item.title_ja ? item.title_ja : '',
-            question_type: item.question_type,
-            actived_flg: item.actived_flg,
-            updated_by: req.user.id
-          },{
-            where: {
-              survey_id: id,
-              id: item.id,
-              deleted_flg: false
-            },
-            transaction: transaction
-          });
+        await removeQuestionAndAnswerNotInList(id ,questions, transaction);
 
-          if (item.answers && item.answers.length > 0) {
-            for (let answer of  item.answers) {
-              await QuestionAnswer.update({
-                text: answer.text,
-                text_js: answer.text_js ? answer.text_js : '',
-                is_correct_flg: answer.is_correct_flg
-              },{
-                where: {
-                  id: answer.id
-                },
-                transaction: transaction
-              });
-            }
+        for (let item of questions) {
+          if (item.id) {
+            await updateQuestions(id,item, transaction, req.user.id);
+          }
+          else {
+            await createQuestionAndAnswers(id,item, transaction,req.user.id);
           }
         }
       }
+      else {
+        await removeAllQuestionAndAnswer(id, transaction);
+      }
+
       await transaction.commit();
       return res.ok(true);
     }
@@ -201,7 +165,7 @@ module.exports = {
       next(error);
     }
   },
-  deleteSurvey: async(req, res, next) => {
+  deleteSurvey: async (req, res, next) => {
     let transaction;
     try {
       const { params: { id } } = req;
@@ -218,7 +182,7 @@ module.exports = {
       transaction = await database.transaction();
       await Survey.update({
         deleted_flg: true
-      },{
+      }, {
         where: {
           id: id
         },
@@ -227,7 +191,7 @@ module.exports = {
 
       await Question.update({
         deleted_flg: true
-      },{
+      }, {
         where: {
           survey_id: id
         },
@@ -246,3 +210,180 @@ module.exports = {
     }
   },
 };
+
+async function removeQuestionAndAnswerNotInList(survey_id, questions, transaction) {
+  try {
+    const listQuestionId = [];
+    questions.forEach(item => {
+      if (item.id) {
+        listQuestionId.push(item.id);
+      }
+    });
+
+    await Question.update({
+      deleted_flg: true
+    }, {
+      where: {
+        id: { [Op.notIn]: listQuestionId },
+        survey_id: survey_id,
+        deleted_flg: false
+      },
+      transaction: transaction
+    });
+
+    const questionsRemoved = await Question.findAll({
+      where: {
+        id: { [Op.notIn]: listQuestionId },
+        survey_id: survey_id
+      },
+    });
+
+    const questionRemovedIds = questionsRemoved.map(item => item.id);
+    await QuestionAnswer.destroy({
+      where: {
+        question_id: questionRemovedIds
+      },
+      transaction: transaction
+    });
+  }
+  catch (error) {
+    logger.error('Remove question and answer not in list fail', error);
+    throw error;
+  }
+}
+
+async function createQuestionAndAnswers(survey_id, question, transaction, user_id) {
+  try {
+    const questionRes = await Question.create({
+      title: question.title,
+      title_ja: question.title_ja ? question.title_ja : '',
+      question_type: question.question_type,
+      actived_flg: question.actived_flg,
+      points: 0,
+      deleted_flg: false,
+      created_by: user_id,
+      updated_by: user_id,
+      survey_id: survey_id,
+      sub_type: QuestionSubType.SURVEY,
+      estimate_time: 0
+    }, {
+      transaction: transaction
+    });
+
+    if (question.answers && question.answers.length > 0) {
+      question.answers.forEach(x => {
+        x.question_id = questionRes.id;
+      });
+
+      await QuestionAnswer.bulkCreate(question.answers, {
+        transaction: transaction
+      });
+    }
+  }
+  catch (error) {
+    logger.error('Create question and answer fail', error);
+    throw error;
+  }
+}
+async function updateQuestions(survey_id, question, transaction,user_id) {
+  try {
+    await Question.update({
+      title: question.title,
+      title_ja: question.title_ja ? question.title_ja : '',
+      question_type: question.question_type,
+      actived_flg: question.actived_flg,
+      updated_by: user_id
+    }, {
+      where: {
+        survey_id: survey_id,
+        id: question.id,
+        deleted_flg: false
+      },
+      transaction: transaction
+    });
+
+    if (question.answers && question.answers.length > 0) {
+      const listAnswerId = [];
+      question.answers.forEach(x => {
+        if (x.id) {
+          listAnswerId.push(x.id);
+        }
+      });
+
+      await QuestionAnswer.destroy({
+        where: {
+          id: { [Op.notIn]: listAnswerId },
+          question_id: question.id,
+        }
+      });
+
+      for (let answer of question.answers) {
+        if (answer.id) {
+          await QuestionAnswer.update({
+            text: answer.text,
+            text_js: answer.text_js ? answer.text_js : '',
+            is_correct_flg: answer.is_correct_flg
+          }, {
+            where: {
+              id: answer.id
+            },
+            transaction: transaction
+          });
+        }
+        else {
+          await QuestionAnswer.create({
+            question_id: question.id,
+            text: answer.text,
+            text_js: answer.text_js ? answer.text_js : '',
+            is_correct_flg: answer.is_correct_flg
+          }, {
+            transaction: transaction
+          });
+        }
+      }
+    }
+    else {
+      await QuestionAnswer.destroy({
+        where: {
+          question_id: question.id
+        },
+        transaction: transaction
+      });
+    }
+  }
+  catch (error) {
+    logger.error('Update question fail', error);
+    throw error;
+  }
+}
+
+async function removeAllQuestionAndAnswer(survey_id, transaction) {
+  try {
+    await Question.update({
+      deleted_flg: true
+    }, {
+      where: {
+        survey_id: survey_id,
+        deleted_flg: false
+      },
+      transaction: transaction
+    });
+    const questionsRemoved = await Question.findAll({
+      where: {
+        survey_id: survey_id,
+      }
+    });
+
+    const questionIds = questionsRemoved.map(item => item.id);
+    await QuestionAnswer.destroy({
+      where: {
+        question_id: questionIds
+      },
+      transaction: transaction
+    });
+  }
+  catch (error) {
+    logger.error('Remove all question and answer of survey fail', error);
+    throw error;
+  }
+}

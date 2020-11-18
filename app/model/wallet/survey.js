@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    activated_flg: {
+    actived_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
