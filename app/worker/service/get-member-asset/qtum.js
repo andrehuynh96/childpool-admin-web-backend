@@ -73,8 +73,8 @@ class QTUM extends GetMemberAsset {
         reward: reward
       };
     } catch (error) {
+      logger[error.canLogAxiosError ? 'error' : 'info'](error);
       await dbLogger(error,address);
-      logger.error(error);
       logHangout.write(JSON.stringify(error));
       return null;
     }

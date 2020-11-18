@@ -55,7 +55,7 @@ module.exports = {
         order: [['created_at', 'DESC']]
       });
       items.forEach(item => {
-        item.member_email = item.Member.email ? item.Member.email : '';
+        item.member_email = item.Member ? item.Member.email : '';
       });
       return res.ok({
         items: fiatTransactionsMapper(items),

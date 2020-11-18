@@ -1,7 +1,7 @@
 const config = require("app/config");
 const axios = require("axios");
 const logger = require("app/lib/logger");
-const { getToken } = require("./token")
+const { getToken } = require("./token");
 
 module.exports = {
 	updateCommission: async (id, items, userId) => {
@@ -21,7 +21,7 @@ module.exports = {
 			return result.data;
 		}
 		catch (err) {
-			logger.error("updateCommission fail:", err);
+			logger[err.canLogAxiosError ? 'error' : 'info']("updateCommission fail:", err);
 			return { code: err.response.status, data: err.response.data };
 		}
 	},
@@ -37,7 +37,7 @@ module.exports = {
 			return result.data;
 		}
 		catch (err) {
-			logger.error("getAllCommission fail:", err);
+			logger[err.canLogAxiosError ? 'error' : 'info']("getAllCommission fail:", err);
 			return { code: err.response.status, data: err.response.data };
 		}
 	},
@@ -53,7 +53,7 @@ module.exports = {
 			return result.data;
 		}
 		catch (err) {
-			logger.error("getCommissionHis fail:", err);
+			logger[err.canLogAxiosError ? 'error' : 'info']("getCommissionHis fail:", err);
 			return { code: err.response.status, data: err.response.data };
 		}
 	},
@@ -69,7 +69,7 @@ module.exports = {
 			return result.data;
 		}
 		catch (err) {
-			logger.error("getAllCommissionByPlatform fail:", err);
+			logger[err.canLogAxiosError ? 'error' : 'info']("getAllCommissionByPlatform fail:", err);
 			return { code: err.response.status, data: err.response.data };
 		}
 	},
@@ -85,7 +85,7 @@ module.exports = {
 			return result.data;
 		}
 		catch (err) {
-			logger.error("getCommissions fail:", err);
+			logger[err.canLogAxiosError ? 'error' : 'info']("getCommissions fail:", err);
 			return { code: err.response.status, data: err.response.data };
 		}
 	},
@@ -101,8 +101,8 @@ module.exports = {
 			return result.data;
 		}
 		catch (err) {
-			logger.error("getAllCommissionByPlatform fail:", err);
+			logger[err.canLogAxiosError ? 'error' : 'info']("getAllCommissionByPlatform fail:", err);
 			return { code: err.response.status, data: err.response.data };
 		}
 	},
-}
+};

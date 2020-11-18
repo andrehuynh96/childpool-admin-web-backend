@@ -1,7 +1,6 @@
 const UpdateAffiliateSchedule = require("./update-affiliate.schedule");
-const CheckDistributeRewardSchedule = require("./check-distribute-reward.schedule");
-const CheckAdaPoolSizeSchedule = require("./check-ada-pool-size.schedule")
-const CheckExchangeStatusSchedule = require("./check-exchange-status.schedule")
+const CheckAdaPoolSizeSchedule = require("./check-ada-pool-size.schedule");
+const CheckExchangeStatusSchedule = require("./check-exchange-status.schedule");
 const GetMemberAssetSchedule = require("./get-member-asset.schedule");
 const SyncCurrencyWithChangelly = require("./sycn-currency-with-changelly.schedule");
 const CheckStatusFiatTransactionSchedule = require("./check-status-fiat-transaction.schedule");
@@ -36,11 +35,15 @@ async function _removeLockFile() {
     }
   }
   catch (err) {
-    console.log('_removeLockFile Error:::', err)
+    console.log('_removeLockFile Error:::', err);
   }
 }
 
 async function _remove(f) {
+  if (!fs.existsSync(f)) {
+    return;
+  }
+
   return new Promise((resolve, reject) => {
     fs.unlink(f, function (err) {
       if (err) {
@@ -51,5 +54,5 @@ async function _remove(f) {
       }
       resolve(true);
     });
-  })
+  });
 }

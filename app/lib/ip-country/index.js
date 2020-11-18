@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const logger = require('app/lib/logger');
 const Axios = require('axios');
 const config = require('app/config');
@@ -10,10 +11,10 @@ module.exports = {
       const data = {
         data: result.data,
         headers: req.headers
-      }
+      };
       return data;
     } catch (err) {
-      logger.error("getCountryLocal: ", err);
+      // logger.error("getCountryLocal: ", err);
       throw err;
     }
   },
@@ -21,7 +22,7 @@ module.exports = {
     try {
       const _ip = _getIpClient(req);
       const _country = await Axios.get(`https://freegeoip.app/json/${_ip}`);
-      const _CountryWhitelist = config.membership.countryWhitelist.split(',')
+      const _CountryWhitelist = config.membership.countryWhitelist.split(',');
       return _CountryWhitelist.indexOf(_country.data.country_code) > -1;
     } catch (err) {
       logger.error("isExistCountryLocal: ", err);
@@ -36,7 +37,7 @@ module.exports = {
     }
     return false;
   },
-}
+};
 
 function _getIpClient(req) {
   const registerIp = (req.headers['x-forwarded-for'] || req.headers['x-client-ip'] || req.ip);

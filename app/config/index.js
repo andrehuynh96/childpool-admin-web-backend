@@ -32,7 +32,7 @@ const config = {
     name: process.env.APP_NAME || 'staking-childpool-admin-web-backend',
     version: pkg.version,
     description: pkg.description,
-    buildNumber: process.env.BUILD_NUMBER || '',
+    buildNumber: process.env.BUILD_NUMBER || process.env.CI_JOB_ID || '',
     port: parseInt(process.env.PORT || process.env.APP_PORT),
   },
   db: {
@@ -186,7 +186,8 @@ const config = {
   patchData: {
     isEnabledUpdatingMembershipRewards: process.env.PATCH_IS_ENABLED_UPDATING_MEMBERSHIP_REWARDS === 'true',
     patchIsEnabledSyncMembershipType: process.env.PATCH_IS_ENABLED_SYNC_MEMBERSHIP_TYPE === 'true',
-    patchIsEnabledSyncClients: process.env.PATCH_IS_ENABLED_SYNC_CLIENTS === 'true'
+    patchIsEnabledSyncClients: process.env.PATCH_IS_ENABLED_SYNC_CLIENTS === 'true',
+    isEnabledDowngrageGoldMembers: process.env.PATCH_IS_ENABLED_DOWNGRAGE_GOLD_MEMBERS === 'true',
   },
   exchange: {
     changelly: {
@@ -221,7 +222,15 @@ const config = {
     wyre: {
       url: process.env.WYRE_URL
     }
-  }
+  },
+  crypto: {
+    secret: process.env.CRYPTO_SECRET,
+  },
+  hangoutError: {
+    isEnabled: process.env.HANGOUT_ERROR_IS_ENABLED === 'true',
+    logLevel: process.env.HANGOUT_ERROR_LOG_LEVEL || 'error',
+    webhookUrl: process.env.HANGOUT_ERROR_CHANEL_WEBHOOK_URL,
+  },
 };
 
 module.exports = config;
