@@ -159,6 +159,7 @@ module.exports = {
       const result = {
         ms_point_mode: getPropertyValue(settings, 'ms_point_mode', 'phase_1'),
         ms_point_delay_time_in_seconds: getPropertyValue(settings, 'ms_point_delay_time_in_seconds', '86400'),
+        ms_point_delay_time_duration: getPropertyValue(settings, 'ms_point_delay_time_duration', 'days'),
         ms_point_claiming_is_enabled: getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false'),
         ms_point_staking_is_enabled: getPropertyValue(settings, 'ms_point_staking_is_enabled', 'false'),
         ms_point_upgrading_membership_is_enabled: getPropertyValue(settings, 'ms_point_upgrading_membership_is_enabled', 'false'),
@@ -207,10 +208,12 @@ module.exports = {
       const {
         ms_point_claiming_is_enabled,
         ms_point_delay_time_in_seconds,
+        ms_point_delay_time_duration,
         membership_types,
       } = req.body;
 
-      await Setting.update({
+      const tasks = [];
+      tasks.push(Setting.update({
         value: ms_point_delay_time_in_seconds
       }, {
         where: {
@@ -218,18 +221,27 @@ module.exports = {
         },
         returning: true,
         transaction: transaction
-      });
-      await Setting.update({
-        value: ms_point_claiming_is_enabled
+      }));
+      tasks.push(Setting.update({
+        value: ms_point_claiming_is_enabled,
       }, {
         where: {
           key: 'MS_POINT_CLAIMING_IS_ENABLED'
         },
         returning: true,
         transaction: transaction
-      });
+      }));
+      tasks.push(Setting.update({
+        value: ms_point_delay_time_duration,
+      }, {
+        where: {
+          key: 'MS_POINT_DELAY_TIME_DURATION'
+        },
+        returning: true,
+        transaction: transaction
+      }));
 
-      await forEach(membership_types, async item => {
+      tasks.push(forEach(membership_types, async item => {
         await MembershipType.update({
           claim_points: item.points,
         }, {
@@ -239,7 +251,9 @@ module.exports = {
           returning: true,
           transaction: transaction
         });
-      });
+      }));
+
+      await Promise.all(tasks);
       await transaction.commit();
 
       return res.ok(true);
