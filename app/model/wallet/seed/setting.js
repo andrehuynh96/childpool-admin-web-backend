@@ -17,6 +17,12 @@ const SETTINGS = [
     "property": "ms_point_delay_time_in_seconds"
   },
   {
+    "key": "MS_POINT_DELAY_TIME_DURATION",
+    "value": "days",
+    "type": "string",
+    "property": "ms_point_delay_time_duration"
+  },
+  {
     "key": "MS_POINT_CLAIMING_IS_ENABLED",
     "value": "true",
     "type": "boolean",
@@ -46,7 +52,12 @@ const SETTINGS = [
     "type": "number",
     "property": "ms_point_exchange_mininum_value_in_usdt"
   },
-
+  {
+    "key": "MS_POINT_SURVEY_IS_ENABLED",
+    "value": "false",
+    "type": "boolean",
+    "property": "ms_point_survey_is_enabled"
+  },
 ];
 
 module.exports = async () => {

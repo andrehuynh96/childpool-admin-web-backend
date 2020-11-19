@@ -13,7 +13,6 @@ const questionSchema = Joi.object().keys({
   title: Joi.string().required(),
   title_ja: Joi.string().allow(null).allow('').optional(),
   question_type: Joi.string().valid(Object.values(QuestionType)).required(),
-  actived_flg: Joi.boolean().required(),
   answers: Joi.array().optional().items(answerSchema),
 });
 

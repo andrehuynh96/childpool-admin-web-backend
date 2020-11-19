@@ -258,7 +258,7 @@ async function createQuestionAndAnswers(survey_id, question, transaction, user_i
       title: question.title,
       title_ja: question.title_ja ? question.title_ja : '',
       question_type: question.question_type,
-      actived_flg: question.actived_flg,
+      actived_flg: true,
       points: 0,
       deleted_flg: false,
       created_by: user_id,
