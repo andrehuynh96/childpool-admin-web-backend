@@ -491,8 +491,7 @@ module.exports = {
       ]);
       res.setHeader('Content-disposition', 'attachment; filename=token-payment.csv');
       res.set('Content-Type', 'text/csv');
-      // res.send(cryptoHelper.encrypt(data));
-      res.send(data);
+      res.send(cryptoHelper.encrypt(data));
     }
     catch (error) {
       logger.info('download csv fail', error);
