@@ -52,7 +52,12 @@ const SETTINGS = [
     "type": "number",
     "property": "ms_point_exchange_mininum_value_in_usdt"
   },
-
+  {
+    "key": "MS_POINT_SURVEY_IS_ENABLED",
+    "value": "false",
+    "type": "boolean",
+    "property": "ms_point_survey_is_enabled"
+  },
 ];
 
 module.exports = async () => {

@@ -5,4 +5,5 @@ module.exports = {
   updateStakingSettings: require('./update-staking-settings'),
   updateExchangeSettings: require('./update-exchange-settings'),
   updateUpgradeMembershipSettings: require('./update-upgrade-membership-settings'),
+  updateSurveySettings: require('./update-survey-settings'),
 };
