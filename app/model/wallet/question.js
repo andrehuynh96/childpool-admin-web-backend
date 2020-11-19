@@ -62,11 +62,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     survey_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     },
     sub_type: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       defaultValue: QuestionSubType.QUESTIONNAIRE
     }
   }, {

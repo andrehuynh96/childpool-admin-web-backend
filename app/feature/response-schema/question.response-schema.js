@@ -13,7 +13,7 @@ const destObject = {
     '[].actived_flg': '[].actived_flg',
     '[].deleted_flg': '[].deleted_flg',
     '[].sub_type': '[].sub_type',
-    '[].Answers': '[].Answers?',
+    '[].Answers': '[].answers?',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
   },
