@@ -65,8 +65,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     sub_type: {
-      type: DataTypes.UUID,
-      allowNull: true,
+      type: DataTypes.STRING(100),
+      allowNull: false,
       defaultValue: QuestionSubType.QUESTIONNAIRE
     }
   }, {
