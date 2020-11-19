@@ -134,9 +134,10 @@ module.exports = {
   getSettings: async (req, res, next) => {
     try {
       const keys = [
-        'MS_POINT_DELAY_TIME_IN_SECONDS',
-        'MS_POINT_CLAIMING_IS_ENABLED',
         'MS_POINT_MODE',
+        'MS_POINT_CLAIMING_IS_ENABLED',
+        'MS_POINT_DELAY_TIME_IN_SECONDS',
+        'MS_POINT_DELAY_TIME_DURATION',
         'MS_POINT_STAKING_IS_ENABLED',
         'MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED',
         'MS_POINT_EXCHANGE_IS_ENABLED',
@@ -159,7 +160,7 @@ module.exports = {
       const result = {
         ms_point_mode: getPropertyValue(settings, 'ms_point_mode', 'phase_1'),
         ms_point_delay_time_in_seconds: getPropertyValue(settings, 'ms_point_delay_time_in_seconds', '86400'),
-        ms_point_delay_time_duration: getPropertyValue(settings, 'ms_point_delay_time_duration', 'days'),
+        ms_point_delay_time_duration: getPropertyValue(settings, 'ms_point_delay_time_duration', ''),
         ms_point_claiming_is_enabled: getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false'),
         ms_point_staking_is_enabled: getPropertyValue(settings, 'ms_point_staking_is_enabled', 'false'),
         ms_point_upgrading_membership_is_enabled: getPropertyValue(settings, 'ms_point_upgrading_membership_is_enabled', 'false'),
