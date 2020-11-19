@@ -49,8 +49,12 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: SurveyType.SURVEY
     },
     point: {
-      type: DataTypes.JSON,
+      type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    membership_point: {
+      type: DataTypes.JSON,
+      allowNull: true
     },
     estimate_time: {
       type: DataTypes.INTEGER,
