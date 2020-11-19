@@ -142,6 +142,7 @@ module.exports = {
         'MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED',
         'MS_POINT_EXCHANGE_IS_ENABLED',
         'MS_POINT_EXCHANGE_MININUM_VALUE_IN_USDT',
+        'MS_POINT_SURVEY_IS_ENABLED',
       ];
       const settings = await Setting.findAll({
         where: {
@@ -166,6 +167,7 @@ module.exports = {
         ms_point_upgrading_membership_is_enabled: getPropertyValue(settings, 'ms_point_upgrading_membership_is_enabled', 'false'),
         ms_point_exchange_is_enabled: getPropertyValue(settings, 'ms_point_exchange_is_enabled', 'false'),
         ms_point_exchange_mininum_value_in_usdt: getPropertyValue(settings, 'ms_point_exchange_mininum_value_in_usdt', null),
+        ms_point_survey_is_enabled: getPropertyValue(settings, 'ms_point_survey_is_enabled', 'false'),
         membership_types: membershipTypeMapper(membershipTypes),
       };
 
@@ -403,6 +405,34 @@ module.exports = {
         transaction.rollback();
       }
       logger.info('update ms point settings fail', error);
+      next();
+    }
+  },
+  updateSurveySettings: async (req, res, next) => {
+    let transaction;
+    try {
+      transaction = await database.transaction();
+      const { ms_point_survey_is_enabled } = req.body;
+
+      await Setting.update({
+        value: ms_point_survey_is_enabled
+      }, {
+        where: {
+          key: 'MS_POINT_SURVEY_IS_ENABLED'
+        },
+        returning: true,
+        transaction: transaction
+      });
+
+      await transaction.commit();
+
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        transaction.rollback();
+      }
+      logger.info('update updateSurveySettings fail', error);
       next();
     }
   },
