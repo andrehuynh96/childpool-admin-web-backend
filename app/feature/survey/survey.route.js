@@ -32,6 +32,9 @@ router.get('/surveys',
 *       - name: limit
 *         in: query
 *         type: integer
+*       - name: history
+*         in: query
+*         type: integer
 *       - name: name
 *         in: query
 *         type: string

@@ -8,7 +8,7 @@ const moment = require('moment');
 const questionMapper = require("app/feature/response-schema/question.response-schema");
 const database = require('app/lib/database').db().wallet;
 const QuestionSubType = require('app/model/wallet/value-object/question-sub-type');
-
+const SurveyStatus = require('app/model/wallet/value-object/survey-status');
 module.exports = {
   search: async (req, res, next) => {
     try {
@@ -19,9 +19,17 @@ module.exports = {
         deleted_flg: false
       };
 
+      if (query.history) {
+        where.status = SurveyStatus.DONE;
+      }
+      else {
+        where.status = { [Op.not]: SurveyStatus.DONE };
+      }
+
       if (query.name) {
         where.name = { [Op.iLike]: `%${query.name}%` };
       }
+
       if (query.from_date && query.to_date) {
         const fromDate = moment(query.from_date).toDate();
         const toDate = moment(query.to_date).toDate();
