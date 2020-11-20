@@ -374,7 +374,7 @@ async function updateQuestions(survey_id, question, transaction, user_id) {
         if (answer.id) {
           await QuestionAnswer.update({
             text: answer.text,
-            text_ja: answer.text_ja ? answer.text_ja : '',
+            text_ja: answer.text_ja,
             is_correct_flg: answer.is_correct_flg
           }, {
             where: {
@@ -387,7 +387,7 @@ async function updateQuestions(survey_id, question, transaction, user_id) {
           await QuestionAnswer.create({
             question_id: question.id,
             text: answer.text,
-            text_ja: answer.text_ja ? answer.text_ja : '',
+            text_ja: answer.text_ja,
             is_correct_flg: answer.is_correct_flg
           }, {
             transaction: transaction
