@@ -85,7 +85,7 @@ module.exports = {
       survey.duration = getDurationTime(survey.start_date, survey.end_date);
 
       const today = new Date();
-      if (today < survey.end_date && today > survey.start_date && survey.status === SurveyStatus.READY) {
+      if (today <= survey.end_date && today >= survey.start_date && survey.status === SurveyStatus.READY) {
         survey.status = 'IN_PROGRESS';
       }
 
