@@ -30,11 +30,11 @@ const schema = Joi.object().keys({
     point: Joi.number().min(1).required(),
     status: Joi.string().valid(surveyStatuses).required(),
     type: Joi.string().valid(surveyTypes).required(),
-    membership_point: Joi.object().keys({
-      silver: Joi.number().required(),
-      gold: Joi.number().required(),
-      platinum: Joi.number().required(),
-    })
+    title: Joi.string().max(1000).required(),
+    title_ja: Joi.string().max(1000).optional(),
+    silver_membership_point: Joi.number().required(),
+    gold_membership_point: Joi.number().required(),
+    platinum_membership_point: Joi.number().required(),
   }),
   questions: Joi.array().optional().items(questionSchema)
 });
