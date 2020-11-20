@@ -52,13 +52,9 @@ module.exports = {
       });
 
       items.forEach(item => {
-        const startDate = Date.parse(item.start_date) / 1000;
-        const endDate = Date.parse(item.end_date) / 1000;
-        const secondDurations = endDate - startDate;
-        item.duration = getDurationTime(secondDurations);
-
+        item.duration = getDurationTime(item.start_date, item.end_date);
         const today = new Date();
-        if (today < item.end_date && today > item.start_date && item.status === SurveyStatus.READY ) {
+        if (today <= item.end_date && today >= item.start_date && item.status === SurveyStatus.READY) {
           item.status = 'IN_PROGRESS';
         }
       });
@@ -86,15 +82,12 @@ module.exports = {
         raw: true
       });
 
-      const startDate = Date.parse(survey.start_date) / 1000;
-        const endDate = Date.parse(survey.end_date) / 1000;
-        const secondDurations = endDate - startDate;
-        survey.duration = getDurationTime(secondDurations);
+      survey.duration = getDurationTime(survey.start_date, survey.end_date);
 
-        const today = new Date();
-        if (today < survey.end_date && today > survey.start_date && survey.status === SurveyStatus.READY ) {
-          survey.status = 'IN_PROGRESS';
-        }
+      const today = new Date();
+      if (today < survey.end_date && today > survey.start_date && survey.status === SurveyStatus.READY) {
+        survey.status = 'IN_PROGRESS';
+      }
 
       if (!survey) {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
@@ -136,7 +129,7 @@ module.exports = {
 
       if (questions && questions.length > 0) {
         for (let item of questions) {
-          await createQuestionAndAnswers(surveyRes.id, item, transaction,req.user.id);
+          await createQuestionAndAnswers(surveyRes.id, item, transaction, req.user.id);
         }
       }
       await transaction.commit();
@@ -174,14 +167,14 @@ module.exports = {
       });
 
       if (questions && questions.length > 0) {
-        await removeQuestionAndAnswerNotInList(id ,questions, transaction);
+        await removeQuestionAndAnswerNotInList(id, questions, transaction);
 
         for (let item of questions) {
           if (item.id) {
-            await updateQuestions(id,item, transaction, req.user.id);
+            await updateQuestions(id, item, transaction, req.user.id);
           }
           else {
-            await createQuestionAndAnswers(id,item, transaction,req.user.id);
+            await createQuestionAndAnswers(id, item, transaction, req.user.id);
           }
         }
       }
@@ -320,7 +313,7 @@ async function createQuestionAndAnswers(survey_id, question, transaction, user_i
     throw error;
   }
 }
-async function updateQuestions(survey_id, question, transaction,user_id) {
+async function updateQuestions(survey_id, question, transaction, user_id) {
   try {
     await Question.update({
       title: question.title,
@@ -423,11 +416,15 @@ async function removeAllQuestionAndAnswer(survey_id, transaction) {
   }
 }
 
-function getDurationTime(seconds) {
-  const d = Math.floor(seconds / (3600 * 24));
-  const h = Math.floor(seconds % (3600 * 24) / 3600);
-  const m = Math.floor(seconds % 3600 / 60);
-  const s = Math.floor(seconds % 60);
+function getDurationTime(start_date, end_date) {
+  const startDate = Date.parse(start_date) / 1000;
+  const endDate = Date.parse(end_date) / 1000;
+  const secondDurations = endDate - startDate;
+
+  const d = Math.floor(secondDurations / (3600 * 24));
+  const h = Math.floor(secondDurations % (3600 * 24) / 3600);
+  const m = Math.floor(secondDurations % 3600 / 60);
+  const s = Math.floor(secondDurations % 60);
 
   const dDisplay = d > 0 ? d + 'd ' : '';
   const hDisplay = h > 0 ? h + 'h ' : '';
