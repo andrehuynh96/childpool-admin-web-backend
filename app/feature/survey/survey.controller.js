@@ -9,6 +9,7 @@ const questionMapper = require("app/feature/response-schema/question.response-sc
 const database = require('app/lib/database').db().wallet;
 const QuestionSubType = require('app/model/wallet/value-object/question-sub-type');
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
+
 module.exports = {
   search: async (req, res, next) => {
     try {
@@ -46,7 +47,20 @@ module.exports = {
         limit: limit,
         offset: offset,
         where: where,
-        order: [['created_at', 'DESC']]
+        order: [['created_at', 'DESC']],
+        raw: true
+      });
+
+      items.forEach(item => {
+        const startDate = Date.parse(item.start_date) / 1000;
+        const endDate = Date.parse(item.end_date) / 1000;
+        const secondDurations = endDate - startDate;
+        item.duration = getDurationTime(secondDurations);
+
+        const today = new Date();
+        if (today < item.end_date && today > item.start_date && item.status === SurveyStatus.READY ) {
+          item.status = 'IN_PROGRESS';
+        }
       });
 
       return res.ok({
@@ -68,8 +82,20 @@ module.exports = {
         where: {
           id: id,
           deleted_flg: false
-        }
+        },
+        raw: true
       });
+
+      const startDate = Date.parse(survey.start_date) / 1000;
+        const endDate = Date.parse(survey.end_date) / 1000;
+        const secondDurations = endDate - startDate;
+        survey.duration = getDurationTime(secondDurations);
+
+        const today = new Date();
+        if (today < survey.end_date && today > survey.start_date && survey.status === SurveyStatus.READY ) {
+          survey.status = 'IN_PROGRESS';
+        }
+
       if (!survey) {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
@@ -100,6 +126,12 @@ module.exports = {
     let transaction;
     try {
       const { survey, questions } = req.body;
+
+      const membershipPoint = survey.membership_point.reduce((result,value) => {
+        result[value.membership_type_id] = value.amount;
+        return result;
+      },{});
+      survey.membership_point = membershipPoint;
       survey.created_by = req.user.id;
       survey.updated_by = req.user.id;
 
@@ -138,6 +170,11 @@ module.exports = {
       if (!availableSurvey) {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
+      const membershipPoint = survey.membership_point.reduce((result,value) => {
+        result[value.membership_type_id] = value.amount;
+        return result;
+      },{});
+      survey.membership_point = membershipPoint;
       transaction = await database.transaction();
       await Survey.update(survey, {
         where: {
@@ -394,4 +431,18 @@ async function removeAllQuestionAndAnswer(survey_id, transaction) {
     logger.error('Remove all question and answer of survey fail', error);
     throw error;
   }
+}
+
+function getDurationTime(seconds) {
+  const d = Math.floor(seconds / (3600 * 24));
+  const h = Math.floor(seconds % (3600 * 24) / 3600);
+  const m = Math.floor(seconds % 3600 / 60);
+  const s = Math.floor(seconds % 60);
+
+  const dDisplay = d > 0 ? d + 'd ' : '';
+  const hDisplay = h > 0 ? h + 'h ' : '';
+  const mDisplay = m > 0 ? m + 'm ' : '';
+  const sDisplay = s > 0 ? s + 's' : '';
+
+  return dDisplay + hDisplay + mDisplay + sDisplay;
 }
