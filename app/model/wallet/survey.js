@@ -13,6 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(256),
       allowNull: false,
     },
+    title: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+      defaultValue: '',
+    },
+    title_ja: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+    },
     content: {
       type: DataTypes.TEXT('long'),
       allowNull: false,
@@ -52,8 +61,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    membership_point: {
-      type: DataTypes.JSON,
+    silver_membership_point: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    gold_membership_point: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    platinum_membership_point: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     estimate_time: {

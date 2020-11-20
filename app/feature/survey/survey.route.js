@@ -257,16 +257,21 @@ router.post('/surveys',
 *            example:
 *                  {
                       "survey": {
-                          "name":"survey 1",
-                          "content": "test create survey",
-                          "content_ja": "",
-                          "start_date": "2020-11-16T04:51:40.739Z",
-                          "end_date": "2020-11-20T04:51:40.739Z",
-                          "actived_flg": true,
-                          "description": "",
-                          "point": 100,
-                          "estimate_time": 60
-                      },
+                            "name":"survey 7",
+                            "content": "test create survey",
+                            "content_ja": "",
+                            "start_date": "2020-11-16T04:51:40.739Z",
+                            "end_date": "2020-11-20T04:51:40.739Z",
+                            "description": "",
+                            "point": 100,
+                            "status": "DRAFT",
+                            "type": "SURVEY",
+                            "membership_point": {
+                                "silver": 10,
+                                "gold":50,
+                                "platinum": 100
+                            }
+                        },
                       "questions": [
                           {
                               "title": "Are you kidding me?",
@@ -354,16 +359,21 @@ router.put('/surveys/:id',
 *            example:
 *                  {
                       "survey": {
-                          "name":"survey 1",
-                          "content": "test create survey",
-                          "content_ja": "",
-                          "start_date": "2020-11-16T04:51:40.739Z",
-                          "end_date": "2020-11-20T04:51:40.739Z",
-                          "actived_flg": true,
-                          "description": "",
-                          "point": 100,
-                          "estimate_time": 60
-                      },
+                            "name":"survey 7",
+                            "content": "test create survey",
+                            "content_ja": "",
+                            "start_date": "2020-11-16T04:51:40.739Z",
+                            "end_date": "2020-11-20T04:51:40.739Z",
+                            "description": "",
+                            "point": 100,
+                            "status": "DRAFT",
+                            "type": "SURVEY",
+                            "membership_point": {
+                                "silver": 10,
+                                "gold":50,
+                                "platinum": 100
+                            }
+                        },
                       "questions": [
                           {
                               "id": 35,
