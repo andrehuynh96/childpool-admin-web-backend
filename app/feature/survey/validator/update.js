@@ -29,7 +29,6 @@ const schema = Joi.object().keys({
     start_date: Joi.date().required(),
     end_date: Joi.date().required(),
     description: Joi.string().allow(null).allow('').max(2000).optional(),
-    point: Joi.number().min(1).required(),
     status: Joi.string().valid(surveyStatuses).required(),
     type: Joi.string().valid(surveyTypes).required(),
     title: Joi.string().max(1000).required(),
