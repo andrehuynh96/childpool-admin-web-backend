@@ -4,6 +4,7 @@ const destObject = {
   array: {
     '[].id': '[].id',
     '[].name': '[].name',
+    '[].key': '[].key',
     '[].price': '[].price',
     '[].currency_symbol': '[].currency_symbol',
     '[].type': '[].type',
@@ -19,6 +20,7 @@ const destObject = {
   single: {
     id: 'id',
     name: 'name',
+    key: 'key',
     price: 'price',
     currency_symbol: 'currency_symbol',
     type: 'type',
