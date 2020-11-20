@@ -9,6 +9,7 @@ const questionMapper = require("app/feature/response-schema/question.response-sc
 const database = require('app/lib/database').db().wallet;
 const QuestionSubType = require('app/model/wallet/value-object/question-sub-type');
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
+const SurveyType = require('app/model/wallet/value-object/survey-type');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -237,6 +238,30 @@ module.exports = {
       next(error);
     }
   },
+  getOptions: (req,res,next) => {
+    try {
+      const options = {};
+      options.status = Object.entries(SurveyStatus).map(item => {
+        return {
+          label: item[0],
+          value: item[1]
+        };
+      });
+
+      options.type = Object.entries(SurveyType).map(item => {
+        return {
+          label: item[0],
+          value: item[1]
+        };
+      });
+
+      return res.ok(options);
+    }
+    catch (error) {
+      logger.error('get survey options fail',error);
+      next(error);
+    }
+  }
 };
 
 async function removeQuestionAndAnswerNotInList(survey_id, questions, transaction) {
