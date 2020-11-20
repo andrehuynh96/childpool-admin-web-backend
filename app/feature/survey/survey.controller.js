@@ -126,12 +126,6 @@ module.exports = {
     let transaction;
     try {
       const { survey, questions } = req.body;
-
-      const membershipPoint = survey.membership_point.reduce((result,value) => {
-        result[value.membership_type_id] = value.amount;
-        return result;
-      },{});
-      survey.membership_point = membershipPoint;
       survey.created_by = req.user.id;
       survey.updated_by = req.user.id;
 
@@ -170,11 +164,7 @@ module.exports = {
       if (!availableSurvey) {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
-      const membershipPoint = survey.membership_point.reduce((result,value) => {
-        result[value.membership_type_id] = value.amount;
-        return result;
-      },{});
-      survey.membership_point = membershipPoint;
+
       transaction = await database.transaction();
       await Survey.update(survey, {
         where: {

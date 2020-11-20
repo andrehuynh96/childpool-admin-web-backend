@@ -33,7 +33,7 @@ const schema = Joi.object().keys({
     status: Joi.string().valid(surveyTypes).required(),
     type: Joi.string().valid(surveyStatuses).required(),
     title: Joi.string().max(1000).required(),
-    title_ja: Joi.string().max(1000).optional(),
+    title_ja: Joi.string().allow(null).allow('').max(1000).optional(),
     silver_membership_point: Joi.number().required(),
     gold_membership_point: Joi.number().required(),
     platinum_membership_point: Joi.number().required(),
