@@ -113,6 +113,10 @@ router.get('/surveys',
 */
 /* #endregion */
 
+router.get('/surveys/options',
+  controller.getOptions
+);
+
 /* #region Get Survey detail */
 
 router.get('/surveys/:id',
