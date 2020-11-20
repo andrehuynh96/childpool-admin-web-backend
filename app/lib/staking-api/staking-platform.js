@@ -1,7 +1,7 @@
 const config = require("app/config");
 const axios = require("axios");
-const logger = require("app/lib/logger")
-const { getToken } = require("./token")
+const logger = require("app/lib/logger");
+const { getToken } = require("./token");
 
 module.exports = {
   getValidatorAddresses: async (platform) => {
@@ -16,7 +16,7 @@ module.exports = {
       return result.data ? result.data.data.filter(e => e.symbol.toUpperCase() == platform.toUpperCase()).map(e => e.validator_address) : [];
     }
     catch (err) {
-      logger.error("get list API key fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("getValidatorAddresses fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   },
@@ -32,8 +32,9 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger.error("get list API key fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("getValidatorInfo fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   }
-} 
+};
+

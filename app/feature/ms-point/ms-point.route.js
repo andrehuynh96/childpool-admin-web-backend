@@ -11,6 +11,7 @@ const {
   updateStakingSettings,
   updateExchangeSettings,
   updateUpgradeMembershipSettings,
+  updateSurveySettings,
 } = require('./validator');
 
 const router = express.Router();
@@ -416,13 +417,12 @@ router.get(
 );
 /* #endregion */
 
-
-/* #region Update MS points settings for claiming*/
+/* #region Update MS points Mode*/
 /**
  * @swagger
- * /web/ms-point/settings/claiming':
+ * /web/ms-point/settings/mode':
  *   put:
- *     summary: Update MS points settings for claiming
+ *     summary: Update MS points mode
  *     tags:
  *       - MS Point
  *     description:
@@ -630,7 +630,7 @@ router.put(
 );
 /* #endregion */
 
-/* #region Update MS points settings for staking*/
+/* #region Update MS points settings for exchange*/
 /**
  * @swagger
  * /web/ms-point/settings/exchange':
@@ -769,6 +769,63 @@ router.put(
   authority(PermissionKey.UPDATE_MS_POINT_SETTINGS),
   validator(updateUpgradeMembershipSettings),
   controller.updateUpgradeMembershipSettings
+);
+/* #endregion */
+
+/* #region Update MS points settings for survey */
+/**
+ * @swagger
+ * /web/ms-point/settings/survey':
+ *   put:
+ *     summary: Update MS points settings for survey
+ *     tags:
+ *       - MS Point
+ *     description:
+ *     parameters:
+*       - name: data
+*         in: body
+*         required: true
+*         description: submit data JSON.
+*         schema:
+*            type: object
+*            example:
+*                  {
+                      "ms_point_survey_is_enabled": true,
+*                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                "data": true
+            }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+router.put(
+  '/ms-point/settings/survey',
+  authenticate,
+  authority(PermissionKey.UPDATE_MS_POINT_SETTINGS),
+  validator(updateSurveySettings),
+  controller.updateSurveySettings
 );
 /* #endregion */
 

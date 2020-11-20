@@ -1,7 +1,7 @@
 {
   "name": "staking-childpool-admin-web-backend",
   "version": "1.7.0",
-  "description": "v1.15.0-ms-rc",
+  "description": "v1.16.0-ms-rc",
   "main": "index.js",
   "scripts": {
     "test": "mocha test"
@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@cityofzion/neon-core": "^4.8.0",
+    "@kevit/log4js-hangout": "^1.0.3",
     "address-rfc2822": "^2.0.5",
     "aws-sdk": "^2.722.0",
     "axios": "^0.19.2",
@@ -30,6 +31,7 @@
     "connect-redis": "^4.0.4",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
+    "crypto-js": "^4.0.0",
     "csv-parse": "^4.11.1",
     "csv-stringify": "^5.5.0",
     "dotenv": "^8.2.0",
@@ -72,6 +74,7 @@
     "sequelize-temporalize": "^4.1.0",
     "sleep-promise": "^8.0.1",
     "speakeasy": "^2.0.0",
+    "staking-logging": "^0.1.8",
     "stream-to-array": "^2.3.0",
     "swagger-jsdoc": "^3.5.0",
     "swagger-ui-express": "^4.1.3",

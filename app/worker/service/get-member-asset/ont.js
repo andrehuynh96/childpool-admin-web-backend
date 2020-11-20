@@ -54,12 +54,12 @@ class ONT extends GetMemberAsset {
       let myValidatorStakingRate = 0;
       const splitFee = await GovernanceTxBuilder.getSplitFeeAddress(userAddr, this.network);
       if (splitFee && amount > 0) {
-        //unclaimReward = BigNumber(splitFee.amount).toNumber();
+        // unclaimReward = BigNumber(splitFee.amount).toNumber();
         let totalUnclaimReward = BigNumber(splitFee.amount).toNumber();
         const peerMap = await GovernanceTxBuilder.getPeerPoolMap(this.network);
         var totalSakingAmount = 0;
         for (var nodePubKey in peerMap) {
-          let authorizeInfo = await GovernanceTxBuilder.getAuthorizeInfo(nodePubKey, userAddr, this.network)
+          let authorizeInfo = await GovernanceTxBuilder.getAuthorizeInfo(nodePubKey, userAddr, this.network);
           if (authorizeInfo) {
             const { consensusPos, freezePos, newPos } = authorizeInfo;
             totalSakingAmount += (consensusPos + freezePos + newPos);
@@ -102,10 +102,10 @@ class ONT extends GetMemberAsset {
         unclaimReward: unclaimReward
       };
     } catch (error) {
-      logger.error(error);
+      logger[error.canLogAxiosError ? 'error' : 'info'](error);
       logHangout.write(JSON.stringify(error));
-            await dbLogger(error,address);
-            return null;
+      await dbLogger(error,address);
+      return null;
     }
   }
 }
@@ -157,9 +157,9 @@ async function getClaimAmount(parserUrl, address, address_unbound_ong, address_s
     }
     return claim;
   } catch (err) {
+    logger[err.canLogAxiosError ? 'error' : 'info'](err);
     dbLogger(err,address);
-    logger.error(err)
-    return 0
+    return 0;
   }
 }
 

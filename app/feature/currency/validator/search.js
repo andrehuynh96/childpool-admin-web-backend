@@ -7,6 +7,7 @@ const schema = Joi.object().keys({
   platform: Joi.string().allow('').allow(null).max(100).optional(),
   symbol: Joi.string().allow('').allow(null).max(100).optional(),
   status: Joi.number().integer().allow(null).allow('').optional(),
+  mobile_status: Joi.number().integer().allow(null).allow('').optional(),
 });
 
 module.exports = schema;

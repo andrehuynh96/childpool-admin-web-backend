@@ -32,7 +32,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -52,7 +52,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("Update referrer code fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -68,7 +68,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create client fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -89,7 +89,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("updateClaimRequest:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("updateClaimRequest:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -106,7 +106,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get membership policy fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get membership policy fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -124,7 +124,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("create membership policy fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create membership policy fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -141,7 +141,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get membership policy detail fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get membership policy detail fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -159,7 +159,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("update membership policy fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("update membership policy fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -190,7 +190,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get calculate reward request list fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get calculate reward request list fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -207,7 +207,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get calculate reward request detail fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get calculate reward request detail fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -224,7 +224,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get caculate reward request detail list fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get caculate reward request detail list fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -241,7 +241,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get reward list by request id fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get reward list by request id fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -258,7 +258,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get member tree chart fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get member tree chart fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -274,7 +274,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get membership referral structure fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get membership referral structure fail:", err);
     }
   }
   async setRewardRequest(payload) {
@@ -289,7 +289,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("setRewardRequest:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("setRewardRequest:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -306,7 +306,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("get membership referral structure fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get membership referral structure fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -322,7 +322,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("Update affiliate code fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("Update affiliate code fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -339,7 +339,7 @@ class AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("Update affiliate code fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("Update affiliate code fail:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -418,7 +418,7 @@ class MembershipApi extends AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("registerMembership:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("registerMembership:", err);
 
       return { httpCode: err.response.status, data: err.response.data };
     }
@@ -440,7 +440,7 @@ class MembershipApi extends AffiliateApi {
       return { httpCode: 200, data: result.data.data };
     }
     catch (err) {
-      logger.error("Update Membership Type:", err.response.data);
+      logger[err.canLogAxiosError ? 'error' : 'info']("Update Membership Type:", err.response.data);
 
       return { httpCode: err.response.status, data: err.response.data };
     }

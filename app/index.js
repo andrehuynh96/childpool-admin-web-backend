@@ -92,8 +92,6 @@ router.get('/', function (req, res) {
     version: config.app.version,
     buildNumber: config.app.buildNumber,
     description: config.app.description,
-    enableSeed: config.enableSeed,
-    recaptchaSiteKey: config.recaptchaSiteKey,
   };
   res.json(result);
 });
