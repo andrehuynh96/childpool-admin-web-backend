@@ -31,9 +31,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     status: {
-      type: DataTypes.STRING(16),
+      type: DataTypes.STRING(32),
       allowNull: false,
-      defaultValue: Status.NEW
+      defaultValue: Status.WAIT_EMAIL_CONFIRMATION
     },
     type: {
       type: DataTypes.STRING(16),
