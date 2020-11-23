@@ -7,7 +7,7 @@ const CHECK_STATUS_NEXO_TRANSACTION_LOCK_FILE = 'check_status_nexo_transaction.l
 module.exports = {
   run: () => {
     cron.schedule(config.schedule.checkStatusNexoTransaction, async () => {
-      await runWithLockFile(checkStatusNexoTransaction, CHECK_STATUS_NEXO_TRANSACTION_LOCK_FILE, "check status nexo transaction", false);
+      await runWithLockFile(checkStatusNexoTransaction, CHECK_STATUS_NEXO_TRANSACTION_LOCK_FILE, "check status nexo transaction", true);
     });
   },
   lockFile: () => CHECK_STATUS_NEXO_TRANSACTION_LOCK_FILE

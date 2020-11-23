@@ -11,12 +11,12 @@ const fs = require('fs');
 module.exports = {
   start: async () => {
     await _removeLockFile();
-    // UpdateAffiliateSchedule.run();
-    // CheckAdaPoolSizeSchedule.run();
-    // CheckExchangeStatusSchedule.run();
-    // GetMemberAssetSchedule.run();
-    // SyncCurrencyWithChangelly.run();
-    // CheckStatusFiatTransactionSchedule.run();
+    UpdateAffiliateSchedule.run();
+    CheckAdaPoolSizeSchedule.run();
+    CheckExchangeStatusSchedule.run();
+    GetMemberAssetSchedule.run();
+    SyncCurrencyWithChangelly.run();
+    CheckStatusFiatTransactionSchedule.run();
     CheckStatusNexoTransactionSchedule.run();
   }
 };

@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     nexo_currency_id: {
-      type: DataTypes.STRING(16),
+      type: DataTypes.STRING(32),
       allowNull: false
     },
     amount: {
@@ -78,6 +78,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('long'),
       allowNull: true
     },
+    nexo_transaction_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    }
   }, {
     underscored: true,
     timestamps: true,
@@ -102,4 +106,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return Model;
-} 
+};

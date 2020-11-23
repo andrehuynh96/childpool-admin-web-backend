@@ -4,7 +4,7 @@ const NexoMember = require('app/model/wallet').nexo_members;
 const NexoTransaction = require('app/model/wallet').nexo_transactions;
 const NexoTransactionStatus = require('app/model/wallet/value-object/nexo-transaction-status');
 const NexoTransactionType = require('app/model/wallet/value-object/nexo-transaction-type');
-const NexoMemberStatus = require('app/model/wallet/value-object/nexo-member-status')
+const NexoMemberStatus = require('app/model/wallet/value-object/nexo-member-status');
 module.exports = {
   execute: async () => {
     try {
@@ -16,7 +16,7 @@ module.exports = {
             model: NexoTransaction,
             where: {
               type: NexoTransactionType.WITHDRAW,
-              status: [NexoTransactionStatus.NEW,NexoTransactionStatus.PENDING]
+              status: [NexoTransactionStatus.PENDING]
             },
             required: true,
           }
@@ -25,29 +25,40 @@ module.exports = {
           status: NexoMemberStatus.ACTIVATED
         }
       });
+
       const nexoAccounts = nexoMembers.map(item => {
         return {
           nexo_id: item.nexo_id,
-          secret: item.user_secret
+          secret: item.user_secret,
         };
       });
 
-      const nexoWithdrawTransaction = await NexoTransaction.findAll({
+      const nexoTransaction = await NexoTransaction.findAll({
         where: {
           type: NexoTransactionType.WITHDRAW,
-          status: [NexoTransactionStatus.NEW,NexoTransactionStatus.PENDING]
-        },
-        raw: true
+          status: [NexoTransactionStatus.PENDING]
+        }
       });
 
-      const nexoTransactionList = nexoWithdrawTransaction.map(item => item.nexo_transaction_id);
-      console.log("🚀 ~ file: check-status-nexo-transaction.job.js ~ line 43 ~ execute: ~ nexoTransactionList", nexoTransactionList)
-
+      const nexoTransactionIds = nexoTransaction.map(item => item.nexo_transaction_id);
       let service = new CheckStatusNexoTransaction({ ibp: true });
 
-      // for (let item of nexoAccount) {
-      //   const result = await service.getWithdrawTransactions({ nexo_id: item.nexo_id, secret: item.secret });
-      // }
+      for (let item of nexoAccounts) {
+        const result = await service.getWithdrawTransactions({ nexo_id: item.nexo_id, secret: item.secret });
+
+        for (let tx_id of nexoTransactionIds) {
+          const tx = result.find(x => x.id === tx_id);
+          if (tx && tx.status !== NexoMemberStatus.PENDING.toLowerCase()) {
+            await NexoTransaction.update({
+              status: tx.status.toUpperCase()
+            },{
+              where: {
+                nexo_transaction_id: tx.id
+              }
+            });
+          }
+        }
+      }
     }
     catch (err) {
       logger.error("check status fiat transaction job error:", err);
