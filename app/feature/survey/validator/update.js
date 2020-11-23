@@ -1,5 +1,10 @@
 const Joi = require('joi');
 const QuestionType = require("app/model/wallet/value-object/question-type");
+const SurveyType = require('app/model/wallet/value-object/survey-type');
+const SurveyStatus = require('app/model/wallet/value-object/survey-status');
+
+const surveyTypes = Object.values(SurveyType);
+const surveyStatuses = Object.values(SurveyStatus);
 
 const answerSchema = Joi.object().keys({
   id: Joi.number().optional(),
@@ -13,7 +18,6 @@ const questionSchema = Joi.object().keys({
   title: Joi.string().required(),
   title_ja: Joi.string().allow(null).allow('').optional(),
   question_type: Joi.string().valid(Object.values(QuestionType)).required(),
-  actived_flg: Joi.boolean().required(),
   answers: Joi.array().optional().items(answerSchema),
 });
 
@@ -24,10 +28,14 @@ const schema = Joi.object().keys({
     content_ja: Joi.string().allow(null).allow('').max(2000).optional(),
     start_date: Joi.date().required(),
     end_date: Joi.date().required(),
-    actived_flg: Joi.boolean().required(),
     description: Joi.string().allow(null).allow('').max(2000).optional(),
-    point: Joi.number().min(1).required(),
-    estimate_time: Joi.number().min(1).required(),
+    status: Joi.string().valid(surveyStatuses).required(),
+    type: Joi.string().valid(surveyTypes).required(),
+    title: Joi.string().max(1000).required(),
+    title_ja: Joi.string().allow(null).allow('').max(1000).optional(),
+    silver_membership_point: Joi.number().required(),
+    gold_membership_point: Joi.number().required(),
+    platinum_membership_point: Joi.number().required(),
   }),
   questions: Joi.array().optional().items(questionSchema)
 });

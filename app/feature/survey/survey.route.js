@@ -32,6 +32,9 @@ router.get('/surveys',
 *       - name: limit
 *         in: query
 *         type: integer
+*       - name: history
+*         in: query
+*         type: integer
 *       - name: name
 *         in: query
 *         type: string
@@ -109,6 +112,10 @@ router.get('/surveys',
 *           $ref: '#/definitions/500'
 */
 /* #endregion */
+
+router.get('/surveys/options',
+  controller.getOptions
+);
 
 /* #region Get Survey detail */
 
@@ -254,16 +261,20 @@ router.post('/surveys',
 *            example:
 *                  {
                       "survey": {
-                          "name":"survey 1",
-                          "content": "test create survey",
-                          "content_ja": "",
-                          "start_date": "2020-11-16T04:51:40.739Z",
-                          "end_date": "2020-11-20T04:51:40.739Z",
-                          "actived_flg": true,
-                          "description": "",
-                          "point": 100,
-                          "estimate_time": 60
-                      },
+                            "name":"survey 9",
+                            "content": "test create survey",
+                            "content_ja": "",
+                            "start_date": "2020-11-16T04:51:40.739Z",
+                            "end_date": "2020-11-20T04:51:40.739Z",
+                            "description": "",
+                            "status": "DRAFT",
+                            "type": "SURVEY",
+                            "title": "create new survey",
+                            "title_ja": "",
+                            "silver_membership_point": 10,
+                            "gold_membership_point": 20,
+                            "platinum_membership_point": 30
+                        },
                       "questions": [
                           {
                               "title": "Are you kidding me?",
@@ -350,50 +361,48 @@ router.put('/surveys/:id',
 *            type: object
 *            example:
 *                  {
-                      "survey": {
-                          "name":"survey 1",
-                          "content": "test create survey",
-                          "content_ja": "",
-                          "start_date": "2020-11-16T04:51:40.739Z",
-                          "end_date": "2020-11-20T04:51:40.739Z",
-                          "actived_flg": true,
-                          "description": "",
-                          "point": 100,
-                          "estimate_time": 60
-                      },
-                      "questions": [
-                          {
-                              "id": 35,
-                              "title": "Are you kidding me?",
-                              "title_ja": "",
-                              "question_type": "OPEN_ENDED",
-                              "actived_flg": true,
-                              "answers": [
-                                  {
-                                      "id": 149,
-                                      "text":"yes",
-                                      "text_ja":"",
-                                      "is_correct_flg": false
-                                  }
-                              ]
-                          },
-                          {
-                              "id": 36,
-                              "title": "question 2 update",
-                              "title_ja": "",
-                              "question_type": "OPEN_ENDED",
-                              "actived_flg": true,
-                              "answers": [
-                                  {
-                                      "id": "150",
-                                      "text":"yes",
-                                      "text_ja":"",
-                                      "is_correct_flg": true
-                                  }
-                              ]
-                          }
-                      ]
-                  }
+                    "survey": {
+                        "name":"survey 9",
+                        "content": "test update survey",
+                        "content_ja": "",
+                        "start_date": "2020-11-16T04:51:40.739Z",
+                        "end_date": "2020-11-20T04:51:40.739Z",
+                        "description": "",
+                        "status": "DRAFT",
+                        "type": "SURVEY",
+                        "title": "update survey 9",
+                        "title_ja": "",
+                        "silver_membership_point": 100,
+                        "gold_membership_point": 200,
+                        "platinum_membership_point": 300
+                    },
+                    "questions": [
+                        {
+                            "title": "question 1 survey 9",
+                            "title_ja": "",
+                            "question_type": "OPEN_ENDED",
+                            "answers": [
+                                {
+                                    "text":"yes create",
+                                    "text_ja":"",
+                                    "is_correct_flg": true
+                                }
+                            ]
+                        },
+                        {
+                            "title": "question 2 survey 9",
+                            "title_ja": "",
+                            "question_type": "OPEN_ENDED",
+                            "answers": [
+                                {
+                                    "text":"yes create",
+                                    "text_ja":"",
+                                    "is_correct_flg": true
+                                }
+                            ]
+                        }
+                    ]
+                }
 *     produces:
 *       - application/json
 *     responses:

@@ -1,3 +1,6 @@
+const SurveyStatus = require('./value-object/survey-status');
+const SurveyType = require('./value-object/survey-type');
+
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define("surveys", {
     id: {
@@ -9,6 +12,15 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING(256),
       allowNull: false,
+    },
+    title: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+      defaultValue: '',
+    },
+    title_ja: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
     },
     content: {
       type: DataTypes.TEXT('long'),
@@ -26,20 +38,29 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    actived_flg: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false
-    },
     description: {
       type: DataTypes.TEXT('medium'),
       allowNull: true
     },
-    point: {
-      type: DataTypes.INTEGER,
+    status: {
+      type: DataTypes.STRING(50),
       allowNull: false,
+      defaultValue: SurveyStatus.DRAFT
     },
-    estimate_time: {
+    type: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      defaultValue: SurveyType.SURVEY
+    },
+    silver_membership_point: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    gold_membership_point: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    platinum_membership_point: {
       type: DataTypes.INTEGER,
       allowNull: true
     },
