@@ -14,7 +14,8 @@ const questionSchema = Joi.object().keys({
   answers: Joi.array().optional().items(answerSchema),
 });
 
-const createDraftQuizSchema = Joi.object().keys({
+const schema = Joi.object().keys({
+  action_name: Joi.string().max(100).required(),
   name: Joi.string().max(24).required(),
   name_ja: Joi.string().allow(null).allow('').max(14).optional(),
   start_date: Joi.date().required(),
@@ -25,5 +26,4 @@ const createDraftQuizSchema = Joi.object().keys({
   questions: Joi.array().optional().items(questionSchema),
 });
 
-module.exports = createDraftQuizSchema;
-
+module.exports = schema;

@@ -1,7 +1,7 @@
 const logger = require('app/lib/logger');
 const Question = require('app/model/wallet').questions;
 const QuestionAnswer = require('app/model/wallet').question_answers;
-const Survey = require('app/model/wallet').surveys;
+const Quiz = require('app/model/wallet').quizzes;
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const moment = require('moment');
@@ -44,7 +44,7 @@ module.exports = {
         };
       }
 
-      const { count: total, rows: items } = await Survey.findAndCountAll({
+      const { count: total, rows: items } = await Quiz.findAndCountAll({
         limit: limit,
         offset: offset,
         where: where,
@@ -75,7 +75,7 @@ module.exports = {
   details: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const survey = await Survey.findOne({
+      const survey = await Quiz.findOne({
         where: {
           id: id,
           deleted_flg: false
@@ -122,31 +122,30 @@ module.exports = {
       const { body } = req;
       const { questions } = body;
       const data = {
-        title : body.title,
-        title_ja : body.title_ja,
-        start_date : body.start_date,
-        end_date : body.end_date,
-        silver_membership_point : body.silver_membership_point,
-        gold_membership_point : body.gold_membership_point,
-        platinum_membership_point : body.platinum_membership_point,
+        name: body.name,
+        name_ja: body.name_ja,
+        start_date: body.start_date,
+        end_date: body.end_date,
+        silver_membership_point: body.silver_membership_point,
+        gold_membership_point: body.gold_membership_point,
+        platinum_membership_point: body.platinum_membership_point,
         status: SurveyStatus.DRAFT,
         type: SurveyType.QUIZ,
         created_by: req.user.id,
         updated_by: req.user.id,
-        name: 'QUIZ',
-        content: 'AAA',
       };
 
       transaction = await database.transaction();
-      const surveyRes = await Survey.create(data, {
+      const newQuiz = await Quiz.create(data, {
         transaction: transaction
       });
 
       if (questions && questions.length > 0) {
         for (let item of questions) {
-          await createQuestionAndAnswers(surveyRes.id, item, transaction, req.user.id);
+          await createQuestionAndAnswers(newQuiz.id, item, transaction, req.user.id);
         }
       }
+
       await transaction.commit();
       return res.ok(true);
     }
@@ -166,7 +165,7 @@ module.exports = {
       survey.updated_by = req.user.id;
 
       transaction = await database.transaction();
-      const surveyRes = await Survey.create(survey, {
+      const surveyRes = await Quiz.create(survey, {
         transaction: transaction
       });
 
@@ -190,7 +189,7 @@ module.exports = {
     let transaction;
     try {
       const { body: { survey, questions }, params: { id } } = req;
-      const availableSurvey = await Survey.findOne({
+      const availableSurvey = await Quiz.findOne({
         where: {
           id: id,
           deleted_flg: false
@@ -202,7 +201,7 @@ module.exports = {
       }
 
       transaction = await database.transaction();
-      await Survey.update(survey, {
+      await Quiz.update(survey, {
         where: {
           id: id
         },
@@ -240,7 +239,7 @@ module.exports = {
     let transaction;
     try {
       const { params: { id } } = req;
-      const availableSurvey = await Survey.findOne({
+      const availableSurvey = await Quiz.findOne({
         where: {
           id: id,
           deleted_flg: false
@@ -251,7 +250,7 @@ module.exports = {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
       transaction = await database.transaction();
-      await Survey.update({
+      await Quiz.update({
         deleted_flg: true
       }, {
         where: {
