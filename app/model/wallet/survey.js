@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: {
       type: DataTypes.STRING(256),
-      allowNull: false,
+      allowNull: true,
     },
     title: {
       type: DataTypes.STRING(1000),
@@ -22,14 +22,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(1000),
       allowNull: true,
     },
-    content: {
-      type: DataTypes.TEXT('long'),
-      allowNull: false,
-    },
-    content_ja: {
-      type: DataTypes.TEXT('long'),
-      allowNull: true,
-    },
     start_date: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -37,10 +29,6 @@ module.exports = (sequelize, DataTypes) => {
     end_date: {
       type: DataTypes.DATE,
       allowNull: false,
-    },
-    description: {
-      type: DataTypes.TEXT('medium'),
-      allowNull: true
     },
     status: {
       type: DataTypes.STRING(50),

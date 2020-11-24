@@ -116,6 +116,48 @@ module.exports = {
       next(error);
     }
   },
+  saveAsDraftQuiz: async (req, res, next) => {
+    let transaction;
+    try {
+      const { body } = req;
+      const { questions } = body;
+      const data = {
+        title : body.title,
+        title_ja : body.title_ja,
+        start_date : body.start_date,
+        end_date : body.end_date,
+        silver_membership_point : body.silver_membership_point,
+        gold_membership_point : body.gold_membership_point,
+        platinum_membership_point : body.platinum_membership_point,
+        status: SurveyStatus.DRAFT,
+        type: SurveyType.QUIZ,
+        created_by: req.user.id,
+        updated_by: req.user.id,
+        name: 'QUIZ',
+        content: 'AAA',
+      };
+
+      transaction = await database.transaction();
+      const surveyRes = await Survey.create(data, {
+        transaction: transaction
+      });
+
+      if (questions && questions.length > 0) {
+        for (let item of questions) {
+          await createQuestionAndAnswers(surveyRes.id, item, transaction, req.user.id);
+        }
+      }
+      await transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
+      logger.error('Create survey detail fail', error);
+      next(error);
+    }
+  },
   createSurvey: async (req, res, next) => {
     let transaction;
     try {
@@ -238,7 +280,7 @@ module.exports = {
       next(error);
     }
   },
-  getOptions: (req,res,next) => {
+  getOptions: (req, res, next) => {
     try {
       const options = {};
       options.status = Object.entries(SurveyStatus).map(item => {
@@ -258,7 +300,7 @@ module.exports = {
       return res.ok(options);
     }
     catch (error) {
-      logger.error('get survey options fail',error);
+      logger.error('get survey options fail', error);
       next(error);
     }
   }

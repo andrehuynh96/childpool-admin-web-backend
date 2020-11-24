@@ -4,7 +4,11 @@ const controller = require('./survey.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require('app/middleware/validator.middleware');
-const { create, update } = require('./validator');
+const {
+  create,
+  update,
+  createDraftQuiz,
+} = require('./validator');
 
 const router = express.Router();
 
@@ -243,6 +247,15 @@ router.post('/surveys',
   authority(PermissionKey.CREATE_SURVEY),
   controller.createSurvey
 );
+
+router.post('/draft-quizzes/',
+  authenticate,
+  validator(createDraftQuiz),
+  authority(PermissionKey.CREATE_SURVEY),
+  controller.saveAsDraftQuiz
+);
+
+
 /**
 * @swagger
 * /web/surveys:
