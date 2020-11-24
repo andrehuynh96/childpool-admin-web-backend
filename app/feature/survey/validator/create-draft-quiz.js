@@ -1,20 +1,15 @@
 const Joi = require('joi');
 const QuestionType = require("app/model/wallet/value-object/question-type");
-const SurveyType = require('app/model/wallet/value-object/survey-type');
-const SurveyStatus = require('app/model/wallet/value-object/survey-status');
-
-const surveyTypes = Object.values(SurveyType);
-const surveyStatuses = Object.values(SurveyStatus);
 
 const answerSchema = Joi.object().keys({
-  text: Joi.string().max(1000).required(),
+  text: Joi.string().allow(null).allow('').max(1000).optional(),
   text_ja: Joi.string().allow(null).allow('').max(1000).optional(),
   is_correct_flg: Joi.boolean().required(),
 });
 
 const questionSchema = Joi.object().keys({
-  title: Joi.string().required(),
-  title_ja: Joi.string().allow(null).allow('').optional(),
+  title: Joi.string().max(1000).required(),
+  title_ja: Joi.string().allow(null).allow('').max(1000).optional(),
   question_type: Joi.string().valid(Object.values(QuestionType)).required(),
   answers: Joi.array().optional().items(answerSchema),
 });
