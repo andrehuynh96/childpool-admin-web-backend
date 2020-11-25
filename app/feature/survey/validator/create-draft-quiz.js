@@ -19,6 +19,7 @@ const createDraftQuizSchema = Joi.object().keys({
   name_ja: Joi.string().allow(null).allow('').max(14).optional(),
   start_date: Joi.date().required(),
   end_date: Joi.date().required(),
+  type: Joi.string().max(100).required(),
   silver_membership_point: Joi.number().allow(null).optional(),
   gold_membership_point: Joi.number().allow(null).optional(),
   platinum_membership_point: Joi.number().allow(null).optional(),

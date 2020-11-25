@@ -137,8 +137,8 @@ module.exports = {
         silver_membership_point: body.silver_membership_point,
         gold_membership_point: body.gold_membership_point,
         platinum_membership_point: body.platinum_membership_point,
+        type: body.type,
         status: SurveyStatus.DRAFT,
-        type: SurveyType.QUIZ,
         created_by: req.user.id,
         updated_by: req.user.id,
       };
