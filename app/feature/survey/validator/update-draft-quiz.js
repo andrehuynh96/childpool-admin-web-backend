@@ -2,12 +2,15 @@ const Joi = require('joi');
 const QuestionType = require("app/model/wallet/value-object/question-type");
 
 const answerSchema = Joi.object().keys({
+  id: Joi.number().optional(),
   text: Joi.string().allow(null).allow('').max(1000).optional(),
   text_ja: Joi.string().allow(null).allow('').max(1000).optional(),
   is_correct_flg: Joi.boolean().required(),
+  is_other_flg: Joi.boolean().optional(),
 });
 
 const questionSchema = Joi.object().keys({
+  id: Joi.number().optional(),
   title: Joi.string().max(1000).required(),
   title_ja: Joi.string().allow(null).allow('').max(1000).optional(),
   question_type: Joi.string().valid(Object.values(QuestionType)).required(),
