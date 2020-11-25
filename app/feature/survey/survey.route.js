@@ -4,13 +4,17 @@ const controller = require('./survey.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require('app/middleware/validator.middleware');
-const { create, update } = require('./validator');
+const {
+  create,
+  updateDraftQuiz,
+  createDraftQuiz,
+} = require('./validator');
 
 const router = express.Router();
 
 /* #region Search Survey */
 
-router.get('/surveys',
+router.get('/quizzes',
   authenticate,
   authority(PermissionKey.VIEW_LIST_SURVEY),
   controller.search
@@ -18,7 +22,7 @@ router.get('/surveys',
 
 /**
 * @swagger
-* /web/surveys:
+* /web/quizzes:
 *   get:
 *     summary: Search survey
 *     tags:
@@ -30,6 +34,9 @@ router.get('/surveys',
 *         type: integer
 *         format: int32
 *       - name: limit
+*         in: query
+*         type: integer
+*       - name: history
 *         in: query
 *         type: integer
 *       - name: name
@@ -110,16 +117,20 @@ router.get('/surveys',
 */
 /* #endregion */
 
+router.get('/quizzes/options',
+  controller.getOptions
+);
+
 /* #region Get Survey detail */
 
-router.get('/surveys/:id',
+router.get('/quizzes/:id',
   authenticate,
   authority(PermissionKey.VIEW_SURVEY_DETAIL),
   controller.details
 );
 /**
 * @swagger
-* /web/surveys/{id}:
+* /web/quizzes/{id}:
 *   get:
 *     summary: Get survey detail
 *     tags:
@@ -230,15 +241,23 @@ router.get('/surveys/:id',
 
 /* #region Create Survey */
 
-router.post('/surveys',
+router.post('/quizzes',
   authenticate,
   validator(create),
   authority(PermissionKey.CREATE_SURVEY),
   controller.createSurvey
 );
+
+router.post('/draft-quizzes/',
+  authenticate,
+  validator(createDraftQuiz),
+  authority(PermissionKey.CREATE_SURVEY),
+  controller.saveAsDraftQuiz
+);
+
 /**
 * @swagger
-* /web/surveys:
+* /web/quizzes:
 *   post:
 *     summary: Create survey
 *     tags:
@@ -254,16 +273,20 @@ router.post('/surveys',
 *            example:
 *                  {
                       "survey": {
-                          "name":"survey 1",
-                          "content": "test create survey",
-                          "content_ja": "",
-                          "start_date": "2020-11-16T04:51:40.739Z",
-                          "end_date": "2020-11-20T04:51:40.739Z",
-                          "actived_flg": true,
-                          "description": "",
-                          "point": 100,
-                          "estimate_time": 60
-                      },
+                            "name":"survey 9",
+                            "content": "test create survey",
+                            "content_ja": "",
+                            "start_date": "2020-11-16T04:51:40.739Z",
+                            "end_date": "2020-11-20T04:51:40.739Z",
+                            "description": "",
+                            "status": "DRAFT",
+                            "type": "SURVEY",
+                            "title": "create new survey",
+                            "title_ja": "",
+                            "silver_membership_point": 10,
+                            "gold_membership_point": 20,
+                            "platinum_membership_point": 30
+                        },
                       "questions": [
                           {
                               "title": "Are you kidding me?",
@@ -323,16 +346,16 @@ router.post('/surveys',
 /* #endregion */
 
 /* #region Update Survey */
-router.put('/surveys/:id',
+router.put('/quizzes/:id',
   authenticate,
-  validator(update),
+  validator(updateDraftQuiz),
   authority(PermissionKey.UPDATE_SURVEY),
   controller.updateSurvey
 );
 
 /**
 * @swagger
-* /web/surveys/{id}:
+* /web/quizzes/{id}:
 *   put:
 *     summary: Update survey
 *     tags:
@@ -350,50 +373,48 @@ router.put('/surveys/:id',
 *            type: object
 *            example:
 *                  {
-                      "survey": {
-                          "name":"survey 1",
-                          "content": "test create survey",
-                          "content_ja": "",
-                          "start_date": "2020-11-16T04:51:40.739Z",
-                          "end_date": "2020-11-20T04:51:40.739Z",
-                          "actived_flg": true,
-                          "description": "",
-                          "point": 100,
-                          "estimate_time": 60
-                      },
-                      "questions": [
-                          {
-                              "id": 35,
-                              "title": "Are you kidding me?",
-                              "title_ja": "",
-                              "question_type": "OPEN_ENDED",
-                              "actived_flg": true,
-                              "answers": [
-                                  {
-                                      "id": 149,
-                                      "text":"yes",
-                                      "text_ja":"",
-                                      "is_correct_flg": false
-                                  }
-                              ]
-                          },
-                          {
-                              "id": 36,
-                              "title": "question 2 update",
-                              "title_ja": "",
-                              "question_type": "OPEN_ENDED",
-                              "actived_flg": true,
-                              "answers": [
-                                  {
-                                      "id": "150",
-                                      "text":"yes",
-                                      "text_ja":"",
-                                      "is_correct_flg": true
-                                  }
-                              ]
-                          }
-                      ]
-                  }
+                    "survey": {
+                        "name":"survey 9",
+                        "content": "test update survey",
+                        "content_ja": "",
+                        "start_date": "2020-11-16T04:51:40.739Z",
+                        "end_date": "2020-11-20T04:51:40.739Z",
+                        "description": "",
+                        "status": "DRAFT",
+                        "type": "SURVEY",
+                        "title": "update survey 9",
+                        "title_ja": "",
+                        "silver_membership_point": 100,
+                        "gold_membership_point": 200,
+                        "platinum_membership_point": 300
+                    },
+                    "questions": [
+                        {
+                            "title": "question 1 survey 9",
+                            "title_ja": "",
+                            "question_type": "OPEN_ENDED",
+                            "answers": [
+                                {
+                                    "text":"yes create",
+                                    "text_ja":"",
+                                    "is_correct_flg": true
+                                }
+                            ]
+                        },
+                        {
+                            "title": "question 2 survey 9",
+                            "title_ja": "",
+                            "question_type": "OPEN_ENDED",
+                            "answers": [
+                                {
+                                    "text":"yes create",
+                                    "text_ja":"",
+                                    "is_correct_flg": true
+                                }
+                            ]
+                        }
+                    ]
+                }
 *     produces:
 *       - application/json
 *     responses:
@@ -424,7 +445,7 @@ router.put('/surveys/:id',
 /* #endregion */
 
 /* #region Delete Survey */
-router.delete('/surveys/:id',
+router.delete('/quizzes/:id',
   authenticate,
   authority(PermissionKey.DELETE_SURVEY),
   controller.deleteSurvey
@@ -432,7 +453,7 @@ router.delete('/surveys/:id',
 
 /**
 * @swagger
-* /web/surveys/{id}:
+* /web/quizzes/{id}:
 *   delete:
 *     summary: Delete survey
 *     tags:

@@ -1,13 +1,15 @@
 const logger = require('app/lib/logger');
 const Question = require('app/model/wallet').questions;
 const QuestionAnswer = require('app/model/wallet').question_answers;
-const Survey = require('app/model/wallet').surveys;
+const Quiz = require('app/model/wallet').quizzes;
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const moment = require('moment');
 const questionMapper = require("app/feature/response-schema/question.response-schema");
 const database = require('app/lib/database').db().wallet;
 const QuestionSubType = require('app/model/wallet/value-object/question-sub-type');
+const SurveyStatus = require('app/model/wallet/value-object/survey-status');
+const SurveyType = require('app/model/wallet/value-object/survey-type');
 
 module.exports = {
   search: async (req, res, next) => {
@@ -19,9 +21,17 @@ module.exports = {
         deleted_flg: false
       };
 
+      if (query.history) {
+        where.status = SurveyStatus.DONE;
+      }
+      else {
+        where.status = { [Op.not]: SurveyStatus.DONE };
+      }
+
       if (query.name) {
         where.name = { [Op.iLike]: `%${query.name}%` };
       }
+
       if (query.from_date && query.to_date) {
         const fromDate = moment(query.from_date).toDate();
         const toDate = moment(query.to_date).toDate();
@@ -34,11 +44,20 @@ module.exports = {
         };
       }
 
-      const { count: total, rows: items } = await Survey.findAndCountAll({
+      const { count: total, rows: items } = await Quiz.findAndCountAll({
         limit: limit,
         offset: offset,
         where: where,
-        order: [['created_at', 'DESC']]
+        order: [['created_at', 'DESC']],
+        raw: true
+      });
+
+      items.forEach(item => {
+        item.duration = getDurationTime(item.start_date, item.end_date);
+        const today = new Date();
+        if (today <= item.end_date && today >= item.start_date && item.status === SurveyStatus.READY) {
+          item.status = 'IN_PROGRESS';
+        }
       });
 
       return res.ok({
@@ -56,12 +75,21 @@ module.exports = {
   details: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const survey = await Survey.findOne({
+      const survey = await Quiz.findOne({
         where: {
           id: id,
           deleted_flg: false
-        }
+        },
+        raw: true
       });
+
+      survey.duration = getDurationTime(survey.start_date, survey.end_date);
+
+      const today = new Date();
+      if (today <= survey.end_date && today >= survey.start_date && survey.status === SurveyStatus.READY) {
+        survey.status = 'IN_PROGRESS';
+      }
+
       if (!survey) {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
@@ -88,6 +116,47 @@ module.exports = {
       next(error);
     }
   },
+  saveAsDraftQuiz: async (req, res, next) => {
+    let transaction;
+    try {
+      const { body } = req;
+      const { questions } = body;
+      const data = {
+        name: body.name,
+        name_ja: body.name_ja,
+        start_date: body.start_date,
+        end_date: body.end_date,
+        silver_membership_point: body.silver_membership_point,
+        gold_membership_point: body.gold_membership_point,
+        platinum_membership_point: body.platinum_membership_point,
+        status: SurveyStatus.DRAFT,
+        type: SurveyType.QUIZ,
+        created_by: req.user.id,
+        updated_by: req.user.id,
+      };
+
+      transaction = await database.transaction();
+      const newQuiz = await Quiz.create(data, {
+        transaction: transaction
+      });
+
+      if (questions && questions.length > 0) {
+        for (let item of questions) {
+          await createQuestionAndAnswers(newQuiz.id, item, transaction, req.user.id);
+        }
+      }
+
+      await transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
+      logger.error('Create survey detail fail', error);
+      next(error);
+    }
+  },
   createSurvey: async (req, res, next) => {
     let transaction;
     try {
@@ -96,13 +165,13 @@ module.exports = {
       survey.updated_by = req.user.id;
 
       transaction = await database.transaction();
-      const surveyRes = await Survey.create(survey, {
+      const surveyRes = await Quiz.create(survey, {
         transaction: transaction
       });
 
       if (questions && questions.length > 0) {
         for (let item of questions) {
-          await createQuestionAndAnswers(surveyRes.id, item, transaction,req.user.id);
+          await createQuestionAndAnswers(surveyRes.id, item, transaction, req.user.id);
         }
       }
       await transaction.commit();
@@ -120,7 +189,7 @@ module.exports = {
     let transaction;
     try {
       const { body: { survey, questions }, params: { id } } = req;
-      const availableSurvey = await Survey.findOne({
+      const availableSurvey = await Quiz.findOne({
         where: {
           id: id,
           deleted_flg: false
@@ -130,8 +199,9 @@ module.exports = {
       if (!availableSurvey) {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
+
       transaction = await database.transaction();
-      await Survey.update(survey, {
+      await Quiz.update(survey, {
         where: {
           id: id
         },
@@ -139,14 +209,14 @@ module.exports = {
       });
 
       if (questions && questions.length > 0) {
-        await removeQuestionAndAnswerNotInList(id ,questions, transaction);
+        await removeQuestionAndAnswerNotInList(id, questions, transaction);
 
         for (let item of questions) {
           if (item.id) {
-            await updateQuestions(id,item, transaction, req.user.id);
+            await updateQuestions(id, item, transaction, req.user.id);
           }
           else {
-            await createQuestionAndAnswers(id,item, transaction,req.user.id);
+            await createQuestionAndAnswers(id, item, transaction, req.user.id);
           }
         }
       }
@@ -169,7 +239,7 @@ module.exports = {
     let transaction;
     try {
       const { params: { id } } = req;
-      const availableSurvey = await Survey.findOne({
+      const availableSurvey = await Quiz.findOne({
         where: {
           id: id,
           deleted_flg: false
@@ -180,7 +250,7 @@ module.exports = {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
       transaction = await database.transaction();
-      await Survey.update({
+      await Quiz.update({
         deleted_flg: true
       }, {
         where: {
@@ -209,6 +279,30 @@ module.exports = {
       next(error);
     }
   },
+  getOptions: (req, res, next) => {
+    try {
+      const options = {};
+      options.status = Object.entries(SurveyStatus).map(item => {
+        return {
+          label: item[0],
+          value: item[1]
+        };
+      });
+
+      options.type = Object.entries(SurveyType).map(item => {
+        return {
+          label: item[0],
+          value: item[1]
+        };
+      });
+
+      return res.ok(options);
+    }
+    catch (error) {
+      logger.error('get survey options fail', error);
+      next(error);
+    }
+  }
 };
 
 async function removeQuestionAndAnswerNotInList(survey_id, questions, transaction) {
@@ -285,7 +379,7 @@ async function createQuestionAndAnswers(survey_id, question, transaction, user_i
     throw error;
   }
 }
-async function updateQuestions(survey_id, question, transaction,user_id) {
+async function updateQuestions(survey_id, question, transaction, user_id) {
   try {
     await Question.update({
       title: question.title,
@@ -321,7 +415,7 @@ async function updateQuestions(survey_id, question, transaction,user_id) {
         if (answer.id) {
           await QuestionAnswer.update({
             text: answer.text,
-            text_js: answer.text_js ? answer.text_js : '',
+            text_ja: answer.text_ja,
             is_correct_flg: answer.is_correct_flg
           }, {
             where: {
@@ -334,7 +428,7 @@ async function updateQuestions(survey_id, question, transaction,user_id) {
           await QuestionAnswer.create({
             question_id: question.id,
             text: answer.text,
-            text_js: answer.text_js ? answer.text_js : '',
+            text_ja: answer.text_ja,
             is_correct_flg: answer.is_correct_flg
           }, {
             transaction: transaction
@@ -386,4 +480,22 @@ async function removeAllQuestionAndAnswer(survey_id, transaction) {
     logger.error('Remove all question and answer of survey fail', error);
     throw error;
   }
+}
+
+function getDurationTime(start_date, end_date) {
+  const startDate = Date.parse(start_date) / 1000;
+  const endDate = Date.parse(end_date) / 1000;
+  const secondDurations = endDate - startDate;
+
+  const d = Math.floor(secondDurations / (3600 * 24));
+  const h = Math.floor(secondDurations % (3600 * 24) / 3600);
+  const m = Math.floor(secondDurations % 3600 / 60);
+  const s = Math.floor(secondDurations % 60);
+
+  const dDisplay = d > 0 ? d + 'd ' : '';
+  const hDisplay = h > 0 ? h + 'h ' : '';
+  const mDisplay = m > 0 ? m + 'm ' : '';
+  const sDisplay = s > 0 ? s + 's' : '';
+
+  return dDisplay + hDisplay + mDisplay + sDisplay;
 }
