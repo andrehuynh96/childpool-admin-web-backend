@@ -10,6 +10,14 @@ const database = require('app/lib/database').db().wallet;
 const QuestionSubType = require('app/model/wallet/value-object/question-sub-type');
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
 const SurveyType = require('app/model/wallet/value-object/survey-type');
+const Joi = require('joi');
+const UpdateDraftQuiz = require('./validator/update-draft-quiz');
+const UpdateQuiz = require('./validator/update-quiz');
+
+const ActionName = {
+  Draft: 'draft',
+  Publish: 'publish'
+};
 
 module.exports = {
   search: async (req, res, next) => {
@@ -185,10 +193,60 @@ module.exports = {
       next(error);
     }
   },
-  updateSurvey: async (req, res, next) => {
+  updateQuiz: async (req, res, next) => {
     let transaction;
+    let startDate, endDate;
+    const { body: { questions }, params: { id } } = req;
     try {
-      const { body: { survey, questions }, params: { id } } = req;
+      if (req.body.start_date) {
+        startDate = moment(req.body.start_date).toDate();
+      }
+      if (req.body.end_date) {
+        endDate = moment(req.body.end_date).toDate();
+      }
+      if (startDate && endDate && startDate >= endDate) {
+        return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['start_date', 'end_date'] });
+      }
+      if (req.body.action_name.toLowerCase() === ActionName.Draft) {
+        const result = Joi.validate(req.body, UpdateDraftQuiz);
+        req.body.status = SurveyStatus.DRAFT;
+        if (result.error) {
+          const err = {
+            details: result.error.details,
+          };
+          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
+        }
+      } else if (req.body.action_name.toLowerCase() === ActionName.Publish) {
+        const checkQuizReady = await Quiz.findOne({
+          where: {
+            deleted_flg: false,
+            status: SurveyStatus.READY,
+            [Op.or]: [{
+              start_date: {
+                [Op.gt]: endDate
+              }
+            }, {
+              end_date: {
+                [Op.lt]: startDate
+              }
+            }
+            ]
+          }
+        });
+        if (checkQuizReady === null) {
+          return res.notFound(res.__("THERE_ARE_ACTIVITY_DURING_THIS_TIME"), "THERE_ARE_ACTIVITY_DURING_THIS_TIME", { field: ['start_date', 'end_date'] });
+        }
+
+        const result = Joi.validate(req.body, UpdateQuiz);
+        req.body.status = SurveyStatus.READY;
+        if (result.error) {
+          const err = {
+            details: result.error.details,
+          };
+          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
+        }
+      }
+      req.body.type = SurveyType.QUIZ;
       const availableSurvey = await Quiz.findOne({
         where: {
           id: id,
@@ -201,7 +259,7 @@ module.exports = {
       }
 
       transaction = await database.transaction();
-      await Quiz.update(survey, {
+      await Quiz.update(req.body, {
         where: {
           id: id
         },

@@ -347,10 +347,10 @@ router.post('/draft-quizzes/',
 
 /* #region Update Survey */
 router.put('/quizzes/:id',
-  authenticate,
-  validator(updateDraftQuiz),
-  authority(PermissionKey.UPDATE_SURVEY),
-  controller.updateSurvey
+ authenticate,
+ // validator(updateDraftQuiz),
+ authority(PermissionKey.UPDATE_SURVEY),
+  controller.updateQuiz
 );
 
 /**
