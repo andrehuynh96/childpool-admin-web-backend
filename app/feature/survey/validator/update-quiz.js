@@ -6,6 +6,7 @@ const answerSchema = Joi.object().keys({
   text: Joi.string().allow(null).max(1000).required(),
   text_ja: Joi.string().allow(null).allow('').max(1000).optional(),
   is_correct_flg: Joi.boolean().required(),
+  is_other_flg: Joi.boolean().optional(),
 });
 
 const questionSchema = Joi.object().keys({
