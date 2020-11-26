@@ -239,31 +239,45 @@ module.exports = {
             });
             qs.answers.forEach(answer => {
               const result = textArray.filter(item => item === answer.text);
-              console.log(result);
               if (result.length >= 2) {
                 return res.badRequest(res.__("THERE_ARE_TWO_OVERLAPPING_FIELD"), "THERE_ARE_TWO_OVERLAPPING_FIELD", { field: ['answers_text'] });
               }
             });
           }
         });
-
         const checkQuizReady = await Quiz.findOne({
           where: {
             deleted_flg: false,
             status: SurveyStatus.READY,
             [Op.or]: [{
               start_date: {
-                [Op.gt]: endDate
+                [Op.between]: [startDate, endDate],
               }
             }, {
               end_date: {
-                [Op.lt]: startDate
+                [Op.between]: [startDate, endDate],
+              }
+            },
+            {
+              start_date: {
+                [Op.lt]: startDate,
+              },
+              end_date: {
+                [Op.gt]: endDate
+              }
+            },
+            {
+              start_date: {
+                [Op.gt]: startDate,
+              },
+              end_date: {
+                [Op.lt]: endDate
               }
             }
             ]
           }
         });
-        if (checkQuizReady === null) {
+        if (checkQuizReady != null) {
           return res.notFound(res.__("THERE_ARE_ACTIVITY_DURING_THIS_TIME"), "THERE_ARE_ACTIVITY_DURING_THIS_TIME", { field: ['start_date', 'end_date'] });
         }
       }
@@ -464,7 +478,7 @@ async function updateQuestions(survey_id, question, transaction, user_id) {
       title_ja: question.title_ja ? question.title_ja : '',
       question_type: question.question_type,
       actived_flg: question.actived_flg,
-      updated_by: user_id
+      updated_by: user_id,
     }, {
       where: {
         survey_id: survey_id,
@@ -494,7 +508,8 @@ async function updateQuestions(survey_id, question, transaction, user_id) {
           await QuestionAnswer.update({
             text: answer.text,
             text_ja: answer.text_ja,
-            is_correct_flg: answer.is_correct_flg
+            is_correct_flg: answer.is_correct_flg,
+            is_other_flg: answer.is_other_flg
           }, {
             where: {
               id: answer.id
@@ -507,7 +522,8 @@ async function updateQuestions(survey_id, question, transaction, user_id) {
             question_id: question.id,
             text: answer.text,
             text_ja: answer.text_ja,
-            is_correct_flg: answer.is_correct_flg
+            is_correct_flg: answer.is_correct_flg,
+            is_other_flg: answer.is_other_flg
           }, {
             transaction: transaction
           });
