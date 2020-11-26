@@ -245,9 +245,13 @@ module.exports = {
         for (let i = 0; i < questions.length; i++) {
           if (questions[i].answers && questions[i].answers.length > 0) {
             let textArray = [];
+            let textJaArray = [];
             let errFlag = false;
             questions[i].answers.forEach(answer => {
               textArray.push(answer.text);
+              if (answer.text_ja != ''){
+                textJaArray.push(answer.text_ja);
+              }
               if (questions[i].question_type !== QuestionType.OPEN_ENDED && !answer.is_other_flg && answer.text.trim() === '') {
                 errFlag = true;
               }
@@ -256,8 +260,9 @@ module.exports = {
               return res.badRequest(res.__("ANSWER_TEXT_FIELD_IS_REQUIRED"), "ANSWER_TEXT_FIELD_IS_REQUIRED", { field: ['answers_text'] });
             }
             questions[i].answers.forEach(answer => {
-              const result = textArray.filter(item => item === answer.text);
-              if (result.length >= 2) {
+              const resultText = textArray.filter(item => item === answer.text);
+              const resultTextJa = textJaArray.filter(item => item === answer.text_ja);
+              if (resultText.length >= 2 || resultTextJa.length >= 2) {
                 errFlag = true;
               }
             });
