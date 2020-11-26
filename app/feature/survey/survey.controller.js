@@ -210,6 +210,17 @@ module.exports = {
         return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['start_date', 'end_date'] });
       }
 
+      const availableSurvey = await Quiz.findOne({
+        where: {
+          id: id,
+          deleted_flg: false
+        }
+      });
+
+      if (!availableSurvey) {
+        return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
+      }
+
       if (req.body.action_name.toLowerCase() === ActionName.Draft) {
         const result = Joi.validate(req.body, updateDraftQuiz);
         req.body.status = SurveyStatus.DRAFT;
@@ -228,7 +239,7 @@ module.exports = {
           };
           return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
         }
-        if (startDate < today) {
+        if (availableSurvey.status != SurveyStatus.READY && startDate < today) {
           return res.badRequest(res.__("START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY"), "START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY", { field: ['start_date'] });
         }
         for (let i = 0; i < questions.length; i++) {
@@ -292,16 +303,6 @@ module.exports = {
         if (checkQuizReady != null) {
           return res.notFound(res.__("THERE_ARE_ACTIVITY_DURING_THIS_TIME"), "THERE_ARE_ACTIVITY_DURING_THIS_TIME", { field: ['start_date', 'end_date'] });
         }
-      }
-      const availableSurvey = await Quiz.findOne({
-        where: {
-          id: id,
-          deleted_flg: false
-        }
-      });
-
-      if (!availableSurvey) {
-        return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
 
       transaction = await database.transaction();
