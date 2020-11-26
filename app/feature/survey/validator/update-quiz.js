@@ -3,7 +3,7 @@ const QuestionType = require("app/model/wallet/value-object/question-type");
 
 const answerSchema = Joi.object().keys({
   id: Joi.number().optional(),
-  text: Joi.string().allow(null).max(1000).required(),
+  text: Joi.string().allow(null).allow('').max(1000).optional(),
   text_ja: Joi.string().allow(null).allow('').max(1000).optional(),
   is_correct_flg: Joi.boolean().required(),
   is_other_flg: Joi.boolean().optional(),

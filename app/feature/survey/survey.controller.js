@@ -13,6 +13,7 @@ const SurveyType = require('app/model/wallet/value-object/survey-type');
 const Joi = require('joi');
 const updateDraftQuiz = require('./validator/update-draft-quiz');
 const updatePublishQuiz = require('./validator/update-quiz');
+const QuestionType = require('app/model/wallet/value-object/question-type');
 
 const ActionName = {
   Draft: 'draft',
@@ -209,6 +210,17 @@ module.exports = {
         return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['start_date', 'end_date'] });
       }
 
+      const availableSurvey = await Quiz.findOne({
+        where: {
+          id: id,
+          deleted_flg: false
+        }
+      });
+
+      if (!availableSurvey) {
+        return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
+      }
+
       if (req.body.action_name.toLowerCase() === ActionName.Draft) {
         const result = Joi.validate(req.body, updateDraftQuiz);
         req.body.status = SurveyStatus.DRAFT;
@@ -227,28 +239,39 @@ module.exports = {
           };
           return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
         }
-        if (startDate < today) {
+        if (availableSurvey.status != SurveyStatus.READY && startDate < today) {
           return res.badRequest(res.__("START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY"), "START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY", { field: ['start_date'] });
         }
-
-        questions.forEach(qs => {
-          if (qs.answers && qs.answers.length > 0) {
+        for (let i = 0; i < questions.length; i++) {
+          if (questions[i].answers && questions[i].answers.length > 0) {
             let textArray = [];
-            qs.answers.forEach(answer => {
+            let errFlag = false;
+            questions[i].answers.forEach(answer => {
               textArray.push(answer.text);
-            });
-            qs.answers.forEach(answer => {
-              const result = textArray.filter(item => item === answer.text);
-              if (result.length >= 2) {
-                return res.badRequest(res.__("THERE_ARE_TWO_OVERLAPPING_FIELD"), "THERE_ARE_TWO_OVERLAPPING_FIELD", { field: ['answers_text'] });
+              if (questions[i].question_type !== QuestionType.OPEN_ENDED && !answer.is_other_flg && answer.text.trim() === '') {
+                errFlag = true;
               }
             });
+            if (errFlag) {
+              return res.badRequest(res.__("ANSWER_TEXT_FIELD_IS_REQUIRED"), "ANSWER_TEXT_FIELD_IS_REQUIRED", { field: ['answers_text'] });
+            }
+            questions[i].answers.forEach(answer => {
+              const result = textArray.filter(item => item === answer.text);
+              if (result.length >= 2) {
+                errFlag = true;
+              }
+            });
+            if (errFlag) {
+              return res.badRequest(res.__("THERE_ARE_TWO_OVERLAPPING_FIELD"), "THERE_ARE_TWO_OVERLAPPING_FIELD", { field: ['answers_text'] });
+            }
           }
-        });
+        }
+
         const checkQuizReady = await Quiz.findOne({
           where: {
             deleted_flg: false,
             status: SurveyStatus.READY,
+            [Op.not]: { id: id },
             [Op.or]: [{
               start_date: {
                 [Op.between]: [startDate, endDate],
@@ -280,16 +303,6 @@ module.exports = {
         if (checkQuizReady != null) {
           return res.notFound(res.__("THERE_ARE_ACTIVITY_DURING_THIS_TIME"), "THERE_ARE_ACTIVITY_DURING_THIS_TIME", { field: ['start_date', 'end_date'] });
         }
-      }
-      const availableSurvey = await Quiz.findOne({
-        where: {
-          id: id,
-          deleted_flg: false
-        }
-      });
-
-      if (!availableSurvey) {
-        return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
 
       transaction = await database.transaction();
