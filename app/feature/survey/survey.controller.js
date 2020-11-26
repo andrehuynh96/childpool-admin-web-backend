@@ -11,8 +11,8 @@ const QuestionSubType = require('app/model/wallet/value-object/question-sub-type
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
 const SurveyType = require('app/model/wallet/value-object/survey-type');
 const Joi = require('joi');
-const UpdateDraftQuiz = require('./validator/update-draft-quiz');
-const UpdateQuiz = require('./validator/update-quiz');
+const updateDraftQuiz = require('./validator/update-draft-quiz');
+const updatePublishQuiz = require('./validator/update-quiz');
 
 const ActionName = {
   Draft: 'draft',
@@ -196,6 +196,7 @@ module.exports = {
   updateQuiz: async (req, res, next) => {
     let transaction;
     let startDate, endDate;
+    const today = new Date();
     const { body: { questions }, params: { id } } = req;
     try {
       if (req.body.start_date) {
@@ -207,8 +208,9 @@ module.exports = {
       if (startDate && endDate && startDate >= endDate) {
         return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['start_date', 'end_date'] });
       }
+
       if (req.body.action_name.toLowerCase() === ActionName.Draft) {
-        const result = Joi.validate(req.body, UpdateDraftQuiz);
+        const result = Joi.validate(req.body, updateDraftQuiz);
         req.body.status = SurveyStatus.DRAFT;
         if (result.error) {
           const err = {
@@ -217,6 +219,34 @@ module.exports = {
           return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
         }
       } else if (req.body.action_name.toLowerCase() === ActionName.Publish) {
+        const result = Joi.validate(req.body, updatePublishQuiz);
+        req.body.status = SurveyStatus.READY;
+        if (result.error) {
+          const err = {
+            details: result.error.details,
+          };
+          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
+        }
+        if (startDate < today) {
+          return res.badRequest(res.__("START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY"), "START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY", { field: ['start_date'] });
+        }
+
+        questions.forEach(qs => {
+          if (qs.answers && qs.answers.length > 0) {
+            let textArray = [];
+            qs.answers.forEach(answer => {
+              textArray.push(answer.text);
+            });
+            qs.answers.forEach(answer => {
+              const result = textArray.filter(item => item === answer.text);
+              console.log(result);
+              if (result.length >= 2) {
+                return res.badRequest(res.__("THERE_ARE_TWO_OVERLAPPING_FIELD"), "THERE_ARE_TWO_OVERLAPPING_FIELD", { field: ['answers_text'] });
+              }
+            });
+          }
+        });
+
         const checkQuizReady = await Quiz.findOne({
           where: {
             deleted_flg: false,
@@ -236,17 +266,7 @@ module.exports = {
         if (checkQuizReady === null) {
           return res.notFound(res.__("THERE_ARE_ACTIVITY_DURING_THIS_TIME"), "THERE_ARE_ACTIVITY_DURING_THIS_TIME", { field: ['start_date', 'end_date'] });
         }
-
-        const result = Joi.validate(req.body, UpdateQuiz);
-        req.body.status = SurveyStatus.READY;
-        if (result.error) {
-          const err = {
-            details: result.error.details,
-          };
-          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
-        }
       }
-      req.body.type = SurveyType.QUIZ;
       const availableSurvey = await Quiz.findOne({
         where: {
           id: id,
