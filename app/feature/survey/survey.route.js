@@ -6,7 +6,6 @@ const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require('app/middleware/validator.middleware');
 const {
   create,
-  updateDraftQuiz,
   createDraftQuiz,
 } = require('./validator');
 
@@ -348,7 +347,6 @@ router.post('/draft-quizzes/',
 /* #region Update Survey */
 router.put('/quizzes/:id',
  authenticate,
- // validator(updateDraftQuiz),
  authority(PermissionKey.UPDATE_SURVEY),
   controller.updateQuiz
 );
@@ -397,7 +395,8 @@ router.put('/quizzes/:id',
                                 {
                                     "text":"yes create",
                                     "text_ja":"",
-                                    "is_correct_flg": true
+                                    "is_correct_flg": true,
+                                    "is_other_flg":false
                                 }
                             ]
                         },
@@ -409,7 +408,8 @@ router.put('/quizzes/:id',
                                 {
                                     "text":"yes create",
                                     "text_ja":"",
-                                    "is_correct_flg": true
+                                    "is_correct_flg": true,
+                                    "is_other_flg":true
                                 }
                             ]
                         }
