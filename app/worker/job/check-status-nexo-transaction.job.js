@@ -39,16 +39,16 @@ module.exports = {
           status: [NexoTransactionStatus.PENDING]
         }
       });
-
       const nexoTransactionIds = nexoTransaction.map(item => item.nexo_transaction_id);
       let service = new CheckStatusNexoTransaction({ ibp: true });
-
+      console.log(nexoTransactionIds);
       for (let item of nexoAccounts) {
         const result = await service.getWithdrawTransactions({ nexo_id: item.nexo_id, secret: item.secret });
-
+        console.log(result);
         for (let tx_id of nexoTransactionIds) {
           const tx = result.find(x => x.id === tx_id);
-          if (tx && tx.status !== NexoMemberStatus.PENDING.toLowerCase()) {
+          if (tx && tx.status !== NexoTransactionStatus.PENDING.toLowerCase()) {
+            logger.info('Update nexo transaction: ',tx.id);
             await NexoTransaction.update({
               status: tx.status.toUpperCase()
             },{
