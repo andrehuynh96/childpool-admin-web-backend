@@ -1,4 +1,5 @@
 module.exports = {
   create: require('./create'),
-  update: require('./update')
+  updateDraftQuiz: require('./update-draft-quiz'),
+  createDraftQuiz: require('./create-draft-quiz'),
 };

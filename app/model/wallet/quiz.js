@@ -2,7 +2,7 @@ const SurveyStatus = require('./value-object/survey-status');
 const SurveyType = require('./value-object/survey-type');
 
 module.exports = (sequelize, DataTypes) => {
-  const Model = sequelize.define("surveys", {
+  const Model = sequelize.define("quizzes", {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -11,14 +11,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: {
       type: DataTypes.STRING(256),
-      allowNull: true,
-    },
-    title: {
-      type: DataTypes.STRING(1000),
       allowNull: false,
-      defaultValue: '',
     },
-    title_ja: {
+    name_ja: {
       type: DataTypes.STRING(1000),
       allowNull: true,
     },

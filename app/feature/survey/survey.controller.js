@@ -1,7 +1,7 @@
 const logger = require('app/lib/logger');
 const Question = require('app/model/wallet').questions;
 const QuestionAnswer = require('app/model/wallet').question_answers;
-const Survey = require('app/model/wallet').surveys;
+const Quiz = require('app/model/wallet').quizzes;
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const moment = require('moment');
@@ -10,6 +10,14 @@ const database = require('app/lib/database').db().wallet;
 const QuestionSubType = require('app/model/wallet/value-object/question-sub-type');
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
 const SurveyType = require('app/model/wallet/value-object/survey-type');
+const Joi = require('joi');
+const updateDraftQuiz = require('./validator/update-draft-quiz');
+const updatePublishQuiz = require('./validator/update-quiz');
+
+const ActionName = {
+  Draft: 'draft',
+  Publish: 'publish'
+};
 
 module.exports = {
   search: async (req, res, next) => {
@@ -44,7 +52,7 @@ module.exports = {
         };
       }
 
-      const { count: total, rows: items } = await Survey.findAndCountAll({
+      const { count: total, rows: items } = await Quiz.findAndCountAll({
         limit: limit,
         offset: offset,
         where: where,
@@ -75,7 +83,7 @@ module.exports = {
   details: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const survey = await Survey.findOne({
+      const survey = await Quiz.findOne({
         where: {
           id: id,
           deleted_flg: false
@@ -116,6 +124,47 @@ module.exports = {
       next(error);
     }
   },
+  saveAsDraftQuiz: async (req, res, next) => {
+    let transaction;
+    try {
+      const { body } = req;
+      const { questions } = body;
+      const data = {
+        name: body.name,
+        name_ja: body.name_ja,
+        start_date: body.start_date,
+        end_date: body.end_date,
+        silver_membership_point: body.silver_membership_point,
+        gold_membership_point: body.gold_membership_point,
+        platinum_membership_point: body.platinum_membership_point,
+        type: body.type,
+        status: SurveyStatus.DRAFT,
+        created_by: req.user.id,
+        updated_by: req.user.id,
+      };
+
+      transaction = await database.transaction();
+      const newQuiz = await Quiz.create(data, {
+        transaction: transaction
+      });
+
+      if (questions && questions.length > 0) {
+        for (let item of questions) {
+          await createQuestionAndAnswers(newQuiz.id, item, transaction, req.user.id);
+        }
+      }
+
+      await transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
+      logger.error('Create survey detail fail', error);
+      next(error);
+    }
+  },
   createSurvey: async (req, res, next) => {
     let transaction;
     try {
@@ -124,7 +173,7 @@ module.exports = {
       survey.updated_by = req.user.id;
 
       transaction = await database.transaction();
-      const surveyRes = await Survey.create(survey, {
+      const surveyRes = await Quiz.create(survey, {
         transaction: transaction
       });
 
@@ -144,11 +193,81 @@ module.exports = {
       next(error);
     }
   },
-  updateSurvey: async (req, res, next) => {
+  updateQuiz: async (req, res, next) => {
     let transaction;
+    let startDate, endDate;
+    const today = new Date();
+    const { body: { questions }, params: { id } } = req;
     try {
-      const { body: { survey, questions }, params: { id } } = req;
-      const availableSurvey = await Survey.findOne({
+      if (req.body.start_date) {
+        startDate = moment(req.body.start_date).toDate();
+      }
+      if (req.body.end_date) {
+        endDate = moment(req.body.end_date).toDate();
+      }
+      if (startDate && endDate && startDate >= endDate) {
+        return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['start_date', 'end_date'] });
+      }
+
+      if (req.body.action_name.toLowerCase() === ActionName.Draft) {
+        const result = Joi.validate(req.body, updateDraftQuiz);
+        req.body.status = SurveyStatus.DRAFT;
+        if (result.error) {
+          const err = {
+            details: result.error.details,
+          };
+          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
+        }
+      } else if (req.body.action_name.toLowerCase() === ActionName.Publish) {
+        const result = Joi.validate(req.body, updatePublishQuiz);
+        req.body.status = SurveyStatus.READY;
+        if (result.error) {
+          const err = {
+            details: result.error.details,
+          };
+          return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
+        }
+        if (startDate < today) {
+          return res.badRequest(res.__("START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY"), "START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY", { field: ['start_date'] });
+        }
+
+        questions.forEach(qs => {
+          if (qs.answers && qs.answers.length > 0) {
+            let textArray = [];
+            qs.answers.forEach(answer => {
+              textArray.push(answer.text);
+            });
+            qs.answers.forEach(answer => {
+              const result = textArray.filter(item => item === answer.text);
+              console.log(result);
+              if (result.length >= 2) {
+                return res.badRequest(res.__("THERE_ARE_TWO_OVERLAPPING_FIELD"), "THERE_ARE_TWO_OVERLAPPING_FIELD", { field: ['answers_text'] });
+              }
+            });
+          }
+        });
+
+        const checkQuizReady = await Quiz.findOne({
+          where: {
+            deleted_flg: false,
+            status: SurveyStatus.READY,
+            [Op.or]: [{
+              start_date: {
+                [Op.gt]: endDate
+              }
+            }, {
+              end_date: {
+                [Op.lt]: startDate
+              }
+            }
+            ]
+          }
+        });
+        if (checkQuizReady === null) {
+          return res.notFound(res.__("THERE_ARE_ACTIVITY_DURING_THIS_TIME"), "THERE_ARE_ACTIVITY_DURING_THIS_TIME", { field: ['start_date', 'end_date'] });
+        }
+      }
+      const availableSurvey = await Quiz.findOne({
         where: {
           id: id,
           deleted_flg: false
@@ -160,7 +279,7 @@ module.exports = {
       }
 
       transaction = await database.transaction();
-      await Survey.update(survey, {
+      await Quiz.update(req.body, {
         where: {
           id: id
         },
@@ -198,7 +317,7 @@ module.exports = {
     let transaction;
     try {
       const { params: { id } } = req;
-      const availableSurvey = await Survey.findOne({
+      const availableSurvey = await Quiz.findOne({
         where: {
           id: id,
           deleted_flg: false
@@ -209,7 +328,7 @@ module.exports = {
         return res.notFound(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND", { field: ['id'] });
       }
       transaction = await database.transaction();
-      await Survey.update({
+      await Quiz.update({
         deleted_flg: true
       }, {
         where: {
@@ -238,7 +357,7 @@ module.exports = {
       next(error);
     }
   },
-  getOptions: (req,res,next) => {
+  getOptions: (req, res, next) => {
     try {
       const options = {};
       options.status = Object.entries(SurveyStatus).map(item => {
@@ -258,7 +377,7 @@ module.exports = {
       return res.ok(options);
     }
     catch (error) {
-      logger.error('get survey options fail',error);
+      logger.error('get survey options fail', error);
       next(error);
     }
   }
