@@ -6,8 +6,7 @@ const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require('app/middleware/validator.middleware');
 const {
   create,
-  updateDraftQuiz,
-  createDraftQuiz,
+  createDraftSurvey, createDraftQuiz
 } = require('./validator');
 
 const router = express.Router();
@@ -255,6 +254,13 @@ router.post('/draft-quizzes/',
   controller.saveAsDraftQuiz
 );
 
+router.post('/draft-surveys/',
+  authenticate,
+  validator(createDraftSurvey),
+  authority(PermissionKey.CREATE_SURVEY),
+  controller.saveAsDraftSurveys
+);
+
 /**
 * @swagger
 * /web/quizzes:
@@ -346,9 +352,14 @@ router.post('/draft-quizzes/',
 /* #endregion */
 
 /* #region Update Survey */
+router.put('/surveys/:id',
+ authenticate,
+ authority(PermissionKey.UPDATE_SURVEY),
+  controller.updateSurvey
+);
+
 router.put('/quizzes/:id',
  authenticate,
- // validator(updateDraftQuiz),
  authority(PermissionKey.UPDATE_SURVEY),
   controller.updateQuiz
 );
@@ -397,7 +408,8 @@ router.put('/quizzes/:id',
                                 {
                                     "text":"yes create",
                                     "text_ja":"",
-                                    "is_correct_flg": true
+                                    "is_correct_flg": true,
+                                    "is_other_flg":false
                                 }
                             ]
                         },
@@ -409,7 +421,8 @@ router.put('/quizzes/:id',
                                 {
                                     "text":"yes create",
                                     "text_ja":"",
-                                    "is_correct_flg": true
+                                    "is_correct_flg": true,
+                                    "is_other_flg":true
                                 }
                             ]
                         }
