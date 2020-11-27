@@ -146,7 +146,7 @@ module.exports = {
           let errFlag = false;
           let answers = questions[i].answers;
           for (let j = 0; j < answers.length; j++) {
-            if (answers[0].text.trim() != '' || answers[1].text.trim() != '') {
+            if (answers[0].text.trim() === '' || answers[1].text_ja.trim() === '') {
               errFlag = true;
             }
           }
@@ -279,23 +279,6 @@ module.exports = {
         return res.badRequest(res.__("TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE"), "TO_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_FROM_DATE", { field: ['start_date', 'end_date'] });
       }
 
-      for (let i = 0; i < questions.length; i++) {
-        if (questions[i].answers && questions[i].answers.length > 0 && questions[i].answers.length <= 5) {
-          let errFlag = false;
-          let answers = questions[i].answers;
-          for (let j = 0; j < answers.length; j++) {
-            if (answers[0].text.trim() != '' || answers[1].text.trim() != '') {
-              errFlag = true;
-            }
-          }
-          if (errFlag) {
-            return res.badRequest(res.__("ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED"), "ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED", { field: ['answers_text'] });
-          }
-        } else {
-          return res.badRequest(res.__("ROW_ANSWER_TEXT_FIELD_MUST_BE_GREATER_THAN_OR_EQUAL_FIVE"), "ROW_ANSWER_TEXT_FIELD_MUST_BE_GREATER_THAN_OR_EQUAL_FIVE", { field: ['answers_text'] });
-        }
-      }
-
       const availableSurvey = await Quiz.findOne({
         where: {
           id: id,
@@ -329,21 +312,24 @@ module.exports = {
           return res.badRequest(res.__("START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY"), "START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY", { field: ['start_date'] });
         }
         for (let i = 0; i < questions.length; i++) {
-          if (questions[i].answers && questions[i].answers.length > 0) {
+          if (questions[i].answers && questions[i].answers.length > 0 && questions[i].answers.length <= 5) {
             let textArray = [];
             let textJaArray = [];
             let errFlag = false;
-            questions[i].answers.forEach(answer => {
-              textArray.push(answer.text);
-              if (answer.text_ja != '') {
-                textJaArray.push(answer.text_ja);
-              }
-              if (questions[i].question_type !== QuestionType.OPEN_ENDED && !answer.is_other_flg && answer.text.trim() === '') {
+            let answers = questions[i].answers;
+            for (let j = 0; j < answers.length; j++) {
+              if (answers[0].text.trim() === '' || answers[1].text_ja.trim() === '') {
                 errFlag = true;
               }
-            });
+              if (answers[j].text != '') {
+                textArray.push(answers[j].text);
+              }
+              if (answers[j].text_ja != '') {
+                textJaArray.push(answers[j].text_ja);
+              }
+            }
             if (errFlag) {
-              return res.badRequest(res.__("ANSWER_TEXT_FIELD_IS_REQUIRED"), "ANSWER_TEXT_FIELD_IS_REQUIRED", { field: ['answers_text'] });
+              return res.badRequest(res.__("ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED"), "ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED", { field: ['answers_text'] });
             }
             questions[i].answers.forEach(answer => {
               const resultText = textArray.filter(item => item === answer.text);
@@ -355,6 +341,8 @@ module.exports = {
             if (errFlag) {
               return res.badRequest(res.__("THERE_ARE_TWO_OVERLAPPING_FIELD"), "THERE_ARE_TWO_OVERLAPPING_FIELD", { field: ['answers_text'] });
             }
+          } else {
+            return res.badRequest(res.__("ROW_ANSWER_TEXT_FIELD_MUST_BE_GREATER_THAN_OR_EQUAL_FIVE"), "ROW_ANSWER_TEXT_FIELD_MUST_BE_GREATER_THAN_OR_EQUAL_FIVE", { field: ['answers_text'] });
           }
         }
 
