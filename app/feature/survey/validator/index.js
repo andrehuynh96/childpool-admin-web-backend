@@ -1,9 +1,9 @@
 module.exports = {
   create: require('./create'),
-  createDraftSurveys: require('./create-draft-surveys'),
+  createDraftSurvey: require('./create-draft-survey'),
   createDraftQuiz: require('./create-draft-quiz'),
-  updateDraftSurveys: require('./update-draft-surveys'),
+  updateDraftSurvey: require('./update-draft-survey'),
   updateDraftQuiz: require('./update-draft-quiz'),
-  updateSurveys: require('./update-surveys'),
+  updateSurvey: require('./update-survey'),
   updateQuiz: require('./update-quiz'),
 };

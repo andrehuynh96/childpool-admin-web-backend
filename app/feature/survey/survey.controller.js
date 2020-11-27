@@ -12,7 +12,7 @@ const SurveyStatus = require('app/model/wallet/value-object/survey-status');
 const SurveyType = require('app/model/wallet/value-object/survey-type');
 const Joi = require('joi');
 const QuestionType = require('app/model/wallet/value-object/question-type');
-const { updateDraftSurveys, updateDraftQuiz, updateSurveys, updateQuiz } = require('./validator');
+const { updateDraftSurvey, updateDraftQuiz, updateSurvey, updateQuiz } = require('./validator');
 
 const ActionName = {
   Draft: 'draft',
@@ -460,7 +460,7 @@ module.exports = {
       }
 
       if (req.body.action_name.toLowerCase() === ActionName.Draft) {
-        const result = Joi.validate(req.body, updateDraftSurveys);
+        const result = Joi.validate(req.body, updateDraftSurvey);
         req.body.status = SurveyStatus.DRAFT;
         if (result.error) {
           const err = {
@@ -469,7 +469,7 @@ module.exports = {
           return res.badRequest(res.__('MISSING_PARAMETERS'), 'MISSING_PARAMETERS', err);
         }
       } else if (req.body.action_name.toLowerCase() === ActionName.Publish) {
-        const result = Joi.validate(req.body, updateSurveys);
+        const result = Joi.validate(req.body, updateSurvey);
         req.body.status = SurveyStatus.READY;
         if (result.error) {
           const err = {
