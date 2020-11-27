@@ -24,7 +24,7 @@ const Schema = Joi.object().keys({
   silver_membership_point: Joi.number().allow(null).optional(),
   gold_membership_point: Joi.number().allow(null).optional(),
   platinum_membership_point: Joi.number().allow(null).optional(),
-  questions: Joi.array().optional().items(questionSchema),
+  questions: Joi.array().min(1).required().items(questionSchema),
 });
 
 module.exports = Schema;
