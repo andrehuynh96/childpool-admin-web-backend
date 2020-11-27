@@ -145,10 +145,8 @@ module.exports = {
         if (questions[i].answers && questions[i].answers.length > 0 && questions[i].answers.length >= 5) {
           let errFlag = false;
           let answers = questions[i].answers;
-          for (let j = 0; j < answers.length; j++) {
-            if (answers[0].text.trim() === '' || answers[1].text_ja.trim() === '') {
-              errFlag = true;
-            }
+          if (answers[0].text.trim() === '' || answers[0].text.trim() === null || answers[1].text_ja.trim() === '' || answers[1].text_ja.trim() === null) {
+            errFlag = true;
           }
           if (errFlag) {
             return res.badRequest(res.__("ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED"), "ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED", { field: ['answers_text'] });
@@ -317,19 +315,20 @@ module.exports = {
             let textJaArray = [];
             let errFlag = false;
             let answers = questions[i].answers;
+            if (answers[0].text.trim() === '' || answers[0].text.trim() === null || answers[1].text_ja.trim() === '' || answers[1].text_ja.trim() === null) {
+              errFlag = true;
+            }
+            if (errFlag) {
+              return res.badRequest(res.__("ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED"), "ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED", { field: ['answers_text'] });
+            }
+
             for (let j = 0; j < answers.length; j++) {
-              if (answers[0].text.trim() === '' || answers[1].text_ja.trim() === '') {
-                errFlag = true;
-              }
               if (answers[j].text != '') {
                 textArray.push(answers[j].text);
               }
               if (answers[j].text_ja != '') {
                 textJaArray.push(answers[j].text_ja);
               }
-            }
-            if (errFlag) {
-              return res.badRequest(res.__("ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED"), "ANSWER_TEXT_FIELD_ONE_AND_TWO_ARE_REQUIRED", { field: ['answers_text'] });
             }
             questions[i].answers.forEach(answer => {
               const resultText = textArray.filter(item => item === answer.text);
