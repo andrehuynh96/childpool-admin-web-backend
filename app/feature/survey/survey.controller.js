@@ -142,7 +142,7 @@ module.exports = {
       }
 
       for (let i = 0; i < questions.length; i++) {
-        if (questions[i].answers && questions[i].answers.length > 0 && questions[i].answers.length <= 5) {
+        if (questions[i].answers && questions[i].answers.length > 0 && questions[i].answers.length >= 5) {
           let errFlag = false;
           let answers = questions[i].answers;
           for (let j = 0; j < answers.length; j++) {
@@ -312,7 +312,7 @@ module.exports = {
           return res.badRequest(res.__("START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY"), "START_DATE_MUST_BE_GREATER_THAN_OR_EQUAL_TODAY", { field: ['start_date'] });
         }
         for (let i = 0; i < questions.length; i++) {
-          if (questions[i].answers && questions[i].answers.length > 0 && questions[i].answers.length <= 5) {
+          if (questions[i].answers && questions[i].answers.length > 0 && questions[i].answers.length >= 5) {
             let textArray = [];
             let textJaArray = [];
             let errFlag = false;
