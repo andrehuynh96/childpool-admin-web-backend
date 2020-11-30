@@ -4,13 +4,16 @@ const controller = require('./survey.controller');
 const authority = require('app/middleware/authority.middleware');
 const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const validator = require('app/middleware/validator.middleware');
-const { create, update } = require('./validator');
+const {
+  create,
+  createDraftSurvey, createDraftQuiz
+} = require('./validator');
 
 const router = express.Router();
 
 /* #region Search Survey */
 
-router.get('/surveys',
+router.get('/quizzes',
   authenticate,
   authority(PermissionKey.VIEW_LIST_SURVEY),
   controller.search
@@ -18,7 +21,7 @@ router.get('/surveys',
 
 /**
 * @swagger
-* /web/surveys:
+* /web/quizzes:
 *   get:
 *     summary: Search survey
 *     tags:
@@ -113,20 +116,20 @@ router.get('/surveys',
 */
 /* #endregion */
 
-router.get('/surveys/options',
+router.get('/quizzes/options',
   controller.getOptions
 );
 
 /* #region Get Survey detail */
 
-router.get('/surveys/:id',
+router.get('/quizzes/:id',
   authenticate,
   authority(PermissionKey.VIEW_SURVEY_DETAIL),
   controller.details
 );
 /**
 * @swagger
-* /web/surveys/{id}:
+* /web/quizzes/{id}:
 *   get:
 *     summary: Get survey detail
 *     tags:
@@ -237,15 +240,30 @@ router.get('/surveys/:id',
 
 /* #region Create Survey */
 
-router.post('/surveys',
+router.post('/quizzes',
   authenticate,
   validator(create),
   authority(PermissionKey.CREATE_SURVEY),
   controller.createSurvey
 );
+
+router.post('/draft-quizzes/',
+  authenticate,
+  validator(createDraftQuiz),
+  authority(PermissionKey.CREATE_SURVEY),
+  controller.saveAsDraftQuiz
+);
+
+router.post('/draft-surveys/',
+  authenticate,
+  validator(createDraftSurvey),
+  authority(PermissionKey.CREATE_SURVEY),
+  controller.saveAsDraftSurveys
+);
+
 /**
 * @swagger
-* /web/surveys:
+* /web/quizzes:
 *   post:
 *     summary: Create survey
 *     tags:
@@ -335,15 +353,20 @@ router.post('/surveys',
 
 /* #region Update Survey */
 router.put('/surveys/:id',
-  authenticate,
-  validator(update),
-  authority(PermissionKey.UPDATE_SURVEY),
+ authenticate,
+ authority(PermissionKey.UPDATE_SURVEY),
   controller.updateSurvey
+);
+
+router.put('/quizzes/:id',
+ authenticate,
+ authority(PermissionKey.UPDATE_SURVEY),
+  controller.updateQuiz
 );
 
 /**
 * @swagger
-* /web/surveys/{id}:
+* /web/quizzes/{id}:
 *   put:
 *     summary: Update survey
 *     tags:
@@ -385,7 +408,8 @@ router.put('/surveys/:id',
                                 {
                                     "text":"yes create",
                                     "text_ja":"",
-                                    "is_correct_flg": true
+                                    "is_correct_flg": true,
+                                    "is_other_flg":false
                                 }
                             ]
                         },
@@ -397,7 +421,8 @@ router.put('/surveys/:id',
                                 {
                                     "text":"yes create",
                                     "text_ja":"",
-                                    "is_correct_flg": true
+                                    "is_correct_flg": true,
+                                    "is_other_flg":true
                                 }
                             ]
                         }
@@ -433,7 +458,7 @@ router.put('/surveys/:id',
 /* #endregion */
 
 /* #region Delete Survey */
-router.delete('/surveys/:id',
+router.delete('/quizzes/:id',
   authenticate,
   authority(PermissionKey.DELETE_SURVEY),
   controller.deleteSurvey
@@ -441,7 +466,7 @@ router.delete('/surveys/:id',
 
 /**
 * @swagger
-* /web/surveys/{id}:
+* /web/quizzes/{id}:
 *   delete:
 *     summary: Delete survey
 *     tags:

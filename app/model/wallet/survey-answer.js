@@ -1,36 +1,41 @@
 module.exports = (sequelize, DataTypes) => {
-  const QuestionAnswer = sequelize.define("question_answers", {
+  const Model = sequelize.define("survey_answers", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
+    member_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    survey_id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4(),
+    },
     question_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    text: {
-      type: DataTypes.TEXT('long'),
-      allowNull: false
+    answer_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
-    text_ja: {
-      type: DataTypes.TEXT('long'),
+    value: {
+      type: DataTypes.TEXT('medium'),
       allowNull: true,
     },
     is_correct_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       default: false,
-    },
-    is_other_flg: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
-      default: false,
-    },
+    }
   }, {
     underscored: true,
     timestamps: true,
   });
 
-  return QuestionAnswer;
+  return Model;
 };
