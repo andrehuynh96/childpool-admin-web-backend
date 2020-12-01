@@ -45,14 +45,9 @@ class SyncCurrencyChangellyServices {
 
     let subject = updateExchange ? ` ${config.emailTemplate.partnerName} - Update Exchange Currency` : `${config.emailTemplate.partnerName} - API Changelly update`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
-    if (data.fix_rate_flg === undefined) {
-      data.fix_rate_flg = '#';
-    }
-    if (data.status === undefined) {
-      data.status = '#';
-    }
-    data = { ...data, imageUrl: config.website.urlImages };
-    await mailer.sendWithTemplate(subject, from, emailAdminLists.join(','), data, (updateExchange ? config.emailTemplate.updateExchangeCurrency : config.emailTemplate.apiChangellyUpdate));
+
+      data = { data, imageUrl: config.website.urlImages };
+      await mailer.sendWithTemplate(subject, from, emailAdminLists.join(','), data, (updateExchange ? config.emailTemplate.updateExchangeCurrency : config.emailTemplate.apiChangellyUpdate));
   }
 }
 module.exports = SyncCurrencyChangellyServices;
