@@ -17,7 +17,7 @@ const mailer = require('app/lib/mailer');
 const stringHelper = require('app/lib/string-helper');
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const MembershipType = require("app/model/wallet").membership_types;
-
+const KycAccountType = require('app/model/wallet/value-object/kyc-property-account-type');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -129,8 +129,14 @@ module.exports = {
           field_key: fieldKeyList
         }
       });
+      let accountType;
+      memberKycProperties.forEach(item => {
+        if (item.field_key === 'account_type') {
+          accountType = item.value;
+        }
+      });
       let verify = _validateKYCProperties(kycProperties, body);
-      if (verify.error) {
+      if (verify.error || ( accountType === KycAccountType.company && !req.body.company_name)) {
         return res.badRequest("Missing parameters", verify.error);
       }
 
