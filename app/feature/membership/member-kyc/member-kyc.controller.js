@@ -129,8 +129,14 @@ module.exports = {
           field_key: fieldKeyList
         }
       });
+      let accountType;
+      memberKycProperties.forEach(item => {
+        if (item.field_key === 'account_type') {
+          accountType = item.value;
+        }
+      });
       let verify = _validateKYCProperties(kycProperties, body);
-      if (verify.error || ( req.body.account_type === KycAccountType.company && !req.body.company_name)) {
+      if (verify.error || ( accountType === KycAccountType.company && !req.body.company_name)) {
         return res.badRequest("Missing parameters", verify.error);
       }
 
