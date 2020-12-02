@@ -198,13 +198,17 @@ router.put(
 
 /**
 * @swagger
-* /web/membership/member/:memberId/member-kyc-properties:
-*   post:
+* /web/membership/members/{memberId}/member-kyc-properties:
+*   put:
 *     summary: update member kyc properties
 *     tags:
 *       - Member
 *     description: update member kyc properties
 *     parameters:
+*       - name: memberId
+*         in: path
+*         type: string
+*         required: true
 *       - name: data
 *         in: body
 *         required: true
