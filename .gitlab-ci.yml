@@ -6,6 +6,30 @@ stages:
 variables:
  GIT_STRATEGY: none
  ANSIBLE_DIR: "/home/ubuntu/staking-iac/ansible"
+
+stak-stage-ap-ms-admin-api:
+ stage: deploy
+ script:
+  - cd /home/ubuntu/staking-iac/ansible
+  - sudo su ubuntu -c "ansible-playbook stak-stage-ap-ms-admin-api.yml --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
+ only:
+  - /^.*-ms-rc$/
+ except:
+  - branches
+ tags:
+  - stak-stage-ap-ms-bastion
+
+stage-stak-ap-ms-admin-api:
+ stage: deploy
+ script:
+  - cd /home/ubuntu/staking-iac/ansible
+  - sudo su ubuntu -c "ansible-playbook stage-stak-ap-ms-admin-api.yml --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
+ only:
+  - /^.*-ms-rc$/
+ except:
+  - branches
+ tags:
+  - stage-stak-ap-ms-ansible
  
 .BuildJSApp:
  stage: build
@@ -14,8 +38,6 @@ variables:
   - project=`echo ${CI_COMMIT_TAG} | awk -F'-' '{print $2}'`
   - ansible_file=`grep ${CI_PROJECT_NAME}.git *.yml | awk '{print $1}'|awk -F':' '{print $1}' | grep ${_ENV} | grep $project`
   - sudo su ubuntu -c "ansible-playbook $ansible_file --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
-  
-
   
 .OnlyStagingMS:
  only:
@@ -41,23 +63,23 @@ variables:
  except:
   - branches
 
-DeployStagMS:
- variables:
-  _ENV: "stage" 
- extends:
-  - .BuildJSApp
-  - .OnlyStagingMS
- tags:
-  - stage-stak-ap-ms-ansible
+# DeployStagMS:
+#  variables:
+#   _ENV: "stage" 
+#  extends:
+#   - .BuildJSApp
+#   - .OnlyStagingMS
+#  tags:
+#   - stage-stak-ap-ms-ansible
   
-DeployStagBS:
- variables:
-  _ENV: "stage" 
- extends:
-  - .BuildJSApp
-  - .OnlyStagingBS
- tags:
-  - stage-stak-ap-bs-ansible
+# DeployStagBS:
+#  variables:
+#   _ENV: "stage" 
+#  extends:
+#   - .BuildJSApp
+#   - .OnlyStagingBS
+#  tags:
+#   - stage-stak-ap-bs-ansible
 
 DeployProdMS:
  variables:
