@@ -16,7 +16,7 @@ module.exports = {
           status: status.ENABLED
         }
       });
-      const curreciesDisableByJob = await exchangeCurrencies.findAll({
+      const currenciesDisableByJob = await exchangeCurrencies.findAll({
         where: {
           turn_off_by_job_flg: true
         }
@@ -28,17 +28,16 @@ module.exports = {
             ...x,
             symbol: x.ticker.toUpperCase(),
             platform: (x.contract_address && x.address_url.startsWith("https://etherscan.io")) ? "ETH" : x.ticker.toUpperCase()
-          }
+          };
         });
 
-
+        let exchangeCurrenciesData = [];
         for (let e of exchangeCurrenciesDB) {
           let item = changellyData.find(x => x.symbol == e.symbol.toUpperCase() && x.platform == e.platform.toUpperCase());
           if (!item) {
             continue;
           }
           const changellyStatus = item.enabled ? status.ENABLED : status.DISABLED;
-
           if (e.status != changellyStatus || item.fix_rate_enabled != e.fix_rate_flg) {
             await exchangeCurrencies.update({
               status: changellyStatus,
@@ -54,14 +53,18 @@ module.exports = {
                 status: changellyStatus ? "ENABLED" : "DISABLED",
                 fix_rate_flg: item.fix_rate_enabled ? "ENABLED" : "DISABLED",
                 symbol: e.symbol,
-                flatForm: e.platform
+                platform: e.platform
               };
-              syncCurrencyServices.sendMail(data);
+              exchangeCurrenciesData.push(data);
             }
           }
         }
+        if (exchangeCurrenciesData.length > 0) {
+          syncCurrencyServices.sendMail(exchangeCurrenciesData);
+        }
 
-        for (let e of curreciesDisableByJob) {
+        const currencyDisableData = [];
+        for (let e of currenciesDisableByJob) {
           let item = changellyData.find(x => x.symbol == e.symbol.toUpperCase() && x.platform == e.platform.toUpperCase());
           if (!item) {
             continue;
@@ -74,9 +77,9 @@ module.exports = {
                 status: changellyStatus ? "ENABLED" : "DISABLED",
                 fix_rate_flg: item.fix_rate_enabled ? "ENABLED" : "DISABLED",
                 symbol: e.symbol,
-                flatForm: e.platform
+                platform: e.platform
               };
-              syncCurrencyServices.sendMail(data, false);
+              currencyDisableData.push(data);
             }
             await exchangeCurrencies.update({
               turn_off_by_job_flg: false
@@ -87,6 +90,11 @@ module.exports = {
               });
           }
         }
+
+        if (currencyDisableData.length > 0) {
+          syncCurrencyServices.sendMail(currencyDisableData, false);
+        }
+
       }
     }
     catch (err) {
