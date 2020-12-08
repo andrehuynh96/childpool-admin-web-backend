@@ -19,18 +19,6 @@ stak-stage-ap-ms-admin-api:
  tags:
   - stak-stage-ap-ms-bastion
 
-stage-stak-ap-ms-admin-api:
- stage: deploy
- script:
-  - cd /home/ubuntu/staking-iac/ansible
-  - sudo su ubuntu -c "ansible-playbook stage-stak-ap-ms-admin-api.yml --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
- only:
-  - /^.*-ms-rc$/
- except:
-  - branches
- tags:
-  - stage-stak-ap-ms-ansible
- 
 .BuildJSApp:
  stage: build
  script:
@@ -39,18 +27,6 @@ stage-stak-ap-ms-admin-api:
   - ansible_file=`grep ${CI_PROJECT_NAME}.git *.yml | awk '{print $1}'|awk -F':' '{print $1}' | grep ${_ENV} | grep $project`
   - sudo su ubuntu -c "ansible-playbook $ansible_file --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
   
-.OnlyStagingMS:
- only:
-  - /^.*-ms-rc$/
- except:
-  - branches
-
-.OnlyStagingBS:
- only:
-  - /^.*-bs-rc$/
- except:
-  - branches
-
 .OnlyProductionMS:
  only:
   - /^.*-ms$/
@@ -63,24 +39,6 @@ stage-stak-ap-ms-admin-api:
  except:
   - branches
 
-# DeployStagMS:
-#  variables:
-#   _ENV: "stage" 
-#  extends:
-#   - .BuildJSApp
-#   - .OnlyStagingMS
-#  tags:
-#   - stage-stak-ap-ms-ansible
-  
-# DeployStagBS:
-#  variables:
-#   _ENV: "stage" 
-#  extends:
-#   - .BuildJSApp
-#   - .OnlyStagingBS
-#  tags:
-#   - stage-stak-ap-bs-ansible
-
 DeployProdMS:
  variables:
   _ENV: "prod" 
@@ -89,13 +47,3 @@ DeployProdMS:
   - .OnlyProductionMS
  tags:
   - prod-stak-ap-ms-ansible
-  
-DeployProdBS:
- variables:
-  _ENV: "prod" 
- extends:
-  - .BuildJSApp
-  - .OnlyProductionBS
- tags:
-  - prod-stak-ap-bs-ansible
-  
