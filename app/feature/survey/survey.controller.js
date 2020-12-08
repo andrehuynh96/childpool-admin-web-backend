@@ -28,12 +28,12 @@ module.exports = {
       const where = {
         deleted_flg: false
       };
-
+      const today = new Date();
       if (query.history) {
-        where.status = SurveyStatus.DONE;
+        where.end_date = { [Op.lt]: today };
       }
       else {
-        where.status = { [Op.not]: SurveyStatus.DONE };
+        where.end_date = { [Op.gte]: today };
       }
 
       if (query.name) {
@@ -65,6 +65,9 @@ module.exports = {
         const today = new Date();
         if (today <= item.end_date && today >= item.start_date && item.status === SurveyStatus.READY) {
           item.status = 'IN_PROGRESS';
+        }
+        if (today > item.end_date) {
+          item.status = 'DONE';
         }
       });
 

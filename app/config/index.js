@@ -134,7 +134,8 @@ const config = {
     checkExchangeStatus: process.env.SCHEDULE_CHECK_EXCHANGE_STATUS,
     getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET,
     syncCurrencyWithChangelly: process.env.SCHEDULE_SYNC_CURRENCY_WITH_CHANGELLY,
-    checkStatusFiatTransaction: process.env.SCHEDULE_CHECK_STATUS_FIAT_TRANSACTION
+    checkStatusFiatTransaction: process.env.SCHEDULE_CHECK_STATUS_FIAT_TRANSACTION,
+    checkStatusNexoTransaction: process.env.SCHEDULE_CHECK_NEXO_TRANSACTION_STATUS
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
