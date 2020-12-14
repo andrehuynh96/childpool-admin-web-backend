@@ -5,16 +5,28 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const SETTINGS = [
   {
+    "key": "MS_POINT_MODE",
+    "value": "phase_1",
+    "type": "string",
+    "property": "ms_point_mode"
+  },
+  {
     "key": "MS_POINT_DELAY_TIME_IN_SECONDS",
     "value": "86400",
     "type": "number",
     "property": "ms_point_delay_time_in_seconds"
   },
   {
-    "key": "MS_POINT_MODE",
-    "value": "phase_1",
+    "key": "MS_POINT_DELAY_TIME_DURATION",
+    "value": "days",
     "type": "string",
-    "property": "ms_point_mode"
+    "property": "ms_point_delay_time_duration"
+  },
+  {
+    "key": "MS_POINT_CLAIMING_IS_ENABLED",
+    "value": "true",
+    "type": "boolean",
+    "property": "ms_point_claiming_is_enabled"
   },
   {
     "key": "MS_POINT_STAKING_IS_ENABLED",
@@ -40,7 +52,12 @@ const SETTINGS = [
     "type": "number",
     "property": "ms_point_exchange_mininum_value_in_usdt"
   },
-
+  {
+    "key": "MS_POINT_SURVEY_IS_ENABLED",
+    "value": "false",
+    "type": "boolean",
+    "property": "ms_point_survey_is_enabled"
+  },
 ];
 
 module.exports = async () => {

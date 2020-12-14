@@ -169,7 +169,7 @@ class EmailService {
           logger.error(err);
           EmailLoggingModel.create({
             id,
-            email,
+            email: email.length > 256 ? email.substr(0,256) : email,
             subject,
             body: '',
             num_of_views: 0,
@@ -187,7 +187,7 @@ class EmailService {
 
         EmailLoggingModel.create({
           id,
-          email,
+          email: email.length > 256 ? email.substr(0,256) : email,
           subject,
           body: '',
           num_of_views: 0,

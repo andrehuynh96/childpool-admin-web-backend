@@ -49,6 +49,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: CurrencyStatus.ENABLED
     },
+    mobile_status: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: CurrencyStatus.ENABLED
+    },
     created_by: {
       type: DataTypes.INTEGER,
       allowNull: false,

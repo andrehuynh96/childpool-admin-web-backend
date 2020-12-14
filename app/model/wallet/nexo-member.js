@@ -53,7 +53,14 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'member_id',
       targetKey: 'id'
     });
+
+    Model.hasMany(models.nexo_transactions, { foreignKey: 'nexo_member_id' });
+    Model.hasMany(models.nexo_transactions, {
+      as: 'NexoTransaction',
+      foreignKey: 'nexo_member_id',
+      sourceKey: 'id',
+    });
   };
 
   return Model;
-} 
+};

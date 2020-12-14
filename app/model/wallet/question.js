@@ -1,5 +1,6 @@
 const QuestionType = require("./value-object/question-type");
 const QuestionCategory = require("./value-object/question-category");
+const QuestionSubType = require('./value-object/question-sub-type');
 
 module.exports = (sequelize, DataTypes) => {
   const Question = sequelize.define("questions", {
@@ -30,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
+    estimate_time: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
     forecast_key: {
       type: DataTypes.STRING(100),
       allowNull: true,
@@ -53,6 +59,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0
+    },
+    survey_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    sub_type: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue: QuestionSubType.QUESTIONNAIRE
     }
   }, {
     underscored: true,

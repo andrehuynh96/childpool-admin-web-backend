@@ -107,7 +107,6 @@ module.exports = {
       } else {
         order.push(['created_at', 'DESC']);
       }
-
       const { count: total, rows: items } = await Member.findAndCountAll({
         limit,
         offset,
@@ -361,7 +360,6 @@ module.exports = {
     }
   },
   updaterReferrerCode: async (req, res, next) => {
-    let transaction;
     try {
       const { body, params } = req;
       const { memberId } = params;
@@ -390,7 +388,7 @@ module.exports = {
         referrer_code: referrerCode,
       };
 
-      transaction = await database.transaction();
+      const transaction = await database.transaction();
       try {
         await Member.update(
           data,
@@ -455,9 +453,6 @@ module.exports = {
       }
     }
     catch (error) {
-      if (transaction) {
-        await transaction.rollback();
-      }
       logger.error('update member fail:', error);
       next(error);
     }

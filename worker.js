@@ -1,4 +1,4 @@
-/*eslint no-process-env: "off"*/
+/* eslint no-process-env: "off"*/
 require('dotenv').config();
 require('rootpath')();
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';

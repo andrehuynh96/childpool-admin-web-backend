@@ -12,6 +12,7 @@ const schema = Joi.object().keys({
   title_ja: Joi.string().allow(null).allow('').optional(),
   question_type: Joi.string().valid(Object.values(QuestionType)).max(32).required(),
   points: Joi.number().min(1).required(),
+  estimate_time: Joi.number().min(1).required(),
   actived_flg: Joi.boolean().required(),
   answers: Joi.array().optional().items(answerSchema),
 });

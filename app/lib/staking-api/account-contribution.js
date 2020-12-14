@@ -19,7 +19,7 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger.error("get account contribution fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get account contribution fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   },
@@ -34,7 +34,7 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger.error("get account contribution fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get account contribution fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   }

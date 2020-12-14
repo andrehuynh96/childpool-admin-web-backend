@@ -14,7 +14,7 @@ module.exports = {
       });
       return result.data;
     } catch (error) {
-      logger.error("get tezos reward fail:", error);
+      logger[error.canLogAxiosError ? 'error' : 'info']("get tezos reward fail:", error);
       return { code: error.response.status, data: error.response.data };
     }
   }

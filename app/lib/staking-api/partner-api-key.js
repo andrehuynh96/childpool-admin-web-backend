@@ -1,10 +1,10 @@
 const config = require("app/config");
 const axios = require("axios");
-const logger = require("app/lib/logger")
+const logger = require("app/lib/logger");
 const redisResource = require("app/resource/redis");
 const redis = require("app/lib/redis");
 const cache = redis.client();
-const { getToken } = require("./token")
+const { getToken } = require("./token");
 
 module.exports = {
   getAllApiKey: async (partner_id, limit, offset) => {
@@ -19,7 +19,7 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger.error("get list API key fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get list API key fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   },
@@ -40,7 +40,7 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger.error("create new API key fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create new API key fail:", err);
       return { code: err.response.status, data: err.response.data };
     }
   },
@@ -56,8 +56,8 @@ module.exports = {
       return result.data;
     }
     catch (err) {
-      logger.error("get partner info fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get partner info fail:", err);
       return err.response ? { code: err.response.status, data: err.response.data } : null;
     }
   }
-} 
+};

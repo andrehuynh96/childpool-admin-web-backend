@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const config = require('app/config');
 const logger = require('app/lib/logger');
 const crypto = require('crypto');
@@ -15,10 +16,10 @@ class Changelly extends Exchange {
       return await this._makeRequest({
         method: 'getCurrenciesFull',
         params: {}
-      })
+      });
     }
     catch (err) {
-      logger.error(`changelly getCurrencies error:`, err);
+      // logger.error(`changelly getCurrencies error:`, err);
       throw err;
     }
   }
@@ -31,10 +32,10 @@ class Changelly extends Exchange {
           from: from.toLowerCase(),
           to: to.toLowerCase()
         }
-      })
+      });
     }
     catch (err) {
-      logger.error(`changelly getMinAmount error:`, err);
+      // logger.error(`changelly getMinAmount error:`, err);
       throw err;
     }
   }
@@ -47,7 +48,7 @@ class Changelly extends Exchange {
       return await this._estimateFixRate({ from, to, amount });
     }
     catch (err) {
-      logger.error(`changelly getExchangeAmount error:`, err);
+      // logger.error(`changelly getExchangeAmount error:`, err);
       throw err;
     }
   }
@@ -60,7 +61,7 @@ class Changelly extends Exchange {
       return await this._makeTransaction({ from, to, amount, address, extra_id, refund_address, refund_extra_id });
     }
     catch (err) {
-      logger.error(`changelly createTransaction error:`, err);
+      // logger.error(`changelly createTransaction error:`, err);
       throw err;
     }
   }
@@ -76,10 +77,10 @@ class Changelly extends Exchange {
           limit: limit,
           offset: offset
         }
-      })
+      });
     }
     catch (err) {
-      logger.error(`changelly getTransaction error:`, err);
+      // logger.error(`changelly getTransaction error:`, err);
       throw err;
     }
   }
@@ -91,10 +92,10 @@ class Changelly extends Exchange {
         params: {
           id: transaction_id
         }
-      })
+      });
     }
     catch (err) {
-      logger.error(`changelly getStatus error:`, err);
+      // logger.error(`changelly getStatus error:`, err);
       throw err;
     }
   }
@@ -107,7 +108,7 @@ class Changelly extends Exchange {
         to: to.toLowerCase(),
         amount: amount
       }]
-    })
+    });
   }
 
   async _estimateFixRate({ from, to, amount }) {
@@ -118,7 +119,7 @@ class Changelly extends Exchange {
         to: to.toLowerCase(),
         amountFrom: amount
       }]
-    })
+    });
   }
 
 
@@ -134,7 +135,7 @@ class Changelly extends Exchange {
         refundAddress: refund_address,
         refundExtraId: refund_extra_id
       }
-    })
+    });
   }
 
   async _makeTransactionFixRate({ from, to, amount, address, extra_id, refund_address, refund_extra_id, rate_id, amount_to }) {
@@ -151,7 +152,7 @@ class Changelly extends Exchange {
         rateId: rate_id,
         amountTo: amount_to
       }
-    })
+    });
   }
 
   async _makeRequest({ method, params }) {
@@ -193,7 +194,7 @@ class Changelly extends Exchange {
       var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
-  };
+  }
 }
 
 module.exports = Changelly;

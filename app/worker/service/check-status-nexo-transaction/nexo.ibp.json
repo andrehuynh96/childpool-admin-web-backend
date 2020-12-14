@@ -1,0 +1,72 @@
+[
+  {
+    "name": "createAccount",
+    "method": "POST",
+    "url": "/nexo/v1/user",
+    "checksum": true
+  },
+  {
+    "name": "verifyEmail",
+    "method": "POST",
+    "url": "/nexo/v1/user/{user_id}/verify/email",
+    "params": [
+      "user_id"
+    ],
+    "checksum": true
+  },
+  {
+    "name": "requestRecoveryCode",
+    "method": "POST",
+    "url": "/nexo/v1/user/recovery/request",
+    "checksum": true
+  },
+  {
+    "name": "verifyRecoveryCode",
+    "method": "POST",
+    "url": "/nexo/v1/user/recovery/verify",
+    "checksum": true
+  },
+  {
+    "name": "getBalance",
+    "method": "GET",
+    "url": "/nexo/v1/user/{user_id}/balance",
+    "params": [
+      "user_id"
+    ]
+  },
+  {
+    "name": "getDepositAddress",
+    "method": "GET",
+    "url": "/nexo/v1/user/{user_id}/deposit/{currency_id}/wallet",
+    "params": [
+      "user_id",
+      "currency_id"
+    ]
+  },
+  {
+    "name": "withdraw",
+    "method": "POST",
+    "url": "/nexo/v1/user/{user_id}/withdraw",
+    "params": [
+      "user_id"
+    ],
+    "checksum": true
+  },
+  {
+    "name": "verifyWithdraw",
+    "method": "POST",
+    "url": "/nexo/v1/user/{user_id}/verify/withdraw",
+    "params": [
+      "user_id"
+    ],
+    "checksum": true
+  },
+  {
+    "name": "getWithdrawTransactions",
+    "method": "GET",
+    "url": "/nexo/v1/user/{user_id}/transactions/withdraw",
+    "params": [
+      "user_id"
+    ]
+  }
+]
