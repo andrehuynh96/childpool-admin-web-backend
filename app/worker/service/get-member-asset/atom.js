@@ -63,7 +63,7 @@ class ATOM extends GetMemberAsset {
         const rewardResult = await apiCoin.getRewards(address);
         if (rewardResult && rewardResult.data.rewards && rewardResult.data.rewards.length > 0) {
           for (let e of rewardResult.data.rewards) {
-            if (this.validatorAddresses.indexOf(e.validator_address) != -1) {
+            if (this.validatorAddresses.indexOf(e.validator_address) != -1 && e.reward && e.reward.length > 0) {
               for (let r of e.reward) {
                 unclaimReward = unclaimReward + BigNumber(r.amount).toNumber();
               }
