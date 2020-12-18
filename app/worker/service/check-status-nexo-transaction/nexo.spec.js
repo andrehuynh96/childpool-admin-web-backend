@@ -30,7 +30,7 @@ describe('Test NEXO', function (done) {
     instance = new NEXO({ ibp: true });
   });
 
-  it('Create account', async () => {
+  it.only('Create account', async () => {
     let time = Date.now();
     let email = `myhn@gmailup.com`;
     let result = await instance.createAccount({
@@ -131,7 +131,7 @@ describe('Test NEXO', function (done) {
     result.should.have.property('status');
   });
 
-  it.only('withdraw transaction', async () => {
+  it('withdraw transaction', async () => {
     let result = await instance.getWithdrawTransactions({
       nexo_id: nexoId,
       secret: secret
