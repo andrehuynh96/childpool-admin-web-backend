@@ -232,6 +232,13 @@ const config = {
     logLevel: process.env.HANGOUT_ERROR_LOG_LEVEL || 'error',
     webhookUrl: process.env.HANGOUT_ERROR_CHANEL_WEBHOOK_URL,
   },
+  banking: {
+    nexo: {
+      usingIBP: process.env.NEXO_USING_IBP == "1",
+      url: process.env.NEXO_URL,
+      apiKey: process.env.NEXO_API_KEY,
+    }
+  },
 };
 
 module.exports = config;
