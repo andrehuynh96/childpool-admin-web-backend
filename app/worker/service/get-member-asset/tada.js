@@ -12,6 +12,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logHangout = require("app/lib/logger/hangout");
 const dbLogger = require('app/lib/logger/db');
+const AdaService = require("app/lib/ada");
 
 class ADA extends GetMemberAsset {
   constructor() {
@@ -80,7 +81,7 @@ class ADA extends GetMemberAsset {
       return result;
     } catch (error) {
       logger[error.canLogAxiosError ? 'error' : 'info'](error);
-      await dbLogger(error,address);
+      await dbLogger(error, address);
       logHangout.write(JSON.stringify(error));
       return null;
     }
@@ -95,59 +96,31 @@ async function getBalanceADA(address) {
     return balance;
   }
   catch (error) {
-    await dbLogger(error,address);
+    await dbLogger(error, address);
     logger.error(error);
     logHangout.write(JSON.stringify(error));
     throw error;
   }
 }
 
-async function getBestBlockADA() {
-  try {
-    let params = [
-      {
-        name: "getBestBlock",
-        method: "GET",
-        url: '/chains/v1/ADA/bestblock'
-      }
-    ];
-
-    api.extendMethod("chains", params, api);
-    const response = await api.chains.getBestBlock();
-    if (response.data && response.cd == 0) {
-      return response.data;
-
-    } else {
-      return null;
-    }
-  }
-  catch (err) {
-    await dbLogger(err);
-    logger.error(err);
-    logHangout.write(JSON.stringify(err));
-    throw err;
-  }
-}
-
 async function getClaimedReward(delegatorAddress, memberAsset) {
   try {
-    let lastTx = memberAsset ? memberAsset.tracking : null
+    let lastTx = memberAsset ? memberAsset.tracking : null;
     let totalClaimedReward = 0;
-    let currentBlockHash = await getBestBlockADA();
+    let currentBlockHash = await AdaService.getLatestBlock();
     while (true) {
       let payload = {
-        addresses: [
-          delegatorAddress
-        ],
-        untilBlock: currentBlockHash.hash
       };
       if (lastTx)
         payload = {
-          ...payload,
-          after: lastTx
+          after_block: lastTx.block,
+          after_tx: lastTx.tx
         };
-      let { data } = await axios.post('https://iohk-mainnet.yoroiwallet.com/api/v2/txs/history', payload);
-
+      let data = await AdaService.getTransactionDetail({
+        address: delegatorAddress,
+        until_block: currentBlockHash.hash,
+        ...payload
+      });
       //check the same data
       if (!data || data.length == 0) {
         break;

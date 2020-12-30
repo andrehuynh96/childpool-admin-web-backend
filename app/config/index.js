@@ -239,6 +239,9 @@ const config = {
       apiKey: process.env.NEXO_API_KEY,
     }
   },
+  ADA: {
+    restUrl: process.env.ADA_REST_URL,
+  }
 };
 
 module.exports = config;
