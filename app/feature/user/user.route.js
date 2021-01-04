@@ -26,20 +26,20 @@ router.get(
 
 router.post(
   '/users',
+  validator(create),
   authenticate,
   authority(PermissionKey.CREATE_USER),
   levelAuthority("req.body.role_id"),
-  validator(create),
   controller.create
 );
 
 router.put(
   '/users/:id',
+  validator(update),
   authenticate,
   authority(PermissionKey.UPDATE_USER),
   levelAuthority("req.params.id", true),
   levelAuthority("req.body.role_id"),
-  validator(update),
   controller.update
 );
 
@@ -57,14 +57,14 @@ router.post(
   // authenticate,
   // authority(PermissionKey.ACTIVE_USER),
   controller.active
-)
+);
 
 router.post(
   '/users/:id/resend-email',
   authenticate,
   authority(PermissionKey.RESEND_EMAIL),
   controller.resendEmailActive
-)
+);
 
 module.exports = router;
 
