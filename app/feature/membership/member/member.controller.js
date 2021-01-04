@@ -21,6 +21,8 @@ const OtpType = require("app/model/wallet/value-object/otp-type");
 const mailer = require('app/lib/mailer');
 const config = require('app/config');
 const uuidV4 = require('uuid/v4');
+const stateJP = require('app/model/wallet/value-object/state-jp');
+const countries = require('app/model/wallet/value-object/country');
 
 const Op = Sequelize.Op;
 
@@ -533,7 +535,7 @@ module.exports = {
 
     } catch (error) {
 
-      logger.error('get kyc status listt fail:', error);
+      logger.error('get kyc status list fail:', error);
       next(error);
     }
   },
@@ -748,7 +750,17 @@ module.exports = {
       const timezone_offset = query.timezone_offset || 0;
       items.forEach(element => {
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        element.day_of_birth = element.day_of_birth ? moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD') : '';
       });
+
+      if (req.query.current_language == 'jp') {
+        items.forEach(item => {
+          if (item.city && stateJP[item.city.toUpperCase()]) {
+            item.city = stateJP[item.city.toUpperCase()];
+          }
+        });
+      }
+
       const data = await stringifyAsync(items, [
         { key: 'no', header: '#' },
         { key: 'last_name', header: 'Last Name' },
@@ -756,6 +768,10 @@ module.exports = {
         { key: 'email', header: 'Email' },
         { key: 'kyc_level', header: 'KYC' },
         { key: 'kyc_status', header: 'KYC Status' },
+        { key: 'day_of_birth', header: 'Birth Day' },
+        { key: 'address', header: 'Address' },
+        { key: 'city', header: 'City' },
+        { key: 'country', header: 'Country' },
         { key: 'membership_type', header: 'Membership' },
         { key: 'status', header: 'Status' },
         { key: 'referral_code', header: 'Referral' },
@@ -813,6 +829,22 @@ module.exports = {
       next(err);
     }
   },
+  getCountryDropdownList: async (req, res, next) => {
+    try {
+      const listCountry = Object.entries(countries);
+      const dropdownList = listCountry.map(item => {
+        return {
+          label: item[0],
+          value: item[1]
+        };
+      });
+      return res.ok(dropdownList);
+    }
+    catch (err) {
+      logger.error('get dropdownlist city fail:', err);
+      next(err);
+    }
+  }
 };
 
 async function _createMemberCond(query) {
@@ -850,6 +882,10 @@ async function _createMemberCond(query) {
 
   if (query.email) {
     memberCond.email = { [Op.iLike]: `%${query.email}%` };
+  }
+
+  if (query.country) {
+    memberCond.country = { [Op.iLike]: query.country };
   }
 
   memberCond.source = { [Op.is]: null };

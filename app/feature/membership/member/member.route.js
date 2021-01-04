@@ -89,6 +89,9 @@ router.post(
   controller.resendActiveEmail
 );
 
+router.get("/countries",
+  controller.getCountryDropdownList,
+);
 module.exports = router;
 
 
@@ -719,6 +722,62 @@ router.put("/members/:memberId/max-references",
                         ],
                         "referrer_email": "trunglk+142@blockchainlabs.asia"
                     }
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/membership/countries:
+ *   get:
+ *     summary: get dropdown list countries
+ *     tags:
+ *       - Members
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": [
+                        {
+                          "label": "Afghanistan",
+                          "value": "AF"
+                        },
+                        {
+                            "label": "Åland Islands",
+                            "value": "AX"
+                        },
+                        {
+                            "label": "Albania",
+                            "value": "AL"
+                        },
+                        {
+                            "label": "Algeria",
+                            "value": "DZ"
+                        },
+                        {
+                            "label": "American Samoa",
+                            "value": "AS"
+                        }
+                    ]
                 }
  *       400:
  *         description: Error
