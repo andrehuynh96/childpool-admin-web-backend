@@ -17,6 +17,11 @@ router.get(
 );
 
 router.get(
+  '/operator-countries',
+  controller.getCountries
+);
+
+router.get(
   '/users/:id',
   authenticate,
   authority(PermissionKey.VIEW_USER_DETAIL),
@@ -65,6 +70,9 @@ router.post(
   authority(PermissionKey.RESEND_EMAIL),
   controller.resendEmailActive
 );
+
+
+
 
 module.exports = router;
 
