@@ -13,6 +13,9 @@ const mailer = require('app/lib/mailer');
 const database = require('app/lib/database').db().wallet;
 const Role = require("app/model/wallet").roles;
 const UserRole = require("app/model/wallet").user_roles;
+const Country = require("app/model/wallet").countries;
+const countryMapper = require("app/feature/response-schema/country.response-schema");
+
 module.exports = {
   search: async (req, res, next) => {
     try {
@@ -41,7 +44,7 @@ module.exports = {
         }
       ];
       if (req.query.user_sts) {
-        where.user_sts = req.query.user_sts
+        where.user_sts = req.query.user_sts;
       }
       if (req.query.query) {
         where.email = { [Op.iLike]: `%${req.query.query}%` };
@@ -65,7 +68,7 @@ module.exports = {
         where: {
           id: req.params.id
         }
-      })
+      });
 
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
@@ -75,7 +78,7 @@ module.exports = {
         where: {
           user_id: req.params.id
         }
-      })
+      });
 
       let response = userMapper(result);
       if (userRole) {
@@ -98,7 +101,7 @@ module.exports = {
         where: {
           id: req.params.id
         }
-      })
+      });
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
@@ -139,7 +142,7 @@ module.exports = {
           email: req.body.email.toLowerCase(),
           deleted_flg: false
         }
-      })
+      });
 
       if (result) {
         return res.badRequest(res.__("EMAIL_EXISTS_ALREADY"), "EMAIL_EXISTS_ALREADY", { fields: ['email'] });
@@ -149,7 +152,7 @@ module.exports = {
         where: {
           id: req.body.role_id
         }
-      })
+      });
 
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
@@ -199,7 +202,7 @@ module.exports = {
           action_type: OtpType.CREATE_ACCOUNT
         },
         returning: true
-      })
+      });
 
       await OTP.create({
         code: verifyToken,
@@ -208,14 +211,14 @@ module.exports = {
         expired_at: today,
         user_id: user.id,
         action_type: OtpType.CREATE_ACCOUNT
-      })
+      });
       user.role = role.name,
-        user.adminName = req.user.name
+        user.adminName = req.user.name;
       await transaction.commit();
       _sendEmailCreateUser(user, verifyToken);
 
       let response = userMapper(user);
-      response.role_id = role.id
+      response.role_id = role.id;
       return res.ok(response);
     }
     catch (err) {
@@ -231,7 +234,7 @@ module.exports = {
         where: {
           id: req.params.id
         }
-      })
+      });
 
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
@@ -241,7 +244,7 @@ module.exports = {
         where: {
           id: req.body.role_id
         }
-      })
+      });
 
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
@@ -288,10 +291,10 @@ module.exports = {
         where: {
           id: req.params.id
         }
-      })
+      });
 
       let user = userMapper(result);
-      user.role_id = role.id
+      user.role_id = role.id;
       return res.ok(user);
     }
     catch (err) {
@@ -300,7 +303,6 @@ module.exports = {
       next(err);
     }
   },
-
   active: async (req, res, next) => {
     try {
       let otp = await OTP.findOne({
@@ -355,7 +357,7 @@ module.exports = {
           action_type: OtpType.CREATE_ACCOUNT
         },
         returning: true
-      })
+      });
 
       return res.ok(true);
     }
@@ -371,7 +373,7 @@ module.exports = {
         where: {
           id: userId
         }
-      })
+      });
 
       if (!user) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
@@ -397,7 +399,7 @@ module.exports = {
           action_type: OtpType.CREATE_ACCOUNT
         },
         returning: true
-      })
+      });
 
       await OTP.create({
         code: verifyToken,
@@ -406,20 +408,20 @@ module.exports = {
         expired_at: today,
         user_id: user.id,
         action_type: OtpType.CREATE_ACCOUNT
-      })
+      });
       let userRole = await UserRole.findOne({
         where: {
           user_id: user.id
         }
-      })
+      });
 
       let role = await Role.findOne({
         where: {
           id: userRole.role_id
         }
-      })
-      user.role = role.name
-      user.adminName = req.user.name
+      });
+      user.role = role.name;
+      user.adminName = req.user.name;
       _sendEmailCreateUser(user, verifyToken);
       return res.ok(true);
     }
@@ -427,8 +429,24 @@ module.exports = {
       logger.error('create account fail:', err);
       next(err);
     }
-  }
-}
+  },
+  getCountries: async (req, res, next) => {
+    try {
+      const countries = await Country.findAll({
+        where: {
+          actived_flg: true,
+        },
+        order: [['order_index', 'ASC']],
+      });
+
+      return res.ok(countryMapper(countries));
+    }
+    catch (err) {
+      logger.error('get countries fail:', err);
+      next(err);
+    }
+  },
+};
 
 async function _sendEmailCreateUser(user, verifyToken) {
   try {
@@ -440,7 +458,7 @@ async function _sendEmailCreateUser(user, verifyToken) {
       role: user.role,
       link: `${config.website.urlActiveUser}${verifyToken}`,
       hours: config.expiredVefiryToken
-    }
+    };
     data = Object.assign({}, data, config.email);
     await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.activeAccount);
   } catch (err) {
@@ -454,7 +472,7 @@ async function _sendEmailDeleteUser(user) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-    }
+    };
     data = Object.assign({}, data, config.email);
     await mailer.sendWithTemplate(subject, from, user.email, data, config.emailTemplate.deactiveAccount);
   } catch (err) {
@@ -463,8 +481,8 @@ async function _sendEmailDeleteUser(user) {
 }
 
 async function _getRoleControl(roles) {
-  let levels = roles.map(ele => ele.level)
-  let roleControl = []
+  let levels = roles.map(ele => ele.level);
+  let roleControl = [];
   for (let e of levels) {
     let role = await Role.findOne({
       attribute: ["level"],
