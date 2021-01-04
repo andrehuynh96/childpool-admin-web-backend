@@ -24,31 +24,28 @@ module.exports = {
   },
   roleHavePermission: async (req, res, next) => {
     try {
-      let levels = req.roles.map(ele => ele.level)
-      let roleControl = []
+      const levels = req.roles.map(ele => ele.level);
+      let roleControl = [];
+
       for (let e of levels) {
-        let role = await Role.findOne({
+        const roles = await Role.findAll({
           where: {
             level: { [Op.gt]: e },
-            deleted_flg: false
+            deleted_flg: false,
+            root_flg: false,
           },
           order: [['level', 'ASC']]
         });
 
-        if (role) {
-          let roles = await Role.findAll({
-            where: {
-              level: role.level,
-              deleted_flg: false
-            }
-          });
+        if (roles.length > 0) {
           roleControl = roleControl.concat(roles);
         }
       }
+
       return res.ok(roleControl);
     }
     catch (err) {
-      logger.error('getAll role fail:', err);
+      logger.error('Get roles fail:', err);
       next(err);
     }
   },
@@ -58,7 +55,7 @@ module.exports = {
         where: {
           id: req.params.id
         }
-      })
+      });
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['id'] });
       }
@@ -66,13 +63,13 @@ module.exports = {
         where: {
           role_id: req.params.id
         }
-      })
-      let permissionIds = rolePemssion.map(ele => ele.permission_id)
+      });
+      let permissionIds = rolePemssion.map(ele => ele.permission_id);
       let permissions = await Permission.findAll({
         where: {
           id: permissionIds
         }
-      })
+      });
       return res.ok(permissions);
     }
     catch (err) {
@@ -83,15 +80,15 @@ module.exports = {
   create: async (req, res, next) => {
     let transaction;
     try {
-      let name = req.body.name
-      let level = req.body.level
-      let permissionList = req.body.permission_ids
+      let name = req.body.name;
+      let level = req.body.level;
+      let permissionList = req.body.permission_ids;
 
       let role = await Role.findOne({
         where: {
           name: name
         }
-      })
+      });
       if (role) {
         return res.badRequest(res.__("ROLE_EXIST_ALREADY"), "ROLE_EXIST_ALREADY", { fields: ['name'] });
       }
@@ -100,9 +97,9 @@ module.exports = {
         attributes:
           ["id"]
       });
-      let allPermissions = items.map(ele => ele.id)
+      let allPermissions = items.map(ele => ele.id);
 
-      const foundPermission = permissionList.every(ele => allPermissions.includes(ele))
+      const foundPermission = permissionList.every(ele => allPermissions.includes(ele));
       if (!foundPermission) {
         return res.badRequest(res.__("PERMISION_IDS_NOT_FOUND"), "PERMISION_IDS_NOT_FOUND", { fields: ['permission_ids'] });
       }
@@ -112,18 +109,18 @@ module.exports = {
         level: level,
         deleted_flg: false,
         root_flg: false
-      }, { transaction })
+      }, { transaction });
       if (!createRoleResponse) {
         if (transaction) await transaction.rollback();
         return res.serverInternalError();
       }
-      let data = []
+      let data = [];
       permissionList.map(ele => {
         data.push({
           role_id: createRoleResponse.id,
           permission_id: ele
-        })
-      })
+        });
+      });
 
       let rolePermissions = await RolePermission.bulkCreate(data, {
         returning: true,
@@ -146,14 +143,14 @@ module.exports = {
   update: async (req, res, next) => {
     let transaction;
     try {
-      let name = req.body.name
-      let level = req.body.level
-      let permissionList = req.body.permission_ids
+      let name = req.body.name;
+      let level = req.body.level;
+      let permissionList = req.body.permission_ids;
       let role = await Role.findOne({
         where: {
           id: req.params.id
         }
-      })
+      });
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['id'] });
       }
@@ -164,9 +161,9 @@ module.exports = {
         attributes:
           ["id"]
       });
-      let allPermissions = items.map(ele => ele.id)
+      let allPermissions = items.map(ele => ele.id);
 
-      const foundPermission = permissionList.every(ele => allPermissions.includes(ele))
+      const foundPermission = permissionList.every(ele => allPermissions.includes(ele));
       if (!foundPermission) {
         return res.badRequest(res.__("PERMISION_IDS_NOT_FOUND"), "PERMISION_IDS_NOT_FOUND", { fields: ['permission_ids'] });
       }
@@ -178,19 +175,19 @@ module.exports = {
             where: {
               name: name
             }
-          })
+          });
           if (checkName) return res.badRequest(res.__("NAME_EXIST_ALREADY"), "NAME_EXIST_ALREADY", { fields: ['name'] });
         }
         let updateRoleResponse = await Role.update({
           name: name,
           level: level
         }, {
-            where: {
-              id: req.params.id
-            },
-            returning: true,
-            transaction: transaction
-          });
+          where: {
+            id: req.params.id
+          },
+          returning: true,
+          transaction: transaction
+        });
         if (!updateRoleResponse) {
           if (transaction) await transaction.rollback();
           return res.serverInternalError();
@@ -201,13 +198,13 @@ module.exports = {
         transaction: transaction
       });
 
-      let data = []
+      let data = [];
       permissionList.map(ele => {
         data.push({
           role_id: req.params.id,
           permission_id: ele
-        })
-      })
+        });
+      });
 
       let rolePermissions = await RolePermission.bulkCreate(data, {
         returning: true,
@@ -228,4 +225,4 @@ module.exports = {
       next(err);
     }
   }
-}
+};
