@@ -753,7 +753,7 @@ module.exports = {
         element.day_of_birth = element.day_of_birth ? moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD') : '';
       });
 
-      if (req.user.current_language == 'jp') {
+      if (req.query.current_language == 'jp') {
         items.forEach(item => {
           if (item.city && stateJP[item.city.toUpperCase()]) {
             item.city = stateJP[item.city.toUpperCase()];
