@@ -9,12 +9,12 @@ module.exports = {
             const listStateJapanese = Object.keys(localizeObj.jp);
             const listStateEnglish = Object.keys(localizeObj.en);
             for (let item of listStateJapanese) {
-              const updateJapaneseToLocalizeKey = `UPDATE members SET city = '${localizeObj.jp[item]}' WHERE city iLike '${item}'`;
+              const updateJapaneseToLocalizeKey = `UPDATE members SET city = '${localizeObj.jp[item]}' WHERE city iLike '${item}' AND country='JP' `;
               await queryInterface.sequelize.query(updateJapaneseToLocalizeKey, {}, {});
             }
 
             for (let item of listStateEnglish) {
-              const updateEnglishToLocalizeKey = `UPDATE members SET city = '${localizeObj.en[item]}' WHERE city iLike '${item}'`;
+              const updateEnglishToLocalizeKey = `UPDATE members SET city = '${localizeObj.en[item]}' WHERE city iLike '${item}' AND country='JP'`;
               await queryInterface.sequelize.query(updateEnglishToLocalizeKey, {}, {});
             }
           })
