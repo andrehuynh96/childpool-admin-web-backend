@@ -173,13 +173,6 @@ module.exports = {
         item.status = MemberFillterStatusText[item.status];
       });
 
-      if (req.user.current_language == 'jp') {
-        items.forEach(item => {
-          if (item.city && stateJP[item.city.toUpperCase()]) {
-            item.city = stateJP[item.city.toUpperCase()];
-          }
-        });
-      }
       return res.ok({
         items: items.length > 0 ? memberMapper(items) : [],
         offset: offset,
