@@ -9,7 +9,8 @@ const destObject = {
     '[].twofa_enable_flg': '[].twofa_enable_flg',
     '[].created_at': '[].created_at',
     '[].user_sts': '[].user_sts',
-    '[].country_code': '[].country_code',
+    '[].country_code': '[].country_code?',
+    '[].country': '[].country?',
     '[].latest_login_at': '[].latest_login_at',
   },
   single: {
@@ -20,7 +21,8 @@ const destObject = {
     twofa_enable_flg: 'twofa_enable_flg',
     created_at: 'created_at',
     user_sts: 'user_sts',
-    country_code: 'country_code',
+    country_code: 'country_code?',
+    country: 'country?',
     latest_login_at: 'latest_login_at',
   }
 };

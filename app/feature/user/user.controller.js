@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const logger = require('app/lib/logger');
 const User = require("app/model/wallet").users;
 const UserStatus = require("app/model/wallet/value-object/user-status");
@@ -50,6 +51,14 @@ module.exports = {
         where.email = { [Op.iLike]: `%${req.query.query}%` };
       }
       const { count: total, rows: items } = await User.findAndCountAll({ limit, offset, where: where, include: include, order: [['created_at', 'DESC']] });
+
+      if (items.length > 0) {
+        const countries = await Country.findAll({});
+        const cache = _.keyBy(countries, 'code');
+
+        items.forEach(item => item.country = cache[item.country_code]);
+      }
+
       return res.ok({
         items: items.length > 0 ? userMapper(items) : [],
         offset: offset,
@@ -143,7 +152,6 @@ module.exports = {
           deleted_flg: false
         }
       });
-
       if (result) {
         return res.badRequest(res.__("EMAIL_EXISTS_ALREADY"), "EMAIL_EXISTS_ALREADY", { fields: ['email'] });
       }
@@ -153,18 +161,30 @@ module.exports = {
           id: req.body.role_id
         }
       });
-
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
       }
-      transaction = await database.transaction();
 
+      let country_code = req.body.country_code;
+      if (country_code) {
+        let country = await Country.findOne({
+          where: {
+            code: country_code
+          }
+        });
+        if (!country) {
+          return res.badRequest(res.__("COUNTRY_CODE_NOT_FOUND"), "COUNTRY_CODE_NOT_FOUND", { fields: ['country_code'] });
+        }
+      }
+
+      transaction = await database.transaction();
       let passWord = bcrypt.hashSync("Abc@123456", 10);
       let user = await User.create({
         email: req.body.email.toLowerCase(),
         name: req.body.name,
         password_hash: passWord,
         user_sts: UserStatus.UNACTIVATED,
+        country_code,
         updated_by: req.user.id,
         created_by: req.user.id
       }, { transaction });
@@ -235,7 +255,6 @@ module.exports = {
           id: req.params.id
         }
       });
-
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ['id'] });
       }
@@ -245,17 +264,28 @@ module.exports = {
           id: req.body.role_id
         }
       });
-
       if (!role) {
         return res.badRequest(res.__("ROLE_NOT_FOUND"), "ROLE_NOT_FOUND", { fields: ['role_id'] });
+      }
+
+      let country_code = req.body.country_code;
+      if (country_code) {
+        let country = await Country.findOne({
+          where: {
+            code: country_code
+          }
+        });
+        if (!country) {
+          return res.badRequest(res.__("COUNTRY_CODE_NOT_FOUND"), "COUNTRY_CODE_NOT_FOUND", { fields: ['country_code'] });
+        }
       }
 
       transaction = await database.transaction();
 
       let [_, response] = await User.update({
         user_sts: req.body.user_sts,
-        // email: req.body.email.toLowerCase(),
-        name: req.body.name
+        name: req.body.name,
+        country_code,
       }, {
         where: {
           id: req.params.id
@@ -483,23 +513,18 @@ async function _sendEmailDeleteUser(user) {
 async function _getRoleControl(roles) {
   let levels = roles.map(ele => ele.level);
   let roleControl = [];
+
   for (let e of levels) {
-    let role = await Role.findOne({
-      attribute: ["level"],
+    const roles = await Role.findAll({
       where: {
         level: { [Op.gt]: e },
-        deleted_flg: false
+        deleted_flg: false,
+        root_flg: false,
       },
       order: [['level', 'ASC']]
     });
 
-    if (role) {
-      let roles = await Role.findAll({
-        where: {
-          level: role.level,
-          deleted_flg: false
-        }
-      });
+    if (roles.length > 0) {
       roleControl = roleControl.concat(roles.map(x => x.id));
     }
   }
