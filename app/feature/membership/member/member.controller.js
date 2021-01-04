@@ -760,7 +760,7 @@ module.exports = {
       items.forEach(element => {
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
         element.day_of_birth = element.day_of_birth ? moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD') : '';
-        element.city = stateJP[locale][element.city] ? stateJP[locale][element.city] : element.city;
+        element.city = req.user.country_code !== 'KO' && stateJP[locale][element.city] ? stateJP[locale][element.city] : element.city;
         element.country = localizeCountry[element.country] ? localizeCountry[element.country] : element.country;
       });
 
