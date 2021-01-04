@@ -829,22 +829,6 @@ module.exports = {
       next(err);
     }
   },
-  getJPCityDropdownList: async (req, res, next) => {
-    try {
-      const listState = Object.entries(stateJP);
-      const dropdownList = listState.map(item => {
-        return {
-          label: item[0],
-          value: item[0]
-        };
-      });
-      return res.ok(dropdownList);
-    }
-    catch (err) {
-      logger.error('get dropdownlist city fail:', err);
-      next(err);
-    }
-  },
   getCountryDropdownList: async (req, res, next) => {
     try {
       const listCountry = Object.entries(countries);
