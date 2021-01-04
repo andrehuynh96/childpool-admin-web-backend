@@ -750,7 +750,7 @@ module.exports = {
       const timezone_offset = query.timezone_offset || 0;
       items.forEach(element => {
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
-        element.day_of_birth = element.day_of_birth ? moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm') : '';
+        element.day_of_birth = element.day_of_birth ? moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD') : '';
       });
 
       if (req.user.current_language == 'jp') {
