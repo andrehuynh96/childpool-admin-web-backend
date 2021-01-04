@@ -124,11 +124,15 @@ module.exports = {
           deleted_flg: false
         }
       });
-
+      const localizeCountry = {};
+      Object.entries(countries).forEach(item => {
+        localizeCountry[item[1]] = item[0];
+      });
       items.forEach(item => {
         const membershipType = membershipTypes.find(membershipType => membershipType.id === item.membership_type_id);
         item.membership_type = membershipType ? membershipType.name : 'Basic';
         item.kyc_level = (item.kyc_level || '').replace('LEVEL_', '') || '0';
+        item.country = localizeCountry[item.country] ? localizeCountry[item.country] : item.country;
       });
 
       if (filterStatus) {
@@ -748,18 +752,17 @@ module.exports = {
       });
 
       const timezone_offset = query.timezone_offset || 0;
+      const locale = req.query.current_language;
+      const localizeCountry = {};
+      Object.entries(countries).forEach(item => {
+        localizeCountry[item[1]] = item[0];
+      });
       items.forEach(element => {
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
         element.day_of_birth = element.day_of_birth ? moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD') : '';
+        element.city = req.user.country_code !== 'KO' && stateJP[locale][element.city] ? stateJP[locale][element.city] : element.city;
+        element.country = localizeCountry[element.country] ? localizeCountry[element.country] : element.country;
       });
-
-      if (req.query.current_language == 'jp') {
-        items.forEach(item => {
-          if (item.city && stateJP[item.city.toUpperCase()]) {
-            item.city = stateJP[item.city.toUpperCase()];
-          }
-        });
-      }
 
       const data = await stringifyAsync(items, [
         { key: 'no', header: '#' },
