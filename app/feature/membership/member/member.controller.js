@@ -757,6 +757,7 @@ module.exports = {
       const timezone_offset = query.timezone_offset || 0;
       items.forEach(element => {
         element.created_at = moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm');
+        element.day_of_birth = element.day_of_birth ? moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD HH:mm') : '';
       });
 
       if (req.user.current_language == 'jp') {
@@ -774,6 +775,8 @@ module.exports = {
         { key: 'email', header: 'Email' },
         { key: 'kyc_level', header: 'KYC' },
         { key: 'kyc_status', header: 'KYC Status' },
+        { key: 'day_of_birth', header: 'Birth Day' },
+        { key: 'address', header: 'Address' },
         { key: 'city', header: 'City' },
         { key: 'country', header: 'Country' },
         { key: 'membership_type', header: 'Membership' },
