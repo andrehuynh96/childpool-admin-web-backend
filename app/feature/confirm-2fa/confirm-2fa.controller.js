@@ -132,6 +132,7 @@ module.exports = async (req, res, next) => {
       user_agent: req.headers['user-agent']
     });
 
+    delete user.password_hash;
     req.session.authenticated = true;
     req.session.user = user;
 
