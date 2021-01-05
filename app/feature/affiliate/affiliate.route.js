@@ -6,10 +6,10 @@ const PermissionKey = require('app/model/wallet/value-object/permission-key');
 const router = express.Router();
 
 router.get(
-    '/affiliate/:memberId/get-top',
-    authenticate,
-    authority(PermissionKey.VIEW_TOP_AFFILIATE),
-    controller.getTopAffiliate
+  '/affiliate/get-top',
+  authenticate,
+  authority(PermissionKey.VIEW_TOP_AFFILIATE),
+  controller.getTopAffiliate
 );
 
 module.exports = router;
@@ -42,17 +42,14 @@ module.exports = router;
  *             {
                     "data": {
                         "items": [
-                            {
-                              "id": "126c4fc3-d57d-450a-9ecc-1ae63a40d27a",
-                              "email": "hungtv+bug10001@gmail.com",
-                              "fullname": null,
-                              "last_name": "Hung",
-                              "first_name": "bug100001",
-                              "number_of_refferral": 3,
-                              "referrer_code": "I6NNK6M6P",
-                              "referral_code": "C8ORYQYQI",
-                              "create_at": "2020-07-23T03:47:34.243Z"
-                            }
+                        {
+                          "id": "a9d85e5a-6d67-4018-8caf-f37eb424d364",
+                          "referrer_code": null,
+                          "referral_code": "XBJ3I9GV2",
+                          "email": "hungtv+15000@blockchainlabs.asia",
+                          "created_at": "2020-07-21T09:38:39.534Z",
+                          "num_of_refers": "48"
+                        }
                         ],
                         "offset": 0,
                         "limit": 10,
