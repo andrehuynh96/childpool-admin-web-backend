@@ -1073,4 +1073,11 @@ module.exports = {
     "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
     "INITIALIZED_DATE": "2020-11-13T00:00:00.000Z"
   },
+  "VIEW_TOP_AFFILIATE": {
+    "KEY": "VIEW_TOP_AFFILIATE",
+    "DESCRIPTION": "View top affiliate",
+    "GROUP_NAME": "Member",
+    "ROLES": ["Master", "Admin", "Operator1", "Operator2"],
+    "INITIALIZED_DATE": "2020-12-05T00:00:00.000Z"
+  },
 };
