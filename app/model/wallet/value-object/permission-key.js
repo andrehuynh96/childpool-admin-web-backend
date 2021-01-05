@@ -542,6 +542,15 @@ module.exports = {
     "ROLES": [RoleName.Master, RoleName.Admin, RoleName.Operator1, RoleName.Operator2],
     "INITIALIZED_DATE": "2020-09-01T00:00:00.000Z"
   },
+
+  "VIEW_TOP_AFFILIATE": {
+    "KEY": "VIEW_TOP_AFFILIATE",
+    "DESCRIPTION": "View top affiliate",
+    "GROUP_NAME": "Token payout",
+    "ROLES": [RoleName.Master, RoleName.Admin, RoleName.Operator1, RoleName.Operator2],
+    "INITIALIZED_DATE": "2020-12-05T00:00:00.000Z"
+  },
+
   "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE": {
     "KEY": "MEMBERSHIP_VIEW_MEMBERSHIP_TYPE",
     "DESCRIPTION": "View membership type",
@@ -1145,11 +1154,5 @@ module.exports = {
     "ROLES": [RoleName.Master, RoleName.Admin, RoleName.Operator1, RoleName.Operator2],
     "INITIALIZED_DATE": "2020-11-13T00:00:00.000Z"
   },
-  "VIEW_TOP_AFFILIATE": {
-    "KEY": "VIEW_TOP_AFFILIATE",
-    "DESCRIPTION": "View top affiliate",
-    "GROUP_NAME": "Member",
-    "ROLES": [RoleName.Master, RoleName.Admin, RoleName.Operator1, RoleName.Operator2],
-    "INITIALIZED_DATE": "2020-12-05T00:00:00.000Z"
-  },
+
 };
