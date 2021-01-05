@@ -1,4 +1,5 @@
 const config = require("app/config");
+const RoleName = require('../value-object/role-name');
 
 (async () => {
   try {
@@ -6,14 +7,16 @@ const config = require("app/config");
       require("./permission")(),
       require("./setting")(),
       require("./country")(),
+      require("./role")(),
       require("./email-template")(),
       require("./member-setting")(),
     ]);
 
     if (config.enableSeed) {
+      await require("./init-roles")([RoleName.KoreanOperator]);
+
       await Promise.all([
         require("./user")(),
-        require("./role")(),
       ]);
       await Promise.all([
         require("./role-permission")(),

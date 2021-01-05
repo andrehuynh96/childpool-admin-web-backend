@@ -12,7 +12,7 @@ const COUNTRIES = [
     "actived_flg": true,
   },
   {
-    "code": "KO",
+    "code": "KR",
     "name": "Korean",
     "display_name": "한국어",
     "order_index": 2,
