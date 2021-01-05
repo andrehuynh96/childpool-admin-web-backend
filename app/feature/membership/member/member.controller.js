@@ -33,8 +33,8 @@ module.exports = {
       const limit = query.limit ? parseInt(req.query.limit) : 10;
       const offset = query.offset ? parseInt(req.query.offset) : 0;
       const memberCond = await _createMemberCond(query);
-      if (user.country_code === 'KO') {
-        memberCond.country = { [Op.iLike]: 'KO' };
+      if (user.country_code) {
+        memberCond.country = { [Op.iLike]: user.country_code };
       }
       const membershipOrderCond = {};
 
@@ -619,8 +619,8 @@ module.exports = {
     try {
       const { query, user } = req;
       const memberCond = await _createMemberCond(query);
-      if (user.country_code === 'KO') {
-        memberCond.country = { [Op.iLike]: 'KO' };
+      if (user.country_code) {
+        memberCond.country = { [Op.iLike]: user.country_code };
       }
       const membershipOrderCond = {};
 

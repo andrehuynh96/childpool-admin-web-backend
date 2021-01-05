@@ -45,8 +45,8 @@ module.exports = {
         deleted_flg: false
       };
 
-      if (user.country_code === 'KO') {
-        memberWhere.country = { [Op.iLike]: 'KO' };
+      if (user.country_code) {
+        memberWhere.country = { [Op.iLike]: user.country_code };
       }
 
       if (query.order_no) {
@@ -445,8 +445,8 @@ module.exports = {
         deleted_flg: false
       };
 
-      if (user.country_code === 'KO') {
-        memberWhere.country = { [Op.iLike]: 'KO' };
+      if (user.country_code) {
+        memberWhere.country = { [Op.iLike]: user.country_code };
       }
       if (query.order_no) {
         where.order_no = { [Op.iLike]: `%${query.order_no}%` };

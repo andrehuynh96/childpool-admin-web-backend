@@ -67,9 +67,9 @@ module.exports = {
         filters.push('wpk.address ILIKE :address');
         filterData.address = `%${address}%`;
       }
-      if (user.country_code === 'KO') {
+      if (user.country_code) {
         filters.push('m.country ILIKE :country');
-        filterData.country = 'KO';
+        filterData.country = user.country_code;
       }
 
       let total = 0;
@@ -279,9 +279,9 @@ module.exports = {
         filterData.address = `%${address}%`;
       }
 
-      if (user.country_code === 'KO') {
+      if (user.country_code) {
         filters.push('m.country ILIKE :country');
-        filterData.country = 'KO';
+        filterData.country = user.country_code;
       }
 
       let items = [];
