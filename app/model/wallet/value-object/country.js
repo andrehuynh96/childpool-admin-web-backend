@@ -116,7 +116,7 @@ module.exports = {
   "Kenya": "KE",
   "Kiribati": "KI",
   "Korea, Democratic People'S Republic of": "KP",
-  "Korea": "KO",
+  "Korea": "KR",
   "Kuwait": "KW",
   "Kyrgyzstan": "KG",
   "Lao People'S Democratic Republic": "LA",
