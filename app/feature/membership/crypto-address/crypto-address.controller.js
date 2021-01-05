@@ -11,7 +11,7 @@ const Op = Sequelize.Op;
 module.exports = {
   search: async (req, res, next) => {
     try {
-      const { query } = req;
+      const { query, user } = req;
       const limit = query.limit ? parseInt(query.limit) : 10;
       const offset = query.offset ? parseInt(query.offset) : 0;
       const { platform, membership_type_id, email, address, is_reward_address } = query;
@@ -66,6 +66,10 @@ module.exports = {
       if (address) {
         filters.push('wpk.address ILIKE :address');
         filterData.address = `%${address}%`;
+      }
+      if (user.country_code) {
+        filters.push('m.country ILIKE :country');
+        filterData.country = user.country_code;
       }
 
       let total = 0;
@@ -219,7 +223,7 @@ module.exports = {
   },
   downloadCSV: async (req, res, next) => {
     try {
-      const { query } = req;
+      const { query, user } = req;
       const timezone_offset = query.timezone_offset || 0;
       const { platform, membership_type_id, email, address, is_reward_address } = query;
       const filters = ['1=1'];
@@ -273,6 +277,11 @@ module.exports = {
       if (address) {
         filters.push('wpk.address ILIKE :address');
         filterData.address = `%${address}%`;
+      }
+
+      if (user.country_code) {
+        filters.push('m.country ILIKE :country');
+        filterData.country = user.country_code;
       }
 
       let items = [];

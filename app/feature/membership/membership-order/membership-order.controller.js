@@ -36,7 +36,7 @@ const MembershipOrderStatusEnum = {
 module.exports = {
   search: async (req, res, next) => {
     try {
-      const { query } = req;
+      const { query, user } = req;
       const limit = query.limit ? parseInt(query.limit) : 10;
       const offset = query.offset ? parseInt(query.offset) : 0;
       const where = {
@@ -44,6 +44,10 @@ module.exports = {
       const memberWhere = {
         deleted_flg: false
       };
+
+      if (user.country_code) {
+        memberWhere.country = { [Op.iLike]: user.country_code };
+      }
 
       if (query.order_no) {
         where.order_no = { [Op.iLike]: `%${query.order_no}%` };
@@ -109,7 +113,7 @@ module.exports = {
           offset,
           include: [
             {
-              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city', 'country'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -127,8 +131,14 @@ module.exports = {
         }
       );
 
+      const localizeCountry = {};
+      Object.entries(countries).forEach(item => {
+        localizeCountry[item[1]] = item[0];
+      });
+
       items.forEach(item => {
         item.explorer_link = blockchainHelpper.getUrlTxid(item.txid, item.currency_symbol);
+        item.country = localizeCountry[item.Member.country] ? localizeCountry[item.Member.country] : item.Member.country;
       });
 
       return res.ok({
@@ -154,7 +164,7 @@ module.exports = {
         {
           include: [
             {
-              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city', 'country'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -428,13 +438,16 @@ module.exports = {
   },
   downloadCSV: async (req, res, next) => {
     try {
-      const { query } = req;
+      const { query, user } = req;
       const where = {
       };
       const memberWhere = {
         deleted_flg: false
       };
 
+      if (user.country_code) {
+        memberWhere.country = { [Op.iLike]: user.country_code };
+      }
       if (query.order_no) {
         where.order_no = { [Op.iLike]: `%${query.order_no}%` };
       }
