@@ -29,10 +29,13 @@ const Op = Sequelize.Op;
 module.exports = {
   search: async (req, res, next) => {
     try {
-      const { query } = req;
+      const { query, user } = req;
       const limit = query.limit ? parseInt(req.query.limit) : 10;
       const offset = query.offset ? parseInt(req.query.offset) : 0;
       const memberCond = await _createMemberCond(query);
+      if (user.country_code) {
+        memberCond.country = { [Op.iLike]: user.country_code };
+      }
       const membershipOrderCond = {};
 
       let filterStatus = query.status;
@@ -614,8 +617,11 @@ module.exports = {
   },
   downloadCSV: async (req, res, next) => {
     try {
-      const { query } = req;
+      const { query, user } = req;
       const memberCond = await _createMemberCond(query);
+      if (user.country_code) {
+        memberCond.country = { [Op.iLike]: user.country_code };
+      }
       const membershipOrderCond = {};
 
       let filterStatus = query.status;
@@ -762,6 +768,7 @@ module.exports = {
         element.day_of_birth = element.day_of_birth ? moment(element.createdAt).add(- timezone_offset, 'minutes').format('YYYY-MM-DD') : '';
         element.city = req.user.country_code !== 'KO' && stateJP[locale][element.city] ? stateJP[locale][element.city] : element.city;
         element.country = localizeCountry[element.country] ? localizeCountry[element.country] : element.country;
+        // console.log(localizeCountry[element.country]);
       });
 
       const data = await stringifyAsync(items, [
