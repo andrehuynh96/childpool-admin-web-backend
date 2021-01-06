@@ -37,8 +37,12 @@ module.exports = {
         where.status = query.status;
       }
 
-      if (query.mobile_status) {
-        where.mobile_status = query.mobile_status;
+      if (query.mobile_ios_status) {
+        where.mobile_ios_status = query.mobile_ios_status;
+      }
+
+      if (query.mobile_android_status) {
+        where.mobile_android_status = query.mobile_android_status;
       }
 
       let { count: total, rows: items } = await Currency.findAndCountAll({
@@ -51,7 +55,8 @@ module.exports = {
 
       items.forEach(item => {
         item.status = CURRENCY_STATUS_TEXT_CACHE[item.status];
-        item.mobile_status = CURRENCY_STATUS_TEXT_CACHE[item.mobile_status];
+        item.mobile_ios_status = CURRENCY_STATUS_TEXT_CACHE[item.mobile_ios_status];
+        item.mobile_android_status = CURRENCY_STATUS_TEXT_CACHE[item.mobile_android_status];
       });
 
       return res.ok({
