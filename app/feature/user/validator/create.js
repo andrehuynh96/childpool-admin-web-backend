@@ -5,7 +5,8 @@ const schema = Joi.object().keys({
     .email({ minDomainAtoms: 2 })
     .required(),
   name: Joi.string().required(),
-  role_id: Joi.number().required()
+  role_id: Joi.number().required(),
+  country_code: Joi.string().allow(null).max(100).optional(),
 });
 
 module.exports = schema;

@@ -6,50 +6,45 @@ const Op = Sequelize.Op;
 module.exports = function (fId, isUser = false) {
   return async function (req, res, next) {
     if (!req.session.roles) {
-      res.forbidden();
-    } else {
-      let roles = [];
-      let rolesControl = await _getRoleControl(req);
-      let objectid = eval(fId);
-      if (isUser) {
-        roles = await _getUserRole(objectid);
-      }
-      else {
-        roles.push(objectid);
-      }
-
-      const found = rolesControl.some(r => roles.includes(r));
-      if (found) {
-        next();
-      }
-      else {
-        res.forbidden();
-      }
+      return res.forbidden();
     }
-  }
-}
+
+    let requiredRoleIdList = [];
+    let rolesControl = await _getRoleControl(req);
+    let objectid = eval(fId);
+    if (isUser) {
+      requiredRoleIdList = await _getUserRole(objectid);
+    }
+    else {
+      requiredRoleIdList.push(objectid);
+    }
+
+    const found = rolesControl.some(r => requiredRoleIdList.includes(r.id));
+    if (found) {
+      next();
+    }
+    else {
+      res.forbidden();
+    }
+  };
+};
 
 async function _getRoleControl(req) {
-  let levels = req.session.roles.map(ele => ele.level)
-  let roleControl = []
+  let levels = req.session.roles.map(ele => ele.level);
+  let roleControl = [];
+
   for (let e of levels) {
-    let role = await Role.findOne({
-      attribute: ["level"],
+    const roles = await Role.findAll({
       where: {
         level: { [Op.gt]: e },
-        deleted_flg: false
+        deleted_flg: false,
+        root_flg: false,
       },
       order: [['level', 'ASC']]
     });
 
-    if (role) {
-      let roles = await Role.findAll({
-        where: {
-          level: role.level,
-          deleted_flg: false
-        }
-      });
-      roleControl = roleControl.concat(roles.map(x => x.id));
+    if (roles.length > 0) {
+      roleControl = roleControl.concat(roles);
     }
   }
 

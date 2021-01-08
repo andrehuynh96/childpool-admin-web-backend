@@ -24,6 +24,7 @@ const EmailTemplate = require('app/model/wallet').email_templates;
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type');
 const stringHelper = require('app/lib/string-helper');
 const PointService = require('app/lib/point');
+const countries = require('app/model/wallet/value-object/country');
 
 const Op = Sequelize.Op;
 const MembershipOrderStatusEnum = {
@@ -35,7 +36,7 @@ const MembershipOrderStatusEnum = {
 module.exports = {
   search: async (req, res, next) => {
     try {
-      const { query } = req;
+      const { query, user } = req;
       const limit = query.limit ? parseInt(query.limit) : 10;
       const offset = query.offset ? parseInt(query.offset) : 0;
       const where = {
@@ -43,6 +44,10 @@ module.exports = {
       const memberWhere = {
         deleted_flg: false
       };
+
+      if (user.country_code) {
+        memberWhere.country = { [Op.iLike]: user.country_code };
+      }
 
       if (query.order_no) {
         where.order_no = { [Op.iLike]: `%${query.order_no}%` };
@@ -108,7 +113,7 @@ module.exports = {
           offset,
           include: [
             {
-              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city', 'country'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -126,8 +131,14 @@ module.exports = {
         }
       );
 
+      const localizeCountry = {};
+      Object.entries(countries).forEach(item => {
+        localizeCountry[item[1]] = item[0];
+      });
+
       items.forEach(item => {
         item.explorer_link = blockchainHelpper.getUrlTxid(item.txid, item.currency_symbol);
+        item.country = localizeCountry[item.Member.country] ? localizeCountry[item.Member.country] : item.Member.country;
       });
 
       return res.ok({
@@ -153,7 +164,7 @@ module.exports = {
         {
           include: [
             {
-              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city', 'country'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -427,13 +438,16 @@ module.exports = {
   },
   downloadCSV: async (req, res, next) => {
     try {
-      const { query } = req;
+      const { query, user } = req;
       const where = {
       };
       const memberWhere = {
         deleted_flg: false
       };
 
+      if (user.country_code) {
+        memberWhere.country = { [Op.iLike]: user.country_code };
+      }
       if (query.order_no) {
         where.order_no = { [Op.iLike]: `%${query.order_no}%` };
       }
@@ -500,7 +514,7 @@ module.exports = {
         {
           include: [
             {
-              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city'],
+              attributes: ['email', 'fullname', 'first_name', 'last_name', 'kyc_level', 'kyc_status', 'phone', 'city', 'country'],
               as: "Member",
               model: Member,
               where: memberWhere,
@@ -523,6 +537,12 @@ module.exports = {
         }
       );
       let timezone_offset = query.time_offset || 0;
+
+      const localizeCountry = {};
+      Object.entries(countries).forEach(item => {
+        localizeCountry[item[1]] = item[0];
+      });
+
       items.forEach(element => {
         element.email = element.Member.email;
         element.first_name = element.Member.first_name;
@@ -531,6 +551,7 @@ module.exports = {
         element.receiving_addresses = element.ReceivingAddress ? element.ReceivingAddress['wallet_address'] : '';
         element.membership_type = element.MembershipType ? element.MembershipType['name'] : '';
         element.status_string = MembershipOrderStatusEnum[element.status];
+        element.country = localizeCountry[element.Member.country] ? localizeCountry[element.Member.country] : element.Member.country;
       });
       let data = await stringifyAsync(items, [
         { key: 'order_no', header: 'Order' },
@@ -539,6 +560,7 @@ module.exports = {
         { key: 'last_name', header: 'Last Name' },
         { key: 'email', header: 'Email' },
         { key: 'membership_type', header: 'Membership' },
+        { key: 'country', header: 'Country' },
         { key: 'payment_type', header: 'Payment' },
         { key: 'receiving_addresses', header: 'Receiving Address' },
         { key: 'status_string', header: 'Status' },
