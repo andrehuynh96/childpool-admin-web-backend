@@ -48,7 +48,7 @@ module.exports = {
     "PROVINCE_LIST_JAPAN_KAGOSHIMA": "Kagoshima",
     "PROVINCE_LIST_JAPAN_OKINAWA": "Okinawa"
   },
-  "jp": {
+  "ja": {
     "PROVINCE_LIST_JAPAN_HOKKAIDO": "北海道",
     "PROVINCE_LIST_JAPAN_AOMORI": "青森県",
     "PROVINCE_LIST_JAPAN_IWATE": "岩手県",
