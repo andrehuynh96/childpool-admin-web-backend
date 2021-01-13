@@ -26,7 +26,7 @@ const RoleName = require('../value-object/role-name');
 
     await require("./root-permission")();
     await require("./term")();
-    require("./migrate-infinito-user")();
+    // require("./migrate-infinito-user")();
     console.log('Seeding data done.');
   }
   catch (err) {

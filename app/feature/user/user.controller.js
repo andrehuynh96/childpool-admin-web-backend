@@ -178,7 +178,7 @@ module.exports = {
       }
 
       transaction = await database.transaction();
-      let passWord = bcrypt.hashSync("Abc@123456", 10);
+      let passWord = bcrypt.hashSync(uuidV4(), 10);
       let user = await User.create({
         email: req.body.email.toLowerCase(),
         name: req.body.name,
