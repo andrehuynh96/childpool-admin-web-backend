@@ -5,19 +5,21 @@ const GetMemberAssetSchedule = require("./get-member-asset.schedule");
 const SyncCurrencyWithChangelly = require("./sycn-currency-with-changelly.schedule");
 const CheckStatusFiatTransactionSchedule = require("./check-status-fiat-transaction.schedule");
 const CheckStatusNexoTransactionSchedule = require("./check-status-nexo-transaction.schedule");
+const SyncCacheCoinGecko = require('./sync-cache-coin-gecko.schedule');
 
 const fs = require('fs');
 
 module.exports = {
   start: async () => {
     await _removeLockFile();
-    UpdateAffiliateSchedule.run();
-    CheckAdaPoolSizeSchedule.run();
-    CheckExchangeStatusSchedule.run();
-    GetMemberAssetSchedule.run();
-    SyncCurrencyWithChangelly.run();
-    CheckStatusFiatTransactionSchedule.run();
-    CheckStatusNexoTransactionSchedule.run();
+    // UpdateAffiliateSchedule.run();
+    // CheckAdaPoolSizeSchedule.run();
+    // CheckExchangeStatusSchedule.run();
+    // GetMemberAssetSchedule.run();
+    // SyncCurrencyWithChangelly.run();
+    // CheckStatusFiatTransactionSchedule.run();
+    // CheckStatusNexoTransactionSchedule.run();
+    SyncCacheCoinGecko.run();
   }
 };
 
@@ -30,7 +32,8 @@ async function _removeLockFile() {
       GetMemberAssetSchedule.lockFile(),
       SyncCurrencyWithChangelly.lockFile(),
       CheckStatusFiatTransactionSchedule.lockFile(),
-      CheckStatusNexoTransactionSchedule.lockFile()
+      CheckStatusNexoTransactionSchedule.lockFile(),
+      SyncCacheCoinGecko.logFile
     ];
     for (let f of files) {
       if (f) {
