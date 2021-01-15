@@ -12,13 +12,13 @@ const fs = require('fs');
 module.exports = {
   start: async () => {
     await _removeLockFile();
-    // UpdateAffiliateSchedule.run();
-    // CheckAdaPoolSizeSchedule.run();
-    // CheckExchangeStatusSchedule.run();
-    // GetMemberAssetSchedule.run();
-    // SyncCurrencyWithChangelly.run();
-    // CheckStatusFiatTransactionSchedule.run();
-    // CheckStatusNexoTransactionSchedule.run();
+    UpdateAffiliateSchedule.run();
+    CheckAdaPoolSizeSchedule.run();
+    CheckExchangeStatusSchedule.run();
+    GetMemberAssetSchedule.run();
+    SyncCurrencyWithChangelly.run();
+    CheckStatusFiatTransactionSchedule.run();
+    CheckStatusNexoTransactionSchedule.run();
     SyncCacheCoinGecko.run();
   }
 };
@@ -33,7 +33,7 @@ async function _removeLockFile() {
       SyncCurrencyWithChangelly.lockFile(),
       CheckStatusFiatTransactionSchedule.lockFile(),
       CheckStatusNexoTransactionSchedule.lockFile(),
-      SyncCacheCoinGecko.logFile
+      SyncCacheCoinGecko.logFile()
     ];
     for (let f of files) {
       if (f) {
