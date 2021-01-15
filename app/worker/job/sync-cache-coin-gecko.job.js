@@ -28,8 +28,7 @@ module.exports = {
         const keyHash = crypto.createHmac('sha256', secret)
           .update(`/coin-gecko/prices?platform=${platform}`)
           .digest('hex');
-        console.log(keyHash);
-        await cache.setAsync(keyHash, JSON.stringify(data), "EX", 300);
+        await cache.setAsync(keyHash, JSON.stringify({ data: data }), "EX", 300);
       }
     }
     catch (error) {
