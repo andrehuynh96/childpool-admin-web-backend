@@ -4,6 +4,7 @@ const CoinGecko = require('coingecko-api');
 const redis = require("app/lib/redis");
 const cache = redis.client();
 const crypto = require('crypto');
+const sleep = require('sleep-promise');
 const secret = "MS_CACHE";
 
 module.exports = {
@@ -29,6 +30,7 @@ module.exports = {
           .update(`/coin-gecko/prices?platform=${platform}`)
           .digest('hex');
         await cache.setAsync(keyHash, JSON.stringify({ data: data }), "EX", 300);
+        await sleep(1000);
       }
     }
     catch (error) {
