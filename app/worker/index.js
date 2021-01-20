@@ -33,7 +33,7 @@ async function _removeLockFile() {
       SyncCurrencyWithChangelly.lockFile(),
       CheckStatusFiatTransactionSchedule.lockFile(),
       CheckStatusNexoTransactionSchedule.lockFile(),
-      SyncCacheCoinGecko.logFile()
+      SyncCacheCoinGecko.lockFile()
     ];
     for (let f of files) {
       if (f) {

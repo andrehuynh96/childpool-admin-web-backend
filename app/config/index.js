@@ -242,7 +242,14 @@ const config = {
   },
   ADA: {
     restUrl: process.env.ADA_REST_URL,
-  }
+  },
+  DOT: {
+    url: process.env.POLKADOT_API
+  },
+  XQC: {
+    url: process.env.QURAS_API
+  },
+
 };
 
 module.exports = config;
