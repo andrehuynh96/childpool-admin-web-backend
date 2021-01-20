@@ -242,7 +242,11 @@ const config = {
   },
   ADA: {
     restUrl: process.env.ADA_REST_URL,
-  }
+  },
+  DOT: {
+    url: process.env.POLKADOT_API
+  },
+
 };
 
 module.exports = config;
