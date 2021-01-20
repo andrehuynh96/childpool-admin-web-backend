@@ -1,7 +1,7 @@
 require('dotenv').config();
 require('rootpath')();
 
-describe('Test DOT get methods', function () {
+describe('Test XQC get methods', function () {
   this.timeout(60000);
 
   beforeEach((done) => {
@@ -10,9 +10,9 @@ describe('Test DOT get methods', function () {
   });
 
   it('Constructor', async () => {
-    const DOT = require('./dot');
-    let dot = new DOT();
-    const result = await dot.get('5HQGHHrz1DMhCP8UkoqJieTRw7KHTjRjLyCujDvu8fPJm5gu');
+    const XQC = require('./xqc');
+    let xqc = new XQC();
+    const result = await xqc.get('DnydeYy3FETqXEWUo92Tq9qYpfJ7CSt7PT');
     console.log(result);
   });
 });

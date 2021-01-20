@@ -246,6 +246,9 @@ const config = {
   DOT: {
     url: process.env.POLKADOT_API
   },
+  XQC: {
+    url: process.env.QURAS_API
+  },
 
 };
 
