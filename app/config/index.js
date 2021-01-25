@@ -244,7 +244,8 @@ const config = {
     restUrl: process.env.ADA_REST_URL,
   },
   DOT: {
-    url: process.env.POLKADOT_API
+    url: process.env.POLKADOT_API,
+    isMainnet: process.env.POLKADOT_MAINNET == '1'
   },
   XQC: {
     url: process.env.QURAS_API

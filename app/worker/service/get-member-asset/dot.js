@@ -6,6 +6,7 @@ const dbLogger = require('app/lib/logger/db');
 const logHangout = require("app/lib/logger/hangout");
 const axios = require('axios');
 
+const DECIMAL = config.DOT.isMainnet ? 10 : 12;
 class DOT extends GetMemberAsset {
   constructor() {
     super();
@@ -25,8 +26,8 @@ class DOT extends GetMemberAsset {
       const result = await axios.post(`${dotUrl}/search`,balanceParams);
       if (result.data.data) {
         const account = result.data.data.account;
-        const availableBalance = account.balance ? BigNumber(account.balance).toNumber() : 0;
-        const lockBalance = account.balance_lock ? BigNumber(account.balance_lock).toNumber() : 0;
+        const availableBalance = account.balance ? BigNumber(account.balance).multipliedBy(10 ** DECIMAL).toNumber() : 0;
+        const lockBalance = account.balance_lock ? BigNumber(account.balance_lock).multipliedBy(10 ** DECIMAL).toNumber() : 0;
         balance = lockBalance ? availableBalance - lockBalance : availableBalance;
       }
       return {

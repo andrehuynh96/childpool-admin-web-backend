@@ -6,7 +6,7 @@ const https = require('https');
 const BigNumber = require('bignumber.js');
 const dbLogger = require('app/lib/logger/db');
 const logHangout = require("app/lib/logger/hangout");
-
+const DECIMAL = 8;
 class XQC extends GetMemberAsset {
   constructor() {
     super();
@@ -29,7 +29,7 @@ class XQC extends GetMemberAsset {
       let res = await Api.get(`/address/balance/${address}`);
       if (res.data.data) {
         const assets = res.data.data.balance && res.data.data.balance.assets ? res.data.data.balance.assets : null;
-        balance = assets && assets.XQC ? assets.XQC.balance : 0;
+        balance = assets && assets.XQC ? BigNumber(assets.XQC.balance).multipliedBy(10 ** DECIMAL).toNumber() : 0;
       }
       return {
         balance: balance,
