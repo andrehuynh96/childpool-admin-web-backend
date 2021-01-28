@@ -6,6 +6,10 @@ const CHECK_STATUS_FIAT_TRANSACTION_LOCK_FILE = 'check_status_fiat_transaction.l
 
 module.exports = {
   run: () => {
+    if (!config.schedule.checkStatusFiatTransaction) {
+      return;
+    }
+
     cron.schedule(config.schedule.checkStatusFiatTransaction, async () => {
       await runWithLockFile(checkFiatTransaction, CHECK_STATUS_FIAT_TRANSACTION_LOCK_FILE, "check status fiat transaction", true);
     });

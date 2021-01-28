@@ -14,22 +14,34 @@ module.exports = {
       const coingeckoPlatform = listPlatform.filter(platform => platform !== 'USDT');
       const coinGeckoClient = new CoinGecko();
       for (let platform of coingeckoPlatform) {
-        const data = {};
-        const coinPrices = await coinGeckoClient.simple.price({
-          ids: [Platform[platform].coingeckoId],
-          vs_currencies: ['usd'],
-          include_24hr_change: true
-        });
-        const price = coinPrices.data[Platform[platform].coingeckoId.toLowerCase()]['usd'];
-        const usd_24h_change = coinPrices.data[Platform[platform].coingeckoId.toLowerCase()].usd_24h_change;
+        try {
+          const getCoinPriceResult = await coinGeckoClient.simple.price({
+            ids: [Platform[platform].coingeckoId],
+            vs_currencies: ['usd'],
+            include_24hr_change: true
+          });
 
-        data.price = price;
-        data.usd_24h_change = usd_24h_change;
+          if (getCoinPriceResult.success) {
+            const coinPriceData = getCoinPriceResult.data;
+            const priceData = coinPriceData[Platform[platform].coingeckoId.toLowerCase()];
+            if (!priceData.usd) {
+              continue;
+            }
 
-        const keyHash = crypto.createHmac('sha256', secret)
-          .update(`/coin-gecko/prices?platform=${platform}`)
-          .digest('hex');
-        await cache.setAsync(keyHash, JSON.stringify({ data: data }), "EX", 300);
+            const data = {
+              platform: platform,
+              price: priceData.usd,
+              usd_24h_change: priceData.usd_24h_change,
+            };
+            const keyHash = crypto.createHmac('sha256', secret)
+              .update(`/coin-gecko/prices?platform=${platform}`)
+              .digest('hex');
+            await cache.setAsync(keyHash, JSON.stringify({ data: data }), "EX", 300);
+          }
+        } catch (error2) {
+          logger.error(`Get gecko price for ${platform} fail`, error2);
+        }
+
         await sleep(1000);
       }
     }
