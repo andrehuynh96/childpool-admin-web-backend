@@ -10,7 +10,6 @@ module.exports = {
       return;
     }
 
-    // await syncCacheCoinGecko.execute();
     cron.schedule(config.schedule.syncCacheCoinGecko, async () => {
       await runWithLockFile(syncCacheCoinGecko, SYNC_CACHE_COIN_GECKO_LOCK_FILE, "sync cache coin gecko", false);
     });
