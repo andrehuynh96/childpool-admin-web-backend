@@ -167,7 +167,7 @@ async function getRewardADA(address, validators) {
     api.extendMethod("chains", params, api);
     const response = await api.chains.getCurrentReward(address);
     let isPool = false
-    if (response && response.data.length > 0) {
+    if (response && response.data && response.data.length > 0) {
       let reward = 0;
       response.data.forEach(item => {
         if (validators.find(x => x == item.delegation)) {
