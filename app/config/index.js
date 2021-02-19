@@ -45,6 +45,12 @@ const config = {
         port: process.env.WALLET_DB_PORT,
         dialect: 'postgres',
         logging: process.env.POSTPRES_DEBUG === 'true' ? console.log : false,
+        pool: {
+          max: 5,
+          min: 0,
+          acquire: 30000,
+          idle: 10000
+        }
       }
     }
   },
