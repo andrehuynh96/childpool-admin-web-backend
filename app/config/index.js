@@ -46,7 +46,7 @@ const config = {
         dialect: 'postgres',
         logging: process.env.POSTPRES_DEBUG === 'true' ? console.log : false,
         pool: {
-          max: 5,
+          max: 10,
           min: 0,
           acquire: 30000,
           idle: 10000
