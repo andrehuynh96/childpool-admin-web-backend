@@ -46,4 +46,4 @@ DeployProdMS:
   - .BuildJSApp
   - .OnlyProductionMS
  tags:
-  - prod-stak-ap-ms-ansible
+  - stak-prod-ap-ms-bastion
