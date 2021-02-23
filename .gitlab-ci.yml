@@ -1,13 +1,8 @@
 stages:
  - build
- - test
  - deploy   
 
-variables:
- GIT_STRATEGY: none
- ANSIBLE_DIR: "/home/ubuntu/staking-iac/ansible"
-
-stak-stage-ap-ms-admin-api:
+STAGING:
  stage: deploy
  script:
   - cd /home/ubuntu/staking-iac/ansible
@@ -19,31 +14,14 @@ stak-stage-ap-ms-admin-api:
  tags:
   - stak-stage-ap-ms-bastion
 
-.BuildJSApp:
- stage: build
+PRODUCTION:
+ stage: deploy
  script:
-  - cd ${ANSIBLE_DIR}
-  - project=`echo ${CI_COMMIT_TAG} | awk -F'-' '{print $2}'`
-  - ansible_file=`grep ${CI_PROJECT_NAME}.git *.yml | awk '{print $1}'|awk -F':' '{print $1}' | grep ${_ENV} | grep $project`
-  - sudo su ubuntu -c "ansible-playbook $ansible_file --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
-  
-.OnlyProductionMS:
+  - cd /home/ubuntu/staking-iac/ansible
+  - sudo su ubuntu -c "ansible-playbook stak-prod-ap-ms-admin-api.yml --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
  only:
   - /^.*-ms$/
  except:
   - branches
-
-.OnlyProductionBS:
- only:
-  - /^.*-bs$/
- except:
-  - branches
-
-DeployProdMS:
- variables:
-  _ENV: "prod" 
- extends:
-  - .BuildJSApp
-  - .OnlyProductionMS
  tags:
   - stak-prod-ap-ms-bastion
