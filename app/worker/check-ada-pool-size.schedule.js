@@ -6,6 +6,10 @@ const CHECK_ADA_POOL_SIZE_LOCK_FILE = 'check_ada_pool_size.lock';
 
 module.exports = {
   run: () => {
+    if (!config.schedule.checkAdaPoolSize) {
+      return;
+    }
+
     cron.schedule(config.schedule.checkAdaPoolSize, async () => {
       await runWithLockFile(CheckAdaPoolSizeJob, CHECK_ADA_POOL_SIZE_LOCK_FILE, "check ada pool size");
     });
