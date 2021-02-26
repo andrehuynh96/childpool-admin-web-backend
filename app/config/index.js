@@ -248,6 +248,7 @@ const config = {
   },
   ADA: {
     restUrl: process.env.ADA_REST_URL,
+    graphqlUrl: process.env.ADA_GRAPHQL_URL,
   },
   DOT: {
     url: process.env.POLKADOT_API,
@@ -255,8 +256,7 @@ const config = {
   },
   XQC: {
     url: process.env.QURAS_API
-  },
-
+  }
 };
 
 module.exports = config;
