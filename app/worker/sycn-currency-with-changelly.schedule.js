@@ -6,6 +6,10 @@ const SYNC_CURRENCY_WITH_CHANGELLY_LOCK_FILE = 'sycn_currency_with_changelly.loc
 
 module.exports = {
   run: () => {
+    if (!config.schedule.syncCurrencyWithChangelly) {
+      return;
+    }
+
     cron.schedule(config.schedule.syncCurrencyWithChangelly, async () => {
       await runWithLockFile(syncCurrencyWithChangellyJob, SYNC_CURRENCY_WITH_CHANGELLY_LOCK_FILE, "sync currency with changelly");
     });

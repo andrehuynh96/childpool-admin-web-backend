@@ -8,6 +8,10 @@ const logger = require("app/lib/logger");
 
 module.exports = {
   run: () => {
+    if (!config.schedule.getMemberAsset) {
+      return;
+    }
+
     cron.schedule(config.schedule.getMemberAsset, async () => {
       let name = 'get member asset';
       var id = Math.floor(new Date().getTime() / 1000)

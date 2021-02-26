@@ -56,7 +56,8 @@ class ATOM extends GetMemberAsset {
           amountResult.data.forEach(item => {
             if (this.validatorAddresses.indexOf(item.validator_address) != -1) {
               let ratio = this.validatorRatio.find(x => x.operator_address == item.validator_address)
-              amount += BigNumber(item.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber();
+              if(ratio && item.shares && ratio.shares)
+                amount += BigNumber(item.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber();
             }
           });
         }
