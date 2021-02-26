@@ -13,15 +13,18 @@ const Op = Sequelize.Op;
 const logHangout = require("app/lib/logger/hangout");
 const dbLogger = require('app/lib/logger/db');
 const AdaService = require("app/lib/ada");
+const bech32 = require("bech32");
 
 class ADA extends GetMemberAsset {
   constructor() {
     super();
   }
   async getValidators() {
-    if (!this.validators) {
+    if (!this.validators || !this.pools) {
       let res = await StakingPlatform.getValidatorInfo('TADA')
       this.validators = res.data.map(x => x.address);
+      this.pools = res.data.map(x => x.pool_id);
+      console.log('pools', this.pools)
     }
   }
   async setValidators(addresses) {
@@ -31,16 +34,17 @@ class ADA extends GetMemberAsset {
     try {
       await this.getValidators();
       const unclaim_reward = await getRewardADA(address, this.validators);
+      const amount = await getStaked(address, this.pools);
+
       const balance = await getBalanceADA(address);
       if (!unclaim_reward.isPool) {
         return {
           balance,
-          amount: 0,
+          amount: amount,
           unclaimReward: 0,
           reward: 0
         }
       }
-      const amount = balance;
       let date = new Date();
       date.setHours(0, 0, 0, 0);
       // get old
@@ -183,6 +187,40 @@ async function getRewardADA(address, validators) {
     else {
       return {};
     }
+  }
+  catch (error) {
+    await dbLogger(error);
+    logger.error(error);
+    logHangout.write(JSON.stringify(error));
+    throw error;
+  }
+}
+
+async function getStaked(address, pools) {
+  try {
+    const decodedAddr = bech32.decode(address, 200);
+    const bytes = Buffer.from(bech32.fromWords(decodedAddr.words, 'hex'));
+    const hexKeys = bytes.toString('hex').slice(2);
+    const length = hexKeys.length;
+    const stakeKey = hexKeys.slice(length / 2);
+    const stakeAddr = bech32.encode('stake', bech32.toWords(Buffer.from('e1' + stakeKey, 'hex')));
+
+    const currentEpoch = await AdaService.getCurrentEpoch();
+    const result = await AdaService.getActiveStakeAddress({
+      validators: pools,
+      epoch: currentEpoch,
+      limit: 50,
+      delegators: [stakeAddr]
+    });
+
+    if (result.data.activeStake.length > 0) {
+      const total = result.data.activeStake.reduce((sum, item) => {
+        return sum += (+item.amount);
+      }, 0);
+      return total;
+    }
+
+    return 0;
   }
   catch (error) {
     await dbLogger(error);

@@ -248,6 +248,7 @@ const config = {
   },
   ADA: {
     restUrl: process.env.ADA_REST_URL,
+    graphqlUrl: process.env.ADA_GRAPHQL_URL,
   }
 };
 
