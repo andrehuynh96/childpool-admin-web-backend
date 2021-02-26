@@ -256,8 +256,7 @@ const config = {
   },
   XQC: {
     url: process.env.QURAS_API
-  },
-
+  }
 };
 
 module.exports = config;
