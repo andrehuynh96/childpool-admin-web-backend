@@ -61,7 +61,7 @@ class IRIS extends GetMemberAsset {
           });
         }
         const rewardResult = await apiCoin.getRewards(address);
-        if (rewardResult && rewardResult.data.total.length > 0) {
+        if (rewardResult && rewardResult.data.total && rewardResult.data.total.length > 0) {
           for (let e of rewardResult.data.delegations) {
             if (this.validatorAddresses.indexOf(e.validator) != -1) {
               for (let r of e.reward) {

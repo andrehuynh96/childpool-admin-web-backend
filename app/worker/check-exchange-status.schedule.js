@@ -6,9 +6,13 @@ const LOCK_FILE = 'check_exchange_status.lock';
 
 module.exports = {
   run: () => {
+    if (!config.schedule.checkExchangeStatus) {
+      return;
+    }
+
     cron.schedule(config.schedule.checkExchangeStatus, async () => {
       await runWithLockFile(CheckExchangeStatusJob, LOCK_FILE, "check exchange status");
     });
   },
   lockFile: () => LOCK_FILE
-}
+};

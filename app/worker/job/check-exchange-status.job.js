@@ -46,7 +46,7 @@ module.exports = {
         const Service = ExchangeFactory.create(mappingProvider[t.provider], {});
         let tStatusResult = await Service.getStatus({ transaction_id: t.transaction_id });
         if (tStatusResult.error) {
-          logger.error(`${t.provider}: ${t.transaction_id}: ${result.error.message}`);
+          logger.error(`${t.provider}: ${t.transaction_id}: ${tStatusResult.error.message}`);
           continue;
         }
 
