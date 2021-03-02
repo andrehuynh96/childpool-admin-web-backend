@@ -40,7 +40,6 @@ class ATOM extends GetMemberAsset {
       let unclaimReward = 0;
       let date = new Date();
       date.setHours(0, 0, 0, 0);
-
       if (!this.validatorAddresses) {
         await this.getValidators(apiCoin)
       }
@@ -54,10 +53,11 @@ class ATOM extends GetMemberAsset {
         const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
         if (amountResult && amountResult.data.length > 0) {
           amountResult.data.forEach(item => {
-            if (this.validatorAddresses.indexOf(item.validator_address) != -1) {
-              let ratio = this.validatorRatio.find(x => x.operator_address == item.validator_address)
-              if(ratio && item.shares && ratio.shares)
-                amount += BigNumber(item.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber();
+            if (this.validatorAddresses.indexOf(item.delegation.validator_address) != -1) {
+              let ratio = this.validatorRatio.find(x => x.operator_address == item.delegation.validator_address);
+              if (ratio && item.delegation.shares && ratio.shares) {
+                amount += BigNumber(item.delegation.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber();
+              }
             }
           });
         }
@@ -110,7 +110,7 @@ class ATOM extends GetMemberAsset {
         unclaimReward: unclaimReward,
       };
     } catch (error) {
-      await dbLogger(error,address);
+      await dbLogger(error, address);
       logger.error(error);
       return null;
     }

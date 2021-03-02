@@ -7,8 +7,8 @@ const expect = chai.expect;
 const assert = chai.assert;
 chai.should();
 
-const validators = ["pool1kcnh9avc9jgelajcja7y6wsvjdaulkqj02azcszjvm3pwmksr0l"];
-const delegators = ["stake1uynm03a7sdwhe4ey3v2paepw4t5tpx4us2ad0hwxpy7xrkq2dufad"];
+const validators = ["pool19lz8nyz0jjpdrdtnjaar4untk4th23gpg5s7aegn7480zff4vgq"];
+const delegators = ["stake1u8rlat9w5lfyggwkxfqtydtt52aa2l52tp8408h666y893gzmkhfs"];
 const txId = "d4c12606b0fbdb46c401f1799454314fc67859429e4f7858ca8f40fc56e26821";
 const epoch = 231;
 
