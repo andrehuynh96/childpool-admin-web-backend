@@ -26,13 +26,13 @@ module.exports = {
 async function _removeLockFile() {
   try {
     let files = [
-      UpdateAffiliateSchedule.lockFile(),
-      CheckAdaPoolSizeSchedule.lockFile(),
-      CheckExchangeStatusSchedule.lockFile(),
+      // UpdateAffiliateSchedule.lockFile(),
+      // CheckAdaPoolSizeSchedule.lockFile(),
+      // CheckExchangeStatusSchedule.lockFile(),
       GetMemberAssetSchedule.lockFile(),
-      SyncCurrencyWithChangelly.lockFile(),
-      CheckStatusFiatTransactionSchedule.lockFile(),
-      CheckStatusNexoTransactionSchedule.lockFile(),
+      // SyncCurrencyWithChangelly.lockFile(),
+      // CheckStatusFiatTransactionSchedule.lockFile(),
+      // CheckStatusNexoTransactionSchedule.lockFile(),
       SyncCacheCoinGecko.lockFile()
     ];
     for (let f of files) {

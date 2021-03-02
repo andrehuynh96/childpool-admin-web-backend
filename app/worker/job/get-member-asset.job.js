@@ -56,7 +56,8 @@ module.exports = {
                       reward: 0,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
                       unclaim_reward: 0,// current unclaim reward
                       missed_daily: true,
-                      createdAt: date
+                      createdAt: date,
+                      version: config.app.version
                     })
                   }
                   insertItems.push({
@@ -66,7 +67,8 @@ module.exports = {
                     amount: data.amount,  // balance of staking
                     reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
                     unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward
-                    tracking: data.opts
+                    tracking: data.opts,
+                    version: config.app.version
                   })
                 } else if (number == 1) {
                   insertItems.push({
@@ -76,7 +78,8 @@ module.exports = {
                     amount: data.amount,  // balance of staking
                     reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
                     unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward
-                    tracking: data.opts
+                    tracking: data.opts,
+                    version: config.app.version
                   })
                 } else if (number == 0) {
                   await MemberAsset.update({
@@ -100,7 +103,8 @@ module.exports = {
                   amount: data.amount,  // balance of staking
                   reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
                   unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward
-                  tracking: data.opts
+                  tracking: data.opts,
+                  version: config.app.version
                 })
               }
             }

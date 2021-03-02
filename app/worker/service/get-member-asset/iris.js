@@ -10,6 +10,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logHangout = require("app/lib/logger/hangout");
 const dbLogger = require('app/lib/logger/db');
+const DECIMALS = 1e6;
 
 class IRIS extends GetMemberAsset {
   constructor() {
@@ -17,15 +18,16 @@ class IRIS extends GetMemberAsset {
   }
 
   async getValidators(apiCoin) {
-    this.validatorAddresses = await StakingPlatform.getValidatorAddresses('IRIS');
+    this.validatorAddresses = "iva1q6zpsa3j8452d6q7tkmndkjfgzrmzwmsml7fyg";// await StakingPlatform.getValidatorAddresses('IRIS');
     this.validatorRatio = []
     for (let i of this.validatorAddresses) {
-      let validatorData = await apiCoin.getValidator(i)
-      if (validatorData && validatorData.data && validatorData.data.tokens) {
+      let validatorData = await apiCoin.getValidator(i);
+
+      if (validatorData && validatorData.data && validatorData.data.result && validatorData.data.result.tokens) {
         this.validatorRatio.push({
-          operator_address: validatorData.data.operator_address,
-          tokens: validatorData.data.tokens,
-          shares: validatorData.data.delegator_shares
+          operator_address: validatorData.data.result.operator_address,
+          tokens: validatorData.data.result.tokens,
+          shares: validatorData.data.result.delegator_shares
         })
       }
     }
@@ -47,23 +49,23 @@ class IRIS extends GetMemberAsset {
 
       const balanceResult = await apiCoin.getBalance(address);
       if (balanceResult && balanceResult.data) {
-        balance = BigNumber(balanceResult.data.balance).toNumber() * 1e18;
+        balance = BigNumber(balanceResult.data.balance).toNumber() * DECIMALS;
       }
 
       if (this.validatorAddresses.length > 0) {
         const amountResult = await apiCoin.getListDelegationsOfDelegator(address);
-        if (amountResult && amountResult.data.length > 0) {
-          amountResult.data.forEach(item => {
-            if (this.validatorAddresses.indexOf(item.validator_addr) != -1) {
-              let ratio = this.validatorRatio.find(x => x.operator_address == item.validator_addr)
-              amount += BigNumber(item.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber() * 1e18;
+        if (amountResult && amountResult.data && amountResult.data.result && amountResult.data.result.length > 0) {
+          amountResult.data.result.forEach(item => {
+            if (this.validatorAddresses.indexOf(item.delegation.validator_address) != -1) {
+              let ratio = this.validatorRatio.find(x => x.operator_address == item.delegation.validator_address)
+              amount += BigNumber(item.delegation.shares).dividedBy(BigNumber(ratio.shares)).multipliedBy(BigNumber(ratio.tokens)).toNumber() * DECIMALS;
             }
           });
         }
         const rewardResult = await apiCoin.getRewards(address);
         if (rewardResult && rewardResult.data.total && rewardResult.data.total.length > 0) {
-          for (let e of rewardResult.data.delegations) {
-            if (this.validatorAddresses.indexOf(e.validator) != -1) {
+          for (let e of rewardResult.data.rewards) {
+            if (this.validatorAddresses.indexOf(e.validator_address) != -1) {
               for (let r of e.reward) {
                 unclaimReward = unclaimReward + BigNumber(r.amount).toNumber();
               }
@@ -87,7 +89,7 @@ class IRIS extends GetMemberAsset {
                 if (tx.tx_type === 'get_delegator_rewards_all' && Date.parse(tx.timestamp) >= Date.parse(memberAsset.updatedAt) && tx.validator_addresses && tx.validator_addresses.length > 0) {
                   for (let validator of tx.validator_addresses) {
                     if (this.validatorAddresses.indexOf(validator.validator_address) != -1) {
-                      claim = claim + BigNumber(validator.amount).toNumber() * 1e18;
+                      claim = claim + BigNumber(validator.amount).toNumber() * DECIMALS;
                       logger.info('claim: ', claim);
                     }
                   }
@@ -108,7 +110,7 @@ class IRIS extends GetMemberAsset {
         unclaimReward: unclaimReward
       };
     } catch (error) {
-      await dbLogger(error,address);
+      await dbLogger(error, address);
       logger.error(error);
       return null;
     }
@@ -160,7 +162,7 @@ const getHistories = async (address, memberAsset) => {
   } catch (err) {
     logger[err.canLogAxiosError ? 'error' : 'info'](err);
     logHangout.write(JSON.stringify(err));
-    await dbLogger(err,address);
+    await dbLogger(err, address);
     return null
   }
 }

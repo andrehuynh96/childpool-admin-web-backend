@@ -42,8 +42,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
-    }
-  },{
+    },
+    version: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+  }, {
     underscored: true,
     timestamps: true,
   });
