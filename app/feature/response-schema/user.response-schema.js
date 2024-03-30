@@ -9,7 +9,9 @@ const destObject = {
     '[].twofa_enable_flg': '[].twofa_enable_flg',
     '[].created_at': '[].created_at',
     '[].user_sts': '[].user_sts',
-    '[].latest_login_at': '[].latest_login_at'
+    '[].country_code': '[].country_code?',
+    '[].country': '[].country?',
+    '[].latest_login_at': '[].latest_login_at',
   },
   single: {
     id: 'id',
@@ -19,7 +21,9 @@ const destObject = {
     twofa_enable_flg: 'twofa_enable_flg',
     created_at: 'created_at',
     user_sts: 'user_sts',
-    latest_login_at: 'latest_login_at'
+    country_code: 'country_code?',
+    country: 'country?',
+    latest_login_at: 'latest_login_at',
   }
 };
 module.exports = srcObject => {
@@ -33,4 +37,4 @@ module.exports = srcObject => {
   else {
     return objectMapper(srcObject, destObject.single);
   }
-};  
+};

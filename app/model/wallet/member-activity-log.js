@@ -6,11 +6,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     client_ip: {
-      type: DataTypes.STRING(32),
+      type: DataTypes.STRING(256),
       allowNull: true
     },
     action: {
-      type: DataTypes.STRING(32),
+      type: DataTypes.STRING(100),
       allowNull: false,
       defaultValue: ActionType.LOGIN
     },
@@ -26,4 +26,4 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: true,
     });
-} 
+}

@@ -31,9 +31,9 @@ module.exports = {
           transaction = await database.transaction();
           for (let item of items) {
             logAddress = item.address;
-            logger.info('Waiting for',item.platform,'response');
+            logger.info('Waiting for', item.platform, 'response');
             let data = await service.get(item.address);
-            logger.info(item.platform,data);
+            logger.info(item.platform, data);
             if (data) {
               let memberAsset = await MemberAsset.findOne({
                 where: {
@@ -43,12 +43,12 @@ module.exports = {
                 order: [['created_at', 'DESC']]
               })
               if (memberAsset) {
-                let number = day - Math.floor(Date.parse(memberAsset.createdAt)/86400000);
+                let number = day - Math.floor(Date.parse(memberAsset.createdAt) / 86400000);
                 if (number > 1) {
-                  for (let i = number - 1; i > 0; i --) {
+                  for (let i = number - 1; i > 0; i--) {
                     let date = new Date();
                     date.setDate(date.getDate() - i);
-                    insertItems.push ({
+                    insertItems.push({
                       platform: item.platform,
                       address: item.address,
                       balance: memberAsset.balance,  // balance of account
@@ -59,7 +59,7 @@ module.exports = {
                       createdAt: date
                     })
                   }
-                  insertItems.push ({
+                  insertItems.push({
                     platform: item.platform,
                     address: item.address,
                     balance: data.balance,  // balance of account
@@ -69,7 +69,7 @@ module.exports = {
                     tracking: data.opts
                   })
                 } else if (number == 1) {
-                  insertItems.push ({
+                  insertItems.push({
                     platform: item.platform,
                     address: item.address,
                     balance: data.balance,  // balance of account
@@ -85,7 +85,7 @@ module.exports = {
                     reward: data.reward,  // daily reward = current unclaim reward - yesterday unclaim rewad + change of daily unclaim reward
                     unclaim_reward: data.unclaimReward ? data.unclaimReward : 0, // current unclaim reward
                     tracking: data.opts
-                  },{
+                  }, {
                     where: {
                       id: memberAsset.id
                     },
@@ -93,7 +93,7 @@ module.exports = {
                   });
                 }
               } else {
-                insertItems.push ({
+                insertItems.push({
                   platform: item.platform,
                   address: item.address,
                   balance: data.balance,  // balance of account
@@ -114,7 +114,7 @@ module.exports = {
       return true;
     }
     catch (err) {
-      await dbLogger(err,logAddress);
+      await dbLogger(err, logAddress);
       logger.error("get balance and amount job error:", err);
       if (transaction)
         await transaction.rollback();

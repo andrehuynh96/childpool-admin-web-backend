@@ -6,6 +6,10 @@ const CHECK_TRANSACTION_REWARD_LOCK_FILE = 'check_distribute_reward.lock';
 
 module.exports = {
   run: () => {
+    if (!config.schedule.checkTransactionReward) {
+      return;
+    }
+
     cron.schedule(config.schedule.checkTransactionReward, async () => {
       await runWithLockFile(CheckDistributeRewardJob, CHECK_TRANSACTION_REWARD_LOCK_FILE, "check transaction reward");
     });

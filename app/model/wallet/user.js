@@ -56,7 +56,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0
-    }
+    },
+    country_code: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
   }, {
     underscored: true,
     timestamps: true,

@@ -179,8 +179,10 @@ module.exports = {
           });
         }
         else {
+          delete user.password_hash;
           req.session.authenticated = true;
           req.session.user = user;
+
           let roleList = roles.map(role => role.role_id);
           let rolePermissions = await RolePermissions.findAll({
             attributes: [

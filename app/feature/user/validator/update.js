@@ -5,10 +5,8 @@ const status = Object.keys(UserStatus);
 const schema = Joi.object().keys({
   user_sts: Joi.string().valid(status).required(),
   role_id: Joi.number().required(),
-  // email: Joi.string()
-  //   .email({ minDomainAtoms: 2 })
-  //   .required(),
   name: Joi.string().required(),
+  country_code: Joi.string().allow(null).max(100).optional(),
 });
 
 module.exports = schema;

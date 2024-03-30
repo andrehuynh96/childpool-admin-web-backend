@@ -12,15 +12,19 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const logHangout = require("app/lib/logger/hangout");
 const dbLogger = require('app/lib/logger/db');
+const AdaService = require("app/lib/ada");
+const bech32 = require("bech32");
 
 class ADA extends GetMemberAsset {
   constructor() {
     super();
   }
   async getValidators() {
-    if (!this.validators) {
+    if (!this.validators || !this.pools) {
       let res = await StakingPlatform.getValidatorInfo('TADA')
       this.validators = res.data.map(x => x.address);
+      this.pools = res.data.map(x => x.pool_id);
+      console.log('pools', this.pools)
     }
   }
   async setValidators(addresses) {
@@ -30,16 +34,17 @@ class ADA extends GetMemberAsset {
     try {
       await this.getValidators();
       const unclaim_reward = await getRewardADA(address, this.validators);
+      const amount = await getStaked(address, this.pools);
+
       const balance = await getBalanceADA(address);
       if (!unclaim_reward.isPool) {
         return {
           balance,
-          amount: 0,
+          amount: amount,
           unclaimReward: 0,
           reward: 0
         }
       }
-      const amount = balance;
       let date = new Date();
       date.setHours(0, 0, 0, 0);
       // get old
@@ -80,7 +85,7 @@ class ADA extends GetMemberAsset {
       return result;
     } catch (error) {
       logger[error.canLogAxiosError ? 'error' : 'info'](error);
-      await dbLogger(error,address);
+      await dbLogger(error, address);
       logHangout.write(JSON.stringify(error));
       return null;
     }
@@ -95,59 +100,31 @@ async function getBalanceADA(address) {
     return balance;
   }
   catch (error) {
-    await dbLogger(error,address);
+    await dbLogger(error, address);
     logger.error(error);
     logHangout.write(JSON.stringify(error));
     throw error;
   }
 }
 
-async function getBestBlockADA() {
-  try {
-    let params = [
-      {
-        name: "getBestBlock",
-        method: "GET",
-        url: '/chains/v1/ADA/bestblock'
-      }
-    ];
-
-    api.extendMethod("chains", params, api);
-    const response = await api.chains.getBestBlock();
-    if (response.data && response.cd == 0) {
-      return response.data;
-
-    } else {
-      return null;
-    }
-  }
-  catch (err) {
-    await dbLogger(err);
-    logger.error(err);
-    logHangout.write(JSON.stringify(err));
-    throw err;
-  }
-}
-
 async function getClaimedReward(delegatorAddress, memberAsset) {
   try {
-    let lastTx = memberAsset ? memberAsset.tracking : null
+    let lastTx = memberAsset ? memberAsset.tracking : null;
     let totalClaimedReward = 0;
-    let currentBlockHash = await getBestBlockADA();
+    let currentBlockHash = await AdaService.getLatestBlock();
     while (true) {
       let payload = {
-        addresses: [
-          delegatorAddress
-        ],
-        untilBlock: currentBlockHash.hash
       };
       if (lastTx)
         payload = {
-          ...payload,
-          after: lastTx
+          after_block: lastTx.block,
+          after_tx: lastTx.tx
         };
-      let { data } = await axios.post('https://iohk-mainnet.yoroiwallet.com/api/v2/txs/history', payload);
-
+      let data = await AdaService.getTransactionDetail({
+        address: delegatorAddress,
+        until_block: currentBlockHash.hash,
+        ...payload
+      });
       //check the same data
       if (!data || data.length == 0) {
         break;
@@ -194,7 +171,7 @@ async function getRewardADA(address, validators) {
     api.extendMethod("chains", params, api);
     const response = await api.chains.getCurrentReward(address);
     let isPool = false
-    if (response && response.data.length > 0) {
+    if (response && response.data && response.data.length > 0) {
       let reward = 0;
       response.data.forEach(item => {
         if (validators.find(x => x == item.delegation)) {
@@ -210,6 +187,40 @@ async function getRewardADA(address, validators) {
     else {
       return {};
     }
+  }
+  catch (error) {
+    await dbLogger(error);
+    logger.error(error);
+    logHangout.write(JSON.stringify(error));
+    throw error;
+  }
+}
+
+async function getStaked(address, pools) {
+  try {
+    const decodedAddr = bech32.decode(address, 200);
+    const bytes = Buffer.from(bech32.fromWords(decodedAddr.words, 'hex'));
+    const hexKeys = bytes.toString('hex').slice(2);
+    const length = hexKeys.length;
+    const stakeKey = hexKeys.slice(length / 2);
+    const stakeAddr = bech32.encode('stake', bech32.toWords(Buffer.from('e1' + stakeKey, 'hex')));
+
+    const currentEpoch = await AdaService.getCurrentEpoch();
+    const result = await AdaService.getActiveStakeAddress({
+      validators: pools,
+      epoch: currentEpoch,
+      limit: 50,
+      delegators: [stakeAddr]
+    });
+
+    if (result.data.activeStake.length > 0) {
+      const total = result.data.activeStake.reduce((sum, item) => {
+        return sum += (+item.amount);
+      }, 0);
+      return total;
+    }
+
+    return 0;
   }
   catch (error) {
     await dbLogger(error);

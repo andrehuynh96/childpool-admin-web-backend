@@ -45,6 +45,12 @@ const config = {
         port: process.env.WALLET_DB_PORT,
         dialect: 'postgres',
         logging: process.env.POSTPRES_DEBUG === 'true' ? console.log : false,
+        pool: {
+          max: 10,
+          min: 0,
+          acquire: 30000,
+          idle: 10000
+        }
       }
     }
   },
@@ -135,7 +141,8 @@ const config = {
     getMemberAsset: process.env.SCHEDULE_GET_MEMBER_ASSET,
     syncCurrencyWithChangelly: process.env.SCHEDULE_SYNC_CURRENCY_WITH_CHANGELLY,
     checkStatusFiatTransaction: process.env.SCHEDULE_CHECK_STATUS_FIAT_TRANSACTION,
-    checkStatusNexoTransaction: process.env.SCHEDULE_CHECK_NEXO_TRANSACTION_STATUS
+    checkStatusNexoTransaction: process.env.SCHEDULE_CHECK_NEXO_TRANSACTION_STATUS,
+    syncCacheCoinGecko: process.env.SCHEDULE_SYNC_CACHE_COIN_GECKO,
   },
   sdk: {
     apiKey: process.env.SDK_API_KEY,
@@ -232,6 +239,24 @@ const config = {
     logLevel: process.env.HANGOUT_ERROR_LOG_LEVEL || 'error',
     webhookUrl: process.env.HANGOUT_ERROR_CHANEL_WEBHOOK_URL,
   },
+  banking: {
+    nexo: {
+      usingIBP: process.env.NEXO_USING_IBP == "1",
+      url: process.env.NEXO_URL,
+      apiKey: process.env.NEXO_API_KEY,
+    }
+  },
+  ADA: {
+    restUrl: process.env.ADA_REST_URL,
+    graphqlUrl: process.env.ADA_GRAPHQL_URL,
+  },
+  DOT: {
+    url: process.env.POLKADOT_API,
+    isMainnet: process.env.POLKADOT_MAINNET == '1'
+  },
+  XQC: {
+    url: process.env.QURAS_API
+  }
 };
 
 module.exports = config;
